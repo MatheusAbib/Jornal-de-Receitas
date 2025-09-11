@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Usuários - Jornal de Receitas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/usuario.css">
+</head>
+<body>
+
+  <div class="header-full-width">
+    <div class="header-container">
+      <div class="header-top">
+        <span class="menu-icon" onclick="toggleSidebar()">
+        </span>
+        <div class="page-header">
+          <h1>Gerênciamento de Usuários</h1>
+          <p class="page-subtitle">Página do Administrador</p>
+        </div>
+        <div style="width: 45px;"></div> <!-- Espaço para alinhamento -->
+      </div>
+    </div>
+  </div>
+
+
+
+      <a href="/" class="back-link">
+      <i class="fas fa-arrow-left"></i> Voltar para a página inicial
+    </a>
+  <div class="users-container">
+    <h2 class="users-title">Usuários Cadastrados</h2>
+    
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>CPF</th>
+          <th>Data Cadastro</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="usuario : ${usuarios}">
+          <td th:text="${usuario.id}"></td>
+          <td th:text="${usuario.nome}"></td>
+          <td th:text="${usuario.email}"></td>
+          <td th:text="${usuario.cpf}"></td>
+          <td th:text="${usuario.dataCadastro}"></td>
+          <td>
+            <span th:class="${usuario.ativo} ? 'status-active' : 'status-inactive'" 
+                  th:text="${usuario.ativo} ? 'Ativo' : 'Inativo'"></span>
+          </td>
+          <td>
+            <form th:action="@{/usuarios/ativar/{id}(id=${usuario.id})}" method="post" style="display:inline">
+              <label class="switch">
+                <input type="checkbox" name="ativo" th:checked="${usuario.ativo}" onchange="this.form.submit()">
+                <span class="slider round"></span>
+              </label>
+            </form>
+            
+            <button type="button" class="action-btn btn-delete" th:attr="data-id=${usuario.id}, data-nome=${usuario.nome}, data-email=${usuario.email}" onclick="openDeleteModal(this)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- Modal de Confirmação de Exclusão -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeDeleteModal()">&times;</span>
+      <div class="modal-header">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h2>Confirmar Exclusão</h2>
+      </div>
+      <div class="modal-body">
+        <p>Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.</p>
+        <div class="modal-user-info">
+          <p><strong>ID:</strong> <span id="modal-user-id"></span></p>
+          <p><strong>Nome:</strong> <span id="modal-user-nome"></span></p>
+          <p><strong>Email:</strong> <span id="modal-user-email"></span></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
+        <form id="deleteForm" method="post" style="display: inline;">
+          <button type="submit" class="modal-btn modal-btn-confirm">
+            <i class="fas fa-trash"></i> Excluir
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/usuario.js"></script>
+</body>
+</html>

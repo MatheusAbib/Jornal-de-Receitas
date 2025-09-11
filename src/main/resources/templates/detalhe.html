@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${receita.titulo}">Detalhes da Receita</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/detalhe.css">
+</head>
+<body>
+
+  <!-- Cabeçalho da página -->
+  <div class="page-header">
+    <h1 th:text="${receita.titulo}">Título da Receita</h1>
+  </div>
+
+  <!-- Container principal -->
+  <div class="recipe-container">
+    <!-- Imagem da receita -->
+    <div class="recipe-image-container">
+      <!-- Se a imagem for externa (http ou https) -->
+      <img th:if="${receita.imagem != null and (receita.imagem.startsWith('http') or receita.imagem.startsWith('https'))}" 
+           th:src="${receita.imagem}" 
+           alt="Imagem da receita" 
+           class="recipe-image">
+      
+      <!-- Se a imagem for local (no servidor /uploads/) -->
+      <img th:if="${receita.imagem != null and !(receita.imagem.startsWith('http') or receita.imagem.startsWith('https'))}" 
+           th:src="@{'/uploads/' + ${receita.imagem}}" 
+           alt="Imagem da receita" 
+           class="recipe-image">
+      
+      <!-- Se não houver imagem -->
+      <img th:if="${receita.imagem == null}" 
+           src="/default-image.jpg" 
+           alt="Sem imagem" 
+           class="recipe-image">
+      
+      <div class="recipe-badge">
+        <i class="fas fa-utensils"></i> Receita
+      </div>
+    </div>
+
+    <!-- Informações da receita -->
+    <div class="recipe-info">
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="info-content">
+          <strong>Tempo de Preparo</strong>
+          <span th:text="${receita.tempoPreparo} + ' minutos'">xx minutos</span>
+        </div>
+      </div>
+      
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="info-content">
+          <strong>Porções</strong>
+          <span th:text="${receita.porcoes} + ' porções'">x porções</span>
+        </div>
+      </div>
+      
+<!-- <div class="info-item">
+  <div class="info-icon">
+    <i class="fas fa-chef"></i>
+  </div>
+  <div class="info-content">
+    <strong>Autor</strong>
+    <span th:text="${receita.autor != null} ? ${receita.autor.nome} : 'Chef Anônimo'">Chef Anônimo</span>
+  </div>
+</div> -->
+
+    </div>
+  </div>
+
+  <!-- Ingredientes -->
+  <h3><i class="fas fa-list-check"></i> Ingredientes</h3>
+  <div class="ingredients-container">
+    <ul class="ingredients-list">
+      <li th:each="ingrediente : ${ingredientesList}">
+        <label>
+          <input type="checkbox">
+          <span th:text="${ingrediente}">Ingrediente</span>
+        </label>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Modo de preparo -->
+  <h3><i class="fas fa-mortar-pestle"></i> Modo de Preparo</h3>
+  <div class="preparation-container">
+    <ol class="preparation-list">
+      <li th:each="passo : ${modoPreparoList}" th:text="${passo}">Passo</li>
+    </ol>
+  </div>
+
+  <!-- Botões de navegação -->
+  <div class="navigation-links">
+    <a href="/"><i class="fas fa-arrow-left"></i> Voltar para Receitas</a>
+    <a href="/pendentes" th:if="${!receita.aprovada}"><i class="fas fa-clock"></i> Voltar para Pendentes</a>
+    <a href="#" onclick="window.print(); return false;"><i class="fas fa-print"></i> Imprimir Receita</a>
+  </div>
+
+</body>
+</html>

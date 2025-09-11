@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jornal de Receitas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- HEADER COM LARGURA TOTAL -->
+<div class="header-full-width">
+  <div class="header-container">
+    <header class="newspaper-header">
+      <div class="header-top">
+        <div class="newspaper-price">Edição #01</div>
+        <div class="newspaper-volume">
+          <span class="menu-icon" onclick="toggleSidebar()"><i class="fas fa-bars"></i></span>
+          <span class="user-icon" id="userIcon">
+            <i class="fas fa-user-circle"></i>
+          </span>
+        </div>
+      </div>
+      
+      <h1 class="newspaper-title">Jornal de Receitas</h1>
+      <p class="newspaper-subtitle">Delícias do dia a dia para todos os gostos</p>
+      <p class="newspaper-date" id="newspaperDate"></p> <!-- id adicionado -->
+    </header>
+  </div>
+</div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <h3>Jornal de Receitas</h3>
+    <a th:href="@{/}"><i class="fas fa-home"></i> Início</a>
+    <a th:href="@{/cadastro}"><i class="fas fa-user-plus"></i> Se Cadastrar</a>
+    <a href="#" onclick="openLoginModal(); return false;"><i class="fas fa-sign-in-alt"></i> Fazer Login</a>
+    <a th:href="@{/usuarios}"><i class="fas fa-users"></i> Usuários</a>
+    <a href="/pendentes"><i class="fas fa-clock"></i> Receitas Pendentes</a>
+    <a href="/nova"><i class="fas fa-utensils"></i> Nova Receita</a>
+    <a href="log-transacoes.html"><i class="fas fa-history"></i> Log de Transações</a>
+  </div>
+
+  <!-- CONTEÚDO COM MARGENS -->
+  <div class="content-wrapper">
+    <nav class="nav-links">
+      <a href="/pendentes"><i class="fas fa-clock"></i> Receitas Pendentes</a>
+      <a href="/nova"><i class="fas fa-plus-circle"></i> Nova Receita</a>
+    </nav>
+
+  <!-- Abas de conteúdo -->
+  <div class="content-tabs">
+    <div class="tab-buttons">
+      <button class="tab-button active" data-tab="todas-receitas">
+        Todas as Receitas
+      </button>
+      <button class="tab-button" data-tab="favoritas" id="fav">
+        <i class="fas fa-heart"></i> Favoritas
+        <span class="badge" id="favorite-count">0</span>
+      </button>
+    </div>
+    
+    
+    <div class="tab-content active" id="todas-receitas">
+      <div class="carousel-container">
+        <div class="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item">
+              <img src="/uploads/bolo-chocolate.jpg" alt="Bolo de Chocolate">
+              <div class="carousel-caption">
+                <h3>Bolo de Chocolate</h3>
+                <p>Uma receita incrível para os amantes de chocolate</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img src="/uploads/salada.jpg" alt="Salada Tropical">
+              <div class="carousel-caption">
+                <h3>Salada Tropical</h3>
+                <p>Refrescante e cheia de nutrientes para o verão</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img src="/uploads/frango.jpg" alt="Frango Assado">
+              <div class="carousel-caption">
+                <h3>Frango Assado</h3>
+                <p>Perfeito para um jantar em família</p>
+              </div>
+            </div>
+          </div>
+          <div class="carousel-controls">
+            <button class="carousel-control prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="carousel-control next"><i class="fas fa-chevron-right"></i></button>
+          </div>
+          <div class="carousel-indicators">
+            <div class="carousel-indicator active"></div>
+            <div class="carousel-indicator"></div>
+            <div class="carousel-indicator"></div>
+          </div>
+        </div>
+      </div>
+
+        <div class="news-highlights">
+          <div class="news-item">
+            <div class="news-header">
+              <div class="news-icon"><i class="fas fa-bullhorn"></i></div>
+              <div class="news-title">Novidade na Plataforma</div>
+            </div>
+            <div class="news-content">
+              <p class="news-description">Nova receita enviada: Torta de Limão com raspas de chocolate branco</p>
+              <div class="news-date">
+                <i class="far fa-clock"></i> Publicado há 2 horas
+              </div>
+            </div>
+          </div>
+
+          <div class="news-item">
+            <div class="news-header">
+              <div class="news-icon"><i class="fas fa-star"></i></div>
+              <div class="news-title">Receita em Destaque</div>
+            </div>
+            <div class="news-content">
+              <p class="news-description">Lasanha de Berinjela: Uma opção vegetariana incrível que conquistou nossos leitores</p>
+              <div class="news-date">
+                <i class="far fa-clock"></i> Em destaque esta semana
+              </div>
+            </div>
+          </div>
+
+          <div class="news-item">
+            <div class="news-header">
+              <div class="news-icon"><i class="fas fa-utensils"></i></div>
+              <div class="news-title">Receita para o seu dia</div>
+            </div>
+            <div class="news-content">
+              <p class="news-description">Brownie Fofinho: A receita mais acessada do dia com chocolate 70% cacau</p>
+              <div class="news-date">
+                <i class="far fa-clock"></i> Atualizado hoje
+              </div>
+            </div>
+          </div>
+
+          <div class="news-item">
+            <div class="news-header">
+              <div class="news-icon"><i class="fas fa-bowl-food"></i></div>
+              <div class="news-title">Clássico Revitalizado</div>
+            </div>
+            <div class="news-content">
+              <p class="news-description">Panqueca Americana: Nova versão com toque de canela e baunilha</p>
+              <div class="news-date">
+                <i class="far fa-clock"></i> Receita tradicional
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+<!-- Área de filtros -->
+<div class="recipe-filters">
+  <h3><i class="fas fa-filter"></i> Filtrar Receitas</h3>
+  <form id="filterForm">
+    <div class="filter-group">
+      <label for="nome"><i class="fas fa-utensils"></i> Nome:</label>
+      <i class="fas fa-search filter-icon"></i>
+      <input type="text" id="nome" name="nome" placeholder="Digite o nome da receita">
+    </div>
+    
+    <div class="filter-group">
+      <label for="tempo"><i class="fas fa-clock"></i> Tempo de Preparo (min):</label>
+      <i class="fas fa-hourglass-half filter-icon"></i>
+      <input type="number" id="tempo" name="tempo" min="1" placeholder="Máx. tempo">
+    </div>
+    
+    <div class="filter-group">
+      <label for="porcoes"><i class="fas fa-users"></i> Porções:</label>
+      <i class="fas fa-user filter-icon"></i>
+      <input type="number" id="porcoes" name="porcoes" min="1" placeholder="Quantidade de porções">
+    </div>
+
+    <div class="filter-buttons">
+      <button type="button" id="aplicarFiltros">
+        <i class="fas fa-check"></i> Aplicar Filtros
+      </button>
+      <button type="button" id="limparFiltros">
+        <i class="fas fa-times"></i> Limpar Filtros
+      </button>
+    </div>
+  </form>
+</div>
+
+
+<div class="receitas" id="all-recipes">
+  <div class="card" th:each="r : ${receitas}">
+    <div class="card-image">
+<img th:if="${r.imagem != null and r.imagem.startsWith('http')}" th:src="${r.imagem}" alt="Imagem da receita">
+<img th:if="${r.imagem != null and !r.imagem.startsWith('http')}" th:src="@{'/uploads/' + ${r.imagem}}" alt="Imagem da receita">
+<img th:if="${r.imagem == null}" src="/default-image.jpg" alt="Sem imagem">
+      <div class="card-badge">NOVO</div>
+    </div>
+    <div class="card-content">
+      <h2 th:text="${r.titulo}">Título da Receita</h2>
+      
+      <!-- Tempo de preparo e porções ajustados -->
+      <div class="card-meta">
+        <span><i class="fas fa-clock"></i> <span th:text="${r.tempoPreparo}">30 min</span></span>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <span><i class="fas fa-utensils"></i> <span th:text="${r.porcoes}">1</span> porções</span>
+      </div>
+      
+      <p>Experimente essa receita deliciosa e compartilhe com amigos e familiares. Perfeita para ocasiões especiais!</p>
+      
+      <div class="card-actions">
+        <a th:href="@{/detalhe/{id}(id=${r.id})}" class="card-link">Ver receita <i class="fas fa-arrow-right"></i></a>
+        <button class="card-favorite" th:attr="data-recipe-id=${r.id}">
+          <i class="far fa-heart"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      <!-- NOVO DESIGN PARA CLASSIFICADOS -->
+      <div class="section-title">
+        <h2>Receitas Rápidas</h2>
+        <p>Pratos deliciosos que você prepara em pouco tempo</p>
+      </div>
+      
+      <div class="classifieds">
+        <div class="classified-item">
+          <div class="classified-image">
+            <img src="/uploads/pesto.jpg" alt="Espaguete ao Pesto">
+            <div class="classified-badge">RÁPIDO</div>
+          </div>
+          <div class="classified-content">
+            <h3>Espaguete ao Pesto</h3>
+            <div class="classified-meta">
+              <span><i class="fas fa-clock"></i> 25 min</span>
+              <span><i class="fas fa-user"></i> 2 porções</span>
+            </div>
+            <p class="classified-description">Massa italiana com pesto de manjericão fresco e pinoli. Um clássico da culinária mediterrânea.</p>
+            <div class="classified-actions">
+              <a href="#" class="classified-link">Ver Receita <i class="fas fa-arrow-right"></i></a>
+              <span class="classified-price">Fácil</span>
+            </div>
+          </div>
+        </div>
+        <div class="classified-item">
+          <div class="classified-image">
+            <img src="/uploads/sopa.jpg" alt="Sopa de Abóbora">
+            <div class="classified-badge">SAUDÁVEL</div>
+          </div>
+          <div class="classified-content">
+            <h3>Sopa de Abóbora</h3>
+            <div class="classified-meta">
+              <span><i class="fas fa-clock"></i> 40 min</span>
+              <span><i class="fas fa-user"></i> 4 porções</span>
+            </div>
+            <p class="classified-description">Creme de abóbora com gengibre e toque de noz-moscada. Perfecta para dias frios.</p>
+            <div class="classified-actions">
+              <a href="#" class="classified-link">Ver Receita <i class="fas fa-arrow-right"></i></a>
+              <span class="classified-price">Médio</span>
+            </div>
+          </div>
+        </div>
+
+          <div class="classified-item">
+          <div class="classified-image">
+            <img src="/uploads/ganache.jpg" alt="Sopa de Abóbora">
+            <div class="classified-badge">SOBREMESA</div>
+          </div>
+          <div class="classified-content">
+            <h3>Ganache</h3>
+            <div class="classified-meta">
+              <span><i class="fas fa-clock"></i> 12 min</span>
+              <span><i class="fas fa-user"></i> 4 porções</span>
+            </div>
+            <p class="classified-description">Calda de chocolate deliciosa para adicionar em suas sobremesas.</p>
+            <div class="classified-actions">
+              <a href="#" class="classified-link">Ver Receita <i class="fas fa-arrow-right"></i></a>
+              <span class="classified-price">Médio</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="classified-item">
+          <div class="classified-image">
+            <img src="/uploads/bolinho-chuva.jpg" alt="Bolinhos de Chuva">
+            <div class="classified-badge">SOBREMESA</div>
+          </div>
+          <div class="classified-content">
+            <h3>Bolinhos de Chuva</h3>
+            <div class="classified-meta">
+              <span><i class="fas fa-clock"></i> 20 min</span>
+              <span><i class="fas fa-user"></i> 6 porções</span>
+            </div>
+            <p class="classified-description">Clássica receita de bolinhos fofinhos com canela e açúcar. Ideal para o lanche da tarde.</p>
+            <div class="classified-actions">
+              <a href="#" class="classified-link">Ver Receita <i class="fas fa-arrow-right"></i></a>
+              <span class="classified-price">Fácil</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="advertisement">
+        <h2>Ofertas Especiais de Utensílios!</h2>
+        <p>Aproveite nossas ofertas semanais de utensílios de cozinha com até 40% de desconto!</p>
+        <a href="#" class="btn">Ver Ofertas</a>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="favoritas">
+      <div class="empty-state" id="empty-favorites">
+        <i class="fas fa-heart"></i>
+        <h2>Nenhuma receita favoritada</h2>
+        <p>Você ainda não favoritou nenhuma receita. Clique no coração nas receitas para adicioná-las aos favoritos.</p>
+      </div>
+      
+      <div class="receitas" id="favorite-recipes">
+        <!-- As receitas favoritas serão carregadas via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <footer class="newspaper-footer">
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>Jornal de Receitas</h3>
+        <p>O seu destino para encontrar as melhores receitas caseiras e dicas culinárias.</p>
+      </div>
+      <div class="footer-column">
+        <h3>Links Rápidos</h3>
+        <ul>
+          <li><a href="#"><i class="fas fa-utensils"></i> Receitas</a></li>
+          <li><a href="#"><i class="fas fa-book"></i> Categorias</a></li>
+          <li><a href="#"><i class="fas fa-star"></i> Destaques</a></li>
+          <li><a href="#"><i class="fas fa-question-circle"></i> Sobre Nós</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Contato</h3>
+        <ul>
+          <li><a href="#"><i class="fas fa-envelope"></i> contato@jornaldereceitas.com</a></li>
+          <li><a href="#"><i class="fas fa-phone"></i> (11) 9999-9999</a></li>
+          <li><a href="#"><i class="fas fa-map-marker-alt"></i> São Paulo, Brasil</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="social-links">
+      <a href="#"><i class="fab fa-facebook-f"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-pinterest"></i></a>
+      <a href="#"><i class="fab fa-youtube"></i></a>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>© 2025 Jornal de Receitas - Todos os direitos reservados</p>
+    </div>
+  </footer>
+
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Fazer Login</h2>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" required>
+      </div>
+      <button type="submit" class="login-btn">Entrar</button>
+    </form>
+    <div id="loginMessage" class="message"></div>
+  </div>
+</div>
+
+
+<!-- Modal de informações do usuário -->
+  <div id="userModal" class="modal">
+    <div class="modal-content-user">
+      <div class="modal-header">
+        <h2><i class="fas fa-user-circle"></i> Informações do Usuário</h2>
+        <span class="close close-user-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div id="user-info">
+          <!-- Conteúdo será preenchido via JavaScript -->
+        </div>
+        <div class="modal-actions">
+
+          <button class="btn btn-primary" onclick="fecharModalUsuario()">
+            <i class="fas fa-check"></i> OK
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Logout -->
+<div id="logoutModal" class="modal logout-modal">
+  <div class="modal-content-logout">
+    <span class="close close-logout-modal">&times;</span>
+    <div class="modal-icon">
+      <i class="fas fa-sign-out-alt"></i>
+    </div>
+    <h3>Deseja sair?</h3>
+    <p>Tem certeza que deseja fazer logout da sua conta?</p>
+    <div class="modal-actions">
+      <button class="modal-button cancel">Cancelar</button>
+      <button class="modal-button logout">Sair</button>
+    </div>
+  </div>
+</div>
+</div>
+  <script src="/js/index.js"></script>
+</body>
+</html>

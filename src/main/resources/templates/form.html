@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova Receita - Jornal de Receitas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/form.css">
+</head>
+<body>
+  
+  <div class="form-container">
+    
+    <a href="/" class="back-link">
+      <i class="fas fa-arrow-left"></i> Voltar para a página inicial
+    </a>
+    
+    <form class="recipe-form" th:action="@{/salvar}" th:object="${receita}" method="post" enctype="multipart/form-data" id="recipeForm">
+<div class="form-row">
+  <div class="form-group titulo-width">
+    <label for="titulo"><i class="fas fa-heading"></i> Título da Receita</label>
+    <input type="text" id="titulo" class="form-control" th:field="*{titulo}" placeholder="Ex: Bolo de Chocolate com Cacau" required>
+    <div class="error-message" id="tituloError">Por favor, insira um título para a receita</div>
+  </div>
+
+  <div class="form-group tempo-width">
+    <label for="tempoPreparo"><i class="fas fa-clock"></i> Preparo</label>
+    <input type="text" id="tempoPreparo" class="form-control" th:field="*{tempoPreparo}" placeholder="Ex: 45 minutos" required>
+    <div class="error-message" id="tempoError">Por favor, informe o tempo de preparo</div>
+  </div>
+
+<div class="form-group porcoes-width">
+  <label for="porcoes"><i class="fas fa-utensils"></i> Porções</label>
+  <input type="number" id="porcoes" class="form-control" th:field="*{porcoes}" placeholder="Ex: 4" min="1" required>
+  <div class="error-message" id="porcoesError">Por favor, informe a quantidade de porções</div>
+</div>
+
+</div>
+
+      <!-- Ingredientes Dinâmicos -->
+      <div class="form-group">
+        <label><i class="fas fa-list-ul"></i> Ingredientes</label>
+          <div id="ingredientesContainer">
+            <div class="ingrediente-item">
+              <input type="text" name="ingredientes[]" placeholder="Ingrediente 1" required>
+            </div>
+          </div>
+        <button type="button" id="addIngrediente">Adicionar ingrediente</button>
+        <div class="error-message" id="ingredientesError">Por favor, adicione pelo menos um ingrediente</div>
+      </div>
+
+      <!-- Passos Dinâmicos -->
+      <div class="form-group">
+        <label><i class="fas fa-mortar-pestle"></i> Modo de Preparo</label>
+       <div id="modoPreparoContainer">
+        <div class="passo-item">
+          <input type="text" name="modoPreparo[]" placeholder="Passo 1" required>
+        </div>
+      </div>
+        <button type="button" id="addPasso">Adicionar passo</button>
+        <div class="error-message" id="modoPreparoError">Por favor, adicione pelo menos um passo</div>
+      </div>
+
+      <!-- Imagem -->
+      <div class="form-group">
+        <label for="imagemFile"><i class="fas fa-camera"></i> Imagem da Receita</label>
+        <div class="file-input-container">
+          <label class="file-input-label">
+            <span class="file-input-text" id="fileText">Selecione uma imagem para sua receita</span>
+            <span class="file-input-button">Escolher arquivo</span>
+            <input type="file" id="imagemFile" name="imagemFile" accept="image/*">
+          </label>
+        </div>
+        <div class="image-preview" id="imagePreview">
+          <img src="" alt="Preview da imagem">
+        </div>
+        <div class="error-message" id="imagemError">Formato de arquivo não suportado. Use JPG, PNG ou GIF.</div>
+      </div>
+
+      <button type="submit" class="submit-button">
+        <i class="fas fa-paper-plane button-icon"></i> Enviar para aprovação
+      </button>
+    </form>
+
+  </div>
+
+<script src="/js/form.js"></script>
+</body>
+
+</html>
