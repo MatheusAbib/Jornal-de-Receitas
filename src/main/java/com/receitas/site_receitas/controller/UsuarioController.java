@@ -27,15 +27,27 @@ public class UsuarioController {
 
     
 
-    @PostMapping("/cadastro")
-    public String cadastrarUsuario(@ModelAttribute Usuario usuario) {
-        String resultado = usuarioService.cadastrarUsuario(usuario);
-        if (resultado.contains("sucesso")) {
-            return "redirect:/cadastro?success=" + resultado;
-        } else {
-            return "redirect:/cadastro?error=" + resultado;
-        }
+@PostMapping("/cadastro")
+public String cadastrarUsuario(@ModelAttribute Usuario usuario, HttpSession session) {
+    // Role padrão
+    if(usuario.getRole() == null || usuario.getRole().isEmpty()){
+        usuario.setRole("USER");
     }
+
+    // Apenas um admin logado pode criar outro admin
+    Usuario logado = (Usuario) session.getAttribute("usuarioLogado");
+    if("ADMIN".equals(usuario.getRole()) && (logado == null || !"ADMIN".equals(logado.getRole()))){
+        return "redirect:/cadastro?error=Somente administradores podem criar outro admin";
+    }
+
+    String resultado = usuarioService.cadastrarUsuario(usuario);
+    if (resultado.contains("sucesso")) {
+        return "redirect:/cadastro?success=" + resultado;
+    } else {
+        return "redirect:/cadastro?error=" + resultado;
+    }
+}
+
     
     @GetMapping("/cadastro")
     public String mostrarFormulario() {
@@ -118,6 +130,18 @@ public String ativarDesativarUsuario(@PathVariable Integer id) {
     return "redirect:/usuarios";
 }
 
+@PostMapping("/usuarios/editar/{id}")
+public String editarUsuario(@PathVariable Integer id, @ModelAttribute Usuario usuario, @RequestParam(required = false) String confirmarSenha) {
+    // Se senha estiver vazia, não atualiza
+    if(usuario.getSenha() != null && !usuario.getSenha().isEmpty()) {
+        if(!usuario.getSenha().equals(confirmarSenha)) {
+            // você pode redirecionar com erro
+            return "redirect:/usuarios?error=Senhas não coincidem";
+        }
+    }
+    usuarioService.atualizarUsuario(id, usuario);
+    return "redirect:/usuarios";
+}
 
 
 }

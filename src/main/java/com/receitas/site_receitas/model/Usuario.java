@@ -30,14 +30,17 @@ public class Usuario {
     @Column(name = "data_cadastro", nullable = false)
     private LocalDate dataCadastro;
 
-@Column(nullable = false)
-private boolean ativo = true;
+    @Column(nullable = false)
+    private boolean ativo = true;
 
-public boolean isAtivo() { return ativo; }
-public void setAtivo(boolean ativo) { this.ativo = ativo; }
+    // NOVO CAMPO: papel do usuário
+    @Column(nullable = false)
+    private String role = "USER"; // default é usuário normal
 
+    // Getters e Setters
+    public boolean isAtivo() { return ativo; }
+    public void setAtivo(boolean ativo) { this.ativo = ativo; }
 
-    // Getters e setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
@@ -61,4 +64,7 @@ public void setAtivo(boolean ativo) { this.ativo = ativo; }
 
     public LocalDate getDataCadastro() { return dataCadastro; }
     public void setDataCadastro(LocalDate dataCadastro) { this.dataCadastro = dataCadastro; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }

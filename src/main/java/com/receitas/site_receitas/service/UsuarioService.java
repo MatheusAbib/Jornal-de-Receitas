@@ -71,4 +71,26 @@ public Usuario ativarDesativarUsuario(Integer id) {
     return null;
 }
 
+public void atualizarUsuario(Integer id, Usuario dadosAtualizados) {
+    Optional<Usuario> optional = usuarioRepository.findById(id);
+    if(optional.isPresent()) {
+        Usuario usuario = optional.get();
+
+        // Atualizar campos permitidos
+        usuario.setNome(dadosAtualizados.getNome());
+        usuario.setEmail(dadosAtualizados.getEmail());
+        usuario.setCpf(dadosAtualizados.getCpf());
+        usuario.setTelefone(dadosAtualizados.getTelefone());
+        usuario.setGenero(dadosAtualizados.getGenero());
+
+        // Atualizar senha se houver
+        if(dadosAtualizados.getSenha() != null && !dadosAtualizados.getSenha().isEmpty()) {
+            usuario.setSenha(passwordEncoder.encode(dadosAtualizados.getSenha()));
+        }
+
+        usuarioRepository.save(usuario);
+    }
+}
+
+
 }

@@ -132,6 +132,5 @@ Arrays.stream(receita.getModoPreparo().split("\\|\\|"))
         return "detalhe";
     }
 
-
     
 }

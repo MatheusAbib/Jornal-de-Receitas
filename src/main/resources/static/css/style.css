@@ -1089,6 +1089,7 @@
     .social-links a {
       display: flex;
       align-items: center;
+      text-decoration: none;
       justify-content: center;
       width: 45px;
       height: 45px;
