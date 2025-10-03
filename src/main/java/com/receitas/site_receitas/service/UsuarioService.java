@@ -92,5 +92,7 @@ public void atualizarUsuario(Integer id, Usuario dadosAtualizados) {
     }
 }
 
-
+public void salvarUsuario(Usuario usuario) {
+    usuarioRepository.save(usuario);
+}
 }
