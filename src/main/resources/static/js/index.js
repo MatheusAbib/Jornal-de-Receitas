@@ -1,4 +1,4 @@
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
   // ===================== CARROSSEL =====================
   const carousel = document.querySelector('.carousel-inner');
   const items = document.querySelectorAll('.carousel-item');
@@ -178,8 +178,6 @@
   closeModal.addEventListener('click', closeLoginModal);
   document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeLoginModal(); });
 
-
-
   function closeLoginModal() {
     loginModal.style.display = 'none';
     document.body.style.overflow = 'auto';
@@ -227,11 +225,91 @@
   });
 
   // ===================== VERIFICAR USUÁRIO LOGADO =====================
-  const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado') || sessionStorage.getItem('usuarioLogado'));
-  if (usuarioLogado) {
-    atualizarInterfaceUsuarioLogado(usuarioLogado);
-    adicionarIconeUsuario(usuarioLogado);
+  verificarUsuarioAutenticado();
+
+  // ===================== CONFIGURAR ÍCONE DO USUÁRIO =====================
+  configurarIconeUsuario();
+
+  // ===================== CONFIGURAR MODAL DE LOGOUT =====================
+  const closeLogoutBtn = document.querySelector('.close-logout-modal');
+  if (closeLogoutBtn) {
+    closeLogoutBtn.addEventListener('click', closeLogoutModal);
   }
+  
+  const cancelLogoutBtn = document.querySelector('.logout-modal .cancel');
+  if (cancelLogoutBtn) {
+    cancelLogoutBtn.addEventListener('click', closeLogoutModal);
+  }
+  
+  const logoutBtn = document.querySelector('.logout-modal .logout');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function() {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/logout';
+      document.body.appendChild(form);
+      form.submit();
+    });
+  }
+  
+  const logoutModal = document.getElementById('logoutModal');
+  if (logoutModal) {
+    logoutModal.addEventListener('click', function(e) {
+      if (e.target === logoutModal) {
+        closeLogoutModal();
+      }
+    });
+  }
+
+  // ===================== DATA ATUAL =====================
+  const dateElement = document.getElementById('newspaperDate');
+  const today = new Date();
+  const meses = [
+    "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+    "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+  ];
+  const dia = today.getDate();
+  const mes = meses[today.getMonth()];
+  const ano = today.getFullYear();
+  dateElement.textContent = `${dia} de ${mes} de ${ano}`;
+
+  // ===================== FILTROS DE RECEITAS =====================
+  function filtrarReceitas() {
+    const nomeFiltro = document.getElementById('nome').value.toLowerCase();
+    const tempoFiltro = parseInt(document.getElementById('tempo').value);
+    const porcoesFiltro = parseInt(document.getElementById('porcoes').value);
+
+    const cards = document.querySelectorAll('#all-recipes .card');
+
+    cards.forEach(card => {
+      const titulo = card.querySelector('h2').innerText.toLowerCase();
+      const tempo = parseInt(card.querySelector('.card-meta span:first-child span').innerText);
+      const porcoes = parseInt(card.querySelector('.card-meta span:last-child span').innerText);
+
+      let mostrar = true;
+
+      if (nomeFiltro && !titulo.includes(nomeFiltro)) mostrar = false;
+      if (!isNaN(tempoFiltro) && tempo > tempoFiltro) mostrar = false;
+      if (!isNaN(porcoesFiltro) && porcoes != porcoesFiltro) mostrar = false;
+
+      card.style.display = mostrar ? 'block' : 'none';
+    });
+  }
+
+  document.getElementById('filterForm').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      filtrarReceitas();
+    }
+  });
+
+  document.getElementById('aplicarFiltros').addEventListener('click', filtrarReceitas);
+
+  document.getElementById('limparFiltros').addEventListener('click', () => {
+    document.getElementById('filterForm').reset();
+    const cards = document.querySelectorAll('#all-recipes .card');
+    cards.forEach(card => card.style.display = 'block');
+  });
 });
 
 // ===================== FUNÇÕES GLOBAIS =====================
@@ -239,122 +317,163 @@ function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('show');
 }
 
-function atualizarInterfaceUsuarioLogado(usuario) {
-  if (!usuario.nome) return;
-
-  // Atualiza o texto de boas-vindas
-  let userNameEl = document.querySelector('.user-name');
-  if (!userNameEl) {
-    userNameEl = document.createElement('p');
-    userNameEl.classList.add('user-name');
-    const title = document.querySelector('.newspaper-title');
-    title.insertAdjacentElement('afterend', userNameEl);
+function verificarUsuarioAutenticado() {
+  const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
+  const estaLogado = nomeUsuarioElement && nomeUsuarioElement.textContent.trim();
+  
+  if (estaLogado) {
+    const userIcon = document.getElementById('userIcon');
+    if (userIcon) {
+      userIcon.style.cursor = 'pointer';
+      userIcon.title = 'Ver meu perfil';
+    }
   }
-  userNameEl.innerHTML = `<i class="fas fa-user"></i> Olá, ${usuario.nome}`;
+}
 
-  // Atualiza link de login → logout no sidebar
-  const sidebar = document.getElementById('sidebar');
-  const loginLink = sidebar.querySelector('a[onclick*="openLoginModal"]');
-  if (loginLink) {
-    loginLink.innerHTML = '<i class="fas fa-sign-out-alt"></i> Fazer Logout';
-    loginLink.onclick = function(e) {
-      e.preventDefault();
-      abrirModalLogout(); // Alterado para abrir o modal
-    };
+// ===================== CONFIGURAR ÍCONE DO USUÁRIO =====================
+// ===================== CONFIGURAR ÍCONE DO USUÁRIO =====================
+function configurarIconeUsuario() {
+    console.log('=== INICIANDO CONFIGURAÇÃO DO ÍCONE ===');
+    
+    const userIcon = document.getElementById('userIcon');
+    console.log('Elemento userIcon encontrado:', userIcon);
+    
+    if (userIcon) {
+        console.log('Ícone existe no DOM');
+        userIcon.style.display = 'inline-block';
+        userIcon.style.cursor = 'pointer';
+        userIcon.style.border = '2px solid red'; // Para visualizar
+        
+        // Adicionar evento de clique DIRETAMENTE
+        userIcon.addEventListener('click', function(e) {
+            console.log('=== CLIQUE DETECTADO ===');
+            console.log('Elemento clicado:', e.target);
+            console.log('Evento funcionou!');
+            
+            // Teste simples - mostrar alerta
+            alert('Ícone clicado! Funciona!');
+            
+            // Tentar abrir modal
+            abrirModalUsuarioComDadosReais();
+        });
+        
+        console.log('Evento de clique adicionado ao ícone');
+    } else {
+        console.log('=== ERRO: Ícone do usuário NÃO encontrado ===');
+        console.log('Procurando por qualquer elemento com classe user-icon:');
+        const userIcons = document.querySelectorAll('.user-icon');
+        console.log('Elementos com classe user-icon:', userIcons);
+    }
+}
+
+// ===================== MODAL DO USUÁRIO COM DADOS REAIS =====================
+async function abrirModalUsuarioComDadosReais() {
+  try {
+    console.log('Buscando dados do usuário...');
+    const response = await fetch('/perfil/usuario-logado');
+    const result = await response.json();
+    
+    if (response.ok && result.usuario) {
+      console.log('Dados do usuário encontrados:', result.usuario);
+      abrirModalUsuario(result.usuario);
+    } else {
+      console.log('Usuário não logado ou erro:', result.message);
+      // Se não estiver logado, abre modal básico
+      abrirModalUsuarioSimples();
+    }
+  } catch (error) {
+    console.error('Erro ao buscar dados do usuário:', error);
+    abrirModalUsuarioSimples();
   }
-
-  // Ativa o ícone já existente
-  adicionarIconeUsuario(usuario);
 }
 
-
-// ===================== MODAL DE LOGOUT =====================
-function abrirModalLogout() {
-  document.getElementById('logoutModal').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-function fecharModalLogout() {
-  document.getElementById('logoutModal').style.display = 'none';
-  document.body.style.overflow = 'auto';
-}
-
-// Event listeners para o modal de logout
-document.querySelector('.close-logout-modal').addEventListener('click', fecharModalLogout);
-document.querySelector('.logout-modal .modal-button.cancel').addEventListener('click', fecharModalLogout);
-document.querySelector('.logout-modal .modal-button.logout').addEventListener('click', fazerLogout);
-
-// Fechar modal ao clicar fora dele
-document.getElementById('logoutModal').addEventListener('click', function(event) {
-  if (event.target === this) {
-    fecharModalLogout();
-  }
-});
-
-// Modificar a função fazerLogout existente
-function fazerLogout() {
-  fecharModalLogout();
-  fetch('/logout', { method: 'POST' })
-    .finally(() => {
-      localStorage.removeItem('usuarioLogado');
-      sessionStorage.removeItem('usuarioLogado');
-      window.location.reload();
-    });
-}
-
-function adicionarIconeUsuario(usuario) {
-  const userIcon = document.getElementById('userIcon');
-  if (!userIcon) return;
-
-  // Mostra o ícone (caso ele esteja oculto)
-  userIcon.style.display = 'inline-block';
-
-  // Adiciona evento para abrir o modal
-  userIcon.onclick = () => {
-    abrirModalUsuario(usuario);
-    document.body.style.overflow = 'hidden'; // Bloqueia scroll ao abrir
-  };
-}
-
-
-
-function abrirModalUsuario(usuario) {
+// ===================== MODAL DO USUÁRIO SIMPLIFICADO =====================
+function abrirModalUsuarioSimples() {
   const modal = document.getElementById('userModal');
   
-  // Preencher o formulário com os dados do usuário
-  document.getElementById('editNome').value = usuario.nome || '';
-  document.getElementById('editEmail').value = usuario.email || '';
-  document.getElementById('editCpf').value = usuario.cpf || '';
-  document.getElementById('editTelefone').value = usuario.telefone || '';
-  document.getElementById('editGenero').value = (usuario.genero || '').toUpperCase().trim(); // ✅ corrigido
-  document.getElementById('editDataCadastro').value = usuario.dataCadastro || '';
+  const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
+  const nomeUsuario = nomeUsuarioElement ? nomeUsuarioElement.textContent.trim() : '';
+  
+  document.getElementById('editNome').value = nomeUsuario || '';
+  document.getElementById('editEmail').value = '';
+  document.getElementById('editCpf').value = '';
+  document.getElementById('editTelefone').value = '';
+  document.getElementById('editGenero').value = '';
+  document.getElementById('editDataCadastro').value = '';
   document.getElementById('editSenha').value = '';
   document.getElementById('confirmarSenha').value = '';
   
-  // Limpar mensagens
-  document.getElementById('userEditMessage').textContent = '';
-  document.getElementById('userEditMessage').className = 'message';
+  const messageEl = document.getElementById('userEditMessage');
+  if (nomeUsuario) {
+    messageEl.innerHTML = '<i class="fas fa-info-circle"></i> Faça login para editar seu perfil completo.';
+    messageEl.className = 'message info';
+  } else {
+    messageEl.innerHTML = '<i class="fas fa-info-circle"></i> Faça login para acessar todas as funcionalidades.';
+    messageEl.className = 'message info';
+  }
   
   modal.style.display = 'block';
   document.body.style.overflow = 'hidden';
 }
 
+// ===================== MODAL DE LOGOUT =====================
+function openLogoutModal() {
+  const modal = document.getElementById('logoutModal');
+  if (modal) {
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeLogoutModal() {
+  const modal = document.getElementById('logoutModal');
+  if (modal) {
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }
+}
+
+// ===================== MODAL DO USUÁRIO =====================
+function abrirModalUsuario(usuario) {
+  const modal = document.getElementById('userModal');
+  
+  document.getElementById('editNome').value = usuario.nome || '';
+  document.getElementById('editEmail').value = usuario.email || '';
+  document.getElementById('editCpf').value = usuario.cpf || '';
+  document.getElementById('editTelefone').value = usuario.telefone || '';
+  document.getElementById('editGenero').value = (usuario.genero || '').toUpperCase().trim();
+  document.getElementById('editDataCadastro').value = usuario.dataCadastro || '';
+  document.getElementById('editSenha').value = '';
+  document.getElementById('confirmarSenha').value = '';
+  
+  const messageEl = document.getElementById('userEditMessage');
+  if (!usuario.email) {
+    messageEl.innerHTML = '<i class="fas fa-info-circle"></i> Para editar seu perfil completo, faça login primeiro.';
+    messageEl.className = 'message info';
+  } else {
+    messageEl.textContent = '';
+    messageEl.className = 'message';
+  }
+  
+  modal.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
 
 function fecharModalUsuario() {
   document.getElementById('userModal').style.display = 'none';
   document.body.style.overflow = 'auto';
 }
 
-// Event listener para o formulário de edição
-// Event listener para o formulário de edição
+// ===================== MODAL DE LOGIN =====================
+function openLoginModal() {
+  const loginModal = document.getElementById('loginModal');
+  loginModal.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+// ===================== FORMULÁRIO DE EDIÇÃO DO USUÁRIO =====================
 document.getElementById('userEditForm').addEventListener('submit', async function(event) {
   event.preventDefault();
-  
-  const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado') || sessionStorage.getItem('usuarioLogado'));
-  if (!usuarioLogado) {
-    showMessage('Usuário não está logado', 'error');
-    return;
-  }
   
   const formData = new FormData(this);
   const dadosAtualizados = {
@@ -366,13 +485,11 @@ document.getElementById('userEditForm').addEventListener('submit', async functio
     confirmarSenha: formData.get('confirmarSenha')
   };
   
-  // Validar senhas
   if (dadosAtualizados.senha && dadosAtualizados.senha !== dadosAtualizados.confirmarSenha) {
     showMessage('As senhas não coincidem', 'error');
     return;
   }
   
-  // Se senha estiver vazia, remover do objeto
   if (!dadosAtualizados.senha) {
     delete dadosAtualizados.senha;
     delete dadosAtualizados.confirmarSenha;
@@ -384,33 +501,15 @@ document.getElementById('userEditForm').addEventListener('submit', async functio
   submitBtn.disabled = true;
   
   try {
-const response = await fetch('http://localhost:8080/perfil/editar', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(dadosAtualizados),
-  credentials: 'include' 
-});
+    const response = await fetch('/perfil/editar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dadosAtualizados)
+    });
     
     const result = await response.json();
     
     if (response.ok) {
-      // Atualizar dados no localStorage/sessionStorage
-      const usuarioAtualizado = {
-        ...usuarioLogado,
-        nome: dadosAtualizados.nome,
-        email: dadosAtualizados.email,
-        telefone: dadosAtualizados.telefone,
-        genero: dadosAtualizados.genero
-      };
-      
-      localStorage.setItem('usuarioLogado', JSON.stringify(usuarioAtualizado));
-      sessionStorage.setItem('usuarioLogado', JSON.stringify(usuarioAtualizado));
-      
-      // Atualizar interface
-      atualizarInterfaceUsuarioLogado(usuarioAtualizado);
-      
       showMessage(result.message || 'Perfil atualizado com sucesso!', 'success');
       setTimeout(fecharModalUsuario, 1500);
     } else {
@@ -437,80 +536,10 @@ function showMessage(message, type) {
   }
 }
 
-// Fechar modal ao clicar no X ou fora do modal
+// ===================== EVENT LISTENERS PARA FECHAR MODAIS =====================
 document.querySelector('.close-user-modal').addEventListener('click', fecharModalUsuario);
 document.getElementById('userModal').addEventListener('click', function(event) {
   if (event.target === this) {
     fecharModalUsuario();
   }
-});
-
-
-function openLoginModal() {
-  const loginModal = document.getElementById('loginModal');
-  loginModal.style.display = 'block';
-  document.body.style.overflow = 'hidden';
-}
-
-    function fecharModalUsuario() {
-      document.getElementById('userModal').style.display = 'none';
-      document.body.style.overflow = 'auto';
-    }
-
-    document.querySelector('.close-user-modal').addEventListener('click', fecharModalUsuario);
-
-
-      const dateElement = document.getElementById('newspaperDate');
-  const today = new Date();
-
-  // Array com os meses em português
-  const meses = [
-    "janeiro", "fevereiro", "março", "abril", "maio", "junho",
-    "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
-  ];
-
-  const dia = today.getDate();
-  const mes = meses[today.getMonth()];
-  const ano = today.getFullYear();
-
-  dateElement.textContent = `${dia} de ${mes} de ${ano}`;
-
-function filtrarReceitas() {
-  const nomeFiltro = document.getElementById('nome').value.toLowerCase();
-  const tempoFiltro = parseInt(document.getElementById('tempo').value);
-  const porcoesFiltro = parseInt(document.getElementById('porcoes').value);
-
-  const cards = document.querySelectorAll('#all-recipes .card');
-
-  cards.forEach(card => {
-    const titulo = card.querySelector('h2').innerText.toLowerCase();
-    const tempo = parseInt(card.querySelector('.card-meta span:first-child span').innerText);
-    const porcoes = parseInt(card.querySelector('.card-meta span:last-child span').innerText);
-
-    let mostrar = true;
-
-    if (nomeFiltro && !titulo.includes(nomeFiltro)) mostrar = false;
-    if (!isNaN(tempoFiltro) && tempo > tempoFiltro) mostrar = false;
-    if (!isNaN(porcoesFiltro) && porcoes != porcoesFiltro) mostrar = false;
-
-    card.style.display = mostrar ? 'block' : 'none';
-  });
-}
-
-// Evento Enter para filtrar
-document.getElementById('filterForm').addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    filtrarReceitas();
-  }
-});
-
-// Botão aplicar filtros
-document.getElementById('aplicarFiltros').addEventListener('click', filtrarReceitas);
-
-// Botão limpar filtros
-document.getElementById('limparFiltros').addEventListener('click', () => {
-  document.getElementById('filterForm').reset(); // reseta campos
-  const cards = document.querySelectorAll('#all-recipes .card');
-  cards.forEach(card => card.style.display = 'block'); // mostra todos
 });

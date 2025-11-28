@@ -6,6 +6,86 @@ document.addEventListener('DOMContentLoaded', function() {
   const ingredientesContainer = document.getElementById('ingredientesContainer');
   const modoPreparoContainer = document.getElementById('modoPreparoContainer');
 
+  // Verificar se há mensagem de sucesso da submissão anterior
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('sucesso')) {
+    mostrarNotificacao(urlParams.get('sucesso'));
+  }
+
+  // Criar elemento de notificação
+  function criarNotificacao() {
+    const notificacao = document.createElement('div');
+    notificacao.id = 'successNotification';
+    notificacao.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #27ae60;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      font-family: inherit;
+      font-size: 14px;
+      max-width: 300px;
+      animation: slideInRight 0.3s ease;
+    `;
+    notificacao.innerHTML = `
+      <i class="fas fa-check-circle" style="font-size: 18px;"></i>
+      <span id="notificationText"></span>
+    `;
+    document.body.appendChild(notificacao);
+    return notificacao;
+  }
+
+  const notificacao = criarNotificacao();
+
+  function mostrarNotificacao(mensagem) {
+    const notificationText = document.getElementById('notificationText');
+    notificationText.textContent = mensagem;
+    notificacao.style.display = 'flex';
+    
+    setTimeout(() => {
+      notificacao.style.display = 'none';
+    }, 5000);
+  }
+
+  // Limpar formulário
+  function limparFormulario() {
+    form.reset();
+    
+    // Limpar preview da imagem
+    imagePreview.classList.remove('active');
+    fileText.textContent = 'Selecione uma imagem para sua receita';
+    
+    // Limpar ingredientes dinâmicos (manter apenas o primeiro)
+    const ingredientes = ingredientesContainer.querySelectorAll('.ingrediente-item');
+    ingredientes.forEach((item, index) => {
+      if (index > 0) item.remove();
+    });
+    if (ingredientes[0]) {
+      ingredientes[0].querySelector('input').value = '';
+      ingredientes[0].querySelector('input').placeholder = 'Ingrediente 1';
+    }
+    
+    // Limpar passos dinâmicos (manter apenas o primeiro)
+    const passos = modoPreparoContainer.querySelectorAll('.passo-item');
+    passos.forEach((item, index) => {
+      if (index > 0) item.remove();
+    });
+    if (passos[0]) {
+      passos[0].querySelector('input').value = '';
+      passos[0].querySelector('input').placeholder = 'Passo 1';
+    }
+    
+    // Resetar valores padrão
+    document.getElementById('porcoes').value = '1';
+  }
+
   // Preview de imagem
   imageInput.addEventListener('change', function() {
     const file = this.files[0];
@@ -126,10 +206,34 @@ document.addEventListener('DOMContentLoaded', function() {
     if (ingredientesContainer.querySelectorAll('input').length === 0) { showError('ingredientesError'); isValid = false; } else hideError('ingredientesError');
     if (modoPreparoContainer.querySelectorAll('input').length === 0) { showError('modoPreparoError'); isValid = false; } else hideError('modoPreparoError');
     if (imageInput.files[0] && !imageInput.files[0].type.match('image.*')) { showError('imagemError'); isValid = false; }
-    if (!isValid) e.preventDefault();
+    
+    if (isValid) {
+      // Se o formulário for válido, mostrar notificação após o envio
+      setTimeout(() => {
+        mostrarNotificacao('Receita enviada para aprovação!');
+        limparFormulario();
+      }, 100);
+    } else {
+      e.preventDefault();
+    }
   });
 
   function showError(id, msg='Campo obrigatório') { const el = document.getElementById(id); el.textContent = msg; el.classList.add('show'); }
   function hideError(id) { const el = document.getElementById(id); el.classList.remove('show'); }
 
+  // Adicionar animação CSS para a notificação
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  `;
+  document.head.appendChild(style);
 });

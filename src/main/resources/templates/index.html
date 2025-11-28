@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,36 +20,56 @@
         <div class="newspaper-price">Edição #01</div>
         <div class="newspaper-volume">
           <span class="menu-icon" onclick="toggleSidebar()"><i class="fas fa-bars"></i></span>
-          <span class="user-icon" id="userIcon">
+          <span  class="user-icon" id="userIcon">
             <i class="fas fa-user-circle"></i>
           </span>
         </div>
       </div>
       
       <h1 class="newspaper-title">Jornal de Receitas</h1>
-      <p class="newspaper-subtitle">Delícias do dia a dia para todos os gostos</p>
-      <p class="newspaper-date" id="newspaperDate"></p> <!-- id adicionado -->
+        <p class="newspaper-subtitle" th:if="${nomeUsuario != null}">
+            Bem vindo, <span th:text="${nomeUsuario}"></span>!
+        </p>
+        <p class="newspaper-subtitle" th:if="${nomeUsuario == null}">
+            Delícias do dia a dia para todos os gostos
+        </p>
+
+        <p class="newspaper-subtitle" th:if="${nomeUsuario == null}">
+            Faça Login ou Cadastre-se
+        </p>
+      <p class="newspaper-date" id="newspaperDate"></p> 
     </header>
   </div>
 </div>
 
   <!-- SIDEBAR -->
-  <div class="sidebar" id="sidebar">
+<div class="sidebar" id="sidebar">
     <h3>Jornal de Receitas</h3>
     <a th:href="@{/}"><i class="fas fa-home"></i> Início</a>
     <a th:href="@{/cadastro}"><i class="fas fa-user-plus"></i> Se Cadastrar</a>
-    <a href="#" onclick="openLoginModal(); return false;"><i class="fas fa-sign-in-alt"></i> Fazer Login</a>
-    <a th:href="@{/usuarios}"><i class="fas fa-users"></i> Usuários</a>
-    <a href="/pendentes"><i class="fas fa-clock"></i> Receitas Pendentes</a>
-    <a href="/nova"><i class="fas fa-utensils"></i> Nova Receita</a>
-    <a href="log-transacoes.html"><i class="fas fa-history"></i> Log de Transações</a>
-  </div>
+    <a href="#" onclick="openLoginModal(); return false;">
+        <i class="fas fa-sign-in-alt"></i> Fazer Login
+    </a>
+    <a sec:authorize="hasRole('ADMIN')" th:href="@{/usuarios}"><i class="fas fa-users"></i> Usuários</a>    
+    <!-- Apenas ADMIN vê Receitas Pendentes -->
+    <a sec:authorize="hasRole('ADMIN')" href="/pendentes">
+        <i class="fas fa-clock"></i> Receitas Pendentes
+    </a>
+      <a sec:authorize="isAuthenticated()" href="/nova"><i class="fas fa-utensils"></i> Nova Receita</a>    
+    <!-- Botão Sair - Aparece apenas para usuários logados -->
+    <a sec:authorize="isAuthenticated()" href="#" onclick="openLogoutModal(); return false;">
+        <i class="fas fa-sign-out-alt"></i> Sair
+    </a>
+</div>
 
   <!-- CONTEÚDO COM MARGENS -->
   <div class="content-wrapper">
     <nav class="nav-links">
-      <a href="/pendentes"><i class="fas fa-clock"></i> Receitas Pendentes</a>
-      <a href="/nova"><i class="fas fa-plus-circle"></i> Nova Receita</a>
+      <!-- Apenas ADMIN vê Receitas Pendentes -->
+      <a sec:authorize="hasRole('ADMIN')" href="/pendentes">
+        <i class="fas fa-clock"></i> Receitas Pendentes
+      </a>
+        <a sec:authorize="isAuthenticated()" href="/nova"><i class="fas fa-plus-circle"></i> Nova Receita</a>
     </nav>
 
   <!-- Abas de conteúdo -->
@@ -365,18 +386,20 @@
   <div class="modal-content">
     <span class="close">&times;</span>
     <h2>Fazer Login</h2>
-    <form id="loginForm">
+    <form th:action="@{/login}" method="post">
       <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
+        <label for="username">Email:</label>
+        <input type="email" id="username" name="username" required>
       </div>
       <div class="form-group">
-        <label for="senha">Senha:</label>
-        <input type="password" id="senha" name="senha" required>
+        <label for="password">Senha:</label>
+        <input type="password" id="password" name="password" required>
       </div>
       <button type="submit" class="login-btn">Entrar</button>
     </form>
-    <div id="loginMessage" class="message"></div>
+    <div th:if="${param.error}" class="message error">
+      Email ou senha inválidos!
+    </div>
   </div>
 </div>
 

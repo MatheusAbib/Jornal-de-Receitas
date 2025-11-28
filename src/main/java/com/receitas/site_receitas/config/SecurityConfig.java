@@ -13,7 +13,21 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) // desativa CSRF
-            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()); // libera todas as rotas
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/", "/cadastro", "/css/**", "/js/**", "/uploads/**").permitAll()
+                .requestMatchers("/pendentes").hasRole("ADMIN")
+                .requestMatchers("/nova", "/salvar").authenticated() // Apenas usuários logados
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutSuccessUrl("/")
+                .permitAll()
+            );
         
         return http.build();
     }

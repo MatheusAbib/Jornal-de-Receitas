@@ -10,7 +10,7 @@ import org.springframework.stereotype.Controller;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
-
+import org.springframework.security.core.Authentication;
 
 import java.util.Map;
 import java.util.Optional;
@@ -214,4 +214,45 @@ public String editarUsuario(@PathVariable Integer id, @ModelAttribute Usuario us
     return "redirect:/usuarios";
 }
 
+
+
+@GetMapping("/perfil/usuario-logado")
+@ResponseBody
+public ResponseEntity<?> getUsuarioLogado(Authentication authentication) {
+    try {
+        if (authentication == null || !authentication.isAuthenticated() || 
+            authentication.getName().equals("anonymousUser")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("message", "Usuário não autenticado"));
+        }
+
+        String email = authentication.getName();
+        Optional<Usuario> usuarioOptional = usuarioService.findByEmail(email);
+        
+        if (usuarioOptional.isPresent()) {
+            Usuario usuario = usuarioOptional.get();
+            return ResponseEntity.ok().body(Map.of(
+                "usuario", Map.of(
+                    "id", usuario.getId(),
+                    "nome", usuario.getNome(),
+                    "email", usuario.getEmail(),
+                    "cpf", usuario.getCpf(),
+                    "telefone", usuario.getTelefone(),
+                    "genero", usuario.getGenero(),
+                    "dataCadastro", usuario.getDataCadastro(),
+                    "role", usuario.getRole()
+                )
+            ));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("message", "Usuário não encontrado"));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(Map.of("message", "Erro interno ao buscar dados do usuário"));
+    }
 }
+
+}
+
