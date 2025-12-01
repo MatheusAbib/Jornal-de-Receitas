@@ -64,9 +64,9 @@ async function abrirModalUsuarioSimples() {
   
   try {
     // Buscar dados do usuário logado via API
-        const response = await fetch('/perfil/usuario-logado', {
-          credentials: 'include' 
-        });    
+    const response = await fetch('/perfil/usuario-logado', {
+      credentials: 'include' 
+    });    
     if (response.ok) {
       const data = await response.json();
       const usuario = data.usuario;
@@ -83,9 +83,16 @@ async function abrirModalUsuarioSimples() {
       if (document.getElementById('editCpf')) {
         document.getElementById('editCpf').value = usuario.cpf || '';
       }
+      
+      // TELEFONE: formatar automaticamente
       if (document.getElementById('editTelefone')) {
-        document.getElementById('editTelefone').value = usuario.telefone || '';
+        let telefoneValue = usuario.telefone || '';
+        if (telefoneValue) {
+          telefoneValue = formatarTelefone(telefoneValue);
+        }
+        document.getElementById('editTelefone').value = telefoneValue;
       }
+      
       if (document.getElementById('editGenero')) {
         // Configurar o valor do select
         const generoSelect = document.getElementById('editGenero');
@@ -95,17 +102,17 @@ async function abrirModalUsuarioSimples() {
       if (document.getElementById('editDataCadastro')) {
         // Formatar a data
         let dataCadastro = usuario.dataCadastro || '';
-      if (dataCadastro) {
-        try {
-          // Remover timezone se existir
-          const dataString = dataCadastro.split('T')[0];
-          const [ano, mes, dia] = dataString.split('-');
-          const dataFormatada = `${dia}/${mes}/${ano}`;
-          document.getElementById('editDataCadastro').value = dataFormatada;
-        } catch (e) {
-          document.getElementById('editDataCadastro').value = dataCadastro;
+        if (dataCadastro) {
+          try {
+            // Remover timezone se existir
+            const dataString = dataCadastro.split('T')[0];
+            const [ano, mes, dia] = dataString.split('-');
+            const dataFormatada = `${dia}/${mes}/${ano}`;
+            document.getElementById('editDataCadastro').value = dataFormatada;
+          } catch (e) {
+            document.getElementById('editDataCadastro').value = dataCadastro;
+          }
         }
-      }
       }
       
       // Limpar campos de senha
@@ -324,6 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
     menuToggle.addEventListener('click', toggleSidebar);
   }
   
+  
   // Fechar sidebar ao clicar fora (quando aberta)
   document.addEventListener('click', function(event) {
     const sidebar = document.getElementById('sidebar');
@@ -345,6 +353,19 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
   });
+
+   const telefoneInput = document.getElementById('editTelefone');
+  
+  if (telefoneInput) {
+    telefoneInput.addEventListener('input', function(e) {
+      aplicarMascaraTelefoneInput(e.target);
+    });
+    
+    // Também para quando o campo perde o foco (caso o usuário cole algo)
+    telefoneInput.addEventListener('blur', function(e) {
+      aplicarMascaraTelefoneInput(e.target);
+    });
+  }
 
   // ===================== CARROSSEL =====================
   const carousel = document.querySelector('.carousel-inner');
@@ -982,76 +1003,84 @@ if (loginForm) {
   });
 
 // ===================== FORMULÁRIO DE EDIÇÃO DO USUÁRIO =====================
-const userEditForm = document.getElementById('userEditForm');
-if (userEditForm) {
-  userEditForm.addEventListener('submit', async function(event) {
-    event.preventDefault();
-    
-    const formData = new FormData(this);
-    const dadosAtualizados = {
-      nome: formData.get('nome'),
-      email: formData.get('email'),
-      telefone: formData.get('telefone'),
-      genero: formData.get('genero'),
-      senha: formData.get('senha'),
-      confirmarSenha: formData.get('confirmarSenha')
-    };
-    
-    // Validação de senha
-    if (dadosAtualizados.senha && dadosAtualizados.senha !== dadosAtualizados.confirmarSenha) {
-      showMessage('As senhas não coincidem', 'error');
-      return;
-    }
-    
-    // Se a senha estiver vazia, remover do objeto
-    if (!dadosAtualizados.senha || dadosAtualizados.senha.trim() === '') {
-      delete dadosAtualizados.senha;
-      delete dadosAtualizados.confirmarSenha;
-    }
-    
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
-    submitBtn.disabled = true;
-    
-    try {
-      const response = await fetch('/perfil/editar', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        credentials: 'include',
-        body: JSON.stringify(dadosAtualizados)
-      });
+  const userEditForm = document.getElementById('userEditForm');
+  if (userEditForm) {
+    userEditForm.addEventListener('submit', async function(event) {
+      event.preventDefault();
       
-      const result = await response.json();
+      const formData = new FormData(this);
       
-      if (response.ok) {
-        showMessage(result.message || 'Perfil atualizado com sucesso!', 'success');
-        
-        // Atualizar o nome no header se foi alterado
-        if (dadosAtualizados.nome) {
-          const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
-          if (nomeUsuarioElement) {
-            nomeUsuarioElement.textContent = dadosAtualizados.nome;
-          }
-        }
-        
-        // Fechar o modal após 1.5 segundos
-        setTimeout(fecharModalUsuario, 1500);
-      } else {
-        showMessage(result.message || 'Erro ao atualizar perfil', 'error');
+      // Remover máscara do telefone antes de enviar
+      const telefoneInput = document.getElementById('editTelefone');
+      if (telefoneInput && telefoneInput.value) {
+        const telefoneSemMascara = telefoneInput.value.replace(/\D/g, '');
+        formData.set('telefone', telefoneSemMascara);
       }
-    } catch (error) {
-      console.error('Erro:', error);
-      showMessage('Erro de conexão ao atualizar perfil', 'error');
-    } finally {
-      submitBtn.innerHTML = originalBtnText;
-      submitBtn.disabled = false;
-    }
-  });
-}
+      
+      const dadosAtualizados = {
+        nome: formData.get('nome'),
+        email: formData.get('email'),
+        telefone: formData.get('telefone'),
+        genero: formData.get('genero'),
+        senha: formData.get('senha'),
+        confirmarSenha: formData.get('confirmarSenha')
+      };
+      
+      // Validação de senha
+      if (dadosAtualizados.senha && dadosAtualizados.senha !== dadosAtualizados.confirmarSenha) {
+        showMessage('As senhas não coincidem', 'error');
+        return;
+      }
+      
+      // Se a senha estiver vazia, remover do objeto
+      if (!dadosAtualizados.senha || dadosAtualizados.senha.trim() === '') {
+        delete dadosAtualizados.senha;
+        delete dadosAtualizados.confirmarSenha;
+      }
+      
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+      submitBtn.disabled = true;
+      
+      try {
+        const response = await fetch('/perfil/editar', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          credentials: 'include',
+          body: JSON.stringify(dadosAtualizados)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          showMessage(result.message || 'Perfil atualizado com sucesso!', 'success');
+          
+          // Atualizar o nome no header se foi alterado
+          if (dadosAtualizados.nome) {
+            const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
+            if (nomeUsuarioElement) {
+              nomeUsuarioElement.textContent = dadosAtualizados.nome;
+            }
+          }
+          
+          // Fechar o modal após 1.5 segundos
+          setTimeout(fecharModalUsuario, 1500);
+        } else {
+          showMessage(result.message || 'Erro ao atualizar perfil', 'error');
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+        showMessage('Erro de conexão ao atualizar perfil', 'error');
+      } finally {
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+      }
+    });
+  }
 
   // ===================== EVENT LISTENERS PARA FECHAR MODAIS =====================
   const closeUserModalBtn = document.querySelector('.close-user-modal');
@@ -1068,3 +1097,48 @@ if (userEditForm) {
     });
   }
 });
+
+// ===================== FUNÇÕES DE FORMATAÇÃO =====================
+function formatarTelefone(telefone) {
+  if (!telefone) return '';
+  
+  // Remove tudo que não é dígito
+  const digits = telefone.replace(/\D/g, '');
+  
+  // Aplica máscara baseada no tamanho
+  if (digits.length === 11) {
+    return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+  } else if (digits.length === 10) {
+    return digits.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+  } else if (digits.length === 9) {
+    return digits.replace(/(\d{5})(\d{4})/, '$1-$2');
+  } else if (digits.length === 8) {
+    return digits.replace(/(\d{4})(\d{4})/, '$1-$2');
+  }
+  
+  return digits; // Retorna sem formatação se não for tamanho conhecido
+}
+
+function aplicarMascaraTelefoneInput(input) {
+  let value = input.value.replace(/\D/g, '');
+  
+  if (value.length > 11) {
+    value = value.substring(0, 11);
+  }
+  
+  if (value.length === 11) {
+    // Formato: (99) 99999-9999
+    value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+  } else if (value.length === 10) {
+    // Formato: (99) 9999-9999
+    value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+  } else if (value.length > 6) {
+    value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+  } else if (value.length > 2) {
+    value = value.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+  } else if (value.length > 0) {
+    value = value.replace(/(\d{0,2})/, '($1');
+  }
+  
+  input.value = value;
+}

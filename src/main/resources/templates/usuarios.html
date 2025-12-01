@@ -54,151 +54,226 @@
             <span th:class="${usuario.ativo} ? 'status-active' : 'status-inactive'" 
                   th:text="${usuario.ativo} ? 'Ativo' : 'Inativo'"></span>
           </td>
-          <td>
-            <button type="button" class="action-btn btn-edit"
-                    th:attr="data-id=${usuario.id}, 
-                            data-nome=${usuario.nome}, 
-                            data-email=${usuario.email}, 
-                            data-cpf=${usuario.cpf}, 
-                            data-telefone=${usuario.telefone} ?: '', 
-                            data-genero=${usuario.genero} ?: '', 
-                            data-role=${usuario.role} ?: 'USER'"
-                    onclick="openEditModal(this)">
-                <i class="fas fa-edit"></i>
-            </button>
+        <td>
+<button type="button" class="action-btn btn-edit"
+        th:attr="data-id=${usuario.id}, 
+                data-nome=${usuario.nome}, 
+                data-email=${usuario.email}, 
+                data-cpf=${usuario.cpf},  
+                data-telefone=${usuario.telefone} ?: '', 
+                data-genero=${usuario.genero} ?: '', 
+                data-role=${usuario.role} ?: 'USER'"
+        onclick="openEditModal(this)">
+    <i class="fas fa-edit"></i>
+</button>
 
-
-            <form th:action="@{/usuarios/ativar/{id}(id=${usuario.id})}" method="post" style="display:inline">
-              <label class="switch">
-                <input type="checkbox" name="ativo" th:checked="${usuario.ativo}" onchange="this.form.submit()">
-                <span class="slider round"></span>
-              </label>
-            </form>
-            
-            <button type="button" class="action-btn btn-delete" th:attr="data-id=${usuario.id}, data-nome=${usuario.nome}, data-email=${usuario.email}" onclick="openDeleteModal(this)">
-              <i class="fas fa-trash"></i>
-            </button>
-          </td>
+  <form th:action="@{/usuarios/ativar/{id}(id=${usuario.id})}" method="post" style="display:inline">
+    <label class="switch">
+      <input type="checkbox" name="ativo" th:checked="${usuario.ativo}">
+      <span class="slider round"></span>
+    </label>
+  </form>
+  
+  <button type="button" class="action-btn btn-delete" 
+          th:attr="data-id=${usuario.id}, 
+                  data-nome=${usuario.nome}, 
+                  data-email=${usuario.email}, 
+                  data-cpf=${usuario.cpf}"
+          onclick="openDeleteModal(this)">
+    <i class="fas fa-trash"></i>
+  </button>
+</td>
         </tr>
       </tbody>
     </table>
   </div>
-
-
-  <!-- Modal de Confirmação de Exclusão -->
-  <div id="deleteModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeDeleteModal()">&times;</span>
-      <div class="modal-header">
-        <i class="fas fa-exclamation-triangle"></i>
-        <h2>Confirmar Exclusão</h2>
+<!-- Modal de Exclusão de Usuário -->
+<div id="deleteUserModal" class="modal delete-user-modal">
+  <div class="modal-content-delete">
+    <span class="close close-delete-user-modal">&times;</span>
+    <div class="modal-header-delete">
+      <h2><i class="fas fa-exclamation-triangle"></i> Excluir Usuário</h2>
+    </div>
+    
+    <div class="modal-icon-delete">
+      <i class="fas fa-user-slash"></i>
+    </div>
+    
+    <div class="modal-message">
+      Tem certeza que deseja excluir permanentemente o usuário
+    </div>
+    
+    <div class="user-info-card">
+      <div class="user-info-item">
+        <i class="fas fa-user"></i>
+        <span><strong>Nome:</strong> <span id="deleteUserName"></span></span>
       </div>
-      <div class="modal-body">
-        <p>Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.</p>
-        <div class="modal-user-info">
-          <p><strong>ID:</strong> <span id="modal-user-id"></span></p>
-          <p><strong>Nome:</strong> <span id="modal-user-nome"></span></p>
-          <p><strong>Email:</strong> <span id="modal-user-email"></span></p>
-        </div>
+      <div class="user-info-item">
+        <i class="fas fa-envelope"></i>
+        <span><strong>Email:</strong> <span id="deleteUserEmail"></span></span>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()">
-          <i class="fas fa-times"></i> Cancelar
-        </button>
-        <form id="deleteForm" method="post" style="display: inline;">
-          <button type="submit" class="modal-btn modal-btn-confirm">
-            <i class="fas fa-trash"></i> Excluir
-          </button>
-        </form>
+      <div class="user-info-item">
+        <i class="fas fa-id-card"></i>
+        <span><strong>CPF:</strong> <span id="deleteUserCpf"></span></span>
       </div>
+    </div>
+    
+    <div class="modal-warning">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>Esta ação não pode ser desfeita. Todos os dados do usuário serão permanentemente removidos.</span>
+    </div>
+    
+    <div class="modal-actions-delete">
+      <button class="modal-button-delete cancel">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+      <button class="modal-button-delete confirm">
+        <i class="fas fa-trash"></i> Excluir
+      </button>
     </div>
   </div>
+</div>
 
-
-  <!-- Modal de Edição -->
-<div id="editModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeEditModal()">&times;</span>
-    <div class="modal-header">
-      <i class="fas fa-edit"></i>
-      <h2>Editar Usuário</h2>
+<!-- Modal de Edição de Usuário -->
+<div id="editUserModal" class="modal edit-user-modal">
+  <div class="modal-content-edit">
+    <span class="close close-edit-user-modal">&times;</span>
+    <div class="modal-header-edit">
+      <h2><i class="fas fa-user-edit"></i> Editar Usuário</h2>
     </div>
-    <div class="modal-body">
-
-   <form id="editForm" method="post">
-    <input type="hidden" name="id" id="edit-id">
-
-    <!-- Linha 1: Nome e Email -->
-    <div class="form-row">
-        <div class="form-group">
-            <label for="edit-nome"><i class="fas fa-user"></i> Nome:</label>
-            <input type="text" name="nome" id="edit-nome" required>
-        </div>
-       
-    </div>
- <div class="form-group">
-            <label for="edit-email"><i class="fas fa-envelope"></i> Email:</label>
-            <input type="email" name="email" id="edit-email" required>
-        </div>
-    <!-- Linha 2: Telefone, CPF e Gênero -->
-    <div class="form-row">
-        <div class="form-group">
-            <label for="edit-telefone"><i class="fas fa-phone"></i> Telefone:</label>
-            <input type="text" name="telefone" id="edit-telefone">
-        </div>
-        <div class="form-group">
-            <label for="edit-cpf"><i class="fas fa-id-card"></i> CPF:</label>
-            <input type="text" name="cpf" id="edit-cpf" required>
-        </div>
-        <div class="form-group">
-            <label for="edit-genero"><i class="fas fa-venus-mars"></i> Gênero:</label>
-            <select name="genero" id="edit-genero">
-                <option value="">Selecione</option>
-                <option value="Masculino">Masculino</option>
-                <option value="Feminino">Feminino</option>
-                <option value="Outro">Outro</option>
+    
+    <div class="modal-body-edit">
+      <form id="editUserForm" method="post">
+        <input type="hidden" name="id" id="editUserId">
+        
+        <div class="form-grid">
+          <div class="form-group-edit">
+            <label for="editUserNome"><i class="fas fa-user"></i> Nome:</label>
+            <div class="input-with-icon">
+              <i class="fas fa-user"></i>
+              <input type="text" 
+                     id="editUserNome" 
+                     name="nome" 
+                     class="form-control-edit" 
+                     placeholder="Nome completo" 
+                     required>
+            </div>
+          </div>
+          
+          <div class="form-group-edit">
+            <label for="editUserEmail"><i class="fas fa-envelope"></i> Email:</label>
+            <div class="input-with-icon">
+              <i class="fas fa-at"></i>
+              <input type="email" 
+                     id="editUserEmail" 
+                     name="email" 
+                     class="form-control-edit" 
+                     placeholder="email@exemplo.com" 
+                     required>
+            </div>
+          </div>
+          
+          <div class="form-group-edit">
+            <label for="editUserCpf"><i class="fas fa-id-card"></i> CPF:</label>
+            <div class="input-with-icon">
+              <i class="fas fa-id-card"></i>
+              <input type="text" 
+                     id="editUserCpf" 
+                     name="cpf" 
+                     class="form-control-edit" 
+                     placeholder="000.000.000-00" 
+                     required>
+            </div>
+          </div>
+          
+          <div class="form-group-edit">
+            <label for="editUserTelefone"><i class="fas fa-phone"></i> Telefone:</label>
+            <div class="input-with-icon">
+              <i class="fas fa-phone"></i>
+              <input type="text" 
+                     id="editUserTelefone" 
+                     name="telefone" 
+                     class="form-control-edit" 
+                     placeholder="(11) 99999-9999">
+            </div>
+          </div>
+          
+          <div class="form-group-edit">
+            <label for="editUserGenero"><i class="fas fa-venus-mars"></i> Gênero:</label>
+            <select id="editUserGenero" name="genero" class="form-control-edit">
+              <option value="">Selecione...</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Feminino">Feminino</option>
+              <option value="Outro">Outro</option>
             </select>
+          </div>
+          
+          <div class="form-group-edit">
+            <label for="editUserRole"><i class="fas fa-user-tag"></i> Tipo:</label>
+            <select id="editUserRole" name="role" class="form-control-edit">
+              <option value="USER">Usuário</option>
+              <option value="ADMIN">Administrador</option>
+            </select>
+          </div>
+          
+          <div class="form-group-edit">
+            <label for="editUserSenha"><i class="fas fa-lock"></i> Nova Senha:</label>
+            <div class="input-with-icon">
+              <i class="fas fa-key"></i>
+              <input type="password" 
+                     id="editUserSenha" 
+                     name="senha" 
+                     class="form-control-edit" 
+                     placeholder="Deixe em branco para manter">
+            </div>
+          </div>
+          
+          <div class="form-group-edit">
+            <label for="editUserConfirmarSenha"><i class="fas fa-lock"></i> Confirmar Senha:</label>
+            <div class="input-with-icon">
+              <i class="fas fa-key"></i>
+              <input type="password" 
+                     id="editUserConfirmarSenha" 
+                     name="confirmarSenha" 
+                     class="form-control-edit" 
+                     placeholder="Confirme a nova senha">
+            </div>
+          </div>
         </div>
-    </div>
-
-    <!-- Linha 3: Senha e Confirmar Senha -->
-    <div class="form-row">
-        <div class="form-group">
-            <label for="edit-senha"><i class="fas fa-lock"></i> Nova Senha:</label>
-            <input type="password" name="senha" id="edit-senha" placeholder="Digite a nova senha">
+        
+        <div class="modal-actions-edit">
+          <button type="button" class="modal-button-edit cancel">
+            <i class="fas fa-times"></i> Cancelar
+          </button>
+          <button type="submit" class="modal-button-edit save">
+            <i class="fas fa-save"></i> Salvar Alterações
+          </button>
         </div>
-        <div class="form-group">
-            <label for="edit-confirmar-senha"><i class="fas fa-lock"></i> Confirmar Senha:</label>
-            <input type="password" name="confirmarSenha" id="edit-confirmar-senha" placeholder="Confirme a nova senha">
-        </div>
-    </div>
-</form>
-
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="modal-btn modal-btn-cancel" onclick="closeEditModal()">Cancelar</button>
-      <button type="submit" class="modal-btn modal-btn-confirm" form="editForm">Salvar</button>
+      </form>
     </div>
   </div>
 </div>
 
-<!-- Modal de Confirmação de Edição -->
-<div id="confirmSaveModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <i class="fas fa-check-circle"></i>
-      <h2>Confirmar Alterações</h2>
+<!-- Modal de Confirmação de Salvar -->
+<div id="confirmSaveModal" class="modal confirm-save-modal">
+  <div class="modal-content-confirm">
+    <span class="close close-confirm-save-modal">&times;</span>
+    <div class="modal-icon-confirm">
+      <i class="fas fa-question-circle"></i>
     </div>
-    <div class="modal-body">
-      <p>Tem certeza que deseja salvar as alterações deste usuário?</p>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="modal-btn modal-btn-cancel" onclick="closeConfirmSaveModal()">Cancelar</button>
-      <button type="button" class="modal-btn modal-btn-confirm" onclick="submitEditForm()">Confirmar</button>
+    <h3 class="modal-title">Confirmar Alterações</h3>
+    <p class="modal-message">Tem certeza que deseja salvar as alterações deste usuário?</p>
+    <div class="modal-actions-confirm">
+      <button class="modal-button-confirm cancel">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+      <button class="modal-button-confirm confirm">
+        <i class="fas fa-check"></i> Confirmar
+      </button>
     </div>
   </div>
 </div>
+  <script src="/js/usuario.js"></script> 
 
-  <script src="/js/usuario.js"></script>
 </body>
 </html>
