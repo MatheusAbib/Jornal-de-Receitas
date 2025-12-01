@@ -13,30 +13,38 @@
 <body>
 
   <!-- HEADER COM LARGURA TOTAL -->
+<!-- HEADER COM LARGURA TOTAL -->
 <div class="header-full-width">
   <div class="header-container">
     <header class="newspaper-header">
       <div class="header-top">
         <div class="newspaper-price">Edição #01</div>
         <div class="newspaper-volume">
-          <span class="menu-icon" onclick="toggleSidebar()"><i class="fas fa-bars"></i></span>
-          <span  class="user-icon" id="userIcon">
+          <span class="menu-icon" id="menuToggle"><i class="fas fa-bars"></i></span>
+          
+          <!-- Ícone do usuário aparece apenas se estiver logado -->
+          <span sec:authorize="isAuthenticated()" class="user-icon" id="userIcon">
             <i class="fas fa-user-circle"></i>
+          </span>
+          
+          <!-- ícone de login quando não estiver logado -->
+          <span sec:authorize="!isAuthenticated()" class="user-icon" id="loginIcon" 
+                onclick="openLoginModal(); return false;" style="cursor: pointer;">
+            <i class="fas fa-sign-in-alt"></i>
           </span>
         </div>
       </div>
       
       <h1 class="newspaper-title">Jornal de Receitas</h1>
-        <p class="newspaper-subtitle" th:if="${nomeUsuario != null}">
-            Bem vindo, <span th:text="${nomeUsuario}"></span>!
-        </p>
-        <p class="newspaper-subtitle" th:if="${nomeUsuario == null}">
-            Delícias do dia a dia para todos os gostos
-        </p>
-
-        <p class="newspaper-subtitle" th:if="${nomeUsuario == null}">
-            Faça Login ou Cadastre-se
-        </p>
+      <p class="newspaper-subtitle" th:if="${nomeUsuario != null}">
+          Bem vindo, <span th:text="${nomeUsuario}"></span>!
+      </p>
+      <p class="newspaper-subtitle" th:if="${nomeUsuario == null}">
+          Delícias do dia a dia para todos os gostos
+      </p>
+      <p class="newspaper-subtitle" th:if="${nomeUsuario == null}">
+          Faça Login ou Cadastre-se
+      </p>
       <p class="newspaper-date" id="newspaperDate"></p> 
     </header>
   </div>
@@ -215,15 +223,14 @@
 <div class="receitas" id="all-recipes">
   <div class="card" th:each="r : ${receitas}">
     <div class="card-image">
-<img th:if="${r.imagem != null and r.imagem.startsWith('http')}" th:src="${r.imagem}" alt="Imagem da receita">
-<img th:if="${r.imagem != null and !r.imagem.startsWith('http')}" th:src="@{'/uploads/' + ${r.imagem}}" alt="Imagem da receita">
-<img th:if="${r.imagem == null}" src="/default-image.jpg" alt="Sem imagem">
+      <img th:if="${r.imagem != null and r.imagem.startsWith('http')}" th:src="${r.imagem}" alt="Imagem da receita">
+      <img th:if="${r.imagem != null and !r.imagem.startsWith('http')}" th:src="@{'/uploads/' + ${r.imagem}}" alt="Imagem da receita">
+      <img th:if="${r.imagem == null}" src="/default-image.jpg" alt="Sem imagem">
       <div class="card-badge">NOVO</div>
     </div>
     <div class="card-content">
       <h2 th:text="${r.titulo}">Título da Receita</h2>
       
-      <!-- Tempo de preparo e porções ajustados -->
       <div class="card-meta">
         <span><i class="fas fa-clock"></i> <span th:text="${r.tempoPreparo}">30 min</span></span>
         &nbsp;&nbsp;|&nbsp;&nbsp;
@@ -237,11 +244,16 @@
         <button class="card-favorite" th:attr="data-recipe-id=${r.id}">
           <i class="far fa-heart"></i>
         </button>
+        <!-- Botão de excluir - apenas para ADMIN -->
+        <button sec:authorize="hasRole('ADMIN')" class="card-delete" 
+                th:attr="data-recipe-id=${r.id}" 
+                th:data-recipe-title="${r.titulo}">
+            <i class="fas fa-trash"></i>
+        </button>
       </div>
     </div>
   </div>
 </div>
-
 
       <div class="section-title">
         <h2>Receitas Rápidas</h2>
@@ -382,27 +394,78 @@
     </div>
   </footer>
 
-<div id="loginModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>Fazer Login</h2>
-    <form th:action="@{/login}" method="post">
-      <div class="form-group">
-        <label for="username">Email:</label>
-        <input type="email" id="username" name="username" required>
+<!-- Modal de Login  -->
+<div id="loginModal" class="modal login-modal">
+  <div class="modal-content-login">
+    <span class="close close-login-modal">&times;</span>
+    <div class="modal-header-login">
+      <h2><i class="fas fa-sign-in-alt"></i> Acessar Conta</h2>
+    </div>
+    
+    <div class="modal-body-login">
+
+      <!-- Mensagem de erro será inserida aqui via JavaScript -->
+      <div id="loginError" class="login-error" style="display: none;">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="errorMessage"></span>
       </div>
-      <div class="form-group">
-        <label for="password">Senha:</label>
-        <input type="password" id="password" name="password" required>
+      
+      <form id="loginForm" th:action="@{/login}" method="post">
+        <div class="form-group-login">
+          <label for="username">
+            <i class="fas fa-envelope"></i> Email
+          </label>
+          <div class="input-with-icon">
+            <i class="fas fa-at"></i>
+            <input type="email" 
+                   id="username" 
+                   name="username" 
+                   class="form-control-login" 
+                   placeholder="seu@email.com" 
+                   required
+                   autocomplete="email">
+          </div>
+        </div>
+        
+        <div class="form-group-login">
+          <label for="password">
+            <i class="fas fa-lock"></i> Senha
+          </label>
+          <div class="input-with-icon">
+            <i class="fas fa-key"></i>
+            <input type="password" 
+                   id="password" 
+                   name="password" 
+                   class="form-control-login" 
+                   placeholder="Digite sua senha" 
+                   required
+                   autocomplete="current-password">
+          </div>
+        </div>
+        
+        <div class="login-options">
+          <label class="remember-me">
+            <input type="checkbox" id="remember" name="remember">
+            Lembrar-me
+          </label>
+          <a href="#" class="forgot-password">
+            Esqueci a senha
+          </a>
+        </div>
+        
+        <button type="submit" class="login-button">
+          <i class="fas fa-sign-in-alt"></i>
+          <span class="button-text">Entrar</span>
+        </button>
+      </form>
+      
+      <div class="register-link">
+        Não tem uma conta?
+        <a href="/cadastro">Cadastre-se aqui</a>
       </div>
-      <button type="submit" class="login-btn">Entrar</button>
-    </form>
-    <div th:if="${param.error}" class="message error">
-      Email ou senha inválidos!
     </div>
   </div>
 </div>
-
 
 <!-- Modal de informações do usuário -->
 <div id="userModal" class="modal">
@@ -466,6 +529,33 @@
   </div>
 </div>
 
+<!-- Modal de Confirmação de Exclusão -->
+<div id="deleteModal" class="modal delete-modal">
+  <div class="modal-content-delete">
+    <span class="close close-delete-modal">&times;</span>
+    <div class="modal-header-delete">
+      <h2><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h2>
+    </div>
+
+    <div class="modal-message">
+      Tem certeza que deseja excluir a receita
+      <span class="recipe-name" id="recipeNameToDelete"></span>
+    </div>
+    <div class="modal-warning">
+      <i class="fas fa-exclamation-circle"></i>
+      Esta ação não pode ser desfeita. A receita será removida permanentemente.
+    </div>
+    <div class="modal-actions-delete">
+      <button class="modal-button-delete cancel">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+      <button class="modal-button-delete confirm">
+        <i class="fas fa-trash"></i> Excluir
+      </button>
+    </div>
+  </div>
+</div>
+
   <!-- Modal de Logout -->
 <div id="logoutModal" class="modal logout-modal">
   <div class="modal-content-logout">
@@ -482,6 +572,8 @@
   </div>
 </div>
 </div>
+
+
   <script src="/js/index.js"></script>
 </body>
 </html>

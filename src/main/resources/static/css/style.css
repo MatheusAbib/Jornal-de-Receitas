@@ -86,12 +86,12 @@
 .user-icon {
     font-size: 1.5rem;
     cursor: pointer;
-    padding: 0; /* padding zerado para usar tamanho fixo */
+    padding: 3px; 
     border-radius: 50%;
     transition: var(--transition);
     color: white;
-    height: 35px; /* mesmo tamanho da sidebar */
-    width: 35px;  /* largura igual à altura para centralização */
+    height: 35px; 
+    width: 35px;  
     display: flex;
     align-items: center;
     justify-content: center;
@@ -107,10 +107,6 @@
 .menu-icon:hover,
 .user-icon:hover {
     transform: scale(1.1);
-}
-
-.menu-icon:hover {
-    background: rgba(255, 255, 255, 0.3);
 }
 
 /* Título do jornal */
@@ -167,17 +163,16 @@
     font-weight: 500;
 }
 
-/* Preço e volume do jornal - mesmos tamanhos */
 .newspaper-price,
 .newspaper-volume {
     font-size: 1.2rem;
     font-weight: bold;
-    padding: 8px 15px;
+    padding: 8px 20px;
     border-radius: 30px;
-    height: 40px; /* altura uniforme */
-    line-height: 1; /* remove espaçamento extra */
+    height: 40px;
+    line-height: 1; 
     display: flex;
-    align-items: center; /* centraliza verticalmente */
+    align-items: center; 
     justify-content: center;
     box-shadow: var(--shadow);
     position: absolute;
@@ -200,7 +195,7 @@
 /* Ícones dentro do volume */
 .newspaper-volume .menu-icon,
 .newspaper-volume .user-icon {
-    margin: 0 5px;
+    margin: 0 7px;
     height: 30px;
     width: 30px;
     display: flex;
@@ -693,6 +688,26 @@
     .card:hover .card-image img {
       transform: scale(1.1);
     }
+
+    .card-delete {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
+}
+
+.card-delete:hover {
+    background: #c0392b;
+    transform: scale(1.1);
+}
     
     .card-badge {
       position: absolute;
@@ -1158,13 +1173,13 @@
       overflow: hidden;
     }
 
-        .modal-content-user {
+      .modal-content-user {
       background-color: var(--card-bg);
       margin: 7% auto;
       padding: 0;
       border-radius: 16px;
       width: 90%;
-      max-width: 500px;
+      max-width: 35%;
       box-shadow: var(--shadow);
       position: relative;
       animation: modalFadeIn 0.3s ease;
@@ -1204,13 +1219,14 @@
       right: 25px;
       font-size: 1.8rem;
       cursor: pointer;
-      color: rgba(0, 0, 0, 0.8);
+      color: white;
       transition: var(--transition);
     }
 
     .close:hover {
       color: var(--accent-color);
-      transform: rotate(90deg);
+         transform: rotate(90deg);
+
     }
 
     .form-input {
@@ -1235,9 +1251,8 @@
 .user-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  padding: 15px;
-  margin-bottom: 20px;
+  gap: 25px;
+  padding: 25px;
 }
 
     .user-info-item {
@@ -1289,6 +1304,263 @@
       margin-bottom: 30px;
       border-top: 1px solid rgba(212, 175, 55, 0.2);
     }
+
+    /* Modal de Login Atualizado */
+.login-modal .modal-content-login {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 0;
+    margin: 5% auto;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: var(--shadow);
+    position: relative;
+    animation: modalFadeIn 0.3s ease;
+    overflow: hidden;
+}
+
+.login-modal .modal-header-login {
+    background: linear-gradient(135deg, var(--header-color), #8b0000);
+    color: white;
+    padding: 25px 30px;
+    position: relative;
+}
+
+.login-modal .modal-header-login h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.login-modal .modal-header-login h2 i {
+    color: var(--accent-color);
+}
+
+.login-modal .close-login-modal {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    z-index: 10;
+}
+
+.login-modal .close-login-modal:hover {
+    transform: rotate(90deg);
+}
+
+.login-modal .modal-body-login {
+    padding: 30px;
+}
+
+.login-modal {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.login-modal .form-group-login {
+    margin-bottom: 20px;
+}
+
+.login-modal .form-group-login label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--header-color);
+    font-size: 0.95rem;
+}
+
+.login-modal .form-group-login label i {
+    color: var(--accent-color);
+    width: 16px;
+}
+
+.login-modal .input-with-icon {
+    position: relative;
+}
+
+.login-modal .input-with-icon i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent-color);
+    font-size: 1.1rem;
+}
+
+.login-modal .form-control-login {
+    width: 100%;
+    padding: 14px 15px 14px 45px;
+    border: 2px solid rgba(165, 42, 42, 0.2);
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: var(--transition);
+    background-color: rgba(212, 175, 55, 0.05);
+}
+
+.login-modal .form-control-login:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+.login-modal .form-control-login::placeholder {
+    color: var(--light-text);
+    opacity: 0.7;
+}
+
+.login-modal .login-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0 25px;
+    font-size: 0.9rem;
+}
+
+.login-modal .remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--light-text);
+    cursor: pointer;
+}
+
+.login-modal .remember-me input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--header-color);
+    cursor: pointer;
+}
+
+.login-modal .forgot-password {
+    color: var(--header-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.login-modal .forgot-password:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+.login-modal .login-button {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--header-color), #8b0000);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    box-shadow: 0 5px 15px rgba(165, 42, 42, 0.3);
+}
+
+.login-modal .login-button:hover {
+    background: linear-gradient(135deg, #8b0000, var(--header-color));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(165, 42, 42, 0.4);
+}
+
+.login-modal .login-button:disabled {
+    background: var(--light-text);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.login-modal .register-link {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    color: var(--light-text);
+    font-size: 0.95rem;
+}
+
+.login-modal .register-link a {
+    color: var(--header-color);
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 5px;
+    transition: var(--transition);
+}
+
+.login-modal .register-link a:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+/* Notificação de erro no login */
+.login-modal .login-error {
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    color: #e74c3c;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: fadeIn 0.3s ease;
+}
+
+.login-modal .login-error i {
+    color: #e74c3c;
+    font-size: 1.2rem;
+}
+
+.login-modal .shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+    .login-modal .modal-content-login {
+        margin: 10% auto;
+        width: 95%;
+    }
+    
+    .login-modal .modal-body-login {
+        padding: 20px 15px;
+    }
+    
+    .login-modal .login-options {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .login-modal .forgot-password {
+        align-self: flex-end;
+    }
+}
 
     /* Modal de Logout */
 .logout-modal .modal-content-logout {
@@ -1373,6 +1645,167 @@
     transform: rotate(90deg);
 }
 
+/* Modal de Exclusão de Receita */
+.delete-modal .modal-content-delete {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 30px;
+    margin: 10% auto;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: var(--shadow);
+    text-align: center;
+    position: relative;
+    animation: modalFadeIn 0.3s ease;
+    overflow: hidden;
+}
+
+.delete-modal .modal-header-delete {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    padding: 20px 30px;
+    position: relative;
+    margin: -30px -30px 20px -30px;
+    border-radius: 16px 16px 0 0;
+}
+
+.delete-modal .modal-header-delete h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+
+.delete-modal .modal-message {
+    color: var(--text-color);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 20px 0;
+    padding: 0 10px;
+}
+
+.delete-modal .recipe-name {
+    color: var(--header-color);
+    font-weight: 700;
+    font-style: italic;
+    font-size: 1.2rem;
+    display: block;
+    margin: 10px 0;
+    padding: 8px;
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-color);
+}
+
+.delete-modal .modal-warning {
+    color: #e74c3c;
+    font-size: 0.95rem;
+    margin: 15px 0;
+    padding: 10px;
+    background: rgba(231, 76, 60, 0.1);
+    border-radius: 8px;
+    border-left: 3px solid #e74c3c;
+    text-align: left;
+}
+
+.delete-modal .modal-warning i {
+    color: #e74c3c;
+    margin-right: 8px;
+}
+
+.delete-modal .modal-actions-delete {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.delete-modal .modal-button-delete {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 50px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 120px;
+}
+
+.delete-modal .modal-button-delete.cancel {
+    background: #f2f2f2;
+    color: var(--text-color);
+}
+
+.delete-modal .modal-button-delete.cancel:hover {
+    background: #e6e6e6;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.delete-modal .modal-button-delete.confirm {
+    background: #e74c3c;
+    color: white;
+}
+
+.delete-modal .modal-button-delete.confirm:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+}
+
+.delete-modal .close-delete-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    z-index: 10;
+}
+
+.delete-modal .close-delete-modal:hover {
+    transform: rotate(90deg);
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+    .delete-modal .modal-content-delete {
+        padding: 20px 15px;
+        margin: 20% auto;
+    }
+    
+    .delete-modal .modal-header-delete {
+        padding: 15px 20px;
+    }
+    
+    .delete-modal .modal-header-delete h2 {
+        font-size: 1.5rem;
+    }
+    
+    .delete-modal .modal-actions-delete {
+        flex-direction: column;
+    }
+    
+    .delete-modal .modal-button-delete {
+        width: 100%;
+    }
+}
+
 /* Responsividade */
 @media (max-width: 480px) {
     .logout-modal .modal-content-logout {
@@ -1430,6 +1863,7 @@
     .form-group label {
       display: block;
       margin-bottom: 8px;
+      margin-top: 1%;
       font-weight: 600;
       color: var(--header-color);
     }
@@ -1460,6 +1894,7 @@
       font-size: 1.1rem;
       font-weight: 600;
       cursor: pointer;
+      margin-top: 2%;
       transition: var(--transition);
     }
 

@@ -5,13 +5,17 @@ import com.receitas.site_receitas.repository.ReceitaRepository;
 import com.receitas.site_receitas.model.Usuario;
 import com.receitas.site_receitas.repository.UsuarioRepository;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -183,4 +187,42 @@ public String salvarReceita(@ModelAttribute Receita receita,
 
         return "detalhe";
     }
+
+@PostMapping("/receitas/excluir/{id}")
+@ResponseBody
+public ResponseEntity<?> excluirReceita(@PathVariable Long id) {
+    try {
+        // Verificar se a receita existe
+        if (!repository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("message", "Receita não encontrada"));
+        }
+        
+        // Buscar a receita para obter o nome da imagem
+        Receita receita = repository.findById(id).orElse(null);
+        
+        // Excluir a imagem do servidor se existir
+        if (receita != null && receita.getImagem() != null && !receita.getImagem().startsWith("http")) {
+            try {
+                Path imagePath = Paths.get("uploads/" + receita.getImagem());
+                Files.deleteIfExists(imagePath);
+            } catch (IOException e) {
+                System.err.println("Erro ao excluir imagem: " + e.getMessage());
+            }
+        }
+        
+        // Excluir a receita do banco de dados
+        repository.deleteById(id);
+        
+        return ResponseEntity.ok().body(Map.of(
+            "message", "Receita excluída com sucesso",
+            "id", id
+        ));
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(Map.of("message", "Erro interno ao excluir receita: " + e.getMessage()));
+    }
+}
 }

@@ -54,44 +54,52 @@ public String cadastrarUsuario(@ModelAttribute Usuario usuario, HttpSession sess
         return "cadastro"; 
     }
 
-    @PostMapping("/login")
-    @ResponseBody
-    public ResponseEntity<?> loginUsuario(@RequestBody LoginRequest loginRequest, HttpSession session) {
-        try {
-            Optional<Usuario> usuarioOptional = usuarioService.findByEmail(loginRequest.getEmail());
+   @PostMapping("/login")
+@ResponseBody
+public ResponseEntity<?> loginUsuario(@RequestBody LoginRequest loginRequest, 
+                                     HttpSession session,
+                                     Authentication authentication) {
+    try {
+        Optional<Usuario> usuarioOptional = usuarioService.findByEmail(loginRequest.getEmail());
+        
+        if (usuarioOptional.isPresent()) {
+            Usuario usuario = usuarioOptional.get();
             
-            if (usuarioOptional.isPresent()) {
-                Usuario usuario = usuarioOptional.get();
+            if (passwordEncoder.matches(loginRequest.getSenha(), usuario.getSenha())) {
+                // IMPORTANTE: Salvar o usuário na sessão
+                session.setAttribute("usuarioLogado", usuario);
                 
-                // Verificar senha com BCrypt
-                if (passwordEncoder.matches(loginRequest.getSenha(), usuario.getSenha())) {
-                    session.setAttribute("usuarioLogado", usuario);
-                        return ResponseEntity.ok().body(Map.of(
-                            "message", "Login realizado com sucesso",
-                            "usuario", Map.of(
-                                "id", usuario.getId(),
-                                "nome", usuario.getNome(),
-                                "email", usuario.getEmail(),
-                                "cpf", usuario.getCpf(),
-                                "telefone", usuario.getTelefone(),
-                                "genero", usuario.getGenero(),
-                                "dataCadastro", usuario.getDataCadastro() 
-                            )
-                        ));
-
-                } else {
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(Map.of("message", "Senha incorreta"));
-                }
+                System.out.println("Login bem-sucedido para: " + usuario.getEmail());
+                System.out.println("Sessão ID: " + session.getId());
+                System.out.println("Usuário salvo na sessão: " + usuario.getNome());
+                
+                return ResponseEntity.ok().body(Map.of(
+                    "success", true,
+                    "redirectUrl", "/",
+                    "usuario", Map.of(
+                        "id", usuario.getId(),
+                        "nome", usuario.getNome(),
+                        "email", usuario.getEmail(),
+                        "cpf", usuario.getCpf(),
+                        "telefone", usuario.getTelefone(),
+                        "genero", usuario.getGenero(),
+                        "dataCadastro", usuario.getDataCadastro()
+                    )
+                ));
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "Usuário não encontrado"));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("success", false, "message", "Senha incorreta"));
             }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("message", "Erro interno do servidor"));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("success", false, "message", "Usuário não encontrado"));
         }
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(Map.of("success", false, "message", "Erro interno do servidor"));
     }
+}
 
     @PostMapping("/logout")
     @ResponseBody
@@ -132,30 +140,44 @@ public String ativarDesativarUsuario(@PathVariable Integer id) {
 
 @PostMapping("/perfil/editar")
 @ResponseBody
-public ResponseEntity<?> editarPerfilUsuario(@RequestBody Map<String, String> dados, HttpSession session) {
+public ResponseEntity<?> editarPerfilUsuario(@RequestBody Map<String, String> dados,
+                                            Authentication authentication,
+                                            HttpSession session) {
     try {
-        Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuarioLogado == null) {
+        System.out.println("=== EDITAR PERFIL ===");
+        System.out.println("Authentication: " + authentication);
+        System.out.println("Nome do usuário: " + (authentication != null ? authentication.getName() : "null"));
+        
+        if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("message", "Usuário não logado"));
+                .body(Map.of("message", "Usuário não autenticado"));
         }
 
-        Integer usuarioId = usuarioLogado.getId();
-        Optional<Usuario> usuarioExistente = usuarioService.findById(usuarioId);
+        String email = authentication.getName();
+        Optional<Usuario> usuarioOptional = usuarioService.findByEmail(email);
         
-        if (usuarioExistente.isEmpty()) {
+        if (usuarioOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Map.of("message", "Usuário não encontrado"));
         }
 
-        Usuario usuarioAtualizado = usuarioExistente.get();
+        Usuario usuarioAtualizado = usuarioOptional.get();
         
         // Atualizar apenas os campos permitidos
         if (dados.containsKey("nome")) {
             usuarioAtualizado.setNome(dados.get("nome"));
         }
         if (dados.containsKey("email")) {
-            usuarioAtualizado.setEmail(dados.get("email"));
+            // Verificar se o email já existe (exceto para o próprio usuário)
+            String novoEmail = dados.get("email");
+            if (!novoEmail.equals(email)) {
+                Optional<Usuario> usuarioComEmail = usuarioService.findByEmail(novoEmail);
+                if (usuarioComEmail.isPresent()) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Este email já está em uso por outro usuário"));
+                }
+            }
+            usuarioAtualizado.setEmail(novoEmail);
         }
         if (dados.containsKey("telefone")) {
             usuarioAtualizado.setTelefone(dados.get("telefone"));
@@ -178,8 +200,10 @@ public ResponseEntity<?> editarPerfilUsuario(@RequestBody Map<String, String> da
 
         usuarioService.salvarUsuario(usuarioAtualizado);
         
-        // Atualizar usuário na sessão
+        // Atualizar usuário na sessão (se estiver usando sessão)
         session.setAttribute("usuarioLogado", usuarioAtualizado);
+        
+        System.out.println("Perfil atualizado com sucesso para: " + usuarioAtualizado.getEmail());
         
         return ResponseEntity.ok().body(Map.of(
             "message", "Perfil atualizado com sucesso",
