@@ -12,7 +12,7 @@ public class Receita {
 
     private String titulo;
 
-    @Column(name = "tempo_preparo") // mapeia para a coluna correta
+    @Column(name = "tempo_preparo") 
     private String tempoPreparo;
 
     @Column(columnDefinition = "TEXT")
@@ -21,26 +21,34 @@ public class Receita {
     @Column(name = "modo_preparo", columnDefinition = "TEXT")
     private String modoPreparo;
 
-    @Column(columnDefinition = "TEXT") // agora suporta URLs longas ou nomes de arquivos
+    @Column(columnDefinition = "TEXT") 
     private String imagem;
 
     @Column(nullable = false)
     private boolean aprovada = false; // padrão: false, ou seja, pendente
 
 
-private int porcoes = 1;
-
-public int getPorcoes() {
-    return porcoes;
-}
-
-public void setPorcoes(int porcoes) {
-    this.porcoes = porcoes;
-}
+    private int porcoes = 1;
 
 
+    private String chefe;
 
-    // Getters e Setters
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
+     // Getters e Setters
+
+    public int getPorcoes() {
+        return porcoes;
+    }
+
+    public void setPorcoes(int porcoes) {
+        this.porcoes = porcoes;
+    }
+
+
     public Long getId() {
         return id;
     }
@@ -96,4 +104,22 @@ public void setPorcoes(int porcoes) {
     public void setAprovada(Boolean aprovada) {
         this.aprovada = aprovada;
     }
+
+
+    public String getChefe() {
+        return chefe;
+    }
+
+    public void setChefe(String chefe) {
+        this.chefe = chefe;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+    
 }

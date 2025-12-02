@@ -72,13 +72,33 @@ public String novaReceitaForm(Model model) {
         return "redirect:/";
     }
     
+    // Obtém o usuário autenticado
+    String email = authentication.getName();
+    Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+    
     Receita receita = new Receita();
-    receita.setPorcoes(1); 
+    receita.setPorcoes(1);
+    
+    // Preenche automaticamente o campo "chefe" com o nome do usuário
+    if (usuarioOpt.isPresent()) {
+        receita.setChefe(usuarioOpt.get().getNome());
+    } else {
+        receita.setChefe(email); // fallback para email
+    }
+    
     model.addAttribute("receita", receita);
+    
+    // Adiciona o nome do usuário ao model para o formulário
+    if (usuarioOpt.isPresent()) {
+        model.addAttribute("nomeUsuario", usuarioOpt.get().getNome());
+    } else {
+        model.addAttribute("nomeUsuario", email);
+    }
+    
     return "form";
 }
 
-   @PostMapping("/salvar")
+@PostMapping("/salvar")
 public String salvarReceita(@ModelAttribute Receita receita,
                             @RequestParam("imagemFile") MultipartFile imagemFile,
                             @RequestParam(required = false, name = "ingredientes[]") List<String> ingredientes,
@@ -89,34 +109,49 @@ public String salvarReceita(@ModelAttribute Receita receita,
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication == null || !authentication.isAuthenticated() || 
         authentication.getName().equals("anonymousUser")) {
-        // Redireciona para a página inicial se não estiver logado
         return "redirect:/";
     }
 
-    // Converte a lista em uma única string separada por vírgula e espaço
+    // Obtém o usuário autenticado
+    String email = authentication.getName();
+    Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+    
+    // Associa o usuário à receita (opcional)
+    if (usuarioOpt.isPresent()) {
+        receita.setUsuario(usuarioOpt.get());
+        
+        // Se o campo chefe estiver vazio, preenche com o nome do usuário
+        if (receita.getChefe() == null || receita.getChefe().trim().isEmpty()) {
+            receita.setChefe(usuarioOpt.get().getNome());
+        }
+    } else {
+        // Se não encontrar usuário no banco, usa o email
+        if (receita.getChefe() == null || receita.getChefe().trim().isEmpty()) {
+            receita.setChefe(email);
+        }
+    }
+
+    // Processa ingredientes...
     if (ingredientes != null && !ingredientes.isEmpty()) {
-        // Remove quebras de linha e espaços extras
-        // Armazena cada ingrediente como está, sem juntar tudo em uma string
         receita.setIngredientes(String.join("||", ingredientes.stream()
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .toList()));
-
     } else {
         receita.setIngredientes("");
     }
 
+    // Processa modo de preparo...
     if (modoPreparo != null && !modoPreparo.isEmpty()) {
         receita.setModoPreparo(String.join("||", modoPreparo.stream()
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .toList()));
-
     } else {
         receita.setModoPreparo("");
     }
 
-    // Salva imagem
+    // Salva imagem...
     if (!imagemFile.isEmpty()) {
         String uploadDir = "uploads/";
         Files.createDirectories(Paths.get(uploadDir));
@@ -134,7 +169,22 @@ public String salvarReceita(@ModelAttribute Receita receita,
     // Cria uma nova receita vazia para o formulário
     Receita novaReceita = new Receita();
     novaReceita.setPorcoes(1);
+    
+    // Preenche o campo chefe para a próxima receita
+    if (usuarioOpt.isPresent()) {
+        novaReceita.setChefe(usuarioOpt.get().getNome());
+    } else {
+        novaReceita.setChefe(email);
+    }
+    
     model.addAttribute("receita", novaReceita);
+    
+    // Adiciona o nome do usuário ao model
+    if (usuarioOpt.isPresent()) {
+        model.addAttribute("nomeUsuario", usuarioOpt.get().getNome());
+    } else {
+        model.addAttribute("nomeUsuario", email);
+    }
 
     return "form";
 }

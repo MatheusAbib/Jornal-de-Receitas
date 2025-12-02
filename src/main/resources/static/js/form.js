@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function() {
   const form = document.getElementById('recipeForm');
   const imageInput = document.getElementById('imagemFile');
   const imagePreview = document.getElementById('imagePreview');
