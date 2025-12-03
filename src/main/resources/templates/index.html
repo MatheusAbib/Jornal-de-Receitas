@@ -12,8 +12,6 @@
 </head>
 <body>
 
-  <!-- HEADER COM LARGURA TOTAL -->
-<!-- HEADER COM LARGURA TOTAL -->
 <div class="header-full-width">
   <div class="header-container">
     <header class="newspaper-header">
@@ -51,19 +49,36 @@
 </div>
 
   <!-- SIDEBAR -->
+<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
     <h3>Jornal de Receitas</h3>
     <a th:href="@{/}"><i class="fas fa-home"></i> Início</a>
-    <a th:href="@{/cadastro}"><i class="fas fa-user-plus"></i> Se Cadastrar</a>
-    <a href="#" onclick="openLoginModal(); return false;">
+    
+    <!-- Apenas mostra "Se Cadastrar" quando NÃO estiver logado -->
+    <a sec:authorize="!isAuthenticated()" th:href="@{/cadastro}">
+        <i class="fas fa-user-plus"></i> Se Cadastrar
+    </a>
+    
+    <!-- Apenas mostra "Fazer Login" quando NÃO estiver logado -->
+    <a sec:authorize="!isAuthenticated()" href="#" onclick="openLoginModal(); return false;">
         <i class="fas fa-sign-in-alt"></i> Fazer Login
     </a>
-    <a sec:authorize="hasRole('ADMIN')" th:href="@{/usuarios}"><i class="fas fa-users"></i> Usuários</a>    
+    
+    <!-- Apenas ADMIN vê Usuários -->
+    <a sec:authorize="hasRole('ADMIN')" th:href="@{/usuarios}">
+        <i class="fas fa-users"></i> Usuários
+    </a>    
+    
     <!-- Apenas ADMIN vê Receitas Pendentes -->
     <a sec:authorize="hasRole('ADMIN')" href="/pendentes">
         <i class="fas fa-clock"></i> Receitas Pendentes
     </a>
-      <a sec:authorize="isAuthenticated()" href="/nova"><i class="fas fa-utensils"></i> Nova Receita</a>    
+    
+    <!-- Apenas usuários logados veem Nova Receita -->
+    <a sec:authorize="isAuthenticated()" href="/nova">
+        <i class="fas fa-utensils"></i> Nova Receita
+    </a>    
+    
     <!-- Botão Sair - Aparece apenas para usuários logados -->
     <a sec:authorize="isAuthenticated()" href="#" onclick="openLogoutModal(); return false;">
         <i class="fas fa-sign-out-alt"></i> Sair
@@ -478,23 +493,23 @@
       <form id="userEditForm">
         <div class="user-info-grid">
           <div class="form-group">
-            <label for="editNome"><strong>Nome</strong></label>
+            <label for="editNome"><i class="fas fa-user"></i> Nome</label>
             <input type="text" id="editNome" name="nome" class="form-input" required>
           </div>
           <div class="form-group">
-            <label for="editEmail"><strong>Email</strong></label>
+            <label for="editEmail"><i class="fas fa-envelope"></i> Email</label>
             <input type="email" id="editEmail" name="email" class="form-input" required>
           </div>
           <div class="form-group">
-            <label for="editCpf"><strong>CPF</strong></label>
+            <label for="editCpf"><i class="fas fa-id-card"></i> CPF</label>
             <input type="text" id="editCpf" name="cpf" class="form-input" readonly>
           </div>
           <div class="form-group">
-            <label for="editTelefone"><strong>Telefone</strong></label>
+            <label for="editTelefone"><i class="fas fa-phone"></i> Telefone</label>
             <input type="tel" id="editTelefone" name="telefone" class="form-input">
           </div>
           <div class="form-group">
-            <label for="editGenero"><strong>Gênero</strong></label>
+            <label for="editGenero"><i class="fas fa-venus-mars"></i> Gênero</label>
             <select id="editGenero" name="genero" class="form-input">
               <option value="">Selecione</option>
               <option value="MASCULINO">Masculino</option>
@@ -503,15 +518,15 @@
             </select>
           </div>
           <div class="form-group full-width">
-            <label for="editDataCadastro"><strong>Data de Cadastro</strong></label>
+            <label for="editDataCadastro"><i class="fas fa-calendar-alt"></i> Data de Cadastro</label>
             <input type="text" id="editDataCadastro" class="form-input" readonly>
           </div>
           <div class="form-group full-width">
-            <label for="editSenha"><strong>Nova Senha</strong></label>
+            <label for="editSenha"><i class="fas fa-lock"></i> Nova Senha</label>
             <input type="password" id="editSenha" name="senha" class="form-input" placeholder="Digite nova senha">
           </div>
           <div class="form-group full-width">
-            <label for="confirmarSenha"><strong>Confirmar Nova Senha</strong></label>
+            <label for="confirmarSenha"><i class="fas fa-lock"></i> Confirmar Nova Senha</label>
             <input type="password" id="confirmarSenha" name="confirmarSenha" class="form-input" placeholder="Confirme a nova senha">
           </div>
         </div>
@@ -559,15 +574,25 @@
   <!-- Modal de Logout -->
 <div id="logoutModal" class="modal logout-modal">
   <div class="modal-content-logout">
-    <span class="close close-logout-modal">&times;</span>
-    <div class="modal-icon">
-      <i class="fas fa-sign-out-alt"></i>
+    <div class="modal-header-logout">
+      <h2><i class="fas fa-sign-out-alt"></i> Sair da Conta</h2>
+      <span class="close close-logout-modal">&times;</span>
     </div>
-    <h3>Deseja sair?</h3>
-    <p>Tem certeza que deseja fazer logout da sua conta?</p>
+
+    
+    <div class="modal-message">
+      Tem certeza que deseja sair da sua conta?
+      <br>
+      Você precisará fazer login novamente para acessar recursos exclusivos.
+    </div>
+    
     <div class="modal-actions">
-      <button class="modal-button cancel">Cancelar</button>
-      <button class="modal-button logout">Sair</button>
+      <button class="modal-button cancel">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+      <button class="modal-button logout">
+        <i class="fas fa-sign-out-alt"></i> Sair
+      </button>
     </div>
   </div>
 </div>
