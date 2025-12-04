@@ -4,8 +4,11 @@ import com.receitas.site_receitas.model.Receita;
 import com.receitas.site_receitas.repository.ReceitaRepository;
 import com.receitas.site_receitas.model.Usuario;
 import com.receitas.site_receitas.repository.UsuarioRepository;
-import com.receitas.site_receitas.service.CellarService;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -25,115 +28,166 @@ public class ReceitaController {
 
     private final ReceitaRepository repository;
     private final UsuarioRepository usuarioRepository;
-    private final CellarService cellarService;
 
-    public ReceitaController(ReceitaRepository repository, UsuarioRepository usuarioRepository, CellarService cellarService) {
+    public ReceitaController(ReceitaRepository repository, UsuarioRepository usuarioRepository) {
         this.repository = repository;
         this.usuarioRepository = usuarioRepository;
-        this.cellarService = cellarService;
     }
 
-    @GetMapping("/")
-    public String index(Model model) {
-        model.addAttribute("receitas", repository.findByAprovadaTrue());
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && 
-            !authentication.getName().equals("anonymousUser")) {
-            String email = authentication.getName();
-            Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
-            if (usuario.isPresent()) {
-                model.addAttribute("nomeUsuario", usuario.get().getNome());
-            } else {
-                model.addAttribute("nomeUsuario", email);
-            }
-        }
-
-        return "index"; 
-    }
-
-    @GetMapping("/nova")
-    public String novaReceitaForm(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || 
-            authentication.getName().equals("anonymousUser")) {
-            return "redirect:/";
-        }
-
+@GetMapping("/")
+public String index(Model model) {
+    model.addAttribute("receitas", repository.findByAprovadaTrue());
+    
+    // Adiciona o nome do usuário logado ao model
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.isAuthenticated() && 
+        !authentication.getName().equals("anonymousUser")) {
+        
         String email = authentication.getName();
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+        System.out.println("Email do usuário autenticado: " + email); // Debug
+        
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
+        
+        if (usuario.isPresent()) {
+            System.out.println("Usuário encontrado: " + usuario.get().getNome()); // Debug
+            model.addAttribute("nomeUsuario", usuario.get().getNome());
+        } else {
+            System.out.println("Usuário NÃO encontrado no banco para email: " + email); // Debug
+            model.addAttribute("nomeUsuario", email); // fallback para email
+        }
+    } else {
+        System.out.println("Usuário não autenticado ou anonymous"); // Debug
+    }
+    
+    return "index"; 
+}
 
-        Receita receita = new Receita();
-        receita.setPorcoes(1);
-        receita.setChefe(usuarioOpt.map(Usuario::getNome).orElse(email));
+@GetMapping("/nova")
+public String novaReceitaForm(Model model) {
+    // Verifica se o usuário está autenticado
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || !authentication.isAuthenticated() || 
+        authentication.getName().equals("anonymousUser")) {
+        // Redireciona para a página inicial se não estiver logado
+        return "redirect:/";
+    }
+    
+    // Obtém o usuário autenticado
+    String email = authentication.getName();
+    Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+    
+    Receita receita = new Receita();
+    receita.setPorcoes(1);
+    
+    // Preenche automaticamente o campo "chefe" com o nome do usuário
+    if (usuarioOpt.isPresent()) {
+        receita.setChefe(usuarioOpt.get().getNome());
+    } else {
+        receita.setChefe(email); // fallback para email
+    }
+    
+    model.addAttribute("receita", receita);
+    
+    // Adiciona o nome do usuário ao model para o formulário
+    if (usuarioOpt.isPresent()) {
+        model.addAttribute("nomeUsuario", usuarioOpt.get().getNome());
+    } else {
+        model.addAttribute("nomeUsuario", email);
+    }
+    
+    return "form";
+}
 
-        model.addAttribute("receita", receita);
-        model.addAttribute("nomeUsuario", usuarioOpt.map(Usuario::getNome).orElse(email));
+@PostMapping("/salvar")
+public String salvarReceita(@ModelAttribute Receita receita,
+                            @RequestParam("imagemFile") MultipartFile imagemFile,
+                            @RequestParam(required = false, name = "ingredientes[]") List<String> ingredientes,
+                            @RequestParam(required = false, name = "modoPreparo[]") List<String> modoPreparo,
+                            Model model) throws Exception {
 
-        return "form";
+    // Verifica se o usuário está autenticado
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || !authentication.isAuthenticated() || 
+        authentication.getName().equals("anonymousUser")) {
+        return "redirect:/";
     }
 
-    @PostMapping("/salvar")
-    public String salvarReceita(@ModelAttribute Receita receita,
-                                @RequestParam("imagemFile") MultipartFile imagemFile,
-                                @RequestParam(required = false, name = "ingredientes[]") List<String> ingredientes,
-                                @RequestParam(required = false, name = "modoPreparo[]") List<String> modoPreparo,
-                                Model model) throws Exception {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || 
-            authentication.getName().equals("anonymousUser")) {
-            return "redirect:/";
-        }
-
-        String email = authentication.getName();
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
-
-        usuarioOpt.ifPresent(receita::setUsuario);
+    // Obtém o usuário autenticado
+    String email = authentication.getName();
+    Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+    
+    // Associa o usuário à receita (opcional)
+    if (usuarioOpt.isPresent()) {
+        receita.setUsuario(usuarioOpt.get());
+        
+        // Se o campo chefe estiver vazio, preenche com o nome do usuário
         if (receita.getChefe() == null || receita.getChefe().trim().isEmpty()) {
-            receita.setChefe(usuarioOpt.map(Usuario::getNome).orElse(email));
+            receita.setChefe(usuarioOpt.get().getNome());
         }
-
-        // Processa ingredientes
-        if (ingredientes != null && !ingredientes.isEmpty()) {
-            receita.setIngredientes(String.join("||", ingredientes.stream()
-                    .map(String::trim)
-                    .filter(s -> !s.isEmpty())
-                    .toList()));
-        } else {
-            receita.setIngredientes("");
+    } else {
+        // Se não encontrar usuário no banco, usa o email
+        if (receita.getChefe() == null || receita.getChefe().trim().isEmpty()) {
+            receita.setChefe(email);
         }
-
-        // Processa modo de preparo
-        if (modoPreparo != null && !modoPreparo.isEmpty()) {
-            receita.setModoPreparo(String.join("||", modoPreparo.stream()
-                    .map(String::trim)
-                    .filter(s -> !s.isEmpty())
-                    .toList()));
-        } else {
-            receita.setModoPreparo("");
-        }
-
-        // Salva imagem no Cellar
-        if (!imagemFile.isEmpty()) {
-            String filename = System.currentTimeMillis() + "_" + imagemFile.getOriginalFilename();
-            cellarService.uploadFile(filename, imagemFile);
-            String imageUrl = cellarService.getFileUrl(filename);
-            receita.setImagem(imageUrl);
-        }
-
-        receita.setAprovada(false);
-        repository.save(receita);
-        model.addAttribute("sucesso", "Receita enviada para aprovação!");
-
-        Receita novaReceita = new Receita();
-        novaReceita.setPorcoes(1);
-        novaReceita.setChefe(usuarioOpt.map(Usuario::getNome).orElse(email));
-        model.addAttribute("receita", novaReceita);
-        model.addAttribute("nomeUsuario", usuarioOpt.map(Usuario::getNome).orElse(email));
-
-        return "form";
     }
+
+    // Processa ingredientes...
+    if (ingredientes != null && !ingredientes.isEmpty()) {
+        receita.setIngredientes(String.join("||", ingredientes.stream()
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList()));
+    } else {
+        receita.setIngredientes("");
+    }
+
+    // Processa modo de preparo...
+    if (modoPreparo != null && !modoPreparo.isEmpty()) {
+        receita.setModoPreparo(String.join("||", modoPreparo.stream()
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList()));
+    } else {
+        receita.setModoPreparo("");
+    }
+
+    // Salva imagem...
+    if (!imagemFile.isEmpty()) {
+        String uploadDir = "uploads/";
+        Files.createDirectories(Paths.get(uploadDir));
+        String filename = System.currentTimeMillis() + "_" + imagemFile.getOriginalFilename();
+        Path filePath = Paths.get(uploadDir, filename);
+        Files.write(filePath, imagemFile.getBytes());
+        receita.setImagem(filename);
+    }
+
+    receita.setAprovada(false);
+    repository.save(receita);
+    
+    model.addAttribute("sucesso", "Receita enviada para aprovação!");
+
+    // Cria uma nova receita vazia para o formulário
+    Receita novaReceita = new Receita();
+    novaReceita.setPorcoes(1);
+    
+    // Preenche o campo chefe para a próxima receita
+    if (usuarioOpt.isPresent()) {
+        novaReceita.setChefe(usuarioOpt.get().getNome());
+    } else {
+        novaReceita.setChefe(email);
+    }
+    
+    model.addAttribute("receita", novaReceita);
+    
+    // Adiciona o nome do usuário ao model
+    if (usuarioOpt.isPresent()) {
+        model.addAttribute("nomeUsuario", usuarioOpt.get().getNome());
+    } else {
+        model.addAttribute("nomeUsuario", email);
+    }
+
+    return "form";
+}
 
     @GetMapping("/pendentes")
     public String pendentes(Model model) {
@@ -160,19 +214,22 @@ public class ReceitaController {
     @GetMapping("/detalhe/{id}")
     public String detalheReceita(@PathVariable Long id, Model model) {
         Receita receita = repository.findById(id).orElse(null);
-        if (receita == null) return "redirect:/";
+        if (receita == null) {
+            return "redirect:/";
+        }
 
+        // Converte os ingredientes e modo de preparo em lista para exibição
         List<String> ingredientesList = receita.getIngredientes() != null ?
-            Arrays.stream(receita.getIngredientes().split("\\|\\|"))
-                  .filter(s -> !s.isEmpty())
-                  .toList()
-            : List.of();
+    Arrays.stream(receita.getIngredientes().split("\\|\\|"))
+                          .filter(s -> !s.isEmpty())
+                          .toList()
+                : List.of();
 
         List<String> modoPreparoList = receita.getModoPreparo() != null ?
-            Arrays.stream(receita.getModoPreparo().split("\\|\\|"))
-                  .filter(s -> !s.isEmpty())
-                  .toList()
-            : List.of();
+    Arrays.stream(receita.getModoPreparo().split("\\|\\|"))
+                          .filter(s -> !s.isEmpty())
+                          .toList()
+                : List.of();
 
         model.addAttribute("receita", receita);
         model.addAttribute("ingredientesList", ingredientesList);
@@ -181,31 +238,41 @@ public class ReceitaController {
         return "detalhe";
     }
 
-    @PostMapping("/receitas/excluir/{id}")
-    @ResponseBody
-    public ResponseEntity<?> excluirReceita(@PathVariable Long id) {
-        try {
-            if (!repository.existsById(id)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "Receita não encontrada"));
-            }
-
-            Receita receita = repository.findById(id).orElse(null);
-
-            // Remover imagem do Cellar (opcional: pode manter se quiser histórico)
-            // Se quiser deletar do S3, podemos adicionar método deleteFile(filename) no CellarService
-
-            repository.deleteById(id);
-
-            return ResponseEntity.ok(Map.of(
-                "message", "Receita excluída com sucesso",
-                "id", id
-            ));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("message", "Erro interno ao excluir receita: " + e.getMessage()));
+@PostMapping("/receitas/excluir/{id}")
+@ResponseBody
+public ResponseEntity<?> excluirReceita(@PathVariable Long id) {
+    try {
+        // Verificar se a receita existe
+        if (!repository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("message", "Receita não encontrada"));
         }
+        
+        // Buscar a receita para obter o nome da imagem
+        Receita receita = repository.findById(id).orElse(null);
+        
+        // Excluir a imagem do servidor se existir
+        if (receita != null && receita.getImagem() != null && !receita.getImagem().startsWith("http")) {
+            try {
+                Path imagePath = Paths.get("uploads/" + receita.getImagem());
+                Files.deleteIfExists(imagePath);
+            } catch (IOException e) {
+                System.err.println("Erro ao excluir imagem: " + e.getMessage());
+            }
+        }
+        
+        // Excluir a receita do banco de dados
+        repository.deleteById(id);
+        
+        return ResponseEntity.ok().body(Map.of(
+            "message", "Receita excluída com sucesso",
+            "id", id
+        ));
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(Map.of("message", "Erro interno ao excluir receita: " + e.getMessage()));
     }
+}
 }
