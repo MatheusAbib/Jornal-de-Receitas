@@ -5,9 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jornal de Receitas</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -238,8 +236,7 @@
 <div class="receitas" id="all-recipes">
   <div class="card" th:each="r : ${receitas}">
     <div class="card-image">
-      <img th:if="${r.imagem != null and r.imagem.startsWith('http')}" th:src="${r.imagem}" alt="Imagem da receita">
-      <img th:if="${r.imagem != null and !r.imagem.startsWith('http')}" th:src="@{'/uploads/' + ${r.imagem}}" alt="Imagem da receita">
+      <img th:if="${r.imagem != null}" th:src="${r.imagem}" alt="Imagem da receita">
       <img th:if="${r.imagem == null}" src="/default-image.jpg" alt="Sem imagem">
       <div class="card-badge">NOVO</div>
     </div>
