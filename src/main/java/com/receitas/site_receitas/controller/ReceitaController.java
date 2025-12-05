@@ -4,6 +4,8 @@ import com.receitas.site_receitas.model.Receita;
 import com.receitas.site_receitas.repository.ReceitaRepository;
 import com.receitas.site_receitas.model.Usuario;
 import com.receitas.site_receitas.repository.UsuarioRepository;
+import com.receitas.site_receitas.model.CarrosselItem;
+import com.receitas.site_receitas.repository.CarrosselRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -28,6 +31,9 @@ public class ReceitaController {
 
     private final ReceitaRepository repository;
     private final UsuarioRepository usuarioRepository;
+    
+    @Autowired
+    private CarrosselRepository carrosselRepository;
 
     public ReceitaController(ReceitaRepository repository, UsuarioRepository usuarioRepository) {
         this.repository = repository;
@@ -37,6 +43,12 @@ public class ReceitaController {
 @GetMapping("/")
 public String index(Model model) {
     model.addAttribute("receitas", repository.findByAprovadaTrue());
+    
+    // CARREGAR ITENS DO CARROSSEL DO BANCO
+    List<CarrosselItem> carrosselItens = carrosselRepository.findByAtivoTrueOrderByOrdemExibicaoAsc();
+    model.addAttribute("carrosselItens", carrosselItens);
+    
+    System.out.println("Carregando " + carrosselItens.size() + " itens do carrossel"); // DEBUG
     
     // Adiciona o nome do usuário logado ao model
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -275,4 +287,16 @@ public ResponseEntity<?> excluirReceita(@PathVariable Long id) {
             .body(Map.of("message", "Erro interno ao excluir receita: " + e.getMessage()));
     }
 }
+
+    // Método de debug para verificar o carrossel
+    @GetMapping("/debug/carrossel")
+    @ResponseBody
+    public List<CarrosselItem> debugCarrossel() {
+        List<CarrosselItem> itens = carrosselRepository.findByAtivoTrueOrderByOrdemExibicaoAsc();
+        System.out.println("DEBUG - Itens do carrossel encontrados: " + itens.size());
+        for (CarrosselItem item : itens) {
+            System.out.println("Item: " + item.getTitulo() + " - URL: " + item.getImagemUrl());
+        }
+        return itens;
+    }
 }
