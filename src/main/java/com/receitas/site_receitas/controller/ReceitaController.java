@@ -299,4 +299,23 @@ public ResponseEntity<?> excluirReceita(@PathVariable Long id) {
         }
         return itens;
     }
+
+@GetMapping("/sobre")
+public String sobre(Model model) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.isAuthenticated() && 
+        !authentication.getName().equals("anonymousUser")) {
+        
+        String email = authentication.getName();
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
+        
+        if (usuario.isPresent()) {
+            model.addAttribute("nomeUsuario", usuario.get().getNome());
+        } else {
+            model.addAttribute("nomeUsuario", email);
+        }
+    }
+    
+    return "sobre"; 
+}
 }

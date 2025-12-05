@@ -1,4 +1,4 @@
-// ===================== FUNÇÕES GLOBAIS =====================
+  // ===================== FUNÇÕES GLOBAIS =====================
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   if (sidebar) {
@@ -368,28 +368,74 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ===================== CARROSSEL =====================
-  const carousel = document.querySelector('.carousel-inner');
-  const items = document.querySelectorAll('.carousel-item');
-  const prevBtn = document.querySelector('.carousel-control.prev');
-  const nextBtn = document.querySelector('.carousel-control.next');
-  const indicators = document.querySelectorAll('.carousel-indicator');
-  
-  let currentIndex = 0;
-  const totalItems = items.length;
-  
-  function updateCarousel() {
-    if (carousel) {
-      carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+  function initializeCarousel() {
+    const carousel = document.querySelector('.carousel-inner');
+    const items = document.querySelectorAll('.carousel-item');
+    const prevBtn = document.querySelector('.carousel-control.prev');
+    const nextBtn = document.querySelector('.carousel-control.next');
+    const indicators = document.querySelectorAll('.carousel-indicator');
+    
+    console.log('Itens do carrossel encontrados:', items.length);
+    
+    if (items.length === 0) {
+      console.log('Nenhum item encontrado no carrossel');
+      return;
     }
+    
+    let currentIndex = 0;
+    const totalItems = items.length;
+    
+    function updateCarousel() {
+      if (carousel) {
+        carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+      }
+      indicators.forEach((indicator, index) => {
+        indicator.classList.toggle('active', index === currentIndex);
+      });
+      
+      // Atualizar classe active nos itens
+      items.forEach((item, index) => {
+        item.classList.toggle('active', index === currentIndex);
+      });
+    }
+    
+    function nextSlide() {
+      currentIndex = (currentIndex + 1) % totalItems;
+      updateCarousel();
+    }
+    
+    function prevSlide() {
+      currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+      updateCarousel();
+    }
+    
+    // Configurar botões
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    
+    // Configurar indicadores
     indicators.forEach((indicator, index) => {
-      indicator.classList.toggle('active', index === currentIndex);
+      indicator.addEventListener('click', () => {
+        currentIndex = index;
+        updateCarousel();
+      });
     });
-  }
-  
-  function nextSlide() {
-    currentIndex = (currentIndex + 1) % totalItems;
+    
+    // Iniciar auto-play
+    let carouselInterval = setInterval(nextSlide, 5000);
+    const carouselContainer = document.querySelector('.carousel-container');
+    if (carouselContainer) {
+      carouselContainer.addEventListener('mouseenter', () => clearInterval(carouselInterval));
+      carouselContainer.addEventListener('mouseleave', () => carouselInterval = setInterval(nextSlide, 5000));
+    }
+    
+    // Inicializar
     updateCarousel();
+    console.log(`Carrossel inicializado com ${totalItems} itens`);
   }
+
+  // Inicializar o carrossel quando a página carregar
+  initializeCarousel();
 
   // ===================== MODAL DE EXCLUSÃO =====================
   let currentRecipeToDelete = null;
@@ -575,28 +621,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Inicializar botões de excluir
   initializeDeleteButtons();
   setupDeleteModal();
-  
-  function prevSlide() {
-    currentIndex = (currentIndex - 1 + totalItems) % totalItems;
-    updateCarousel();
-  }
-  
-  if (nextBtn) nextBtn.addEventListener('click', nextSlide);
-  if (prevBtn) prevBtn.addEventListener('click', prevSlide);
-  
-  indicators.forEach((indicator, index) => {
-    indicator.addEventListener('click', () => {
-      currentIndex = index;
-      updateCarousel();
-    });
-  });
-  
-  let carouselInterval = setInterval(nextSlide, 5000);
-  const carouselContainer = document.querySelector('.carousel-container');
-  if (carouselContainer) {
-    carouselContainer.addEventListener('mouseenter', () => clearInterval(carouselInterval));
-    carouselContainer.addEventListener('mouseleave', () => carouselInterval = setInterval(nextSlide, 5000));
-  }
 
   // ===================== ABAS =====================
   const tabButtons = document.querySelectorAll('.tab-button');
@@ -781,7 +805,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Configurar evento de envio do formulário de login
 // ===================== MODAL DE LOGIN =====================
 // Configurar evento de envio do formulário de login
 const loginForm = document.getElementById('loginForm');
@@ -1142,6 +1165,3 @@ function aplicarMascaraTelefoneInput(input) {
   
   input.value = value;
 }
-
-
-

@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sobre Nós - Jornal de Receitas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --main-bg-color: #f8f5f0;
+      --header-color: #a52a2a;
+      --accent-color: #d4af37;
+      --secondary-accent: #c19b76;
+      --text-color: #333;
+      --light-text: #777;
+      --border-color: #8b4513;
+      --card-bg: #fefdf9;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s ease;
+      --favorite-color: #e74c3c;
+      --header-bg: #a52a2a;
+      --rejected-color: #e74c3c;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--main-bg-color);
+      color: var(--text-color);
+      line-height: 1.7;
+      padding: 0;
+      max-width: 1400px;
+      margin: 0 auto;
+      background-image: 
+        url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h100v100H0z' fill='%23f8f5f0'/%3E%3Cpath d='M0 0l100 100M100 0L0 100' stroke='%23e8e1d3' stroke-width='0.5'/%3E%3C/svg%3E");
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(255, 255, 255, 0.7) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    /* HEADER COM LARGURA TOTAL */
+    .header-full-width {
+      width: 100vw;
+      position: relative;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
+      background: linear-gradient(135deg, var(--header-bg), #8b0000);
+      margin-bottom: 30px;
+      box-shadow: var(--shadow);
+    }
+    
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 15px 20px;
+    }
+    
+    .newspaper-header {
+      text-align: center;
+      position: relative;
+      padding: 10px 0 20px;
+    }
+    /* Título do jornal */
+    .newspaper-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 4.5rem;
+      font-weight: 800;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin: 15px 0 5px;
+      line-height: 1.1;
+      position: relative;
+      display: inline-block;
+      padding: 0 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .newspaper-title::before,
+    .newspaper-title::after {
+      content: "✦";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent-color);
+      font-size: 2rem;
+      text-shadow: none;
+    }
+
+    .newspaper-title::before {
+      left: -30px;
+    }
+
+    .newspaper-title::after {
+      right: -30px;
+    }
+
+    /* Subtítulo */
+    .newspaper-subtitle {
+      font-style: italic;
+      font-size: 1.4rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 10px 0;
+      letter-spacing: 1px;
+      font-weight: 400;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Data */
+    .newspaper-date {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    
+    /* Container para o conteúdo com margens */
+    .content-wrapper {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Navegação melhorada */
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin: 40px 0 0;
+      flex-wrap: wrap;
+    }
+    
+    .nav-links a {
+      text-decoration: none;
+      color: var(--header-color);
+      font-weight: 600;
+      padding: 14px 30px;
+      border: 2px solid var(--header-color);
+      border-radius: 50px;
+      transition: var(--transition);
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .nav-links a i {
+      font-size: 1.2rem;
+    }
+    
+    .nav-links a:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 100%;
+      background: var(--header-color);
+      transition: var(--transition);
+      z-index: -1;
+      border-radius: 50px;
+    }
+    
+    .nav-links a:hover:before {
+      width: 100%;
+    }
+    
+    .nav-links a:hover {
+      color: #fff;
+      box-shadow: 0 5px 15px rgba(165, 42, 42, 0.3);
+    }
+    
+    /* Títulos de seção */
+    .section-title {
+      text-align: center;
+      margin: 60px 0 40px;
+      position: relative;
+      padding-bottom: 20px;
+    }
+    
+    .section-title h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      color: var(--header-color);
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+    
+    .section-title p {
+      color: var(--light-text);
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 1.2rem;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent-color), var(--secondary-accent));
+      border-radius: 2px;
+    }
+    
+    /* Conteúdo principal */
+    .about-content {
+      display: grid;
+      gap: 50px;
+      margin-bottom: 80px;
+    }
+    
+    
+    /* Linha do Tempo - Jornada */
+    .journey-timeline {
+      position: relative;
+      max-width: 1000px;
+      margin: 50px auto 0;
+    }
+    
+    .journey-timeline::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      background: linear-gradient(to bottom, var(--accent-color), var(--secondary-accent));
+      border-radius: 2px;
+    }
+    
+    .timeline-item {
+      position: relative;
+      margin-bottom: 60px;
+      width: 45%;
+      padding: 25px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+    
+    .timeline-item:nth-child(odd) {
+      left: 0;
+      text-align: right;
+    }
+    
+    .timeline-item:nth-child(even) {
+      left: 55%;
+    }
+    
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      top: 30px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      border: 4px solid var(--card-bg);
+      box-shadow: 0 0 0 4px var(--accent-color);
+    }
+    
+    .timeline-item:nth-child(odd)::before {
+      right: -12px;
+    }
+    
+    .timeline-item:nth-child(even)::before {
+      left: -12px;
+    }
+    
+    .timeline-year {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--header-color);
+      margin-bottom: 10px;
+    }
+    
+    .timeline-content h4 {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+      color: var(--text-color);
+    }
+    
+    /* FAQ */
+    .faq-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .faq-item {
+      background: var(--card-bg);
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    
+    .faq-item:hover {
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    
+    .faq-question {
+      padding: 25px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: var(--header-color);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    }
+    
+    .faq-question i {
+      color: var(--accent-color);
+      transition: var(--transition);
+    }
+    
+    .faq-answer {
+      padding: 0 30px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+    }
+    
+    .faq-item.active .faq-answer {
+      padding: 0 30px 25px;
+      max-height: 500px;
+    }
+    
+    .faq-item.active .faq-question i {
+      transform: rotate(180deg);
+    }
+    
+    /* Criador */
+    .creator-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      padding: 50px;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      margin-top: 40px;
+    }
+    
+    .creator-image {
+      flex: 0 0 250px;
+    }
+    
+    .creator-image img {
+      width: 100%;
+      height: auto;
+      border-radius: 50%;
+      border: 8px solid var(--accent-color);
+      box-shadow: 0 15px 35px rgba(212, 175, 55, 0.3);
+    }
+    
+    .creator-info {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .creator-info h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      color: var(--header-color);
+      margin-bottom: 10px;
+    }
+    
+    .creator-title {
+      font-size: 1.2rem;
+      color: var(--accent-color);
+      margin-bottom: 25px;
+      font-weight: 600;
+    }
+    
+    .creator-bio {
+      margin-bottom: 25px;
+      line-height: 1.8;
+    }
+    
+    .creator-social {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .creator-social a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 45px;
+      height: 45px;
+      background: var(--header-color);
+      color: white;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+    
+    .creator-social a:hover {
+      background: var(--accent-color);
+      color: var(--header-color);
+      transform: translateY(-5px);
+    }
+    
+    /* Rodapé */
+    .newspaper-footer {
+      text-align: center;
+      margin-top: 80px;
+      padding-top: 40px;
+      border-top: 2px solid var(--border-color);
+      color: var(--light-text);
+      position: relative;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      text-align: left;
+      margin-bottom: 40px;
+    }
+    
+    .footer-column h3 {
+      color: var(--header-color);
+      margin-bottom: 20px;
+      font-size: 1.4rem;
+    }
+    
+    .footer-column ul {
+      list-style: none;
+    }
+    
+    .footer-column ul li {
+      margin-bottom: 12px;
+    }
+    
+    .footer-column a {
+      color: var(--light-text);
+      text-decoration: none;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .footer-column a:hover {
+      color: var(--header-color);
+    }
+    
+    .footer-bottom {
+      padding: 20px 0;
+      border-top: 1px solid #eee;
+    }
+    
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+    
+    .social-links a {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      justify-content: center;
+      width: 45px;
+      height: 45px;
+      background: var(--header-color);
+      color: white;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      transition: var(--transition);
+    }
+    
+    .social-links a:hover {
+      transform: translateY(-5px);
+      background: var(--accent-color);
+      color: var(--header-color);
+    }
+    
+    /* Animações */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .mv-card, .timeline-item, .faq-item {
+      animation: fadeIn 0.6s ease forwards;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 992px) {
+      .newspaper-title {
+        font-size: 3.5rem;
+      }
+      
+      .about-hero h1 {
+        font-size: 2.8rem;
+      }
+      
+      .timeline-item {
+        width: 90%;
+        left: 5% !important;
+        text-align: left !important;
+      }
+      
+      .timeline-item:nth-child(odd)::before {
+        left: -12px;
+        right: auto;
+      }
+      
+      .journey-timeline::before {
+        left: 20px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .nav-links {
+        gap: 15px;
+      }
+      
+      .nav-links a {
+        padding: 12px 20px;
+        font-size: 1rem;
+      }
+      
+      .section-title h2 {
+        font-size: 2.2rem;
+      }
+      
+      .stats-container {
+        gap: 20px;
+      }
+      
+      .stat-item {
+        padding: 20px;
+        min-width: 130px;
+      }
+      
+      .stat-number {
+        font-size: 2.2rem;
+      }
+      
+      .creator-container {
+        padding: 30px;
+      }
+      
+      .creator-image {
+        flex: 0 0 200px;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .newspaper-title {
+        font-size: 2.5rem;
+      }
+      
+      .newspaper-title::before,
+      .newspaper-title::after {
+        font-size: 1.5rem;
+      }
+      
+      .about-hero {
+        padding: 50px 20px;
+      }
+      
+      .about-hero h1 {
+        font-size: 2.2rem;
+      }
+      
+      .creator-container {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header-full-width">
+  <div class="header-container">
+    <header class="newspaper-header">
+
+      
+      <h1 class="newspaper-title">Jornal de Receitas</h1>
+      <p class="newspaper-subtitle">Descubra a nossa história e paixão pela culinária</p>
+      <p class="newspaper-date" id="newspaperDate"></p>
+    </header>
+  </div>
+</div>
+
+<div class="content-wrapper">
+<nav class="nav-links">
+  <!-- Use th:href com as rotas do Spring, não href direto -->
+  <a th:href="@{/}"><i class="fas fa-home"></i> Página Inicial</a>
+  
+</nav>
+
+  <div class="about-content">
+
+    <!-- Jornada do Site -->
+    <section>
+      <div class="section-title">
+        <h2>Nossa Jornada</h2>
+      </div>
+      
+      <div class="journey-timeline">
+        <div class="timeline-item">
+          <div class="timeline-year">2025</div>
+          <div class="timeline-content">
+            <h4>O Início</h4>
+            <p>Um blog simples criado por Matheus Abib para compartilhar receitas que gosto. Primeiras 50 receitas publicadas manualmente.</p>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="timeline-year">2025</div>
+          <div class="timeline-content">
+            <h4>Primeira Grande Atualização</h4>
+            <p>Implementação do sistema de usuários e funcionalidade de favoritos. Lançando o site na web.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section>
+      <div class="section-title">
+        <h2>Possíveis Dúvidas</h2>
+      </div>
+      
+      <div class="faq-container">
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Como posso enviar minha própria receita?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Para enviar sua receita, basta criar uma conta, fazer login e clicar em "Nova Receita" no menu principal. Nossa equipe revisará sua receita em até 48 horas. Se aprovada, ela será publicada com os devidos créditos!</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>As receitas são testadas antes de serem publicadas?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Sim! Todas as receitas passam por um rigoroso processo de teste. Nossa equipe de chefs testa cada receita pelo menos duas vezes para garantir que as medidas, tempos e instruções estejam precisos e replicáveis em casa.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Posso sugerir melhorias ou reportar erros nas receitas?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Claro! Valorizamos muito o feedback da nossa comunidade. Em cada receita há um botão "Reportar Problema" onde você pode enviar sugestões ou apontar possíveis erros. Também temos um fórum de discussão para cada receita.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>O site é completamente gratuito?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Sim! O Jornal de Receitas é e sempre será gratuito para todos os usuários. Nosso sustento vem de parcerias com marcas de ingredientes e utensílios, sempre mantendo a transparência sobre essas colaborações.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+   
+
+  <!-- Rodapé -->
+  <footer class="newspaper-footer">
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>Jornal de Receitas</h3>
+        <p>O seu destino para encontrar as melhores receitas caseiras e dicas culinárias.</p>
+      </div>
+      <div class="footer-column">
+        <h3>Links Rápidos</h3>
+        <ul>
+          <li><a href="index.html"><i class="fas fa-utensils"></i> Receitas</a></li>
+          <li><a href="cadastro.html"><i class="fas fa-book"></i> Cadastrar Receitas</a></li>
+          <li><a href="#"><i class="fas fa-star"></i> Destaques</a></li>
+          <li><a href="sobre.html"><i class="fas fa-question-circle"></i> Sobre Nós</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Contato</h3>
+        <ul>
+          <li><a href="mailto:contato@jornaldereceitas.com"><i class="fas fa-envelope"></i> contato@jornaldereceitas.com</a></li>
+          <li><a href="tel:11999999999"><i class="fas fa-phone"></i> (11) 9999-9999</a></li>
+          <li><a href="#"><i class="fas fa-map-marker-alt"></i> São Paulo, Brasil</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="social-links">
+      <a href="#"><i class="fab fa-facebook-f"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-pinterest"></i></a>
+      <a href="#"><i class="fab fa-youtube"></i></a>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>© 2025 Jornal de Receitas - Todos os direitos reservados</p>
+    </div>
+  </footer>
+</div>
+
+
+<script></script>
+<script>
+  // Data atual no header
+  document.addEventListener('DOMContentLoaded', function() {
+    const dateElement = document.getElementById('newspaperDate');
+    if (dateElement) {
+      const today = new Date();
+      const meses = [
+        "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+        "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+      ];
+      const dia = today.getDate();
+      const mes = meses[today.getMonth()];
+      const ano = today.getFullYear();
+      dateElement.textContent = `${dia} de ${mes} de ${ano}`;
+    }
+    
+    // FAQ Interativo
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    faqItems.forEach(item => {
+      const question = item.querySelector('.faq-question');
+      
+      question.addEventListener('click', () => {
+        // Fechar outros itens abertos
+        faqItems.forEach(otherItem => {
+          if (otherItem !== item && otherItem.classList.contains('active')) {
+            otherItem.classList.remove('active');
+          }
+        });
+        
+        // Alternar item atual
+        item.classList.toggle('active');
+      });
+    });
+    
+    // Efeito de digitação no título
+    const titleElement = document.querySelector('.newspaper-title');
+    if (titleElement) {
+      const originalTitle = titleElement.textContent;
+      titleElement.textContent = '';
+      let charIndex = 0;
+      
+      function typeTitle() {
+        if (charIndex < originalTitle.length) {
+          titleElement.textContent += originalTitle.charAt(charIndex);
+          charIndex++;
+          setTimeout(typeTitle, 100);
+        }
+      }
+      
+      // Iniciar animação após um breve delay
+      setTimeout(typeTitle, 500);
+    }
+    
+    // Animar elementos ao rolar
+    function animateOnScroll() {
+      const elements = document.querySelectorAll('.mv-card, .timeline-item, .faq-item');
+      
+      elements.forEach(element => {
+        const elementPosition = element.getBoundingClientRect().top;
+        const screenPosition = window.innerHeight / 1.2;
+        
+        if (elementPosition < screenPosition) {
+          element.style.opacity = '1';
+          element.style.transform = 'translateY(0)';
+        }
+      });
+    }
+    
+    // Inicializar opacidade dos elementos
+    const animatedElements = document.querySelectorAll('.mv-card, .timeline-item, .faq-item');
+    animatedElements.forEach(element => {
+      element.style.opacity = '0';
+      element.style.transform = 'translateY(20px)';
+      element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    });
+    
+    // Configurar evento de scroll
+    window.addEventListener('scroll', animateOnScroll);
+    
+    // Executar uma vez ao carregar
+    animateOnScroll();
+  });
+</script>
+</body>
+</html>

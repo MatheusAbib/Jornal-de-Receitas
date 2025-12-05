@@ -1,4 +1,4 @@
-  :root {
+      :root {
       --main-bg-color: #f8f5f0;
       --header-color: #a52a2a;
       --accent-color: #d4af37;
@@ -2196,4 +2196,3 @@
     background: var(--light-text);
     color: white;
   }
-    
