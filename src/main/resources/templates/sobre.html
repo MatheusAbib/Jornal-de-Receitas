@@ -33,7 +33,7 @@
     }
     
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Playfair Display', 'Georgia', serif;
       background-color: var(--main-bg-color);
       color: var(--text-color);
       line-height: 1.7;
@@ -98,17 +98,6 @@
       display: inline-block;
       padding: 0 20px;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .newspaper-title::before,
-    .newspaper-title::after {
-      content: "✦";
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--accent-color);
-      font-size: 2rem;
-      text-shadow: none;
     }
 
     .newspaper-title::before {
@@ -613,6 +602,10 @@
       
       .creator-container {
         text-align: center;
+      }
+
+      .newspaper-subtitle{
+        font-size: 1.1rem;
       }
     }
   </style>

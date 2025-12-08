@@ -226,11 +226,19 @@ function abrirModalUsuario(usuario) {
 }
 
 function fecharModalUsuario() {
-  const modal = document.getElementById('userModal');
-  if (modal) {
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-  }
+    const modal = document.getElementById('userModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        
+        // Resetar estilos do modal
+        const modalContent = modal.querySelector('.modal-content-user');
+        if (modalContent) {
+            modalContent.style.overflowY = '';
+            modalContent.style.maxHeight = '';
+        }
+        modal.style.overflowY = '';
+    }
 }
 
 function openLoginModal() {
@@ -1165,3 +1173,592 @@ function aplicarMascaraTelefoneInput(input) {
   
   input.value = value;
 }
+
+// Responsividade para Jornal de Receitas
+function applyResponsiveStyles() {
+    // Verifica se já existe o estilo de responsividade
+    if (document.getElementById('responsive-styles')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'responsive-styles';
+    style.innerHTML = `
+        /* RESPONSIVIDADE PARA TODOS OS DISPOSITIVOS */
+        
+        /* Dispositivos muito pequenos (celulares, até 480px) */
+        @media (max-width: 480px) {
+            :root {
+                --header-padding: 10px;
+                --font-scale: 0.8;
+            }
+            
+            .header-container {
+                padding: 10px 15px;
+            }
+            
+            .newspaper-title {
+                font-size: 2.5rem !important;
+                padding: 0 10px;
+                letter-spacing: 1px;
+            }
+            
+            .newspaper-title::before,
+            .newspaper-title::after {
+                display: none;
+            }
+            
+            .newspaper-subtitle {
+                font-size: 1rem;
+            }
+            
+            .newspaper-price,
+            .newspaper-volume {
+                position: relative;
+                top: 0;
+                left: 0;
+                right: 0;
+                margin: 10px auto;
+                width: fit-content;
+            }
+            
+            .menu-icon,
+            .user-icon {
+                font-size: 1.2rem;
+                height: 30px;
+                width: 30px;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                gap: 10px;
+                margin: 20px 0;
+            }
+            
+            .nav-links a {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+                justify-content: center;
+            }
+            
+            .carousel-container {
+                height: 250px;
+                margin: 20px 0;
+            }
+            
+            .carousel-caption h3 {
+                font-size: 1.5rem;
+            }
+            
+            .carousel-caption p {
+                font-size: 0.9rem;
+                padding: 0 10px;
+            }
+            
+            .carousel-control {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            
+            .news-highlights {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                margin: 30px 0;
+            }
+            
+            .news-item {
+                padding: 20px;
+                min-height: 200px;
+            }
+            
+            .news-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.4rem;
+                margin-right: 12px;
+            }
+            
+            .recipe-filters {
+                padding: 15px;
+            }
+            
+            #filterForm {
+                grid-template-columns: 1fr;
+            }
+            
+            .receitas {
+                grid-template-columns: 1fr !important;
+                gap: 20px;
+                margin: 30px 0;
+            }
+            
+            .card {
+                margin-bottom: 15px;
+            }
+            
+            .card-image {
+                height: 180px;
+            }
+            
+            .card-content {
+                padding: 15px;
+            }
+            
+            .card h2 {
+                font-size: 1.4rem;
+            }
+            
+            .card-actions {
+                flex-direction: row;
+                gap: 10px;
+            }
+            
+            .card-link,
+            .card-favorite {
+                justify-content: center;
+            }
+            
+            .section-title h2 {
+                font-size: 1.6rem;
+            }
+            
+            .classifieds {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .advertisement {
+                padding: 25px 15px;
+            }
+            
+            .advertisement h2 {
+                font-size: 1.6rem;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 25px;
+                text-align: center;
+            }
+            
+            .footer-column ul li {
+                justify-content: center;
+            }
+            
+            .modal-content-user,
+            .modal-content-login,
+            .modal-content-logout,
+            .modal-content-delete {
+                width: 95% !important;
+                max-width: 95% !important;
+                margin: 10% auto;
+            }
+            
+            .user-info-grid {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            
+            .form-input {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+
+            .modal-content-user {
+        width: 95% !important;
+        max-width: 95% !important;
+        margin: 10px auto !important;
+        border-radius: 10px !important;
+    }
+    
+    .modal-content-user .modal-body {
+        padding: 15px !important;
+        max-height: calc(90vh - 120px) !important;
+    }
+    
+    .modal-content-user .form-input {
+        font-size: 16px !important; /* Prevenir zoom no iOS */
+    }
+
+
+        }
+        
+        /* Dispositivos pequenos (celulares, 481px a 768px) */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .header-container {
+                padding: 15px 20px;
+            }
+            
+            .newspaper-title {
+                font-size: 3rem;
+            }
+            
+            .newspaper-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .nav-links {
+                gap: 15px;
+                flex-wrap: wrap;
+            }
+            
+            .nav-links a {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+            
+            .carousel-container {
+                height: 350px;
+            }
+            
+            .carousel-caption h3 {
+                font-size: 1.8rem;
+            }
+            
+            .news-highlights {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            
+            .receitas {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 25px;
+            }
+            
+            .recipe-filters {
+                padding: 20px;
+            }
+            
+            #filterForm {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .classifieds {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .modal-content-user,
+            .modal-content-login,
+            .modal-content-logout,
+            .modal-content-delete {
+                width: 90% !important;
+                max-width: 500px !important;
+            }
+        }
+        
+        /* Dispositivos médios (tablets, 769px a 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .newspaper-title {
+                font-size: 3.5rem;
+            }
+            
+            .news-highlights {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .receitas {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            
+            .carousel-container {
+                height: 400px;
+            }
+            
+            .classifieds {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .footer-content {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .modal-content-user {
+                max-width: 70% !important;
+            }
+        }
+        
+        /* Dispositivos grandes (desktops pequenos, 1025px a 1200px) */
+        @media (min-width: 1025px) and (max-width: 1200px) {
+            .newspaper-title {
+                font-size: 4rem;
+            }
+            
+            .receitas {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+            
+            .classifieds {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        /* Ajustes gerais para todos os dispositivos móveis */
+        @media (max-width: 768px) {
+            .tab-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .tab-button {
+                text-align: center;
+                padding: 12px;
+                font-size: 1rem;
+            }
+            
+            .modal-actions,
+            .modal-actions-delete {
+                flex-direction: column;
+            }
+            
+            .modal-actions button,
+            .modal-actions-delete button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .card-meta {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .carousel-controls {
+                padding: 0 5px;
+            }
+            
+            .carousel-control {
+                width: 45px;
+                height: 45px;
+                font-size: 1.5rem;
+            }
+            
+            .carousel-indicators {
+                bottom: 10px;
+            }
+            
+            .carousel-indicator {
+                width: 10px;
+                height: 10px;
+            }
+            
+            .social-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+              .modal-content-user {
+        max-height: 80vh !important;
+        overflow-y: auto !important;
+        margin: 5% auto !important;
+    }
+    
+    .modal-content-user .modal-body {
+        max-height: calc(80vh - 100px) !important;
+        overflow-y: auto !important;
+    }
+    
+    .modal-content-user .user-info-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+    
+    /* Garantir que o modal seja rolável em dispositivos móveis */
+    .modal {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    .modal-content-user {
+        position: relative !important;
+        transform: none !important;
+        top: 45px !important;
+
+    }
+        }
+        
+        /* Ajustes para orientação paisagem em dispositivos móveis */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .carousel-container {
+                height: 300px;
+            }
+            
+            .nav-links {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .newspaper-title {
+                font-size: 2.2rem;
+            }
+        }
+        
+        /* Ajustes para telas muito grandes */
+        @media (min-width: 1400px) {
+            body {
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+        }
+        
+        /* Ajustes para impressão */
+        @media print {
+            .header-full-width,
+            .nav-links,
+            .carousel-container,
+            .advertisement,
+            .modal,
+            .sidebar,
+            .menu-icon,
+            .user-icon,
+            .card-favorite,
+            .card-delete,
+            .carousel-controls,
+            .social-links,
+            .footer-bottom {
+                display: none !important;
+            }
+            
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .card,
+            .news-item,
+            .classified-item {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    `;
+    
+    document.head.appendChild(style);
+}
+
+// Função para ajustar dinamicamente elementos específicos
+function adjustLayoutForScreenSize() {
+    const width = window.innerWidth;
+    
+    // Ajustar grid de receitas baseado na largura da tela
+    const receitasContainer = document.getElementById('all-recipes');
+    if (receitasContainer) {
+        if (width <= 480) {
+            receitasContainer.style.gridTemplateColumns = '1fr';
+        } else if (width <= 768) {
+            receitasContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        } else if (width <= 1024) {
+            receitasContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        } else {
+            receitasContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(350px, 1fr))';
+        }
+    }
+    
+    // Ajustar altura do carrossel
+    const carouselContainer = document.querySelector('.carousel-container');
+    if (carouselContainer) {
+        if (width <= 480) {
+            carouselContainer.style.height = '250px';
+        } else if (width <= 768) {
+            carouselContainer.style.height = '350px';
+        } else if (width <= 1024) {
+            carouselContainer.style.height = '400px';
+        } else {
+            carouselContainer.style.height = '500px';
+        }
+    }
+    
+    // Ajustar tamanho da fonte do título
+    const title = document.querySelector('.newspaper-title');
+    if (title) {
+        if (width <= 480) {
+            title.style.fontSize = '2.5rem';
+        } else if (width <= 768) {
+            title.style.fontSize = '3rem';
+        } else if (width <= 1024) {
+            title.style.fontSize = '3.5rem';
+        } else if (width <= 1200) {
+            title.style.fontSize = '4rem';
+        } else {
+            title.style.fontSize = '4.5rem';
+        }
+    }
+}
+
+// Inicializar a responsividade quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', function() {
+    applyResponsiveStyles();
+    adjustLayoutForScreenSize();
+    
+    // Reajustar quando a janela for redimensionada
+    window.addEventListener('resize', adjustLayoutForScreenSize);
+    
+    // Reaplicar estilos se necessário
+    window.addEventListener('load', applyResponsiveStyles);
+});
+
+// Adicione esta função ao seu código
+function setupMobileModalScroll() {
+    const userModal = document.getElementById('userModal');
+    
+    if (userModal) {
+        // Prevenir que o modal feche ao rolar
+        userModal.addEventListener('touchmove', function(e) {
+            const modalContent = this.querySelector('.modal-content-user');
+            if (modalContent) {
+                const isScrollable = modalContent.scrollHeight > modalContent.clientHeight;
+                const isAtTop = modalContent.scrollTop === 0;
+                const isAtBottom = modalContent.scrollTop + modalContent.clientHeight >= modalContent.scrollHeight;
+                
+                // Se o conteúdo do modal não for rolável ou estiver nos limites
+                if (!isScrollable || (e.target === modalContent && ((isAtTop && e.touches[0].clientY > e.touches[0].clientY) || 
+                    (isAtBottom && e.touches[0].clientY < e.touches[0].clientY)))) {
+                    e.stopPropagation();
+                }
+            }
+        }, { passive: false });
+        
+        // Ajustar altura do modal quando aberto em mobile
+        if (window.innerWidth <= 768) {
+            userModal.addEventListener('shown', function() {
+                const modalContent = this.querySelector('.modal-content-user');
+                if (modalContent) {
+                    const viewportHeight = window.innerHeight;
+                    modalContent.style.maxHeight = `${viewportHeight * 0.8}px`;
+                }
+            });
+        }
+    }
+}
+
+// Chame esta função no DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    setupMobileModalScroll();
+    
+    // Ajustar modal quando a tela for redimensionada
+    window.addEventListener('resize', function() {
+        const userModal = document.getElementById('userModal');
+        if (userModal && userModal.style.display === 'block') {
+            const modalContent = userModal.querySelector('.modal-content-user');
+            if (modalContent && window.innerWidth <= 768) {
+                const viewportHeight = window.innerHeight;
+                modalContent.style.maxHeight = `${viewportHeight * 0.8}px`;
+            }
+        }
+    });
+});
+
+// Adicionar classe de mobile ao body para CSS específico
+function detectMobile() {
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        document.body.classList.add('mobile-device');
+    } else {
+        document.body.classList.add('desktop-device');
+    }
+}
+
+// Executar detecção de dispositivo
+detectMobile();

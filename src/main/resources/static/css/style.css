@@ -1669,28 +1669,6 @@
     20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
-/* Responsividade */
-@media (max-width: 480px) {
-    .login-modal .modal-content-login {
-        margin: 10% auto;
-        width: 95%;
-    }
-    
-    .login-modal .modal-body-login {
-        padding: 20px 15px;
-    }
-    
-    .login-modal .login-options {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-    }
-    
-    .login-modal .forgot-password {
-        align-self: flex-end;
-    }
-}
-
     /* Modal de Logout */
 .logout-modal .modal-content-logout {
   background: var(--card-bg);
@@ -1843,7 +1821,7 @@
 
 .delete-modal .modal-header-delete h2 {
     margin: 0;
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     display: flex;
     align-items: center;
     gap: 15px;

@@ -435,3 +435,856 @@ function aplicarMascaraTelefone(input) {
 function removerMascara(campoComMascara) {
     return campoComMascara.replace(/\D/g, '');
 }
+
+// Responsividade para página de Gerenciamento de Usuários
+function applyResponsiveStylesUsuarios() {
+    // Verifica se já existe o estilo de responsividade
+    if (document.getElementById('responsive-styles-usuarios')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'responsive-styles-usuarios';
+    style.innerHTML = `
+        /* RESPONSIVIDADE PARA PÁGINA DE USUÁRIOS */
+        
+        /* Dispositivos muito pequenos (celulares, até 480px) */
+        @media (max-width: 480px) {
+            .header-container {
+                padding: 10px 15px !important;
+            }
+            
+            .page-header h1 {
+                font-size: 1.6rem !important;
+                padding: 0 15px !important;
+            }
+            
+            .page-header h1::before,
+            .page-header h1::after {
+                font-size: 1.1rem !important;
+            }
+            
+            .page-header h1::before {
+                left: -10px !important;
+            }
+            
+            .page-header h1::after {
+                right: -10px !important;
+            }
+            
+            .page-subtitle {
+                font-size: 0.85rem !important;
+                padding: 0 10px !important;
+            }
+            
+            .header-top {
+                flex-direction: column !important;
+                gap: 15px !important;
+                text-align: center !important;
+            }
+            
+            .back-link {
+                font-size: 0.9rem !important;
+                margin: 20px 15px !important;
+                padding: 8px 0 !important;
+            }
+            
+            .users-container {
+                padding: 15px !important;
+                margin: 15px !important;
+                border-radius: 8px !important;
+            }
+            
+            .users-title {
+                font-size: 1.4rem !important;
+                margin-bottom: 15px !important;
+                padding-bottom: 10px !important;
+            }
+            
+            .users-title::after {
+                width: 60px !important;
+            }
+            
+            .users-table {
+                font-size: 0.8rem !important;
+            }
+            
+            .users-table th,
+            .users-table td {
+                padding: 8px 6px !important;
+                font-size: 0.75rem !important;
+            }
+            
+            .users-table th:nth-child(1), /* ID */
+            .users-table th:nth-child(5), /* Data Cadastro */
+            .users-table td:nth-child(1),
+            .users-table td:nth-child(5) {
+                display: none !important;
+            }
+            
+            .users-table th:nth-child(4), /* CPF */
+            .users-table td:nth-child(4) {
+                display: none !important;
+            }
+            
+            .action-btn {
+                padding: 6px 8px !important;
+                font-size: 0.75rem !important;
+                min-width: 30px !important;
+                min-height: 30px !important;
+                justify-content: center !important;
+            }
+            
+            .action-btn i {
+                font-size: 0.8rem !important;
+            }
+            
+            .switch {
+                width: 40px !important;
+                height: 20px !important;
+            }
+            
+            .slider:before {
+                height: 14px !important;
+                width: 14px !important;
+                left: 3px !important;
+                bottom: 3px !important;
+            }
+            
+            input:checked + .slider:before {
+                transform: translateX(20px) !important;
+            }
+            
+            .status-active,
+            .status-inactive {
+                font-size: 0.75rem !important;
+            }
+            
+            /* Modais em mobile */
+            .delete-user-modal .modal-content-delete,
+            .edit-user-modal .modal-content-edit,
+            .confirm-save-modal .modal-content-confirm {
+                width: 95% !important;
+                max-width: 95% !important;
+                margin: 5% auto !important;
+            }
+            
+            .delete-user-modal .modal-header-delete,
+            .edit-user-modal .modal-header-edit {
+                padding: 15px 20px !important;
+            }
+            
+            .delete-user-modal .modal-header-delete h2,
+            .edit-user-modal .modal-header-edit h2 {
+                font-size: 1.4rem !important;
+            }
+            
+            .delete-user-modal .modal-icon-delete {
+                font-size: 2.5rem !important;
+                margin: 15px 0 !important;
+            }
+            
+            .delete-user-modal .modal-message,
+            .delete-user-modal .user-info-card,
+            .delete-user-modal .modal-warning {
+                margin: 15px 20px !important;
+                font-size: 0.9rem !important;
+            }
+            
+            .edit-user-modal .modal-body-edit {
+                padding: 20px !important;
+            }
+            
+            .edit-user-modal .form-grid {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }
+            
+            .edit-user-modal .form-control-edit {
+                padding: 12px 15px 12px 40px !important;
+                font-size: 0.9rem !important;
+            }
+            
+            .edit-user-modal .modal-actions-edit {
+                flex-direction: column !important;
+                gap: 10px !important;
+                margin-top: 20px !important;
+            }
+            
+            .edit-user-modal .modal-button-edit {
+                width: 100% !important;
+                padding: 10px 20px !important;
+            }
+            
+            .user-notification {
+                bottom: 10px !important;
+                right: 10px !important;
+                left: 10px !important;
+                text-align: center !important;
+                padding: 10px 15px !important;
+                font-size: 0.9rem !important;
+            }
+            
+            /* Botão de fechar modais */
+            .close-delete-user-modal,
+            .close-edit-user-modal,
+            .close-confirm-save-modal {
+                top: 15px !important;
+                right: 15px !important;
+                font-size: 1.4rem !important;
+                width: 30px !important;
+                height: 30px !important;
+            }
+        }
+        
+        /* Dispositivos pequenos (celulares, 481px a 768px) */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem !important;
+            }
+            
+            .page-subtitle {
+                font-size: 1rem !important;
+            }
+            
+            .users-container {
+                padding: 20px !important;
+                margin: 20px !important;
+            }
+            
+            .users-title {
+                font-size: 1.6rem !important;
+            }
+            
+            .users-table {
+                font-size: 0.85rem !important;
+            }
+            
+            .users-table th,
+            .users-table td {
+                padding: 10px 8px !important;
+            }
+            
+            .users-table th:nth-child(5), /* Data Cadastro */
+            .users-table td:nth-child(5) {
+                display: none !important;
+            }
+            
+            .action-btn {
+                padding: 6px 10px !important;
+                font-size: 0.8rem !important;
+            }
+            
+            .edit-user-modal .modal-content-edit {
+                max-width: 500px !important;
+            }
+            
+            .edit-user-modal .form-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+        
+        /* Dispositivos médios (tablets, 769px a 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .users-container {
+                padding: 25px !important;
+                margin: 25px !important;
+            }
+            
+            .users-table {
+                font-size: 0.9rem !important;
+            }
+            
+            .users-table th,
+            .users-table td {
+                padding: 12px 10px !important;
+            }
+            
+            .edit-user-modal .form-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+        
+        /* Ajustes gerais para todos os dispositivos móveis */
+        @media (max-width: 768px) {
+            .users-table {
+                display: block !important;
+                overflow-x: auto !important;
+                white-space: nowrap !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+            
+            .users-table thead,
+            .users-table tbody,
+            .users-table tr,
+            .users-table th,
+            .users-table td {
+                display: block !important;
+            }
+            
+            .users-table thead {
+                display: none !important;
+            }
+            
+            .users-table tr {
+                margin-bottom: 15px !important;
+                border: 1px solid #ddd !important;
+                border-radius: 8px !important;
+                overflow: hidden !important;
+                background: white !important;
+            }
+            
+            .users-table td {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                padding: 12px 15px !important;
+                border-bottom: 1px solid #eee !important;
+                text-align: right !important;
+            }
+            
+            .users-table td:before {
+                content: attr(data-label) !important;
+                font-weight: 600 !important;
+                color: var(--header-color) !important;
+                margin-right: 10px !important;
+                text-align: left !important;
+            }
+            
+            .users-table td:last-child {
+                border-bottom: none !important;
+            }
+            
+            .modal {
+                padding: 10px !important;
+            }
+            
+            .modal-actions-delete,
+            .modal-actions-confirm {
+                flex-direction: column !important;
+                gap: 10px !important;
+            }
+            
+            .modal-button-delete,
+            .modal-button-confirm {
+                width: 100% !important;
+            }
+            
+            .user-notification {
+                max-width: calc(100% - 20px) !important;
+            }
+        }
+        
+        /* Ajustes para orientação paisagem em dispositivos móveis */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .page-header h1 {
+                font-size: 1.8rem !important;
+            }
+            
+            .users-container {
+                max-height: 70vh !important;
+                overflow-y: auto !important;
+            }
+            
+            .users-table td:before {
+                min-width: 100px !important;
+            }
+            
+            .modal-content-delete,
+            .modal-content-edit,
+            .modal-content-confirm {
+                max-height: 90vh !important;
+                overflow-y: auto !important;
+            }
+            
+            .edit-user-modal .form-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+        
+        /* Tabela responsiva para telas médias */
+        @media (max-width: 1024px) {
+            .users-table {
+                min-width: 100% !important;
+            }
+            
+            .users-table th,
+            .users-table td {
+                min-width: 120px !important;
+            }
+            
+            .users-table td:nth-child(6), /* Status */
+            .users-table td:nth-child(7) { /* Ações */
+                min-width: auto !important;
+            }
+        }
+        
+        /* Ajustes para telas muito grandes */
+        @media (min-width: 1400px) {
+            body {
+                max-width: 1400px !important;
+                margin: 0 auto !important;
+            }
+            
+            .header-full-width {
+                width: 100vw !important;
+            }
+            
+            .header-container {
+                max-width: 1400px !important;
+            }
+            
+            .users-container {
+                max-width: 1200px !important;
+                margin: 40px auto !important;
+            }
+        }
+        
+        /* Ajustes para impressão */
+        @media print {
+            .header-full-width,
+            .back-link,
+            .switch,
+            .action-btn,
+            .modal,
+            .user-notification {
+                display: none !important;
+            }
+            
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 12pt !important;
+            }
+            
+            .users-container {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                padding: 20px !important;
+                margin: 20px 0 !important;
+            }
+            
+            .users-title {
+                color: black !important;
+                font-size: 16pt !important;
+            }
+            
+            .users-title::after {
+                background: black !important;
+            }
+            
+            .users-table {
+                border: 1px solid #999 !important;
+                font-size: 10pt !important;
+            }
+            
+            .users-table th {
+                background: #f0f0f0 !important;
+                color: black !important;
+                border-bottom: 2px solid #999 !important;
+            }
+            
+            .users-table td {
+                border-bottom: 1px solid #ddd !important;
+            }
+            
+            .users-table tr:nth-child(even) {
+                background-color: #f9f9f9 !important;
+            }
+            
+            .status-active {
+                color: black !important;
+            }
+            
+            .status-inactive {
+                color: #666 !important;
+            }
+        }
+        
+        /* Melhorias de acessibilidade para toque */
+        @media (hover: none) and (pointer: coarse) {
+            .action-btn,
+            .switch,
+            .modal-button-delete,
+            .modal-button-edit,
+            .modal-button-confirm,
+            .back-link {
+                min-height: 44px !important;
+                min-width: 44px !important;
+            }
+            
+            .users-table td {
+                padding: 15px !important;
+            }
+            
+            .form-control-edit {
+                min-height: 44px !important;
+                font-size: 16px !important; /* Evita zoom no iOS */
+            }
+            
+            /* Aumentar área de toque para labels */
+            .form-group-edit label {
+                padding: 5px 0 !important;
+                margin-bottom: 10px !important;
+            }
+        }
+        
+        /* Suporte para modo escuro */
+        @media (prefers-color-scheme: dark) {
+            @media (max-width: 768px) {
+                .users-container {
+                    background: #2c2c2c !important;
+                    color: #f0f0f0 !important;
+                }
+                
+                .users-title {
+                    color: #e67e22 !important;
+                }
+                
+                .users-table tr {
+                    background: #3c3c3c !important;
+                    border-color: #555 !important;
+                }
+                
+                .users-table td {
+                    border-color: #555 !important;
+                    color: #f0f0f0 !important;
+                }
+                
+                .users-table td:before {
+                    color: #e67e22 !important;
+                }
+                
+                .status-active {
+                    color: #2ecc71 !important;
+                }
+                
+                .status-inactive {
+                    color: #e74c3c !important;
+                }
+                
+                .modal-content-delete,
+                .modal-content-edit,
+                .modal-content-confirm {
+                    background: #2c2c2c !important;
+                    color: #f0f0f0 !important;
+                }
+                
+                .form-control-edit {
+                    background: #3c3c3c !important;
+                    color: #f0f0f0 !important;
+                    border-color: #555 !important;
+                }
+                
+                .user-info-card {
+                    background: #3c3c3c !important;
+                }
+            }
+        }
+        
+        /* Ajustes para navegadores específicos */
+        @supports (-webkit-overflow-scrolling: touch) {
+            /* Safari iOS */
+            .users-container {
+                -webkit-overflow-scrolling: touch !important;
+            }
+        }
+        
+        /* Corrigir altura segura para dispositivos com notch */
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: max(15px, env(safe-area-inset-left)) !important;
+                padding-right: max(15px, env(safe-area-inset-right)) !important;
+                padding-top: max(0px, env(safe-area-inset-top)) !important;
+                padding-bottom: max(0px, env(safe-area-inset-bottom)) !important;
+            }
+            
+            .modal {
+                padding: max(10px, env(safe-area-inset-top)) 
+                         max(10px, env(safe-area-inset-right))
+                         max(10px, env(safe-area-inset-bottom))
+                         max(10px, env(safe-area-inset-left)) !important;
+            }
+        }
+        
+        /* Estilo para tabela em cards (mobile) */
+        @media (max-width: 768px) {
+            .users-table td[data-label="ID"] { display: none; }
+            .users-table td[data-label="Nome"]:before { content: "Nome:"; }
+            .users-table td[data-label="Email"]:before { content: "Email:"; }
+            .users-table td[data-label="CPF"]:before { content: "CPF:"; }
+            .users-table td[data-label="Data Cadastro"]:before { content: "Cadastro:"; }
+            .users-table td[data-label="Status"]:before { content: "Status:"; }
+            .users-table td[data-label="Ações"]:before { content: "Ações:"; }
+        }
+    `;
+    
+    document.head.appendChild(style);
+}
+
+// Função para ajustar dinamicamente a tabela de usuários
+function adjustTableLayoutForScreenSize() {
+    const width = window.innerWidth;
+    
+    // Ajustar display da tabela para mobile
+    const table = document.querySelector('.users-table');
+    const tbody = table?.querySelector('tbody');
+    
+    if (width <= 768 && tbody) {
+        // Converter tabela para cards em mobile
+        const rows = tbody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            cells.forEach((cell, index) => {
+                const header = table.querySelector(`th:nth-child(${index + 1})`);
+                if (header) {
+                    cell.setAttribute('data-label', header.textContent);
+                }
+            });
+        });
+    }
+    
+    // Ajustar padding do container
+    const container = document.querySelector('.users-container');
+    if (container) {
+        if (width <= 480) {
+            container.style.padding = '15px';
+            container.style.margin = '15px';
+        } else if (width <= 768) {
+            container.style.padding = '20px';
+            container.style.margin = '20px';
+        } else {
+            container.style.padding = '30px';
+            container.style.margin = '40px 0';
+        }
+    }
+    
+    // Ajustar título da página
+    const pageTitle = document.querySelector('.page-header h1');
+    if (pageTitle) {
+        if (width <= 480) {
+            pageTitle.style.fontSize = '1.6rem';
+        } else if (width <= 768) {
+            pageTitle.style.fontSize = '2rem';
+        } else if (width <= 1024) {
+            pageTitle.style.fontSize = '2.4rem';
+        } else {
+            pageTitle.style.fontSize = '2.8rem';
+        }
+    }
+    
+    // Otimizar para touch
+    if ('ontouchstart' in window || navigator.maxTouchPoints) {
+        const touchElements = document.querySelectorAll('.action-btn, .switch, .back-link');
+        touchElements.forEach(el => {
+            el.style.minHeight = '44px';
+            el.style.minWidth = '44px';
+        });
+        
+        // Ajustar inputs nos modais
+        const formInputs = document.querySelectorAll('.form-control-edit');
+        formInputs.forEach(input => {
+            input.style.minHeight = '44px';
+            if (width <= 768) {
+                input.style.fontSize = '16px';
+            }
+        });
+    }
+}
+
+// Inicializar a responsividade quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', function() {
+    applyResponsiveStylesUsuarios();
+    adjustTableLayoutForScreenSize();
+    
+    // Adicionar labels de dados para tabela mobile
+    setupMobileTable();
+    
+    // Reajustar quando a janela for redimensionada
+    window.addEventListener('resize', function() {
+        adjustTableLayoutForScreenSize();
+        setupMobileTable();
+    });
+    
+    // Reaplicar estilos se necessário
+    window.addEventListener('load', applyResponsiveStylesUsuarios);
+});
+
+// Configurar tabela para mobile (cards)
+function setupMobileTable() {
+    const width = window.innerWidth;
+    const table = document.querySelector('.users-table');
+    
+    if (width <= 768 && table) {
+        // Garantir que a tabela esteja em modo card
+        table.style.display = 'block';
+        table.style.overflowX = 'auto';
+        table.style.webkitOverflowScrolling = 'touch';
+        
+        // Esconder cabeçalho em mobile
+        const thead = table.querySelector('thead');
+        if (thead) {
+            thead.style.display = 'none';
+        }
+        
+        // Adicionar classes para estilo de card
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            row.style.display = 'block';
+            row.style.marginBottom = '15px';
+            row.style.border = '1px solid #ddd';
+            row.style.borderRadius = '8px';
+            row.style.overflow = 'hidden';
+            row.style.background = 'white';
+            
+            const cells = row.querySelectorAll('td');
+            cells.forEach((cell, index) => {
+                cell.style.display = 'flex';
+                cell.style.justifyContent = 'space-between';
+                cell.style.alignItems = 'center';
+                cell.style.padding = '12px 15px';
+                cell.style.borderBottom = '1px solid #eee';
+                cell.style.textAlign = 'right';
+                
+                // Remover borda do último item
+                if (index === cells.length - 1) {
+                    cell.style.borderBottom = 'none';
+                }
+            });
+        });
+    } else {
+        // Restaurar estilo normal da tabela
+        if (table) {
+            table.style.display = 'table';
+            const thead = table.querySelector('thead');
+            if (thead) {
+                thead.style.display = 'table-header-group';
+            }
+            
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                row.style.display = 'table-row';
+                row.style.marginBottom = '';
+                row.style.border = '';
+                row.style.borderRadius = '';
+                row.style.overflow = '';
+                row.style.background = '';
+                
+                const cells = row.querySelectorAll('td');
+                cells.forEach(cell => {
+                    cell.style.display = 'table-cell';
+                    cell.style.justifyContent = '';
+                    cell.style.alignItems = '';
+                    cell.style.padding = '';
+                    cell.style.borderBottom = '';
+                    cell.style.textAlign = '';
+                });
+            });
+        }
+    }
+}
+
+// Detectar dispositivo e otimizar
+function optimizeUsuariosForMobile() {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        document.body.classList.add('mobile-usuarios-view');
+        
+        // Otimizar modais para mobile
+        const modals = document.querySelectorAll('.modal-content-delete, .modal-content-edit, .modal-content-confirm');
+        modals.forEach(modal => {
+            modal.classList.add('mobile-optimized-modal');
+        });
+        
+        // Prevenir zoom em inputs no iOS
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.style.fontSize = '16px';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.style.fontSize = '';
+                });
+            });
+        }
+    } else {
+        document.body.classList.add('desktop-usuarios-view');
+    }
+}
+
+// Executar otimizações
+optimizeUsuariosForMobile();
+
+// Adicionar listener para mudanças de orientação
+window.addEventListener('orientationchange', function() {
+    setTimeout(() => {
+        adjustTableLayoutForScreenSize();
+        setupMobileTable();
+        optimizeUsuariosForMobile();
+    }, 100);
+});
+
+// Função para melhorar a experiência em dispositivos móveis
+function enhanceMobileUsuariosExperience() {
+    const width = window.innerWidth;
+    
+    if (width <= 768) {
+        // Adicionar scroll suave para tabela
+        const container = document.querySelector('.users-container');
+        if (container) {
+            container.style.overflowX = 'auto';
+            container.style.webkitOverflowScrolling = 'touch';
+        }
+        
+        // Ajustar botões de ação
+        const actionButtons = document.querySelectorAll('.action-btn');
+        actionButtons.forEach(btn => {
+            btn.style.margin = '2px';
+        });
+        
+        // Simplificar animações para melhor performance
+        const modals = document.querySelectorAll('.modal-content-delete, .modal-content-edit, .modal-content-confirm');
+        modals.forEach(modal => {
+            modal.style.transition = 'transform 0.2s ease';
+        });
+    }
+}
+
+// Executar otimizações
+enhanceMobileUsuariosExperience();
+
+// Função para criar notificação responsiva
+function createResponsiveNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `user-notification ${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Ajustar posição para mobile
+    const width = window.innerWidth;
+    if (width <= 480) {
+        notification.style.left = '10px';
+        notification.style.right = '10px';
+        notification.style.bottom = '10px';
+        notification.style.textAlign = 'center';
+    }
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 3000);
+}
+
+// Exemplo de uso (adicione ao seu usuario.js se necessário):
+// createResponsiveNotification('Usuário atualizado com sucesso!', 'success');

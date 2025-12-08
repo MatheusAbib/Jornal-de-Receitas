@@ -284,8 +284,10 @@
     }
     
     .slider.round {
-      border-radius: 25px;
+      border-radius: 25px !important;
     }
+    
+    
     
    
 /* ===================== MODAIS PADRONIZADOS ===================== */

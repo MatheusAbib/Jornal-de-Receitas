@@ -161,40 +161,7 @@
     </div>
   </div>
 
-  <script>
-    // Script para compartilhar receita
-    function shareRecipe() {
-      if (navigator.share) {
-        navigator.share({
-          title: document.querySelector('.recipe-title').textContent,
-          text: 'Confira esta receita incrível!',
-          url: window.location.href
-        });
-      } else {
-        // Fallback para copiar link
-        navigator.clipboard.writeText(window.location.href);
-        alert('Link copiado para a área de transferência!');
-      }
-    }
-
-    // Marcar todos os ingredientes quando clicar no título
-    document.querySelector('.section-title').addEventListener('click', function() {
-      const checkboxes = document.querySelectorAll('.ingredient-checkbox');
-      const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-      
-      checkboxes.forEach(cb => {
-        cb.checked = !allChecked;
-      });
-    });
-
-    // Efeito de fade in para elementos
-    document.addEventListener('DOMContentLoaded', function() {
-      const elements = document.querySelectorAll('.slide-up');
-      elements.forEach((el, index) => {
-        el.style.animationDelay = `${index * 0.1}s`;
-      });
-    });
-  </script>
+  <script src="/js/detalhe.js"></script>
 
 </body>
 </html>
