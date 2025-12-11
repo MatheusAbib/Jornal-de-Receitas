@@ -4,8 +4,8 @@
 Sistema web completo para gerenciamento e compartilhamento de receitas culinárias com design inspirado em jornais clássicos.
 
 **Status:** 🟢 Em Desenvolvimento Ativo  
-**Versão:** 1.0.0  
-**Última Atualização:** Novembro 2024
+**Versão:** 2.0.0  
+**Última Atualização:** Novembro 2025
 
 ## ✨ Funcionalidades
 
