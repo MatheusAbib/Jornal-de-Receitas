@@ -675,12 +675,6 @@ function applyResponsiveStylesCadastro() {
             }
         }
         
-        /* Ajuste para telas muito grandes */
-        @media (min-width: 1400px) {
-            .container {
-                max-width: 1000px !important;
-            }
-        }
         
         /* Ajustes para animações reduzidas */
         @media (prefers-reduced-motion: reduce) {
