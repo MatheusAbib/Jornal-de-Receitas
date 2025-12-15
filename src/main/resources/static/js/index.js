@@ -1,4 +1,4 @@
-  // ===================== FUNÇÕES GLOBAIS =====================
+ // ===================== FUNÇÕES GLOBAIS =====================
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   if (sidebar) {
@@ -778,9 +778,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if (charIndex < originalTitle.length) {
         titleElement.textContent += originalTitle.charAt(charIndex);
         charIndex++;
-        setTimeout(typeTitle, 100);
+        setTimeout(typeTitle, 150);
       }
     }
+    
     typeTitle();
   }
 
@@ -1774,3 +1775,79 @@ function detectMobile() {
 
 // Executar detecção de dispositivo
 detectMobile();
+
+// ===================== SPINNER DE CARREGAMENTO =====================
+function showPageLoader() {
+    const loader = document.getElementById('pageLoader');
+    if (loader) {
+        loader.classList.remove('hidden');
+        loader.style.display = 'flex';
+    }
+}
+
+function hidePageLoader() {
+    const loader = document.getElementById('pageLoader');
+    if (loader) {
+        loader.classList.add('hidden');
+        setTimeout(() => {
+            loader.style.display = 'none';
+        }, 500);
+    }
+}
+
+// Verificar se imagens principais carregaram
+function checkImagesLoaded() {
+    const images = document.querySelectorAll('img');
+    let loadedCount = 0;
+    const totalImages = images.length;
+    
+    if (totalImages === 0) {
+        hidePageLoader();
+        return;
+    }
+    
+    images.forEach(img => {
+        if (img.complete) {
+            loadedCount++;
+        } else {
+            img.addEventListener('load', () => {
+                loadedCount++;
+                if (loadedCount === totalImages) {
+                    hidePageLoader();
+                }
+            });
+            img.addEventListener('error', () => {
+                loadedCount++;
+                if (loadedCount === totalImages) {
+                    hidePageLoader();
+                }
+            });
+        }
+    });
+    
+    if (loadedCount === totalImages) {
+        hidePageLoader();
+    }
+}
+
+// Configurar o spinner
+document.addEventListener('DOMContentLoaded', function() {
+    showPageLoader();
+    checkImagesLoaded();
+    
+    window.addEventListener('load', function() {
+        setTimeout(hidePageLoader, 300);
+    });
+    
+    setTimeout(hidePageLoader, 3000);
+});
+
+// Para navegação SPA (se aplicável)
+document.addEventListener('click', function(e) {
+    const link = e.target.closest('a');
+    if (link && link.href && !link.href.includes('#') && 
+        link.href.startsWith(window.location.origin) &&
+        !link.hasAttribute('target')) {
+        showPageLoader();
+    }
+});
