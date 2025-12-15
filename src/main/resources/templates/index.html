@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="/css/style.css">
 
-  <link href="/uploads/receita.png" rel="icon">
+<link th:href="${faviconUrl}" rel="icon" th:if="${faviconUrl != null}">
 
 </head>
 <body>
@@ -207,12 +207,7 @@
       <i class="fas fa-search filter-icon"></i>
       <input type="text" id="nome" name="nome" placeholder="Digite o nome da receita">
     </div>
-    
-    <div class="filter-group">
-      <label for="tempo"><i class="fas fa-clock"></i> Tempo de Preparo (min):</label>
-      <i class="fas fa-hourglass-half filter-icon"></i>
-      <input type="number" id="tempo" name="tempo" min="1" placeholder="Máx. tempo">
-    </div>
+  
     
     <div class="filter-group">
       <label for="porcoes"><i class="fas fa-users"></i> Porções:</label>
@@ -267,7 +262,7 @@
   </div>
 </div>
 
-      <!-- <div class="section-title">
+      <div class="section-title">
         <h2>Receitas Rápidas</h2>
         <p>Pratos deliciosos que você prepara em pouco tempo</p>
       </div>
@@ -275,14 +270,15 @@
       <div class="classifieds" id="classifieds">
         <div class="classified-item">
           <div class="classified-image">
-            <img src="/uploads/pesto.jpg" alt="Espaguete ao Pesto">
+            <img th:src="${pestoUrl}" alt="Espaguete ao Pesto" th:if="${pestoUrl != null}">
+            <img src="/uploads/pesto.jpg" alt="Espaguete ao Pesto" th:unless="${pestoUrl != null}">
             <div class="classified-badge">RÁPIDO</div>
           </div>
           <div class="classified-content">
             <h3>Espaguete ao Pesto</h3>
             <div class="classified-meta">
               <span><i class="fas fa-clock"></i> 25 min</span>
-              <span><i class="fas fa-user"></i> 2 porções</span>
+              <span><i class="fas fa-user"></i> 6 porções</span>
             </div>
             <p class="classified-description">Massa italiana com pesto de manjericão fresco e pinoli. Um clássico da culinária mediterrânea.</p>
             <div class="classified-actions">
@@ -293,14 +289,15 @@
         </div>
         <div class="classified-item">
           <div class="classified-image">
-            <img src="/uploads/sopa.jpg" alt="Sopa de Abóbora">
+              <img th:src="${sopaUrl}" alt="Sopa de Abóbora" th:if="${sopaUrl != null}">
+              <img src="/uploads/sopa.jpg" alt="Sopa de Abóbora" th:unless="${sopaUrl != null}">
             <div class="classified-badge">SAUDÁVEL</div>
           </div>
           <div class="classified-content">
             <h3>Sopa de Abóbora</h3>
             <div class="classified-meta">
               <span><i class="fas fa-clock"></i> 40 min</span>
-              <span><i class="fas fa-user"></i> 4 porções</span>
+              <span><i class="fas fa-user"></i> 6 porções</span>
             </div>
             <p class="classified-description">Creme de abóbora com gengibre e toque de noz-moscada. Perfecta para dias frios.</p>
             <div class="classified-actions">
@@ -312,14 +309,14 @@
 
           <div class="classified-item">
           <div class="classified-image">
-            <img src="/uploads/ganache.jpg" alt="Sopa de Abóbora">
-            <div class="classified-badge">SOBREMESA</div>
+            <img th:src="${ganacheUrl}" alt="Ganache de Chocolate" th:if="${ganacheUrl != null}">
+            <img src="/uploads/ganache.jpg" alt="Ganache de Chocolate" th:unless="${ganacheUrl != null}">            <div class="classified-badge">SOBREMESA</div>
           </div>
           <div class="classified-content">
             <h3>Ganache</h3>
             <div class="classified-meta">
-              <span><i class="fas fa-clock"></i> 12 min</span>
-              <span><i class="fas fa-user"></i> 4 porções</span>
+              <span><i class="fas fa-clock"></i> 7 min</span>
+              <span><i class="fas fa-user"></i> 1 porções</span>
             </div>
             <p class="classified-description">Calda de chocolate deliciosa para adicionar em suas sobremesas.</p>
             <div class="classified-actions">
@@ -331,14 +328,15 @@
 
         <div class="classified-item">
           <div class="classified-image">
-            <img src="/uploads/bolinho-chuva.jpg" alt="Bolinhos de Chuva">
+              <img th:src="${bolinhoUrl}" alt="Bolinhos de Chuva" th:if="${bolinhoUrl != null}">
+              <img src="/uploads/bolinho-chuva.jpg" alt="Bolinhos de Chuva" th:unless="${bolinhoUrl != null}">
             <div class="classified-badge">SOBREMESA</div>
           </div>
           <div class="classified-content">
             <h3>Bolinhos de Chuva</h3>
             <div class="classified-meta">
-              <span><i class="fas fa-clock"></i> 20 min</span>
-              <span><i class="fas fa-user"></i> 6 porções</span>
+              <span><i class="fas fa-clock"></i> 30 min</span>
+              <span><i class="fas fa-user"></i> 8 porções</span>
             </div>
             <p class="classified-description">Clássica receita de bolinhos fofinhos com canela e açúcar. Ideal para o lanche da tarde.</p>
             <div class="classified-actions">
@@ -347,7 +345,7 @@
             </div>
           </div>
         </div>
-      </div> -->
+      </div>
 
 <div class="advertisement">
   <h2>Jornal de Receitas!</h2>

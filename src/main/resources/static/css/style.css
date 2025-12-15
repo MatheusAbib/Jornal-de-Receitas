@@ -264,7 +264,7 @@
       display: flex;
       justify-content: center;
       gap: 25px;
-      margin: 40px 0;
+      margin: 30px 0;
       flex-wrap: wrap;
     }
     
@@ -373,11 +373,11 @@
     /* Carrossel modernizado */
     .carousel-container {
       position: relative;
-      margin: 40px 0;
-      border-radius: 12px;
+      margin: 30px 0;
+      border-radius: 5px;
       overflow: hidden;
       box-shadow: var(--shadow);
-      height: 500px;
+      min-height: 600px;
     }
     
     .carousel {
@@ -451,7 +451,7 @@
       width: 60px;
       height: 60px;
       border-radius: 50%;
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -562,7 +562,7 @@
     }
     
     .news-icon {
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       color: var(--accent-color);
       margin-right: 18px;
       width: 80px;
@@ -615,7 +615,6 @@
     .news-description {
       color: var(--text-color);
       line-height: 1.6;
-      margin-bottom: 20px;
       font-size: 1.05rem;
     }
     
