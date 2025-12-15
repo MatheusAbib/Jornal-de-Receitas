@@ -1390,6 +1390,12 @@ function applyResponsiveStyles() {
             
             .newspaper-title {
                 font-size: 3rem;
+                margin-top: 11%;
+            }
+
+            .newspaper-title::before, .newspaper-title::after{
+                display: none;
+
             }
             
             .newspaper-subtitle {
@@ -1453,6 +1459,11 @@ function applyResponsiveStyles() {
         @media (min-width: 769px) and (max-width: 1024px) {
             .newspaper-title {
                 font-size: 3.5rem;
+                margin-top: 9%;
+            }
+
+            .newspaper-title::before, .newspaper-title::after{
+              display: none;
             }
             
             .news-highlights {
@@ -1484,6 +1495,7 @@ function applyResponsiveStyles() {
         @media (min-width: 1025px) and (max-width: 1200px) {
             .newspaper-title {
                 font-size: 4rem;
+                margin-top: 5%;
             }
             
             .receitas {

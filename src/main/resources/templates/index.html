@@ -233,7 +233,6 @@
       <img th:if="${r.imagem != null and r.imagem.startsWith('http')}" th:src="${r.imagem}" alt="Imagem da receita">
       <img th:if="${r.imagem != null and !r.imagem.startsWith('http')}" th:src="@{'/uploads/' + ${r.imagem}}" alt="Imagem da receita">
       <img th:if="${r.imagem == null}" src="/default-image.jpg" alt="Sem imagem">
-      <div class="card-badge">NOVO</div>
     </div>
     <div class="card-content">
       <h2 th:text="${r.titulo}">Título da Receita</h2>
