@@ -35,6 +35,14 @@
     <section class="hero-section slide-up">
       <!-- Imagem da receita -->
       <div class="recipe-image-wrapper">
+        <!-- Badge de categoria no canto superior direito -->
+        <div class="category-badge" 
+             th:classappend="${receita.categoria == T(com.receitas.site_receitas.model.Receita.Categoria).DOCE} ? 'category-doce' : 'category-salgado'">
+          <i class="fas fa-cake-candles" th:if="${receita.categoria == T(com.receitas.site_receitas.model.Receita.Categoria).DOCE}"></i>          
+            <i class="fas fa-pepper-hot" th:if="${receita.categoria != T(com.receitas.site_receitas.model.Receita.Categoria).DOCE}"></i>
+          <span th:text="${receita.categoria == T(com.receitas.site_receitas.model.Receita.Categoria).DOCE} ? 'Doce' : 'Salgado'"></span>
+        </div>
+        
         <img th:if="${receita.imagem != null and (receita.imagem.startsWith('http') or receita.imagem.startsWith('https'))}" 
              th:src="${receita.imagem}" 
              alt="Imagem da receita" 

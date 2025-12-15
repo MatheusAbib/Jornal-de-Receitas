@@ -199,13 +199,89 @@
   });
 
   // Validação simples
-  form.addEventListener('submit', function(e) {
+ form.addEventListener('submit', function(e) {
     let isValid = true;
-    if (!form.querySelector('#titulo').value.trim()) { showError('tituloError'); isValid = false; } else hideError('tituloError');
-    if (!form.querySelector('#tempoPreparo').value.trim()) { showError('tempoError'); isValid = false; } else hideError('tempoError');
-    if (ingredientesContainer.querySelectorAll('input').length === 0) { showError('ingredientesError'); isValid = false; } else hideError('ingredientesError');
-    if (modoPreparoContainer.querySelectorAll('input').length === 0) { showError('modoPreparoError'); isValid = false; } else hideError('modoPreparoError');
-    if (imageInput.files[0] && !imageInput.files[0].type.match('image.*')) { showError('imagemError'); isValid = false; }
+    
+    // Validação do título
+    if (!form.querySelector('#titulo').value.trim()) { 
+      showError('tituloError'); 
+      isValid = false; 
+    } else { 
+      hideError('tituloError'); 
+    }
+    
+    // Validação do tempo de preparo
+    if (!form.querySelector('#tempoPreparo').value.trim()) { 
+      showError('tempoError'); 
+      isValid = false; 
+    } else { 
+      hideError('tempoError'); 
+    }
+    
+    // Validação da categoria
+    const categoriaSelect = form.querySelector('#categoria');
+    if (!categoriaSelect || !categoriaSelect.value) { 
+      showError('categoriaError'); 
+      isValid = false; 
+    } else { 
+      hideError('categoriaError'); 
+    }
+    
+    // Validação do chefe
+    if (!form.querySelector('#chefe').value.trim()) { 
+      showError('chefeError'); 
+      isValid = false; 
+    } else { 
+      hideError('chefeError'); 
+    }
+    
+    // Validação dos ingredientes
+    if (ingredientesContainer.querySelectorAll('input').length === 0) { 
+      showError('ingredientesError'); 
+      isValid = false; 
+    } else { 
+      // Verificar se pelo menos um ingrediente foi preenchido
+      const ingredientesInputs = ingredientesContainer.querySelectorAll('input');
+      let temIngredientePreenchido = false;
+      ingredientesInputs.forEach(input => {
+        if (input.value.trim()) {
+          temIngredientePreenchido = true;
+        }
+      });
+      if (!temIngredientePreenchido) {
+        showError('ingredientesError'); 
+        isValid = false; 
+      } else {
+        hideError('ingredientesError');
+      }
+    }
+    
+    // Validação do modo de preparo
+    if (modoPreparoContainer.querySelectorAll('input').length === 0) { 
+      showError('modoPreparoError'); 
+      isValid = false; 
+    } else {
+      // Verificar se pelo menos um passo foi preenchido
+      const passosInputs = modoPreparoContainer.querySelectorAll('input');
+      let temPassoPreenchido = false;
+      passosInputs.forEach(input => {
+        if (input.value.trim()) {
+          temPassoPreenchido = true;
+        }
+      });
+      if (!temPassoPreenchido) {
+        showError('modoPreparoError'); 
+        isValid = false; 
+      } else {
+        hideError('modoPreparoError');
+      }
+    }
+    
+    // Validação da imagem
+    if (imageInput.files[0] && !imageInput.files[0].type.match('image.*')) { 
+      showError('imagemError'); 
+      isValid = false; 
+    }
     
     if (isValid) {
       // Se o formulário for válido, mostrar notificação após o envio
@@ -215,6 +291,11 @@
       }, 100);
     } else {
       e.preventDefault();
+      // Rolar para o primeiro erro
+      const primeiroErro = form.querySelector('.error-message.show');
+      if (primeiroErro) {
+        primeiroErro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
   });
 

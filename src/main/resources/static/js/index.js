@@ -1,4 +1,10 @@
- // ===================== FUNÇÕES GLOBAIS =====================
+
+// ===================== VARIÁVEIS PARA FILTRO =====================
+let filterTimeout = null;
+let lastFilterValues = {};
+
+
+// ===================== FUNÇÕES GLOBAIS =====================
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   if (sidebar) {
@@ -953,6 +959,8 @@ if (loginForm) {
     });
   }
 
+  
+
   // ===================== DATA ATUAL =====================
   const dateElement = document.getElementById('newspaperDate');
   if (dateElement) {
@@ -967,55 +975,330 @@ if (loginForm) {
     dateElement.textContent = `${dia} de ${mes} de ${ano}`;
   }
 
-  // ===================== FILTROS DE RECEITAS =====================
-  function filtrarReceitas() {
-    const nomeFiltro = document.getElementById('nome')?.value.toLowerCase() || '';
-    const tempoFiltro = parseInt(document.getElementById('tempo')?.value);
-    const porcoesFiltro = parseInt(document.getElementById('porcoes')?.value);
+  // ===================== FILTROS DE RECEITAS COM CATEGORIA =====================
+  function setupFilterWithDelay() {
+    const nomeInput = document.getElementById('nome');
+    const categoriaSelect = document.getElementById('categoria');
+    const porcoesInput = document.getElementById('porcoes');
+    
+    // Criar elemento de status da busca
+    const searchStatus = document.createElement('div');
+    searchStatus.id = 'searchStatus';
+    searchStatus.style.cssText = `
+        text-align: center;
+        padding: 10px;
+        color: var(--light-text);
+        font-style: italic;
+        display: none;
+    `;
+    
+    // Inserir após o formulário de filtro
+    const filterForm = document.getElementById('filterForm');
+    if (filterForm) {
+        filterForm.parentNode.insertBefore(searchStatus, filterForm.nextSibling);
+    }
+    
+    // Função para mostrar status da busca
+    function showSearchStatus(message) {
+        searchStatus.textContent = message;
+        searchStatus.style.display = 'block';
+    }
+    
+    // Função para esconder status da busca
+    function hideSearchStatus() {
+        searchStatus.style.display = 'none';
+    }
+    
+    // Função de filtro com debounce
+    function applyFilterWithDelay() {
+        // Limpar timeout anterior
+        if (filterTimeout) {
+            clearTimeout(filterTimeout);
+        }
+        
+        // Obter valores atuais
+        const currentValues = {
+            nome: nomeInput ? nomeInput.value.toLowerCase().trim() : '',
+            categoria: categoriaSelect ? categoriaSelect.value : '',
+            porcoes: porcoesInput ? porcoesInput.value : ''
+        };
+        
+        // Verificar se houve mudança
+        const hasChanged = JSON.stringify(currentValues) !== JSON.stringify(lastFilterValues);
+        
+        if (!hasChanged) return;
+        
+        // Atualizar valores anteriores
+        lastFilterValues = { ...currentValues };
+        
+        // Mostrar "Procurando receita..."
+        showSearchStatus('Procurando receita...');
+        
+        // Configurar delay de 1 segundo
+        filterTimeout = setTimeout(() => {
+            filtrarReceitasComCategoria(currentValues);
+            hideSearchStatus();
+        }, 1000);
+    }
+    
+    // Função principal de filtro
+function filtrarReceitasComCategoria(filtros = {}) {
+    const { nome = '', categoria = '', porcoes = '' } = filtros;
+    
+    // Selecionar cards de ambas as seções
+    const salgadosCards = document.querySelectorAll('#salgados-recipes .card');
+    const docesCards = document.querySelectorAll('#doces-recipes .card');
+    
+    let salgadosVisiveis = 0;
+    let docesVisiveis = 0;
+    let totalVisiveis = 0;
 
-    const cards = document.querySelectorAll('#all-recipes .card');
+    // OBTER ELEMENTOS DAS SEÇÕES
+    const salgadosSection = document.getElementById('salgados-section');
+    const docesSection = document.getElementById('doces-section');
+    const salgadosEmpty = document.getElementById('salgados-empty');
+    const docesEmpty = document.getElementById('doces-empty');
+    
+    const filtroCategoriaAtivo = categoria !== '';
+    
+    if (!filtroCategoriaAtivo) {
+        if (salgadosSection) salgadosSection.style.display = 'block';
+        if (docesSection) docesSection.style.display = 'block';
+    } else {
+        // Se filtro por categoria está ativo, ESCOLHER qual seção mostrar
+        if (categoria === 'SALGADO') {
+            if (salgadosSection) salgadosSection.style.display = 'block';
+            if (docesSection) docesSection.style.display = 'none'; 
+        } else if (categoria === 'DOCE') {
+            if (salgadosSection) salgadosSection.style.display = 'none'; 
+            if (docesSection) docesSection.style.display = 'block';
+        }
+    }
 
-    cards.forEach(card => {
-      const titulo = card.querySelector('h2')?.innerText.toLowerCase() || '';
-      const tempoElement = card.querySelector('.card-meta span:first-child span');
-      const porcoesElement = card.querySelector('.card-meta span:last-child span');
-      
-      const tempo = tempoElement ? parseInt(tempoElement.innerText) : 0;
-      const porcoes = porcoesElement ? parseInt(porcoesElement.innerText) : 0;
+    // Filtrar receitas SALGADAS
+    salgadosCards.forEach(card => {
+        const titulo = card.querySelector('h2')?.innerText.toLowerCase() || '';
+        const porcoesElement = card.querySelector('.card-meta span:nth-child(2) span');
+        const porcoesReceita = porcoesElement ? parseInt(porcoesElement.innerText) : 0;
 
-      let mostrar = true;
+        // Aplicar filtros
+        let mostrar = true;
 
-      if (nomeFiltro && !titulo.includes(nomeFiltro)) mostrar = false;
-      if (!isNaN(tempoFiltro) && tempo > tempoFiltro) mostrar = false;
-      if (!isNaN(porcoesFiltro) && porcoes != porcoesFiltro) mostrar = false;
+        // Filtro por nome
+        if (nome && !titulo.includes(nome.toLowerCase())) {
+            mostrar = false;
+        }
 
-      card.style.display = mostrar ? 'block' : 'none';
+        if (categoria && categoria !== 'SALGADO') {
+            mostrar = false;
+        }
+
+        // Filtro por porções
+        if (porcoes && porcoesReceita !== parseInt(porcoes)) {
+            mostrar = false;
+        }
+
+        // Aplicar visibilidade
+        if (mostrar) {
+            card.style.display = 'flex';
+            salgadosVisiveis++;
+            totalVisiveis++;
+        } else {
+            card.style.display = 'none';
+        }
     });
-  }
 
-  const filterForm = document.getElementById('filterForm');
-  if (filterForm) {
-    filterForm.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        filtrarReceitas();
-      }
+    // Filtrar receitas DOCES
+    docesCards.forEach(card => {
+        const titulo = card.querySelector('h2')?.innerText.toLowerCase() || '';
+        const porcoesElement = card.querySelector('.card-meta span:nth-child(2) span');
+        const porcoesReceita = porcoesElement ? parseInt(porcoesElement.innerText) : 0;
+
+        // Aplicar filtros
+        let mostrar = true;
+
+        // Filtro por nome
+        if (nome && !titulo.includes(nome.toLowerCase())) {
+            mostrar = false;
+        }
+
+        // Filtro por categoria (doce só mostra se categoria for DOCE ou vazia)
+        if (categoria && categoria !== 'DOCE') {
+            mostrar = false;
+        }
+
+        // Filtro por porções
+        if (porcoes && porcoesReceita !== parseInt(porcoes)) {
+            mostrar = false;
+        }
+
+        // Aplicar visibilidade
+        if (mostrar) {
+            card.style.display = 'flex';
+            docesVisiveis++;
+            totalVisiveis++;
+        } else {
+            card.style.display = 'none';
+        }
     });
-  }
 
-  const aplicarFiltros = document.getElementById('aplicarFiltros');
-  if (aplicarFiltros) {
-    aplicarFiltros.addEventListener('click', filtrarReceitas);
-  }
+    // Atualizar contadores de cada seção
+    const salgadosCount = document.getElementById('salgados-count');
+    const docesCount = document.getElementById('doces-count');
+    const salgadosEmptyText = document.getElementById('salgados-empty-text');
+    const docesEmptyText = document.getElementById('doces-empty-text');
 
-  const limparFiltros = document.getElementById('limparFiltros');
-  if (limparFiltros) {
-    limparFiltros.addEventListener('click', () => {
-      if (filterForm) filterForm.reset();
-      const cards = document.querySelectorAll('#all-recipes .card');
-      cards.forEach(card => card.style.display = 'block');
+    if (salgadosCount) {
+        salgadosCount.textContent = `${salgadosVisiveis} receita${salgadosVisiveis !== 1 ? 's' : ''}`;
+    }
+
+    if (docesCount) {
+        docesCount.textContent = `${docesVisiveis} receita${docesVisiveis !== 1 ? 's' : ''}`;
+    }
+
+    // Mostrar/ocultar mensagens de categoria vazia APENAS se a seção estiver visível
+    if (salgadosEmpty && salgadosSection && salgadosSection.style.display !== 'none') {
+        if (salgadosVisiveis === 0) {
+            salgadosEmpty.style.display = 'block';
+            if (salgadosEmptyText) {
+                salgadosEmptyText.textContent = categoria === 'SALGADO' 
+                    ? 'Não há receitas salgadas com os filtros aplicados.' 
+                    : 'Não há receitas salgadas disponíveis.';
+            }
+        } else {
+            salgadosEmpty.style.display = 'none';
+        }
+    }
+
+    if (docesEmpty && docesSection && docesSection.style.display !== 'none') {
+        if (docesVisiveis === 0) {
+            docesEmpty.style.display = 'block';
+            if (docesEmptyText) {
+                docesEmptyText.textContent = categoria === 'DOCE' 
+                    ? 'Não há receitas doces com os filtros aplicados.' 
+                    : 'Não há receitas doces disponíveis.';
+            }
+        } else {
+            docesEmpty.style.display = 'none';
+        }
+    }
+
+    // Mostrar mensagem se não houver resultados
+    if (searchStatus && totalVisiveis === 0) {
+        const hasFilters = nome || categoria || porcoes;
+        if (hasFilters) {
+            showSearchStatus('Nenhuma receita encontrada com esses filtros.');
+            setTimeout(() => {
+                if (searchStatus.textContent.includes('Nenhuma receita')) {
+                    hideSearchStatus();
+                }
+            }, 2000);
+        }
+    } else if (searchStatus) {
+        hideSearchStatus();
+    }
+}
+    
+    // Adicionar eventos aos campos de filtro
+    if (nomeInput) {
+        nomeInput.addEventListener('input', applyFilterWithDelay);
+    }
+    
+    if (categoriaSelect) {
+        categoriaSelect.addEventListener('change', applyFilterWithDelay);
+    }
+    
+    if (porcoesInput) {
+        porcoesInput.addEventListener('input', applyFilterWithDelay);
+    }
+    
+    // Configurar botão "Aplicar Filtros" para aplicar imediatamente
+    const aplicarFiltros = document.getElementById('aplicarFiltros');
+    if (aplicarFiltros) {
+        aplicarFiltros.addEventListener('click', function() {
+            if (filterTimeout) {
+                clearTimeout(filterTimeout);
+            }
+            
+            showSearchStatus('Aplicando filtros...');
+            
+            const currentValues = {
+                nome: nomeInput ? nomeInput.value.toLowerCase().trim() : '',
+                categoria: categoriaSelect ? categoriaSelect.value : '',
+                porcoes: porcoesInput ? porcoesInput.value : ''
+            };
+            
+            filtrarReceitasComCategoria(currentValues);
+            setTimeout(hideSearchStatus, 500);
+        });
+    }
+    
+    // Configurar botão "Limpar Filtros"
+const limparFiltros = document.getElementById('limparFiltros');
+// Atualizar a função do botão "Limpar Filtros"
+if (limparFiltros) {
+    limparFiltros.addEventListener('click', function() {
+        if (filterTimeout) {
+            clearTimeout(filterTimeout);
+        }
+        
+        // Resetar valores
+        if (nomeInput) nomeInput.value = '';
+        if (categoriaSelect) categoriaSelect.value = '';
+        if (porcoesInput) porcoesInput.value = '';
+        
+        lastFilterValues = {};
+        
+        // Mostrar todas as receitas
+        const salgadosCards = document.querySelectorAll('#salgados-recipes .card');
+        const docesCards = document.querySelectorAll('#doces-recipes .card');
+        
+        salgadosCards.forEach(card => card.style.display = 'flex');
+        docesCards.forEach(card => card.style.display = 'flex');
+        
+        // MOSTRAR AMBAS AS SEÇÕES (IMPORTANTE!)
+        const salgadosSection = document.getElementById('salgados-section');
+        const docesSection = document.getElementById('doces-section');
+        
+        if (salgadosSection) salgadosSection.style.display = 'block';
+        if (docesSection) docesSection.style.display = 'block';
+
+        // Ocultar mensagens de vazio
+        const salgadosEmpty = document.getElementById('salgados-empty');
+        const docesEmpty = document.getElementById('doces-empty');
+        
+        if (salgadosEmpty) salgadosEmpty.style.display = 'none';
+        if (docesEmpty) docesEmpty.style.display = 'none';
+                
+        // Atualizar contadores
+        const salgadosCount = document.getElementById('salgados-count');
+        const docesCount = document.getElementById('doces-count');
+        
+        if (salgadosCount) {
+            salgadosCount.textContent = `${salgadosCards.length} receita${salgadosCards.length !== 1 ? 's' : ''}`;
+        }
+        
+        if (docesCount) {
+            docesCount.textContent = `${docesCards.length} receita${docesCards.length !== 1 ? 's' : ''}`;
+        }
+        
+        // Mostrar mensagem de confirmação
+        showSearchStatus('Filtros limpos! Mostrando todas as receitas.');
+        setTimeout(hideSearchStatus, 1000);
     });
+}
+    
+    // Configurar submit do form para prevenir comportamento padrão
+    const filterFormElement = document.getElementById('filterForm');
+    if (filterFormElement) {
+        filterFormElement.addEventListener('submit', function(e) {
+            e.preventDefault();
+        });
+    }
   }
+  
+  // Inicializar o sistema de filtro
+  setupFilterWithDelay();
 
   // ===================== FECHAR MODAIS COM ESC =====================
   document.addEventListener('keydown', function(e) {
@@ -1190,6 +1473,10 @@ function applyResponsiveStyles() {
             :root {
                 --header-padding: 10px;
                 --font-scale: 0.8;
+            }
+
+            body{
+              padding: 0 15px;
             }
             
             .header-container {
@@ -1818,4 +2105,34 @@ document.addEventListener('click', function(e) {
         !link.hasAttribute('target')) {
         showPageLoader();
     }
+});
+
+
+// ===================== CONTAR RECEITAS POR CATEGORIA =====================
+function updateCategoryCounts() {
+    const salgadosCards = document.querySelectorAll('#salgados-recipes .card');
+    const docesCards = document.querySelectorAll('#doces-recipes .card');
+    
+    const salgadosCount = document.getElementById('salgados-count');
+    const docesCount = document.getElementById('doces-count');
+    const noRecipesMessage = document.getElementById('no-recipes-message');
+    
+    if (salgadosCount) {
+        salgadosCount.textContent = `${salgadosCards.length} receita${salgadosCards.length !== 1 ? 's' : ''}`;
+    }
+    
+    if (docesCount) {
+        docesCount.textContent = `${docesCards.length} receita${docesCards.length !== 1 ? 's' : ''}`;
+    }
+    
+    // Mostrar mensagem se não houver receitas
+    if (noRecipesMessage) {
+        const totalReceitas = salgadosCards.length + docesCards.length;
+        noRecipesMessage.style.display = totalReceitas === 0 ? 'block' : 'none';
+    }
+}
+
+// Executar quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(updateCategoryCounts, 500); // Pequeno delay para garantir que o DOM esteja pronto
 });

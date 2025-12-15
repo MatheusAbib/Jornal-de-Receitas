@@ -39,6 +39,17 @@
         </div>
       </div>
 
+      <!-- Campo Categoria -->
+      <div class="form-group">
+        <label for="categoria"><i class="fas fa-tag"></i> Categoria</label>
+        <select id="categoria" class="form-control" th:field="*{categoria}" required>
+          <option value="">Selecione uma categoria</option>
+          <option value="SALGADO">Salgado</option>
+          <option value="DOCE">Doce</option>
+        </select>
+        <div class="error-message" id="categoriaError">Por favor, selecione a categoria da receita</div>
+      </div>
+
       <!-- Campo Chefe -->
       <div class="form-group">
         <label for="chefe"><i class="fas fa-user-tie"></i> Chef</label>

@@ -153,6 +153,9 @@ public String salvarReceita(@ModelAttribute Receita receita,
         }
     }
 
+    // Log para debug da categoria
+    System.out.println("Categoria da receita: " + receita.getCategoria());
+
     if (ingredientes != null && !ingredientes.isEmpty()) {
         receita.setIngredientes(String.join("||", ingredientes.stream()
                 .map(String::trim)

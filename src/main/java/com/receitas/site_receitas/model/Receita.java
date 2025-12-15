@@ -27,18 +27,25 @@ public class Receita {
     @Column(nullable = false)
     private boolean aprovada = false; // padrão: false, ou seja, pendente
 
-
     private int porcoes = 1;
 
-
     private String chefe;
-
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-     // Getters e Setters
+    // Novo campo para categoria
+    @Enumerated(EnumType.STRING)
+    private Categoria categoria = Categoria.SALGADO; // valor padrão
+
+    // Enum para categorias
+    public enum Categoria {
+        SALGADO,
+        DOCE
+    }
+
+    // Getters e Setters
 
     public int getPorcoes() {
         return porcoes;
@@ -47,7 +54,6 @@ public class Receita {
     public void setPorcoes(int porcoes) {
         this.porcoes = porcoes;
     }
-
 
     public Long getId() {
         return id;
@@ -97,14 +103,13 @@ public class Receita {
         this.imagem = imagem;
     }
 
-        public Boolean getAprovada() {
+    public Boolean getAprovada() {
         return aprovada;
     }
 
     public void setAprovada(Boolean aprovada) {
         this.aprovada = aprovada;
     }
-
 
     public String getChefe() {
         return chefe;
@@ -121,5 +126,12 @@ public class Receita {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-    
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
 }

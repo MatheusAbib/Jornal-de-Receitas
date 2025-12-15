@@ -596,3 +596,55 @@ cubic-bezier(0.175, 0.885, 0.32, 1.1);
     .leaf-2 { top: 20%; right: 5%; transform: rotate(-30deg); }
     .leaf-3 { bottom: 20%; left: 8%; transform: rotate(60deg); }
     .leaf-4 { bottom: 10%; right: 10%; transform: rotate(-45deg); }
+
+    /* ===== BADGE DE CATEGORIA ===== */
+.category-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    text-transform: uppercase;
+    transition: var(--transition);
+    animation: pulse 2s infinite;
+}
+
+.category-badge:hover {
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.category-doce {
+    background: linear-gradient(135deg, #d4af37, #c19b76);
+    color: whitesmoke;
+}
+
+.category-salgado {
+    background: linear-gradient(135deg, #a52a2a, #8b4513);
+    color: whitesmoke;
+}
+
+.category-badge i {
+    font-size: 1rem;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+    50% {
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+    }
+    100% {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+}
