@@ -296,7 +296,7 @@ function applyResponsiveStylesForm() {
             
             .form-row {
                 flex-direction: column !important;
-                gap: 15px !important;
+                gap: 10px !important;
             }
             
             .titulo-width,

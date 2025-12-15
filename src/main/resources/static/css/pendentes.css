@@ -1,4 +1,4 @@
- /* Variáveis e reset */
+   /* Variáveis e reset */
     :root {
       --main-bg-color: #f8f5f0;
       --header-color: #a52a2a;
@@ -27,13 +27,13 @@
       background-color: var(--main-bg-color);
       color: var(--text-color);
       line-height: 1.7;
-      padding: 0; /* Removido o padding para o header ocupar toda a largura */
+      padding: 0;
       max-width: 1400px;
       margin: 0 auto;
       background-image: 
         url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h100v100H0z' fill='%23f8f5f0'/%3E%3Cpath d='M0 0l100 100M100 0L0 100' stroke='%23e8e1d3' stroke-width='0.5'/%3E%3C/svg%3E");
       position: relative;
-      overflow-x: hidden; /* Impede scroll horizontal */
+      overflow-x: hidden;
     }
     
     body::before {
@@ -78,7 +78,7 @@
     
     .page-header h1 {
       font-family: 'Playfair Display', serif;
-      font-size: 2.8rem;
+      font-size: 4rem;
       font-weight: 700;
       color: white;
       margin-bottom: 15px;
@@ -95,7 +95,7 @@
       top: 50%;
       transform: translateY(-50%);
       color: var(--accent-color);
-      font-size: 1.8rem;
+      font-size: 2rem;
     }
     
     .page-header h1::before {
@@ -122,8 +122,6 @@
       margin: 0 auto;
       padding: 0 20px;
     }
-    
-
     
     .header-top {
       display: flex;
@@ -176,7 +174,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
       gap: 30px;
-      margin: 40px 0;
+      margin: 20px 0;
     }
     
     /* Card de receita */
@@ -258,26 +256,24 @@
       color: var(--accent-color);
     }
     
-.card-actions {
-  display: flex;
-  flex-direction: column; /* Coloca linhas empilhadas */
-  gap: 10px; /* Espaçamento entre linhas */
-  margin-top: auto;
-}
+    .card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: auto;
+    }
 
-/* Cada linha de ação */
-.card-actions .action-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px; /* Espaçamento entre botões na mesma linha */
-  flex-wrap: wrap;
-}
+    .card-actions .action-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
-/* Ajuste para botões ocuparem espaço proporcional na segunda linha */
-.card-actions .action-row .approve-button,
-.card-actions .action-row .reject-button {
-  flex: 1; /* Cada botão ocupa metade da linha */
-}
+    .card-actions .action-row .approve-button,
+    .card-actions .action-row .reject-button {
+      flex: 1;
+    }
     
     .card-link {
       display: inline-flex;
@@ -355,7 +351,7 @@
       background: var(--card-bg);
       border-radius: 12px;
       box-shadow: var(--shadow);
-      margin: 40px 0;
+      margin: 20px 0;
     }
     
     .empty-state i {
@@ -392,67 +388,123 @@
     .card:nth-child(5) { animation-delay: 0.5s; }
     .card:nth-child(6) { animation-delay: 0.6s; }
     
-    /* Modal de confirmação */
+    /* MODAIS - ESTILO SIMPLIFICADO E CORRETO */
     .modal {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
       z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
       align-items: center;
       justify-content: center;
-      padding: 20px;
     }
-    
+
     .modal.active {
       display: flex;
-      animation: fadeIn 0.3s ease;
     }
-    
+
     .modal-content {
-        position: relative;
-      background: white;
-      border-radius: 12px;
-      padding: 30px;
+      background: var(--card-bg);
+      margin: 5% auto;
+      padding: 0;
+      border-radius: 16px;
+      width: 90%;
       max-width: 500px;
-      width: 100%;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      box-shadow: var(--shadow);
+      position: relative;
+      animation: modalFadeIn 0.3s ease;
+      overflow: hidden;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-50px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-content .close {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: white;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      z-index: 10;
+    }
+
+    .modal-content .close:hover {
+      transform: rotate(90deg);
+    }
+
+    /* Cabeçalho dos modais */
+    .approve-modal .modal-header,
+    .reject-modal .modal-header {
+      background: linear-gradient(135deg, var(--header-bg), #8b0000);
+      color: white;
+      padding: 25px 30px;
+      position: relative;
+      margin-bottom: 0;
       text-align: center;
     }
-    
-    .modal-icon {
-      font-size: 3rem;
-      margin-bottom: 20px;
+
+    .approve-modal .modal-header {
+      background: linear-gradient(135deg, var(--approved-color), #219653);
     }
-    
-    .approve-modal .modal-icon {
-      color: var(--approved-color);
+
+    .reject-modal .modal-header {
+background: linear-gradient(135deg, var(--header-color), #8b0000);
     }
-    
-    .reject-modal .modal-icon {
-      color: var(--rejected-color);
-    }
-    
-    .modal h3 {
+
+    .modal-header h3 {
+      margin: 0;
       font-size: 1.8rem;
-      margin-bottom: 15px;
-      color: var(--header-color);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
     }
-    
-    .modal p {
-      color: var(--light-text);
-      margin-bottom: 30px;
+
+    .modal-header h3 i {
+      color: var(--accent-color);
+      font-size: 2rem;
     }
-    
+
+    /* Corpo do modal */
+    .modal-body {
+      padding: 30px;
+      text-align: center;
+    }
+
+    .modal-message {
+      color: var(--text-color);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin: 20px 0;
+      font-family: 'Georgia', serif;
+    }
+
+    /* Ações do modal */
     .modal-actions {
       display: flex;
-      gap: 15px;
+      flex-direction: row-reverse;
       justify-content: center;
+      gap: 15px;
+      margin-top: 25px;
+      padding-top: 25px;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
     }
-    
+
     .modal-button {
       padding: 12px 25px;
       border: none;
@@ -461,50 +513,48 @@
       font-weight: 600;
       cursor: pointer;
       transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 140px;
+      font-size: 1rem;
     }
-    
-    .modal-confirm {
-      background: var(--approved-color);
-      color: white;
-    }
-    
-    .modal-confirm:hover {
-      background: #219653;
-      transform: translateY(-2px);
-    }
-    
-    .modal-reject {
-      background: var(--rejected-color);
-      color: white;
-    }
-    
-    .modal-reject:hover {
-      background: #c0392b;
-      transform: translateY(-2px);
-    }
-    
-    .modal-cancel {
+
+    .modal-button.modal-cancel {
       background: #f2f2f2;
       color: var(--text-color);
     }
-    
-    .modal-cancel:hover {
+
+    .modal-button.modal-cancel:hover {
       background: #e6e6e6;
       transform: translateY(-2px);
-    }
-    
-    .close {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: var(--light-text);
-      transition: var(--transition);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
     }
 
-    .close:hover {
-      color: var(--header-color);
-      transform: rotate(90deg);
+    .modal-button.modal-confirm {
+      background: linear-gradient(135deg, var(--approved-color), #219653);
+      color: white;
     }
-    
+
+    .modal-button.modal-confirm:hover {
+      background: linear-gradient(135deg, #219653, var(--approved-color));
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+    }
+
+    .modal-button.modal-reject {
+      background: linear-gradient(135deg, var(--rejected-color), #c0392b);
+      color: white;
+    }
+
+    .modal-button.modal-reject:hover {
+      background: linear-gradient(135deg, #c0392b, var(--rejected-color));
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .modal form {
+      display: flex;
+      justify-content: center;
+    }

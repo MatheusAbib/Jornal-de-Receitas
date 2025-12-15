@@ -836,6 +836,23 @@ function enhanceIngredientCheckboxes() {
     });
 }
 
+ const titleElement = document.querySelector('.recipe-title');
+    if (titleElement) {
+      const originalTitle = titleElement.textContent;
+      titleElement.textContent = '';
+      let charIndex = 0;
+      
+      function typeTitle() {
+        if (charIndex < originalTitle.length) {
+          titleElement.textContent += originalTitle.charAt(charIndex);
+          charIndex++;
+          setTimeout(typeTitle, 100);
+        }
+      }
+      
+      setTimeout(typeTitle, 10);
+    }
+
 // Executar melhorias dos checkboxes
 enhanceIngredientCheckboxes();
 

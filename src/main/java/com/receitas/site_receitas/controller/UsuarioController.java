@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.security.core.Authentication;
+import com.receitas.site_receitas.service.SiteConfigService;
+
 
 import java.util.Map;
 import java.util.Optional;
@@ -19,11 +21,14 @@ import java.util.Optional;
 @RequestMapping("/") 
 public class UsuarioController {
 
-    @Autowired
+  @Autowired
     private UsuarioService usuarioService;
     
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+    
+    @Autowired 
+    private SiteConfigService siteConfigService;
 
     
 
@@ -49,10 +54,12 @@ public String cadastrarUsuario(@ModelAttribute Usuario usuario, HttpSession sess
 }
 
     
-    @GetMapping("/cadastro")
-    public String mostrarFormulario() {
-        return "cadastro"; 
-    }
+@GetMapping("/cadastro")
+public String mostrarFormulario(Model model) { 
+    String faviconUrl = siteConfigService.getFaviconUrl();
+    model.addAttribute("faviconUrl", faviconUrl);
+    return "cadastro"; 
+}
 
    @PostMapping("/login")
 @ResponseBody
@@ -123,7 +130,11 @@ public ResponseEntity<?> loginUsuario(@RequestBody LoginRequest loginRequest,
 @GetMapping("/usuarios")
 public String listarUsuarios(Model model) {
     model.addAttribute("usuarios", usuarioService.findAll());
-    return "usuarios"; // referencia ao usuarios.html
+    
+    String faviconUrl = siteConfigService.getFaviconUrl();
+    model.addAttribute("faviconUrl", faviconUrl);
+    
+    return "usuarios"; 
 }
 
 @PostMapping("/usuarios/excluir/{id}")

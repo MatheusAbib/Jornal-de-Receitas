@@ -1,4 +1,4 @@
-        :root {
+   :root {
       --main-bg-color: #f8f5f0;
       --header-color: #a52a2a;
       --accent-color: #d4af37;
@@ -79,7 +79,7 @@
     
     .page-header h1 {
       font-family: 'Playfair Display', serif;
-      font-size: 2.8rem;
+      font-size: 4rem;
       font-weight: 700;
       color: white;
       margin-bottom: 15px;
@@ -96,7 +96,7 @@
       top: 50%;
       transform: translateY(-50%);
       color: var(--accent-color);
-      font-size: 1.8rem;
+      font-size: 2rem;
     }
     
     .page-header h1::before {
@@ -120,9 +120,9 @@
     .users-container {
       background: var(--card-bg);
       border-radius: 12px;
-      padding: 30px;
+      padding: 0px;
       box-shadow: var(--shadow);
-      margin: 40px 0;
+  margin: 0 0 40px 0; 
       overflow-x: auto;
     }
     
@@ -219,23 +219,35 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
     
-/* Link de voltar */
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 30px;
-      color: var(--header-color);
-      text-decoration: none;
-      font-weight: 600;
-      transition: var(--transition);
-    }
-    
-    .back-link:hover {
-      color: var(--accent-color);
-      transform: translateX(-5px);
-    }
+/* Container do link de voltar */
+.back-link-container {
+  width: 100%;
+  max-width: 1400px; 
+  margin: 0 auto; 
+  padding: 0 0px 20px 0px; 
+  position: relative;
+  display: flex;
+  justify-content: flex-start; 
+  align-items: center; 
+}
 
+/* Link de voltar aprimorado */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--header-color);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition);
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+
+.back-link:hover {
+  color: var(--accent-color);
+  transform: translateX(-5px);
+}
     
     /* Estilo do toggle switch */
     .switch {
@@ -288,7 +300,12 @@
     }
     
     
-    
+    .main-content-wrapper {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
    
 /* ===================== MODAIS PADRONIZADOS ===================== */
 .modal {

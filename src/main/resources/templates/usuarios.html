@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/css/usuario.css">
   <link th:href="${faviconUrl}" rel="icon" th:if="${faviconUrl != null}">
-
 </head>
 <body>
 
@@ -25,14 +24,17 @@
     </div>
   </div>
 
+<div class="main-content-wrapper">
 
-<div class="main-content">
-      <a href="/" class="back-link">
+  <div class="back-link-container">
+    <a href="/" class="back-link">
       <i class="fas fa-arrow-left"></i> Voltar para a página inicial
     </a>
+  </div>
+
+<div class="main-content">
   <div class="users-container">
     <h2 class="users-title">Usuários Cadastrados</h2>
-    
     <table class="users-table">
       <thead>
         <tr>
@@ -89,6 +91,7 @@
       </tbody>
     </table>
   </div>
+</div>
   </div>
 <!-- Modal de Exclusão de Usuário -->
 <div id="deleteUserModal" class="modal delete-user-modal">
@@ -277,6 +280,5 @@
   </div>
 </div>
   <script src="/js/usuario.js"></script> 
-
 </body>
 </html>

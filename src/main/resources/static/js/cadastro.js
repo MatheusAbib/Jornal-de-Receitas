@@ -1,4 +1,4 @@
- // Toggle de senha aprimorado
+     // Toggle de senha aprimorado
     function togglePassword(inputId) {
       const input = document.getElementById(inputId);
       const icon = input.nextElementSibling.querySelector('i');
@@ -239,12 +239,15 @@ function applyResponsiveStylesCadastro() {
                 line-height: 1.4 !important;
             }
             
-            .back-link {
-                margin: 15px 10px !important;
+            .back-link-container {
+                padding: 0 15px 15px 15px !important;
+                max-width: 100% !important;
+              }
+              
+              .back-link {
                 font-size: 0.9rem !important;
-                width: 100% !important;
-                margin-right: 0 !important;
-            }
+                padding: 8px 12px !important;
+              }
             
             .container {
                 padding: 20px 15px !important;
@@ -344,11 +347,10 @@ function applyResponsiveStylesCadastro() {
                 font-size: 1rem !important;
             }
             
-            .back-link {
-                margin: 20px 15px !important;
-                margin-right: auto !important;
-                margin-left: 15px !important;
-            }
+            .back-link-container {
+                padding: 0 20px 15px 20px !important;
+                max-width: calc(100% - 30px) !important;
+              }
             
             .container {
                 padding: 25px 20px !important;
@@ -392,12 +394,20 @@ function applyResponsiveStylesCadastro() {
             .form-row:last-of-type {
                 grid-template-columns: repeat(2, 1fr) !important;
             }
+
+              .back-link-container {
+              max-width: 700px !important;
+            }
         }
         
         /* Dispositivos grandes (desktops pequenos, 1025px a 1200px) */
         @media (min-width: 1025px) and (max-width: 1200px) {
             .container {
                 max-width: 800px !important;
+            }
+
+            .back-link-container {
+              max-width: 800px !important;
             }
         }
         
@@ -667,7 +677,7 @@ function applyResponsiveStylesCadastro() {
                 padding-left: max(10px, env(safe-area-inset-left)) !important;
                 padding-right: max(10px, env(safe-area-inset-right)) !important;
                 padding-top: max(0px, env(safe-area-inset-top)) !important;
-                padding-bottom: max(20px, env(safe-area-inset-bottom)) !important;
+                padding-bottom: max(60px, env(safe-area-inset-bottom)) !important;
             }
             
             .header-full-width {
@@ -785,34 +795,9 @@ function adjustCadastroLayoutForScreenSize() {
         }
     });
     
-    // Ajustar título do jornal
-    const newspaperTitle = document.querySelector('.newspaper-title');
-    if (newspaperTitle) {
-        if (width <= 360) {
-            newspaperTitle.style.fontSize = '1.6rem';
-        } else if (width <= 480) {
-            newspaperTitle.style.fontSize = '1.8rem';
-        } else if (width <= 768) {
-            newspaperTitle.style.fontSize = '2.2rem';
-        } else if (width <= 1024) {
-            newspaperTitle.style.fontSize = '2.8rem';
-        } else {
-            newspaperTitle.style.fontSize = '3.5rem';
-        }
-    }
-    
     // Ajustar link de voltar
     const backLink = document.querySelector('.back-link');
     if (backLink) {
-        if (width <= 768) {
-            backLink.style.margin = '15px 10px';
-            backLink.style.width = '100%';
-            backLink.style.marginRight = '0';
-        } else {
-            backLink.style.margin = '20px 0';
-            backLink.style.width = 'auto';
-            backLink.style.marginRight = '34%';
-        }
     }
     
 
@@ -1018,3 +1003,20 @@ function createMobileNotification(message, type = 'success') {
         }, 5000);
     }
 }
+
+    const titleElement = document.querySelector('.newspaper-title');
+    if (titleElement) {
+      const originalTitle = titleElement.textContent;
+      titleElement.textContent = '';
+      let charIndex = 0;
+      
+      function typeTitle() {
+        if (charIndex < originalTitle.length) {
+          titleElement.textContent += originalTitle.charAt(charIndex);
+          charIndex++;
+          setTimeout(typeTitle, 100);
+        }
+      }
+      
+      setTimeout(typeTitle, 10);
+    }

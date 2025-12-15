@@ -118,6 +118,9 @@ public String novaReceitaForm(Model model) {
     } else {
         model.addAttribute("nomeUsuario", email);
     }
+
+    String faviconUrl = siteConfigService.getFaviconUrl();
+    model.addAttribute("faviconUrl", faviconUrl);
     
     return "form";
 }
@@ -205,6 +208,10 @@ public String salvarReceita(@ModelAttribute Receita receita,
     @GetMapping("/pendentes")
     public String pendentes(Model model) {
         model.addAttribute("receitas", repository.findByAprovadaFalse());
+        
+        String faviconUrl = siteConfigService.getFaviconUrl();
+        model.addAttribute("faviconUrl", faviconUrl);
+        
         return "pendentes"; 
     }
 
@@ -224,31 +231,34 @@ public String salvarReceita(@ModelAttribute Receita receita,
         return "redirect:/pendentes";
     }
 
-    @GetMapping("/detalhe/{id}")
-    public String detalheReceita(@PathVariable Long id, Model model) {
-        Receita receita = repository.findById(id).orElse(null);
-        if (receita == null) {
-            return "redirect:/";
-        }
-
-        List<String> ingredientesList = receita.getIngredientes() != null ?
-    Arrays.stream(receita.getIngredientes().split("\\|\\|"))
-                          .filter(s -> !s.isEmpty())
-                          .toList()
-                : List.of();
-
-        List<String> modoPreparoList = receita.getModoPreparo() != null ?
-    Arrays.stream(receita.getModoPreparo().split("\\|\\|"))
-                          .filter(s -> !s.isEmpty())
-                          .toList()
-                : List.of();
-
-        model.addAttribute("receita", receita);
-        model.addAttribute("ingredientesList", ingredientesList);
-        model.addAttribute("modoPreparoList", modoPreparoList);
-
-        return "detalhe";
+@GetMapping("/detalhe/{id}")
+public String detalheReceita(@PathVariable Long id, Model model) {
+    Receita receita = repository.findById(id).orElse(null);
+    if (receita == null) {
+        return "redirect:/";
     }
+
+    List<String> ingredientesList = receita.getIngredientes() != null ?
+            Arrays.stream(receita.getIngredientes().split("\\|\\|"))
+                  .filter(s -> !s.isEmpty())
+                  .toList()
+            : List.of();
+
+    List<String> modoPreparoList = receita.getModoPreparo() != null ?
+            Arrays.stream(receita.getModoPreparo().split("\\|\\|"))
+                  .filter(s -> !s.isEmpty())
+                  .toList()
+            : List.of();
+
+    model.addAttribute("receita", receita);
+    model.addAttribute("ingredientesList", ingredientesList);
+    model.addAttribute("modoPreparoList", modoPreparoList);
+    
+    String faviconUrl = siteConfigService.getFaviconUrl();
+    model.addAttribute("faviconUrl", faviconUrl);
+
+    return "detalhe";
+}
 
 @PostMapping("/receitas/excluir/{id}")
 @ResponseBody
@@ -310,6 +320,9 @@ public String sobre(Model model) {
             model.addAttribute("nomeUsuario", email);
         }
     }
+    
+    String faviconUrl = siteConfigService.getFaviconUrl();
+    model.addAttribute("faviconUrl", faviconUrl);
     
     return "sobre"; 
 }

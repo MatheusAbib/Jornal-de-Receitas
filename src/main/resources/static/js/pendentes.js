@@ -1,4 +1,4 @@
-  function confirmAction(action, button) {
+      function confirmAction(action, button) {
       event.preventDefault();
       const form = button.closest('form');
       const formAction = form.getAttribute('action');
@@ -179,17 +179,18 @@ function applyResponsiveStylesPendentes() {
             }
             
             .modal-content {
-                padding: 20px 15px !important;
-                margin: 0 10px !important;
-                max-width: 100% !important;
+                width: 95% !important;
+                max-width: 95% !important;
+                margin: 10px !important;
+                padding: 0 !important;
             }
             
-            .modal h3 {
-                font-size: 1.4rem !important;
+            .modal-header h3 {
+                font-size: 1.3rem !important;
             }
             
-            .modal p {
-                font-size: 0.9rem !important;
+            .modal-message {
+                font-size: 0.95rem !important;
                 margin-bottom: 20px !important;
             }
             
@@ -201,6 +202,7 @@ function applyResponsiveStylesPendentes() {
             .modal-button {
                 width: 100% !important;
                 padding: 10px 15px !important;
+                min-width: auto !important;
             }
             
             .header-top {
@@ -261,6 +263,7 @@ function applyResponsiveStylesPendentes() {
             
             .modal-content {
                 max-width: 450px !important;
+                width: 90% !important;
             }
         }
         
@@ -284,13 +287,6 @@ function applyResponsiveStylesPendentes() {
             }
         }
         
-        /* Dispositivos grandes (desktops pequenos, 1025px a 1200px) */
-        @media (min-width: 1025px) and (max-width: 1200px) {
-            .receitas-container {
-                grid-template-columns: repeat(3, 1fr) !important;
-            }
-        }
-        
         /* Ajustes gerais para todos os dispositivos móveis */
         @media (max-width: 768px) {
             .page-header {
@@ -305,53 +301,11 @@ function applyResponsiveStylesPendentes() {
                 padding: 15px !important;
             }
             
-            .modal-content {
-                max-width: 90% !important;
+            .modal-header h3 {
+                font-size: 1.5rem !important;
             }
             
-            .close {
-                top: 10px !important;
-                right: 10px !important;
-                font-size: 1.3rem !important;
-            }
-            
-            .modal-icon {
-                font-size: 2.5rem !important;
-                margin-bottom: 15px !important;
-            }
-        }
-        
-        /* Ajustes para orientação paisagem em dispositivos móveis */
-        @media (max-width: 768px) and (orientation: landscape) {
-            .receitas-container {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
-            
-            .card-image {
-                height: 160px !important;
-            }
-            
-            .page-header h1 {
-                font-size: 1.8rem !important;
-            }
-            
-            .modal-content {
-                max-width: 80% !important;
-                padding: 20px !important;
-            }
-        }
-        
-        /* Otimização para tablets em modo retrato */
-        @media (min-width: 600px) and (max-width: 900px) and (orientation: portrait) {
-            .receitas-container {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
-            
-            .card-image {
-                height: 200px !important;
-            }
-            
-            .card-content {
+            .modal-body {
                 padding: 20px !important;
             }
         }
@@ -369,95 +323,6 @@ function applyResponsiveStylesPendentes() {
             
             .header-container {
                 max-width: 1400px;
-            }
-        }
-        
-        /* Ajustes para impressão */
-        @media print {
-            .header-full-width,
-            .back-link,
-            .card-badge,
-            .card-actions,
-            .modal,
-            .menu-icon,
-            .back-button {
-                display: none !important;
-            }
-            
-            body {
-                background: white !important;
-                color: black !important;
-            }
-            
-            .card {
-                break-inside: avoid !important;
-                box-shadow: none !important;
-                border: 1px solid #ddd !important;
-                border-top: 3px solid var(--pending-color) !important;
-            }
-            
-            .card-image img {
-                max-height: 150px !important;
-            }
-            
-            .receitas-container {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 15px !important;
-            }
-        }
-        
-        /* Melhorias de acessibilidade para toque */
-        @media (hover: none) and (pointer: coarse) {
-            .card-link,
-            .approve-button,
-            .reject-button,
-            .modal-button {
-                padding: 12px 20px !important;
-                min-height: 44px !important;
-            }
-            
-            .back-link,
-            .back-button {
-                padding: 10px !important;
-                min-height: 44px !important;
-            }
-            
-            .close {
-                min-width: 44px !important;
-                min-height: 44px !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-            }
-        }
-        
-        /* Suporte para modo escuro */
-        @media (prefers-color-scheme: dark) {
-            @media (max-width: 768px) {
-                .card {
-                    background: #2c2c2c !important;
-                    color: #f0f0f0 !important;
-                }
-                
-                .card h2 {
-                    color: #e67e22 !important;
-                }
-                
-                .card p {
-                    color: #b0b0b0 !important;
-                }
-                
-                .empty-state {
-                    background: #2c2c2c !important;
-                }
-                
-                .empty-state h2 {
-                    color: #e67e22 !important;
-                }
-                
-                .empty-state p {
-                    color: #b0b0b0 !important;
-                }
             }
         }
     `;
@@ -500,20 +365,6 @@ function adjustLayoutForScreenSizePendentes() {
         }
     });
     
-    // Ajustar tamanho da fonte do título da página
-    const pageTitle = document.querySelector('.page-header h1');
-    if (pageTitle) {
-        if (width <= 480) {
-            pageTitle.style.fontSize = '1.8rem';
-        } else if (width <= 768) {
-            pageTitle.style.fontSize = '2.2rem';
-        } else if (width <= 1024) {
-            pageTitle.style.fontSize = '2.5rem';
-        } else {
-            pageTitle.style.fontSize = '2.8rem';
-        }
-    }
-    
     // Ajustar padding do conteúdo
     const contentWrapper = document.querySelector('.content-wrapper');
     if (contentWrapper) {
@@ -524,15 +375,6 @@ function adjustLayoutForScreenSizePendentes() {
         } else {
             contentWrapper.style.padding = '0 20px';
         }
-    }
-    
-    // Otimizar botões para touch
-    if ('ontouchstart' in window || navigator.maxTouchPoints) {
-        const touchElements = document.querySelectorAll('.card-link, .approve-button, .reject-button, .modal-button');
-        touchElements.forEach(el => {
-            el.style.minHeight = '44px';
-            el.style.padding = '12px 20px';
-        });
     }
 }
 
@@ -546,55 +388,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Reaplicar estilos se necessário
     window.addEventListener('load', applyResponsiveStylesPendentes);
-});
-
-// Detectar dispositivo e adicionar classe para CSS específico
-function detectDevicePendentes() {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-        document.body.classList.add('mobile-view');
-        
-        // Otimizar para touch
-        const touchElements = document.querySelectorAll('button, a, input[type="submit"]');
-        touchElements.forEach(el => {
-            el.classList.add('touch-optimized');
-        });
-    } else {
-        document.body.classList.add('desktop-view');
-    }
-}
-
-// Executar detecção de dispositivo
-detectDevicePendentes();
-
-// Função para melhorar a experiência em dispositivos com tela pequena
-function optimizeForSmallScreen() {
-    const width = window.innerWidth;
-    
-    if (width <= 768) {
-        // Simplificar animações para melhor performance
-        const cards = document.querySelectorAll('.card');
-        cards.forEach(card => {
-            card.style.transition = 'transform 0.2s ease';
-        });
-        
-        // Otimizar modais
-        const modals = document.querySelectorAll('.modal-content');
-        modals.forEach(modal => {
-            modal.style.borderRadius = '8px';
-            modal.style.padding = '20px';
-        });
-    }
-}
-
-// Executar otimizações
-optimizeForSmallScreen();
-
-// Adicionar listener para mudanças de orientação
-window.addEventListener('orientationchange', function() {
-    setTimeout(() => {
-        adjustLayoutForScreenSizePendentes();
-        optimizeForSmallScreen();
-    }, 100);
 });

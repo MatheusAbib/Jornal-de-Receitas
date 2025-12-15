@@ -1,4 +1,4 @@
- // ===================== VARIÁVEIS GLOBAIS =====================
+   // ===================== VARIÁVEIS GLOBAIS =====================
 let currentDeleteUser = null;
 let currentEditUser = null;
 
@@ -481,11 +481,16 @@ function applyResponsiveStylesUsuarios() {
                 text-align: center !important;
             }
             
-            .back-link {
-                font-size: 0.9rem !important;
-                margin: 20px 15px !important;
-                padding: 8px 0 !important;
+            .back-link-container {
+              padding: 0 15px 15px 15px !important;
+              max-width: 100% !important;
             }
+            
+            .back-link {
+              font-size: 0.9rem !important;
+              padding: 8px 12px !important;
+            }
+            
             
             .users-container {
                 padding: 15px !important;
@@ -680,13 +685,18 @@ function applyResponsiveStylesUsuarios() {
             .edit-user-modal .form-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
             }
+
+          .back-link-container {
+              padding: 0 20px 15px 20px !important;
+              max-width: calc(100% - 40px) !important;
+            }
         }
         
         /* Dispositivos médios (tablets, 769px a 1024px) */
         @media (min-width: 769px) and (max-width: 1024px) {
             .users-container {
-                padding: 25px !important;
-                margin: 25px !important;
+                padding: 15px !important;
+                margin: 25px 0 !important;
             }
             
             .users-table {
@@ -700,6 +710,11 @@ function applyResponsiveStylesUsuarios() {
             
             .edit-user-modal .form-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+          .back-link-container {
+              max-width: 1000px !important;
+              padding: 0 20px 0px 0px !important;
             }
         }
         
@@ -799,6 +814,18 @@ function applyResponsiveStylesUsuarios() {
                 grid-template-columns: repeat(2, 1fr) !important;
             }
         }
+
+        @media (min-width: 1025px) and (max-width: 1200px) {
+          .back-link-container {
+              max-width: 1200px !important;
+              padding: 0 20px 0px 0px !important;
+            }
+
+            
+            .users-container{
+        margin: 20px 13px !important;
+                    }
+            }
         
         /* Tabela responsiva para telas médias */
         @media (max-width: 1024px) {
@@ -806,15 +833,17 @@ function applyResponsiveStylesUsuarios() {
                 min-width: 100% !important;
             }
             
-            .users-table th,
-            .users-table td {
-                min-width: 120px !important;
-            }
-            
             .users-table td:nth-child(6), /* Status */
             .users-table td:nth-child(7) { /* Ações */
                 min-width: auto !important;
             }
+        }
+
+        @media (min-width: 1201px) {
+          .back-link-container {
+            max-width: 1400px !important;
+            padding: 0 20px 0px 0px !important;
+          }
         }
         
         /* Ajustes para telas muito grandes */
@@ -833,7 +862,7 @@ function applyResponsiveStylesUsuarios() {
             }
             
             .users-container {
-                max-width: 1200px !important;
+                max-width: 1300px !important;
                 margin: 40px auto !important;
             }
         }
@@ -1056,20 +1085,7 @@ function adjustTableLayoutForScreenSize() {
             container.style.margin = '40px 0';
         }
     }
-    
-    // Ajustar título da página
-    const pageTitle = document.querySelector('.page-header h1');
-    if (pageTitle) {
-        if (width <= 480) {
-            pageTitle.style.fontSize = '1.6rem';
-        } else if (width <= 768) {
-            pageTitle.style.fontSize = '2rem';
-        } else if (width <= 1024) {
-            pageTitle.style.fontSize = '2.4rem';
-        } else {
-            pageTitle.style.fontSize = '2.8rem';
-        }
-    }
+  
     
     // Otimizar para touch
     if ('ontouchstart' in window || navigator.maxTouchPoints) {
@@ -1285,6 +1301,3 @@ function createResponsiveNotification(message, type = 'success') {
         }, 300);
     }, 3000);
 }
-
-// Exemplo de uso (adicione ao seu usuario.js se necessário):
-// createResponsiveNotification('Usuário atualizado com sucesso!', 'success');
