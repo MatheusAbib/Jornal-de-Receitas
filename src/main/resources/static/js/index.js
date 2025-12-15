@@ -1781,6 +1781,7 @@ function showPageLoader() {
     const loader = document.getElementById('pageLoader');
     if (loader) {
         loader.classList.remove('hidden');
+        // Garantir que o loader esteja visível
         loader.style.display = 'flex';
     }
 }
@@ -1788,55 +1789,22 @@ function showPageLoader() {
 function hidePageLoader() {
     const loader = document.getElementById('pageLoader');
     if (loader) {
+        // Adicionar transição suave
         loader.classList.add('hidden');
+        // Remover completamente após a transição
         setTimeout(() => {
             loader.style.display = 'none';
-        }, 500);
+        }, 500); // Tempo deve coincidir com a transição CSS
     }
 }
 
-// Verificar se imagens principais carregaram
-function checkImagesLoaded() {
-    const images = document.querySelectorAll('img');
-    let loadedCount = 0;
-    const totalImages = images.length;
-    
-    if (totalImages === 0) {
-        hidePageLoader();
-        return;
-    }
-    
-    images.forEach(img => {
-        if (img.complete) {
-            loadedCount++;
-        } else {
-            img.addEventListener('load', () => {
-                loadedCount++;
-                if (loadedCount === totalImages) {
-                    hidePageLoader();
-                }
-            });
-            img.addEventListener('error', () => {
-                loadedCount++;
-                if (loadedCount === totalImages) {
-                    hidePageLoader();
-                }
-            });
-        }
-    });
-    
-    if (loadedCount === totalImages) {
-        hidePageLoader();
-    }
-}
-
-// Configurar o spinner
+// Mostrar spinner imediatamente
 document.addEventListener('DOMContentLoaded', function() {
     showPageLoader();
-    checkImagesLoaded();
     
+    // Esconder spinner quando tudo estiver carregado
     window.addEventListener('load', function() {
-        setTimeout(hidePageLoader, 300);
+        setTimeout(hidePageLoader, 600);
     });
     
     setTimeout(hidePageLoader, 3000);
