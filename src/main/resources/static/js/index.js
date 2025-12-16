@@ -1,4 +1,4 @@
-  
+    
 // ===================== VARIÁVEIS PARA FILTRO =====================
 let filterTimeout = null;
 let lastFilterValues = {};
@@ -684,41 +684,79 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 3000);
   }
 
-  function initializeFavoriteButtons() {
+function initializeFavoriteButtons() {
     const favoriteButtons = document.querySelectorAll('.card-favorite');
+    console.log(`Inicializando ${favoriteButtons.length} botões de favorito`);
+    
     favoriteButtons.forEach(button => {
-      const recipeId = button.getAttribute('data-recipe-id');
-      if (favorites.includes(recipeId)) {
-        button.classList.add('active');
-        const icon = button.querySelector('i');
-        if (icon) {
-          icon.classList.remove('far');
-          icon.classList.add('fas');
-        }
-      }
-      button.addEventListener('click', function() {
-        const icon = this.querySelector('i');
-        if (this.classList.contains('active')) {
-          favorites = favorites.filter(id => id !== recipeId);
-          this.classList.remove('active');
-          if (icon) {
-            icon.classList.remove('fas');
-            icon.classList.add('far');
-          }
+        const recipeId = button.getAttribute('data-recipe-id');
+        const recipeTitle = button.closest('.card').querySelector('h2').textContent;
+        
+        console.log(`Receita ${recipeId}: ${recipeTitle} - Favorita: ${favorites.includes(recipeId)}`);
+        
+        // Atualizar estado inicial
+        if (favorites.includes(recipeId)) {
+            button.classList.add('active');
+            const icon = button.querySelector('i');
+            if (icon) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            }
         } else {
-          favorites.push(recipeId);
-          this.classList.add('active');
-          if (icon) {
-            icon.classList.remove('far');
-            icon.classList.add('fas');
-          }
+            button.classList.remove('active');
+            const icon = button.querySelector('i');
+            if (icon) {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            }
         }
-        localStorage.setItem('recipeFavorites', JSON.stringify(favorites));
-        updateFavoriteCount();
-        showFavoriteNotification(this.classList.contains('active'));
-      });
+        
+        // Adicionar evento de clique
+        button.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            
+            if (this.classList.contains('active')) {
+                // Remover dos favoritos
+                favorites = favorites.filter(id => id !== recipeId);
+                this.classList.remove('active');
+                if (icon) {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                }
+                console.log(`Removido dos favoritos: ${recipeId}`);
+            } else {
+                // Adicionar aos favoritos
+                if (!favorites.includes(recipeId)) {
+                    favorites.push(recipeId);
+                }
+                this.classList.add('active');
+                if (icon) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                }
+                console.log(`Adicionado aos favoritos: ${recipeId}`);
+            }
+            
+            // Salvar no localStorage
+            localStorage.setItem('recipeFavorites', JSON.stringify(favorites));
+            
+            // Atualizar contador
+            updateFavoriteCount();
+            
+            // Mostrar notificação
+            showFavoriteNotification(this.classList.contains('active'));
+            
+            // Se a aba de favoritos estiver ativa, recarregar
+            const favTab = document.getElementById('favoritas');
+            if (favTab && favTab.classList.contains('active')) {
+                loadFavoriteRecipes();
+            }
+        });
     });
-  }
+    
+    // Depurar localStorage
+    console.log('Favoritos no localStorage:', JSON.parse(localStorage.getItem('recipeFavorites')) || []);
+}
 
   function loadFavoriteRecipes() {
     const favoriteContainer = document.getElementById('favorite-recipes');
@@ -727,49 +765,94 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!favoriteContainer || !emptyState) return;
     
     favoriteContainer.innerHTML = '';
+    
     if (favorites.length === 0) {
-      emptyState.style.display = 'block';
-      return;
+        emptyState.style.display = 'block';
+        favoriteContainer.style.display = 'none';
+        return;
     }
+    
     emptyState.style.display = 'none';
-    const allRecipeCards = document.querySelectorAll('#all-recipes .card');
+    favoriteContainer.style.display = 'grid';
+    
+    // Buscar todas as receitas das duas categorias
+    const allRecipeCards = document.querySelectorAll('#salgados-recipes .card, #doces-recipes .card');
+    
+    console.log(`Total de cards encontrados: ${allRecipeCards.length}`);
+    console.log(`Favoritos no localStorage: ${favorites.join(', ')}`);
+    
+    let favoriteCardsFound = 0;
+    
     allRecipeCards.forEach(card => {
-      const favoriteButton = card.querySelector('.card-favorite');
-      if (favoriteButton) {
-        const recipeId = favoriteButton.getAttribute('data-recipe-id');
-        if (favorites.includes(recipeId)) {
-          const clonedCard = card.cloneNode(true);
-          const favButton = clonedCard.querySelector('.card-favorite');
-          if (favButton) {
-            favButton.classList.add('active');
-            const icon = favButton.querySelector('i');
-            if (icon) {
-              icon.classList.remove('far');
-              icon.classList.add('fas');
-            }
-            favButton.addEventListener('click', function() {
-              favorites = favorites.filter(id => id !== recipeId);
-              localStorage.setItem('recipeFavorites', JSON.stringify(favorites));
-              updateFavoriteCount();
-              this.closest('.card').remove();
-              if (favorites.length === 0) emptyState.style.display = 'block';
-              const mainButton = document.querySelector(`#all-recipes .card-favorite[data-recipe-id="${recipeId}"]`);
-              if (mainButton) {
-                mainButton.classList.remove('active');
-                const mainIcon = mainButton.querySelector('i');
-                if (mainIcon) {
-                  mainIcon.classList.remove('fas');
-                  mainIcon.classList.add('far');
+        const favoriteButton = card.querySelector('.card-favorite');
+        if (favoriteButton) {
+            const recipeId = favoriteButton.getAttribute('data-recipe-id');
+            
+            if (favorites.includes(recipeId)) {
+                favoriteCardsFound++;
+                const clonedCard = card.cloneNode(true);
+                
+                // Configurar botão de favorito no card clonado
+                const favButton = clonedCard.querySelector('.card-favorite');
+                if (favButton) {
+                    favButton.classList.add('active');
+                    const icon = favButton.querySelector('i');
+                    if (icon) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                    }
+                    
+                    // Adicionar evento de clique para remover dos favoritos
+                    favButton.addEventListener('click', function() {
+                        // Remover do array de favoritos
+                        favorites = favorites.filter(id => id !== recipeId);
+                        localStorage.setItem('recipeFavorites', JSON.stringify(favorites));
+                        
+                        // Atualizar contador
+                        updateFavoriteCount();
+                        
+                        // Remover o card da lista de favoritos
+                        this.closest('.card').remove();
+                        
+                        // Atualizar o botão de favorito na lista principal
+                        const mainButton = document.querySelector(`.card-favorite[data-recipe-id="${recipeId}"]:not(#favorite-recipes .card-favorite)`);
+                        if (mainButton) {
+                            mainButton.classList.remove('active');
+                            const mainIcon = mainButton.querySelector('i');
+                            if (mainIcon) {
+                                mainIcon.classList.remove('fas');
+                                mainIcon.classList.add('far');
+                            }
+                        }
+                        
+                        // Mostrar notificação
+                        showFavoriteNotification(false);
+                        
+                        // Mostrar estado vazio se não houver mais favoritos
+                        if (favorites.length === 0) {
+                            emptyState.style.display = 'block';
+                            favoriteContainer.style.display = 'none';
+                        }
+                    });
                 }
-              }
-              showFavoriteNotification(false);
-            });
-          }
-          favoriteContainer.appendChild(clonedCard);
+                
+                favoriteContainer.appendChild(clonedCard);
+            }
         }
-      }
     });
-  }
+    
+    console.log(`Cards favoritos encontrados: ${favoriteCardsFound}`);
+    
+    // Se não encontrou cards favoritos mas o localStorage diz que tem
+    if (favoriteCardsFound === 0 && favorites.length > 0) {
+        console.warn('Favoritos no localStorage mas não encontrados no DOM');
+        emptyState.style.display = 'block';
+        favoriteContainer.style.display = 'none';
+        favorites = [];
+        localStorage.setItem('recipeFavorites', JSON.stringify(favorites));
+        updateFavoriteCount();
+    }
+}
 
   initializeFavoriteButtons();
   updateFavoriteCount();
