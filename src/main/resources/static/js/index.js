@@ -1,4 +1,4 @@
-
+  
 // ===================== VARIÁVEIS PARA FILTRO =====================
 let filterTimeout = null;
 let lastFilterValues = {};
@@ -1681,6 +1681,8 @@ function applyResponsiveStyles() {
                 margin-top: 11%;
             }
 
+
+
             .newspaper-title::before, .newspaper-title::after{
                 display: none;
 
@@ -1807,6 +1809,14 @@ function applyResponsiveStyles() {
                 padding: 12px;
                 font-size: 1rem;
             }
+
+            .header-top{
+              flex-direction: row-reverse;
+            }
+
+            .recipe-count{
+            display: none;
+            }
             
             .modal-actions,
             .modal-actions-delete {
@@ -1865,7 +1875,6 @@ function applyResponsiveStyles() {
         gap: 15px !important;
     }
     
-    /* Garantir que o modal seja rolável em dispositivos móveis */
     .modal {
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch !important;
@@ -1877,6 +1886,32 @@ function applyResponsiveStyles() {
         top: 45px !important;
 
     }
+
+     .content-wrapper {
+        padding: 0 15px !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    
+    body {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        padding: 0 !important;
+    }
+
+
+     .header-full-width {
+        width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    .header-container {
+        padding: 10px 15px !important;
+        max-width: 100% !important;
+    }
         }
         
         /* Ajustes para orientação paisagem em dispositivos móveis */
@@ -1884,6 +1919,8 @@ function applyResponsiveStyles() {
             .carousel-container {
                 height: 300px;
             }
+
+        
             
             .nav-links {
                 flex-direction: row;

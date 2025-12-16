@@ -1,4 +1,4 @@
-    // Script para compartilhar receita
+     // Script para compartilhar receita
     function shareRecipe() {
       if (navigator.share) {
         navigator.share({
@@ -877,3 +877,72 @@ function createMobileFriendlyLayout() {
 
 // Executar criação de layout mobile
 createMobileFriendlyLayout();
+
+
+function fixIngredientCheckboxes() {
+  const ingredientItems = document.querySelectorAll('.ingredient-item');
+  
+  ingredientItems.forEach((item, index) => {
+    const checkbox = item.querySelector('.ingredient-checkbox');
+    const label = item.querySelector('.ingredient-text');
+    
+    // Remover qualquer ID antigo
+    checkbox.removeAttribute('id');
+    label.removeAttribute('for');
+    
+    // Criar IDs únicos
+    const uniqueId = 'ingredient-' + index + '-' + Date.now();
+    checkbox.id = uniqueId;
+    label.setAttribute('for', uniqueId);
+    
+    // Configurar evento de clique
+    checkbox.addEventListener('change', function() {
+      if (this.checked) {
+        label.style.color = 'var(--text-light)';
+        label.style.textDecoration = 'line-through';
+      } else {
+        label.style.color = '';
+        label.style.textDecoration = '';
+      }
+    });
+    
+    // Permitir clicar em qualquer lugar do item para marcar
+    item.addEventListener('click', function(e) {
+      if (e.target !== checkbox && e.target !== label) {
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event('change'));
+      }
+    });
+  });
+  
+  // Configurar clique no título para marcar/desmarcar todos
+  const titleElement = document.querySelector('.section-title');
+  if (titleElement) {
+    titleElement.style.cursor = 'pointer';
+    titleElement.title = 'Clique para marcar/desmarcar todos';
+    titleElement.addEventListener('click', function() {
+      const checkboxes = document.querySelectorAll('.ingredient-checkbox');
+      const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+      
+      checkboxes.forEach(cb => {
+        cb.checked = !allChecked;
+        cb.dispatchEvent(new Event('change'));
+      });
+    });
+  }
+}
+
+// Executar quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+  // Esperar um pouco para garantir que o Thymeleaf tenha processado tudo
+  setTimeout(fixIngredientCheckboxes, 100);
+  
+  const observer = new MutationObserver(function() {
+    if (document.querySelector('.ingredient-item')) {
+      fixIngredientCheckboxes();
+      observer.disconnect();
+    }
+  });
+  
+  observer.observe(document.body, { childList: true, subtree: true });
+});

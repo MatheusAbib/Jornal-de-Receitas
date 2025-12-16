@@ -1,4 +1,4 @@
-    /* ===== VARIÁVEIS E RESET ===== */
+      /* ===== VARIÁVEIS E RESET ===== */
 :root {
     --primary: #a52a2a;
     --primary-dark: #d4af37;
@@ -85,7 +85,7 @@ cubic-bezier(0.175, 0.885, 0.32, 1.1);
     /* ===== CABEÇALHO ===== */
     .recipe-header {
       text-align: center;
-      margin-bottom: 50px;
+      margin-bottom: 5px;
       position: relative;
       padding-top: 20px;
     }
@@ -114,18 +114,29 @@ cubic-bezier(0.175, 0.885, 0.32, 1.1);
       border-radius: 2px;
     }
 
-    .recipe-subtitle {
-      font-size: 1.1rem;
-      color: var(--text-light);
-      font-style: italic;
-      max-width: 600px;
-      margin: 25px auto 0;
-      padding: 15px 20px;
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: var(--radius-sm);
-      backdrop-filter: blur(10px);
-    }
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--header-color);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition);
+}
 
+.back-link:hover {
+  color: #d4af37;
+  transform: translateX(-5px);
+}
+
+/* Ajuste para o container do subtítulo */
+.recipe-subtitle {
+  margin: 0;
+  padding: 15px 30px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(10px);
+}
     /* ===== SEÇÃO PRINCIPAL COM GRID ===== */
     .hero-section {
       display: grid;
@@ -587,7 +598,7 @@ cubic-bezier(0.175, 0.885, 0.32, 1.1);
     .decoration-leaf {
       position: fixed;
       font-size: 4rem;
-      color: rgba(218, 165, 32, 0.1);
+      color: rgba(218, 165, 32, 19%);
       z-index: -1;
       pointer-events: none;
     }

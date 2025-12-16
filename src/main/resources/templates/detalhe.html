@@ -8,6 +8,7 @@
   
   <link rel="stylesheet" href="/css/detalhe.css">
 
+
   <link th:href="${faviconUrl}" rel="icon" th:if="${faviconUrl != null}">
 
 </head>
@@ -18,18 +19,32 @@
   <div class="decoration-leaf leaf-2">❧</div>
   <div class="decoration-leaf leaf-3">❦</div>
   <div class="decoration-leaf leaf-4">❧</div>
+  
 
   <div class="main-container">
     
     <!-- Cabeçalho -->
-    <header class="recipe-header fade-in">
-      <h1 class="recipe-title" th:text="${receita.titulo}">Título da Receita</h1>
-      <div class="recipe-subtitle">
-        <i class="fas fa-quote-left"></i>
-        Uma receita especial para momentos inesquecíveis
-        <i class="fas fa-quote-right"></i>
-      </div>
-    </header>
+<header class="recipe-header fade-in">
+  <h1 class="recipe-title" th:text="${receita.titulo}">Título da Receita</h1>
+  
+  <div style="display: flex; align-items: center; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 20px;">
+    <div class="recipe-subtitle">
+      <i class="fas fa-quote-left"></i>
+      Uma receita especial para momentos inesquecíveis
+      <i class="fas fa-quote-right"></i>
+    </div>
+  </div>
+</header>
+
+<div style="display: flex; justify-content: flex-start; margin-bottom: 15px;">
+  <a href="/" class="back-link" 
+     style="display: inline-flex; align-items: center; gap: 8px; 
+            text-decoration: none; 
+            font-weight: 600; transition: var(--transition);
+            padding: 8px 16px; border-radius: 4px;">
+    <i class="fas fa-arrow-left"></i> Voltar para a página inicial
+  </a>
+</div>
 
     <!-- Seção Hero com imagem e informações -->
     <section class="hero-section slide-up">
@@ -113,24 +128,24 @@
     </section>
 
     <!-- Seção de Ingredientes -->
-    <section class="content-section slide-up" style="animation-delay: 0.1s;">
-      <div class="section-header">
-        <div class="section-icon">
-          <i class="fas fa-list-check"></i>
-        </div>
-        <h2 class="section-title">Ingredientes</h2>
-        <div class="section-count" th:text="${ingredientesList.size()} + ' itens'">X itens</div>
-      </div>
-      
-      <div class="ingredients-grid">
-        <div class="ingredient-item" th:each="ingrediente : ${ingredientesList}">
-          <input type="checkbox" class="ingredient-checkbox" id="ing-${iterStat.index}">
-          <label class="ingredient-text" for="ing-${iterStat.index}" th:text="${ingrediente}">
-            Ingrediente
-          </label>
-        </div>
-      </div>
-    </section>
+<section class="content-section slide-up" style="animation-delay: 0.1s;">
+  <div class="section-header">
+    <div class="section-icon">
+      <i class="fas fa-list-check"></i>
+    </div>
+    <h2 class="section-title">Ingredientes</h2>
+    <div class="section-count" th:text="${ingredientesList.size()} + ' itens'">X itens</div>
+  </div>
+  
+  <div class="ingredients-grid">
+    <div class="ingredient-item" th:each="ingrediente : ${ingredientesList}">
+      <input type="checkbox" class="ingredient-checkbox">
+      <label class="ingredient-text" th:text="${ingrediente}">
+        Ingrediente
+      </label>
+    </div>
+  </div>
+</section>
 
     <!-- Seção de Modo de Preparo -->
     <section class="content-section slide-up" style="animation-delay: 0.2s;">
@@ -153,12 +168,7 @@
     </section>
 
     <!-- Botões de Ação -->
-    <div class="action-buttons slide-up" style="animation-delay: 0.3s;">
-      <a href="/" class="btn btn-primary">
-        <i class="fas fa-home"></i>
-        <span>Página Inicial</span>
-      </a>
-      
+    <div class="action-buttons slide-up" style="animation-delay: 0.3s;">      
       <a href="/pendentes" class="btn btn-secondary" th:if="${!receita.aprovada}">
         <i class="fas fa-clock"></i>
         <span>Receitas Pendentes</span>
