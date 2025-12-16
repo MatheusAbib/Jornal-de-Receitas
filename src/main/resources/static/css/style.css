@@ -59,16 +59,191 @@
     
     /* HEADER COM LARGURA TOTAL */
     .header-full-width {
-      width: 100vw;
       position: relative;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: sticky;
       left: 50%;
       right: 50%;
+      z-index: 999;
+      top: 0;
       margin-left: -50vw;
       margin-right: -50vw;
       background: linear-gradient(135deg, var(--header-bg), #8b0000);
       margin-bottom: 30px;
-      box-shadow: var(--shadow);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
+
+
+
+/* HEADER MINIMIZADO - Estado quando rola */
+.header-full-width.scrolled {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Ajustar container quando minimizado */
+.header-full-width.scrolled .header-container {
+    padding: 5px 20px !important;
+    position: relative;
+    min-height: 60px;
+}
+
+/* Esconder elementos quando minimizado */
+.header-full-width.scrolled .newspaper-subtitle,
+.header-full-width.scrolled .newspaper-date,
+.header-full-width.scrolled .nav-links {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+
+/* MANTENDO header-top visível */
+.header-full-width.scrolled .header-top {
+    max-height: 30px !important;
+    opacity: 1 !important;
+    margin-bottom: 5px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    transition: all 0.3s ease;
+}
+
+/* Título do jornal quando minimizado */
+.header-full-width.scrolled .newspaper-title {
+    font-size: 2rem !important;
+    margin: 5px 0 !important;
+    padding: 0 20px !important;
+    letter-spacing: 2px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 5;
+}
+
+/* ESTRELAS quando minimizado */
+.header-full-width.scrolled .newspaper-title::before,
+.header-full-width.scrolled .newspaper-title::after {
+    content: "✦" !important;
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: var(--accent-color) !important;
+    font-size: 1.2rem !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+    display: block !important;
+}
+
+.header-full-width.scrolled .newspaper-title::before {
+    left: 0 !important;
+}
+
+.header-full-width.scrolled .newspaper-title::after {
+    right: 0 !important;
+}
+
+/* NEWSPAPER PRICE e VOLUME quando minimizado - POSIÇÃO ORIGINAL */
+.header-full-width.scrolled .newspaper-price {
+    position: absolute !important;
+    top: 20px !important;
+    right: -15px !important;
+    font-size: 1rem !important;
+    height: 35px !important;
+    color: var(--header-color) !important;
+    background: var(--accent-color) !important;
+    transform: none !important;
+}
+
+.header-full-width.scrolled .newspaper-volume {
+    position: absolute !important;
+    top: 20px !important;
+    left: -15px !important;
+    font-size: 0.9rem !important;
+    height: 35px !important;
+    color: var(--header-color) !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: none !important;
+}
+
+/* Ícones dentro do volume */
+.header-full-width.scrolled .newspaper-volume .menu-icon,
+.header-full-width.scrolled .newspaper-volume .user-icon {
+    margin: 0 8px !important;
+    height: 25px !important;
+    width: 25px !important;
+    font-size: 22px;
+}
+
+/* ANIMAÇÃO para o conteúdo principal quando header minimiza */
+.content-wrapper {
+    transition: transform 0.4s ease;
+}
+
+.header-full-width.scrolled ~ .content-wrapper {
+    transform: translateY(-40px);
+}
+
+/* ===================== RESPONSIVIDADE PARA HEADER FIXO ===================== */
+
+@media (max-width: 768px) {
+    .header-full-width.scrolled {
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+    
+    .header-full-width.scrolled .header-container {
+        padding: 3px 15px !important;
+        min-height: 50px;
+    }
+    
+    .header-full-width.scrolled .newspaper-title {
+        font-size: 1.5rem !important;
+        padding: 0 15px !important;
+        margin: 10px 0 !important;
+    }
+    
+    .header-full-width.scrolled .newspaper-title::before,
+    .header-full-width.scrolled .newspaper-title::after {
+        font-size: 0.9rem !important;
+    }
+    
+    .header-full-width.scrolled .newspaper-price,
+    .header-full-width.scrolled .newspaper-volume {
+        font-size: 0.7rem !important;
+        padding: 3px 8px !important;
+        height: 25px !important;
+        top: 15px !important;
+    }
+    
+    .header-full-width.scrolled .newspaper-price {
+        right: 5px !important;
+    }
+    
+    .header-full-width.scrolled .newspaper-volume {
+        left: 5px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-full-width.scrolled .newspaper-title {
+        font-size: 1.2rem !important;
+        padding: 0 20px !important;
+        margin: 8px 0 !important;
+    }
+    
+    .header-full-width.scrolled .newspaper-price,
+    .header-full-width.scrolled .newspaper-volume {
+        display: none !important;
+    }
+    
+    .header-full-width.scrolled .newspaper-title::before,
+    .header-full-width.scrolled .newspaper-title::after {
+        font-size: 0.8rem !important;
+    }
+}
     
     .header-container {
       max-width: 1400px;

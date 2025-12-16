@@ -176,28 +176,41 @@
     });
 
     // Mensagem do servidor
-    const urlParams = new URLSearchParams(window.location.search);
-    const success = urlParams.get('success');
-    const error = urlParams.get('error');
-    const alertBox = document.getElementById('alertBox');
+const urlParams = new URLSearchParams(window.location.search);
+const success = urlParams.get('success');
+const error = urlParams.get('error');
+const cadastroSucesso = urlParams.get('cadastroSucesso');
+const alertBox = document.getElementById('alertBox');
 
-    if(success) {
-      alertBox.querySelector('#alertMessage').textContent = decodeURIComponent(success);
-      alertBox.className = 'alert alert-success';
-      alertBox.style.display = 'flex';
-      
-      // Redireciona após 3 segundos
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 3000);
-    }
+// Se houver sucesso no cadastro (com o novo parâmetro)
+if(cadastroSucesso === 'true') {
+  alertBox.querySelector('#alertMessage').textContent = 'Cadastro realizado com sucesso! Redirecionando para a página principal...';
+  alertBox.className = 'alert alert-success';
+  alertBox.style.display = 'flex';
+  
+  // Redireciona imediatamente para a página principal (já estará logado)
+  setTimeout(() => {
+    window.location.href = '/';
+  }, 1500); // Redireciona mais rápido (1.5 segundos em vez de 3)
+}
 
-    if(error) {
-      alertBox.querySelector('#alertMessage').textContent = decodeURIComponent(error);
-      alertBox.className = 'alert alert-error';
-      alertBox.style.display = 'flex';
-    }
+// Mantém o tratamento antigo para compatibilidade
+if(success) {
+  alertBox.querySelector('#alertMessage').textContent = decodeURIComponent(success);
+  alertBox.className = 'alert alert-success';
+  alertBox.style.display = 'flex';
+  
+  // Redireciona após 3 segundos
+  setTimeout(() => {
+    window.location.href = '/';
+  }, 3000);
+}
 
+if(error) {
+  alertBox.querySelector('#alertMessage').textContent = decodeURIComponent(error);
+  alertBox.className = 'alert alert-error';
+  alertBox.style.display = 'flex';
+}
     
     // Responsividade para página de Cadastro
 function applyResponsiveStylesCadastro() {

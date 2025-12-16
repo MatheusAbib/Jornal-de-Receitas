@@ -123,8 +123,8 @@
 .back-link-container {
   width: 100%;
   max-width: 900px; 
-  margin: 0 auto;
-  padding: 0 35px 20px 0; 
+  margin: -5px auto;
+  padding: 0 35px 15px 0; 
   position: relative;
   display: flex;
   justify-content: flex-start; 
@@ -365,8 +365,8 @@
     /* Link de login */
     .login-link {
       text-align: center;
-      margin-top: 25px;
-      padding-top: 25px;
+      margin-top: 20px;
+      padding-top: 20px;
       border-top: 1px solid rgba(212, 175, 55, 0.2);
       color: var(--light-text);
       font-size: 1rem;

@@ -7,11 +7,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.security.core.Authentication;
 import com.receitas.site_receitas.service.SiteConfigService;
+
+
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 import java.util.Map;
@@ -30,29 +38,74 @@ public class UsuarioController {
     @Autowired 
     private SiteConfigService siteConfigService;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     
 
 @PostMapping("/cadastro")
-public String cadastrarUsuario(@ModelAttribute Usuario usuario, HttpSession session) {
+public String cadastrarUsuario(@ModelAttribute Usuario usuario, 
+                               HttpServletRequest request,
+                               HttpSession session,
+                               Model model) {
+    
+    System.out.println("===== CADASTRO INICIADO =====");
+    System.out.println("Email: " + usuario.getEmail());
+    System.out.println("Nome: " + usuario.getNome());
+    System.out.println("Senha (recebida): " + usuario.getSenha());
+    
     // Role padrão
     if(usuario.getRole() == null || usuario.getRole().isEmpty()){
         usuario.setRole("USER");
+        System.out.println("Role definida como: USER");
     }
 
-    // Apenas um admin logado pode criar outro admin
-    Usuario logado = (Usuario) session.getAttribute("usuarioLogado");
-    if("ADMIN".equals(usuario.getRole()) && (logado == null || !"ADMIN".equals(logado.getRole()))){
-        return "redirect:/cadastro?error=Somente administradores podem criar outro admin";
-    }
-
-    String resultado = usuarioService.cadastrarUsuario(usuario);
-    if (resultado.contains("sucesso")) {
-        return "redirect:/cadastro?success=" + resultado;
-    } else {
+    try {
+        // Salvar usuário (já criptografa a senha)
+        String resultado = usuarioService.cadastrarUsuario(usuario);
+        System.out.println("Resultado do cadastro: " + resultado);
+        
+        if (resultado.contains("sucesso")) {
+            // Buscar usuário criado (com senha criptografada)
+            Optional<Usuario> usuarioCriado = usuarioService.findByEmail(usuario.getEmail());
+            
+            if (usuarioCriado.isPresent()) {
+                Usuario usuarioSalvo = usuarioCriado.get();
+                System.out.println("Usuário salvo ID: " + usuarioSalvo.getId());
+                System.out.println("Usuário salvo Role: " + usuarioSalvo.getRole());
+                
+                // SOLUÇÃO SIMPLES E FUNCIONAL:
+                // 1. Salvar na sessão tradicional
+                session.setAttribute("usuarioLogado", usuarioSalvo);
+                
+                // 2. Usar request.login() para autenticar com Spring Security
+                try {
+                    // Isso vai usar o UserDetailsService para autenticar
+                    request.login(usuario.getEmail(), usuario.getSenha());
+                    System.out.println("Login automático via request.login() BEM-SUCEDIDO!");
+                } catch (ServletException e) {
+                    System.out.println("AVISO: Não foi possível fazer login automático via Spring Security");
+                    System.out.println("Mas o usuário foi salvo na sessão tradicional");
+                    System.out.println("Erro: " + e.getMessage());
+                }
+                
+                System.out.println("===== CADASTRO CONCLUÍDO =====");
+                System.out.println("Redirecionando para página principal...");
+                
+                // Redireciona para a página principal
+                return "redirect:/?cadastroSucesso=true";
+            }
+        }
+        
         return "redirect:/cadastro?error=" + resultado;
+        
+    } catch (Exception e) {
+        System.err.println("===== ERRO NO CADASTRO =====");
+        System.err.println("Mensagem: " + e.getMessage());
+        e.printStackTrace();
+        return "redirect:/cadastro?error=Erro interno: " + e.getMessage();
     }
 }
-
     
 @GetMapping("/cadastro")
 public String mostrarFormulario(Model model) { 

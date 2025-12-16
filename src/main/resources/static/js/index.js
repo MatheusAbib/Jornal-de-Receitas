@@ -1554,19 +1554,40 @@ function applyResponsiveStyles() {
             }
             
             .news-item {
-                padding: 20px;
-                min-height: 200px;
+                padding: 18px;
+                min-height: 180px;
+            }
+
+            .news-description{
+              font-size: 0.9rem;
+            }
+
+            .news-title{
+            font-size: 1.1rem;
+            }
+
+            .filter-group input {
+              padding: 10px 10px 10px 40px
+            }
+
+            .filter-buttons{
+              margin-top: 0;
+              gap: 0;
             }
             
             .news-icon {
                 width: 50px;
                 height: 50px;
-                font-size: 1.4rem;
+                font-size: 1.2rem;
                 margin-right: 12px;
             }
             
             .recipe-filters {
                 padding: 15px;
+            }
+
+            .recipe-filters h3{
+            font-size: 1.3rem;
             }
             
             #filterForm {
@@ -1890,7 +1911,6 @@ function applyResponsiveStyles() {
      .content-wrapper {
         padding: 0 15px !important;
         max-width: 100% !important;
-        overflow-x: hidden !important;
     }
     
     body {
@@ -2172,4 +2192,63 @@ function updateCategoryCounts() {
 // Executar quando a página carregar
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(updateCategoryCounts, 500); // Pequeno delay para garantir que o DOM esteja pronto
+        setupStickyHeader();
+
 });
+
+
+// ===================== HEADER FIXO COM ANIMAÇÃO =====================
+function setupStickyHeader() {
+    const header = document.querySelector('.header-full-width');
+    const contentWrapper = document.querySelector('.content-wrapper');
+    
+    if (!header) return;
+    
+    let lastScrollTop = 0;
+    let ticking = false;
+    
+    function updateHeader(scrollTop) {
+        if (scrollTop > 150) { // Aumentei para 150px para dar mais espaço
+            if (!header.classList.contains('scrolled')) {
+                header.classList.add('scrolled');
+                
+                // Ajustar altura do conteúdo
+                if (contentWrapper) {
+                    const headerHeight = header.offsetHeight;
+                    contentWrapper.style.marginTop = `${headerHeight}px`;
+                }
+            }
+        } else {
+            if (header.classList.contains('scrolled')) {
+                header.classList.remove('scrolled');
+                
+                // Restaurar margem do conteúdo
+                if (contentWrapper) {
+                    contentWrapper.style.marginTop = '0';
+                }
+            }
+        }
+    }
+    
+    window.addEventListener('scroll', function() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                updateHeader(scrollTop);
+                lastScrollTop = scrollTop;
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+    
+    // Ajustar inicialmente baseado na posição de scroll
+    updateHeader(window.pageYOffset || document.documentElement.scrollTop);
+    
+    // Reajustar ao redimensionar a janela
+    window.addEventListener('resize', function() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        updateHeader(scrollTop);
+    });
+}

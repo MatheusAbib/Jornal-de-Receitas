@@ -15,6 +15,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+
 @Configuration
 public class SecurityConfig {
 
@@ -49,6 +54,12 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         );
     
     return http.build();
+}
+
+
+@Bean
+public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+    return authConfig.getAuthenticationManager();
 }
     
     @Bean
