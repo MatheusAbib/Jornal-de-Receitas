@@ -158,14 +158,7 @@
 }
 
 .header-full-width.scrolled .newspaper-volume {
-    position: absolute !important;
-    top: 20px !important;
-    left: -15px !important;
-    font-size: 0.9rem !important;
-    height: 35px !important;
-    color: var(--header-color) !important;
-    background: rgba(255, 255, 255, 0.3) !important;
-    transform: none !important;
+  display: none;
 }
 
 /* Ícones dentro do volume */
