@@ -1,4 +1,4 @@
-    
+      
 // ===================== VARIÁVEIS PARA FILTRO =====================
 let filterTimeout = null;
 let lastFilterValues = {};
@@ -455,36 +455,45 @@ document.addEventListener('DOMContentLoaded', function() {
   let currentRecipeToDelete = null;
   let currentDeleteButton = null;
 
-  function initializeDeleteButtons() {
-    const deleteButtons = document.querySelectorAll('.card-delete');
-    deleteButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        const recipeId = this.getAttribute('data-recipe-id');
-        const recipeTitle = this.getAttribute('data-recipe-title');
-        
-        // Armazenar informações para usar no modal
-        currentRecipeToDelete = recipeId;
-        currentDeleteButton = this;
-        
-        // Abrir modal de confirmação
-        openDeleteModal(recipeTitle);
-      });
-    });
-  }
-
-  function openDeleteModal(recipeTitle) {
-    const modal = document.getElementById('deleteModal');
-    const recipeNameElement = document.getElementById('recipeNameToDelete');
-    
-    if (modal && recipeNameElement) {
-      // Definir o nome da receita no modal
-      recipeNameElement.textContent = `"${recipeTitle}"`;
+function initializeDeleteButtons() {
+  const deleteButtons = document.querySelectorAll('.card-delete');
+  deleteButtons.forEach(button => {
+    button.addEventListener('click', function(event) {
+      event.preventDefault();
+      event.stopPropagation();
       
-      // Mostrar modal
-      modal.style.display = 'block';
-      document.body.style.overflow = 'hidden';
-    }
+      const recipeId = this.getAttribute('data-recipe-id');
+      const recipeTitle = this.getAttribute('data-recipe-title');
+      
+      // Armazenar informações para usar no modal
+      currentRecipeToDelete = recipeId;
+      currentDeleteButton = this;
+      
+      // Abrir modal de confirmação
+      openDeleteModal(recipeTitle);
+    });
+  });
+}
+
+function openDeleteModal(recipeTitle) {
+  const modal = document.getElementById('deleteModal');
+  const recipeNameElement = document.getElementById('recipeNameToDelete');
+  
+  if (modal && recipeNameElement) {
+    // Definir o nome da receita no modal
+    recipeNameElement.textContent = `"${recipeTitle}"`;
+    
+    // Garantir que o modal tenha prioridade
+    modal.style.zIndex = '2000';
+    
+    // Mostrar modal
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    
+    // Parar a propagação de eventos
+    event.stopPropagation();
   }
+}
 
   function closeDeleteModal() {
     const modal = document.getElementById('deleteModal');
@@ -499,20 +508,26 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function setupDeleteModal() {
-    const modal = document.getElementById('deleteModal');
-    const closeBtn = document.querySelector('.close-delete-modal');
-    const cancelBtn = document.querySelector('.delete-modal .cancel');
-    const confirmBtn = document.querySelector('.delete-modal .confirm');
-    
-    // Fechar modal ao clicar no X
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closeDeleteModal);
-    }
-    
-    // Fechar modal ao clicar no botão Cancelar
-    if (cancelBtn) {
-      cancelBtn.addEventListener('click', closeDeleteModal);
-    }
+  const modal = document.getElementById('deleteModal');
+  const closeBtn = document.querySelector('.close-delete-modal');
+  const cancelBtn = document.querySelector('.delete-modal .cancel');
+  const confirmBtn = document.querySelector('.delete-modal .confirm');
+  
+  // Fechar modal ao clicar no X
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function(event) {
+      event.stopPropagation();
+      closeDeleteModal();
+    });
+  }
+  
+  // Fechar modal ao clicar no botão Cancelar
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', function(event) {
+      event.stopPropagation();
+      closeDeleteModal();
+    });
+  }
     
     // Confirmar exclusão
     if (confirmBtn) {
@@ -595,26 +610,26 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log(`Restam ${cards.length} receitas`);
   }
 
-  function showDeleteNotification(message, isSuccess) {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-      position: fixed; bottom: 20px; right: 20px;
-      background: ${isSuccess ? '#27ae60' : '#e74c3c'};
-      color: white; padding: 12px 20px; border-radius: 50px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 1000; display: flex; align-items: center; gap: 10px;
-      opacity: 0; transform: translateY(20px); transition: all 0.3s ease;
-    `;
-    notification.innerHTML = `<i class="fas ${isSuccess ? 'fa-check' : 'fa-exclamation'}"></i> ${message}`;
-    document.body.appendChild(notification);
-    
-    setTimeout(() => { notification.style.opacity = '1'; notification.style.transform = 'translateY(0)'; }, 10);
-    setTimeout(() => {
-      notification.style.opacity = '0';
-      notification.style.transform = 'translateY(20px)';
-      setTimeout(() => document.body.removeChild(notification), 300);
-    }, 3000);
-  }
+function showDeleteNotification(message, isSuccess) {
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed; bottom: 20px; right: 20px;
+    background: ${isSuccess ? 'linear-gradient(135deg, #27ae60, #2ecc71)' : '#e74c3c'};
+    color: white; padding: 12px 20px; border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000; display: flex; align-items: center; gap: 10px;
+    opacity: 0; transform: translateY(20px); transition: all 0.3s ease;
+  `;
+  notification.innerHTML = `<i class="fas ${isSuccess ? 'fa-check' : 'fa-exclamation'}"></i> ${message}`;
+  document.body.appendChild(notification);
+  
+  setTimeout(() => { notification.style.opacity = '1'; notification.style.transform = 'translateY(0)'; }, 10);
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    notification.style.transform = 'translateY(20px)';
+    setTimeout(() => document.body.removeChild(notification), 300);
+  }, 3000);
+}
 
   // Adicionar animação CSS para exclusão
   const style = document.createElement('style');
