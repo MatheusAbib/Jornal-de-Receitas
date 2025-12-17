@@ -26,6 +26,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 @Controller
 public class ReceitaController {
@@ -130,83 +132,68 @@ public String salvarReceita(@ModelAttribute Receita receita,
                             @RequestParam("imagemFile") MultipartFile imagemFile,
                             @RequestParam(required = false, name = "ingredientes[]") List<String> ingredientes,
                             @RequestParam(required = false, name = "modoPreparo[]") List<String> modoPreparo,
-                            Model model) throws Exception {
+                            RedirectAttributes redirectAttributes) throws Exception {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null || !authentication.isAuthenticated() || 
+    if (authentication == null || !authentication.isAuthenticated() ||
         authentication.getName().equals("anonymousUser")) {
         return "redirect:/";
     }
 
     String email = authentication.getName();
     Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
-    
+
     if (usuarioOpt.isPresent()) {
         receita.setUsuario(usuarioOpt.get());
-        
-        if (receita.getChefe() == null || receita.getChefe().trim().isEmpty()) {
+
+        if (receita.getChefe() == null || receita.getChefe().isBlank()) {
             receita.setChefe(usuarioOpt.get().getNome());
         }
     } else {
-        if (receita.getChefe() == null || receita.getChefe().trim().isEmpty()) {
+        if (receita.getChefe() == null || receita.getChefe().isBlank()) {
             receita.setChefe(email);
         }
     }
 
-    // Log para debug da categoria
-    System.out.println("Categoria da receita: " + receita.getCategoria());
-
-    if (ingredientes != null && !ingredientes.isEmpty()) {
-        receita.setIngredientes(String.join("||", ingredientes.stream()
+    if (ingredientes != null) {
+        receita.setIngredientes(
+            ingredientes.stream()
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .toList()));
-    } else {
-        receita.setIngredientes("");
+                .reduce((a, b) -> a + "||" + b)
+                .orElse("")
+        );
     }
 
-    if (modoPreparo != null && !modoPreparo.isEmpty()) {
-        receita.setModoPreparo(String.join("||", modoPreparo.stream()
+    if (modoPreparo != null) {
+        receita.setModoPreparo(
+            modoPreparo.stream()
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .toList()));
-    } else {
-        receita.setModoPreparo("");
+                .reduce((a, b) -> a + "||" + b)
+                .orElse("")
+        );
     }
 
     if (!imagemFile.isEmpty()) {
         String uploadDir = "uploads/";
         Files.createDirectories(Paths.get(uploadDir));
         String filename = System.currentTimeMillis() + "_" + imagemFile.getOriginalFilename();
-        Path filePath = Paths.get(uploadDir, filename);
-        Files.write(filePath, imagemFile.getBytes());
+        Files.write(Paths.get(uploadDir, filename), imagemFile.getBytes());
         receita.setImagem(filename);
     }
 
     receita.setAprovada(false);
     repository.save(receita);
-    
-    model.addAttribute("sucesso", "Receita enviada para aprovação!");
 
-    Receita novaReceita = new Receita();
-    novaReceita.setPorcoes(1);
-    
-    if (usuarioOpt.isPresent()) {
-        novaReceita.setChefe(usuarioOpt.get().getNome());
-    } else {
-        novaReceita.setChefe(email);
-    }
-    
-    model.addAttribute("receita", novaReceita);
-    
-    if (usuarioOpt.isPresent()) {
-        model.addAttribute("nomeUsuario", usuarioOpt.get().getNome());
-    } else {
-        model.addAttribute("nomeUsuario", email);
-    }
+    redirectAttributes.addFlashAttribute(
+        "successMessage",
+        "Receita enviada para aprovação com sucesso!"
+    );
 
-    return "form";
+    return "redirect:/nova";
 }
+
 
     @GetMapping("/pendentes")
     public String pendentes(Model model) {

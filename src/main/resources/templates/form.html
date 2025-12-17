@@ -6,7 +6,6 @@
   <title>Jornal de Receitas</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/css/form.css">
-
   <link th:href="${faviconUrl}" rel="icon" th:if="${faviconUrl != null}">
 
 </head>
@@ -39,25 +38,37 @@
         </div>
       </div>
 
-      <!-- Campo Categoria -->
-      <div class="form-group">
-        <label for="categoria"><i class="fas fa-tag"></i> Categoria</label>
-        <select id="categoria" class="form-control" th:field="*{categoria}" required>
-          <option value="">Selecione uma categoria</option>
-          <option value="SALGADO">Salgado</option>
-          <option value="DOCE">Doce</option>
-        </select>
-        <div class="error-message" id="categoriaError">Por favor, selecione a categoria da receita</div>
+      <div class="form-row">
+
+
+        <div class="form-group titulo-width">
+          <label for="chefe"><i class="fas fa-user-tie"></i> Chef</label>
+          <input type="text" id="chefe" class="form-control"
+                th:field="*{chefe}"
+                th:value="${nomeUsuario != null ? nomeUsuario : 'Seu nome'}"
+                placeholder="Digite o nome do chef" required>
+          <div class="error-message" id="chefeError">
+            Por favor, informe o nome do chef
+          </div>
+        </div>
+
+        <!-- Categoria -->
+        <div class="form-group tempo-width">
+          <label for="categoria"><i class="fas fa-tag"></i> Categoria</label>
+          <select id="categoria" class="form-control" th:field="*{categoria}" required>
+            <option value="">Selecione uma categoria</option>
+            <option value="SALGADO">Salgado</option>
+            <option value="DOCE">Doce</option>
+          </select>
+          <div class="error-message" id="categoriaError">
+            Por favor, selecione a categoria da receita
+          </div>
+        </div>
+
+        <!-- Chef -->
+
       </div>
 
-      <!-- Campo Chefe -->
-      <div class="form-group">
-        <label for="chefe"><i class="fas fa-user-tie"></i> Chef</label>
-        <input type="text" id="chefe" class="form-control" th:field="*{chefe}" 
-               th:value="${nomeUsuario != null ? nomeUsuario : 'Seu nome'}" 
-               placeholder="Digite o nome do chef" required>
-        <div class="error-message" id="chefeError">Por favor, informe o nome do chef</div>
-      </div>
 
       <!-- Ingredientes Dinâmicos -->
       <div class="form-group">
@@ -105,6 +116,13 @@
     </form>
 
   </div>
+
+<div id="notification"
+     class="user-notification success"
+     th:if="${successMessage}">
+  <i class="fas fa-check-circle"></i>
+  <span th:text="${successMessage}"></span>
+</div>
 
   
 <script src="/js/form.js"></script>

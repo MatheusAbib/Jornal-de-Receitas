@@ -6,85 +6,7 @@
   const ingredientesContainer = document.getElementById('ingredientesContainer');
   const modoPreparoContainer = document.getElementById('modoPreparoContainer');
 
-  // Verificar se há mensagem de sucesso da submissão anterior
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.has('sucesso')) {
-    mostrarNotificacao(urlParams.get('sucesso'));
-  }
-
-  // Criar elemento de notificação
-  function criarNotificacao() {
-    const notificacao = document.createElement('div');
-    notificacao.id = 'successNotification';
-    notificacao.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #27ae60;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 10000;
-      display: none;
-      align-items: center;
-      gap: 10px;
-      font-family: inherit;
-      font-size: 14px;
-      max-width: 300px;
-      animation: slideInRight 0.3s ease;
-    `;
-    notificacao.innerHTML = `
-      <i class="fas fa-check-circle" style="font-size: 18px;"></i>
-      <span id="notificationText"></span>
-    `;
-    document.body.appendChild(notificacao);
-    return notificacao;
-  }
-
-  const notificacao = criarNotificacao();
-
-  function mostrarNotificacao(mensagem) {
-    const notificationText = document.getElementById('notificationText');
-    notificationText.textContent = mensagem;
-    notificacao.style.display = 'flex';
-    
-    setTimeout(() => {
-      notificacao.style.display = 'none';
-    }, 5000);
-  }
-
-  // Limpar formulário
-  function limparFormulario() {
-    form.reset();
-    
-    // Limpar preview da imagem
-    imagePreview.classList.remove('active');
-    fileText.textContent = 'Selecione uma imagem para sua receita';
-    
-    // Limpar ingredientes dinâmicos (manter apenas o primeiro)
-    const ingredientes = ingredientesContainer.querySelectorAll('.ingrediente-item');
-    ingredientes.forEach((item, index) => {
-      if (index > 0) item.remove();
-    });
-    if (ingredientes[0]) {
-      ingredientes[0].querySelector('input').value = '';
-      ingredientes[0].querySelector('input').placeholder = 'Ingrediente 1';
-    }
-    
-    // Limpar passos dinâmicos (manter apenas o primeiro)
-    const passos = modoPreparoContainer.querySelectorAll('.passo-item');
-    passos.forEach((item, index) => {
-      if (index > 0) item.remove();
-    });
-    if (passos[0]) {
-      passos[0].querySelector('input').value = '';
-      passos[0].querySelector('input').placeholder = 'Passo 1';
-    }
-    
-    // Resetar valores padrão
-    document.getElementById('porcoes').value = '1';
-  }
+  
 
   // Preview de imagem
   imageInput.addEventListener('change', function() {
@@ -199,105 +121,88 @@
   });
 
   // Validação simples
- form.addEventListener('submit', function(e) {
-    let isValid = true;
-    
-    // Validação do título
-    if (!form.querySelector('#titulo').value.trim()) { 
-      showError('tituloError'); 
-      isValid = false; 
-    } else { 
-      hideError('tituloError'); 
-    }
-    
-    // Validação do tempo de preparo
-    if (!form.querySelector('#tempoPreparo').value.trim()) { 
-      showError('tempoError'); 
-      isValid = false; 
-    } else { 
-      hideError('tempoError'); 
-    }
-    
-    // Validação da categoria
-    const categoriaSelect = form.querySelector('#categoria');
-    if (!categoriaSelect || !categoriaSelect.value) { 
-      showError('categoriaError'); 
-      isValid = false; 
-    } else { 
-      hideError('categoriaError'); 
-    }
-    
-    // Validação do chefe
-    if (!form.querySelector('#chefe').value.trim()) { 
-      showError('chefeError'); 
-      isValid = false; 
-    } else { 
-      hideError('chefeError'); 
-    }
-    
-    // Validação dos ingredientes
-    if (ingredientesContainer.querySelectorAll('input').length === 0) { 
-      showError('ingredientesError'); 
-      isValid = false; 
-    } else { 
-      // Verificar se pelo menos um ingrediente foi preenchido
-      const ingredientesInputs = ingredientesContainer.querySelectorAll('input');
-      let temIngredientePreenchido = false;
-      ingredientesInputs.forEach(input => {
-        if (input.value.trim()) {
-          temIngredientePreenchido = true;
-        }
+form.addEventListener('submit', function (e) {
+  let isValid = true;
+
+  // Validação do título
+  if (!form.querySelector('#titulo').value.trim()) {
+    showError('tituloError');
+    isValid = false;
+  } else {
+    hideError('tituloError');
+  }
+
+  // Validação do tempo de preparo
+  if (!form.querySelector('#tempoPreparo').value.trim()) {
+    showError('tempoError');
+    isValid = false;
+  } else {
+    hideError('tempoError');
+  }
+
+  // Validação da categoria
+  const categoriaSelect = form.querySelector('#categoria');
+  if (!categoriaSelect || !categoriaSelect.value) {
+    showError('categoriaError');
+    isValid = false;
+  } else {
+    hideError('categoriaError');
+  }
+
+  // Validação do chefe
+  if (!form.querySelector('#chefe').value.trim()) {
+    showError('chefeError');
+    isValid = false;
+  } else {
+    hideError('chefeError');
+  }
+
+  // Validação dos ingredientes
+  const ingredientesInputs = ingredientesContainer.querySelectorAll('input');
+  const temIngredientePreenchido = [...ingredientesInputs].some(
+    input => input.value.trim()
+  );
+
+  if (!temIngredientePreenchido) {
+    showError('ingredientesError');
+    isValid = false;
+  } else {
+    hideError('ingredientesError');
+  }
+
+  // Validação do modo de preparo
+  const passosInputs = modoPreparoContainer.querySelectorAll('input');
+  const temPassoPreenchido = [...passosInputs].some(
+    input => input.value.trim()
+  );
+
+  if (!temPassoPreenchido) {
+    showError('modoPreparoError');
+    isValid = false;
+  } else {
+    hideError('modoPreparoError');
+  }
+
+  // Validação da imagem
+  if (imageInput.files[0] && !imageInput.files[0].type.match('image.*')) {
+    showError('imagemError');
+    isValid = false;
+  }
+
+  if (!isValid) {
+    e.preventDefault();
+
+    const primeiroErro = form.querySelector('.error-message.show');
+    if (primeiroErro) {
+      primeiroErro.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
       });
-      if (!temIngredientePreenchido) {
-        showError('ingredientesError'); 
-        isValid = false; 
-      } else {
-        hideError('ingredientesError');
-      }
     }
-    
-    // Validação do modo de preparo
-    if (modoPreparoContainer.querySelectorAll('input').length === 0) { 
-      showError('modoPreparoError'); 
-      isValid = false; 
-    } else {
-      // Verificar se pelo menos um passo foi preenchido
-      const passosInputs = modoPreparoContainer.querySelectorAll('input');
-      let temPassoPreenchido = false;
-      passosInputs.forEach(input => {
-        if (input.value.trim()) {
-          temPassoPreenchido = true;
-        }
-      });
-      if (!temPassoPreenchido) {
-        showError('modoPreparoError'); 
-        isValid = false; 
-      } else {
-        hideError('modoPreparoError');
-      }
-    }
-    
-    // Validação da imagem
-    if (imageInput.files[0] && !imageInput.files[0].type.match('image.*')) { 
-      showError('imagemError'); 
-      isValid = false; 
-    }
-    
-    if (isValid) {
-      // Se o formulário for válido, mostrar notificação após o envio
-      setTimeout(() => {
-        mostrarNotificacao('Receita enviada para aprovação!');
-        limparFormulario();
-      }, 100);
-    } else {
-      e.preventDefault();
-      // Rolar para o primeiro erro
-      const primeiroErro = form.querySelector('.error-message.show');
-      if (primeiroErro) {
-        primeiroErro.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
-  });
+  }
+
+});
+
 
   function showError(id, msg='Campo obrigatório') { const el = document.getElementById(id); el.textContent = msg; el.classList.add('show'); }
   function hideError(id) { const el = document.getElementById(id); el.classList.remove('show'); }
@@ -1003,3 +908,18 @@ function preventSubmitInLandscape() {
 
 // Executar prevenção se necessário
 preventSubmitInLandscape();
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const notification = document.getElementById("notification");
+
+  if (notification) {
+    setTimeout(() => {
+      notification.classList.add("show");
+    }, 300);
+
+    setTimeout(() => {
+      notification.classList.remove("show");
+    }, 4300);
+  }
+});

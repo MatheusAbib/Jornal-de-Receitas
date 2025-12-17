@@ -246,7 +246,7 @@ function applyResponsiveStylesCadastro() {
               
               .back-link {
                 font-size: 0.9rem !important;
-                padding: 8px 12px !important;
+                padding: 8px 0px !important;
               }
             
             .container {
@@ -254,7 +254,7 @@ function applyResponsiveStylesCadastro() {
                 margin: 0 10px 20px !important;
                 border-radius: 12px !important;
                 max-width: 100% !important;
-                width: calc(100% - 20px) !important;
+                width: calc(105% - 20px) !important;
             }
             
             .form-header h1 {

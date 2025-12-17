@@ -863,7 +863,7 @@ function applyResponsiveStylesUsuarios() {
             
             .users-container {
                 max-width: 1300px !important;
-                margin: 40px auto !important;
+                margin: 20px auto !important;
             }
         }
         
