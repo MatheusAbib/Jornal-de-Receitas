@@ -682,7 +682,7 @@ function adjustDetalheLayoutForScreenSize() {
         } else if (width <= 1024) {
             recipeTitle.style.fontSize = '3rem';
         } else {
-            recipeTitle.style.fontSize = '3.5rem';
+            recipeTitle.style.fontSize = '4.5rem';
         }
     }
     

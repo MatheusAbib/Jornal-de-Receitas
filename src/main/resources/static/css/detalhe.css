@@ -79,26 +79,36 @@ cubic-bezier(0.175, 0.885, 0.32, 1.1);
 
     .recipe-title {
       font-family: 'Playfair Display', serif;
-      font-size: 3.5rem;
+      font-size: 4.5rem;
       font-weight: 800;
       color: var(--primary);
-      margin-bottom: 15px;
+      margin: 15px 0 5px;
       line-height: 1.2;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
       position: relative;
       display: inline-block;
     }
 
+
+    .recipe-title::before,
     .recipe-title::after {
-      content: "";
-      position: absolute;
-      bottom: -10px;
-      left: 25%;
-      width: 50%;
-      height: 4px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      border-radius: 2px;
-    }
+    content: "✶";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent-color);
+    font-size: 2.5rem;
+    text-shadow: none;
+}
+
+.recipe-title::before {
+    left: -45px;
+}
+
+.recipe-title::after {
+    right: -45px;
+}
+
 
 .back-link {
   display: inline-flex;

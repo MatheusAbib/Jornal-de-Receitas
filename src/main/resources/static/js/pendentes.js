@@ -389,3 +389,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Reaplicar estilos se necessário
     window.addEventListener('load', applyResponsiveStylesPendentes);
 });
+
+
+    const titleElement = document.querySelector('.page-header h1');
+    if (titleElement) {
+      const originalTitle = titleElement.textContent;
+      titleElement.textContent = '';
+      let charIndex = 0;
+      
+      function typeTitle() {
+        if (charIndex < originalTitle.length) {
+          titleElement.textContent += originalTitle.charAt(charIndex);
+          charIndex++;
+          setTimeout(typeTitle, 100);
+        }
+      }
+      
+      setTimeout(typeTitle, 10);
+    }
