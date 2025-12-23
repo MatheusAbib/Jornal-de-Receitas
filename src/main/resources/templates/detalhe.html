@@ -8,7 +8,6 @@
   
   <link rel="stylesheet" href="/css/detalhe.css">
 
-
   <link th:href="${faviconUrl}" rel="icon" th:if="${faviconUrl != null}">
 
 </head>
@@ -41,7 +40,7 @@
      style="display: inline-flex; align-items: center; gap: 8px; 
             text-decoration: none; 
             font-weight: 600; transition: var(--transition);
-            padding: 8px 16px; border-radius: 4px;">
+            padding: 8px 16px; border-radius: 4px; font-size: 18px;">
     <i class="fas fa-arrow-left"></i> Voltar para a página inicial
   </a>
 </div>
@@ -85,6 +84,23 @@
         </div>
       </div>
 
+
+    <div class="mobile-print-container">
+    <button onclick="window.print()" class="btn btn-outline print-btn mobile-only">
+      <i class="fas fa-print"></i>
+      <span>Imprimir Receita</span>
+    </button>
+  </div>
+
+      <div class="info-card-wrapper">
+    <!-- Botão de imprimir acima do info-card (APENAS DESKTOP) -->
+    <div class="print-button-container desktop-only">
+      <button onclick="window.print()" class="btn btn-outline print-btn">
+        <i class="fas fa-print"></i>
+        <span>Imprimir Receita</span>
+      </button>
+    </div>
+
       <!-- Cartão de informações -->
       <div class="info-card">
         <div class="info-card-header">
@@ -125,6 +141,8 @@
 
         </div>
       </div>
+
+    </div>
     </section>
 
     <!-- Seção de Ingredientes -->
@@ -173,12 +191,6 @@
         <i class="fas fa-clock"></i>
         <span>Receitas Pendentes</span>
       </a>
-      
-      <button onclick="window.print()" class="btn btn-outline">
-        <i class="fas fa-print"></i>
-        <span>Imprimir Receita</span>
-      </button>
-      
     </div>
   </div>
 

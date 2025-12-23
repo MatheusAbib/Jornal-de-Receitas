@@ -1,4 +1,4 @@
-      /* ===== VARIÁVEIS E RESET ===== */
+        /* ===== VARIÁVEIS E RESET ===== */
 :root {
     --primary: #a52a2a;
     --primary-dark: #d4af37;
@@ -138,13 +138,13 @@ cubic-bezier(0.175, 0.885, 0.32, 1.1);
       display: grid;
       grid-template-columns: 1fr 400px;
       gap: 40px;
-      margin-bottom: 60px;
+      margin-bottom: -30px;
     }
 
     /* ===== IMAGEM COM TAMANHO FIXO ===== */
     .recipe-image-wrapper {
       position: relative;
-      border-radius: var(--radius);
+      border-radius: 5px;
       overflow: hidden;
       box-shadow: var(--shadow);
       height: 458px;
@@ -201,8 +201,8 @@ cubic-bezier(0.175, 0.885, 0.32, 1.1);
     /* ===== CARTÃO DE INFORMAÇÕES ===== */
     .info-card {
       background: var(--neutral-light);
-      padding: 30px;
-      border-radius: var(--radius);
+      padding: 32px 30px;
+      border-radius: 5px;
       box-shadow: var(--shadow);
       border: 1px solid rgba(139, 69, 19, 0.1);
       position: relative;
@@ -243,7 +243,7 @@ cubic-bezier(0.175, 0.885, 0.32, 1.1);
 
     .info-grid {
       display: grid;
-      gap: 18px;
+      gap: 25px;
     }
 
     .info-item {
@@ -251,7 +251,7 @@ cubic-bezier(0.175, 0.885, 0.32, 1.1);
       grid-template-columns: 50px 1fr;
       gap: 15px;
       align-items: center;
-      padding: 18px;
+      padding: 20px 18px;
       background: white;
       border-radius: var(--radius-sm);
       box-shadow: var(--shadow-light);
@@ -296,6 +296,149 @@ cubic-bezier(0.175, 0.885, 0.32, 1.1);
       color: var(--primary-dark);
       font-weight: 700;
     }
+
+   /* ===== CONTAINER PARA INFO-CARD E BOTÃO ===== */
+.info-card-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  top: -71px;
+}
+
+.print-button-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.print-btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: white;
+  border: none;
+  box-shadow: var(--shadow-light);
+  transition: var(--transition);
+}
+
+.print-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+}
+
+/* ===== BOTÃO PARA MOBILE ===== */
+.mobile-print-container {
+  display: none; /* Escondido por padrão */
+}
+
+.mobile-only {
+  display: none; /* Escondido por padrão */
+}
+
+.desktop-only {
+  display: flex; /* Visível por padrão */
+}
+
+/* ===== VERSÃO RESPONSIVA ===== */
+
+/* Dispositivos móveis (até 768px) */
+@media (max-width: 768px) {
+  /* Remover o top negativo para mobile */
+  .info-card-wrapper {
+    top: 0;
+    gap: 25px;
+  }
+  
+  /* Esconder botão desktop e mostrar botão mobile */
+  .desktop-only {
+    display: none !important;
+  }
+  
+  .mobile-print-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 20px 0;
+    order: 2; /* Coloca o botão entre imagem e info-card */
+  }
+  
+  .mobile-only {
+    display: flex;
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 1.1rem;
+    justify-content: center;
+  }
+  
+  /* Reorganizar ordem dos elementos no grid */
+  .hero-section {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .recipe-image-wrapper {
+    order: 1;
+  }
+  
+  .mobile-print-container {
+    order: 2;
+  }
+  
+  .info-card-wrapper {
+    order: 3;
+    margin-top: 0;
+  }
+  
+  .print-button-container {
+    justify-content: center;
+  }
+  
+  .print-btn {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 1.1rem;
+  }
+}
+
+/* Tablets (769px a 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .info-card-wrapper {
+    gap: 18px;
+    top: -71px;
+  }
+  
+  /* Garantir que o mobile button fique escondido */
+  .mobile-print-container {
+    display: none;
+  }
+  
+  .desktop-only {
+    display: flex;
+  }
+}
+
+/* Desktop (acima de 1024px) */
+@media (min-width: 1025px) {
+  /* Garantir que o mobile button fique escondido */
+  .mobile-print-container {
+    display: none;
+  }
+  
+  .desktop-only {
+    display: flex;
+  }
+}
+
+/* Impressão */
+@media print {
+  .print-button-container,
+  .mobile-print-container {
+    display: none !important;
+  }
+}
 
     /* ===== SEÇÕES DE CONTEÚDO ===== */
     .content-section {

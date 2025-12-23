@@ -1,4 +1,4 @@
-     // Script para compartilhar receita
+    // Script para compartilhar receita
     function shareRecipe() {
       if (navigator.share) {
         navigator.share({
@@ -45,6 +45,15 @@ function applyResponsiveStylesDetalhe() {
             body {
                 padding: 15px 10px !important;
             }
+
+            .back-link{
+            font-size: 15px !important;
+            }
+
+              .category-badge{
+              font-size: 0.7rem;
+              right: 15px;
+              }
             
             .main-container {
                 padding: 0 5px !important;
@@ -57,36 +66,28 @@ function applyResponsiveStylesDetalhe() {
                 text-align: center !important;
             }
             
-            .recipe-title::after {
-                left: 20% !important;
-                width: 60% !important;
-                bottom: -5px !important;
-                height: 3px !important;
+            .recipe-title::before, .recipe-title::after{
+              font-size: 2rem;
             }
             
             .recipe-subtitle {
-                font-size: 0.9rem !important;
-                margin-top: 15px !important;
-                padding: 12px 15px !important;
-                line-height: 1.5 !important;
+              display: none;
             }
             
             .recipe-header {
-                margin-bottom: 30px !important;
                 padding-top: 10px !important;
             }
             
             .hero-section {
                 grid-template-columns: 1fr !important;
-                gap: 25px !important;
-                margin-bottom: 40px !important;
+                margin-bottom: -45px !important;
             }
             
             .recipe-image-wrapper {
                 height: 250px !important;
                 border-radius: 12px !important;
             }
-            
+
             .image-overlay {
                 padding: 15px !important;
                 flex-direction: column !important;
@@ -106,6 +107,7 @@ function applyResponsiveStylesDetalhe() {
             .info-card {
                 padding: 20px !important;
                 border-radius: 12px !important;
+                margin-bottom: 70px;
             }
             
             .info-card-header {
@@ -576,7 +578,7 @@ function applyResponsiveStylesDetalhe() {
         @supports (padding: max(0px)) {
             body {
                 padding-top: max(15px, env(safe-area-inset-top)) !important;
-                padding-bottom: max(15px, env(safe-area-inset-bottom)) !important;
+                padding-bottom: max(0px, env(safe-area-inset-bottom)) !important;
                 padding-left: max(10px, env(safe-area-inset-left)) !important;
                 padding-right: max(10px, env(safe-area-inset-right)) !important;
             }
@@ -630,7 +632,7 @@ function adjustDetalheLayoutForScreenSize() {
         } else if (width <= 1200) {
             heroSection.style.gridTemplateColumns = '1fr 380px';
         } else {
-            heroSection.style.gridTemplateColumns = '1fr 400px';
+            heroSection.style.gridTemplateColumns = '1fr 430px';
         }
         
         // Ajustar para paisagem em mobile
@@ -651,7 +653,7 @@ function adjustDetalheLayoutForScreenSize() {
         } else if (width <= 1200) {
             imageWrapper.style.height = '430px';
         } else {
-            imageWrapper.style.height = '458px';
+            imageWrapper.style.height = '487px';
         }
     }
     
