@@ -149,18 +149,18 @@
     top: 50% !important;
     transform: translateY(-50%) !important;
     color: var(--accent-color) !important;
-    font-size: 1.8rem !important;
+    font-size: 2rem !important;
     text-shadow: none !important;
     opacity: 1 !important;
     display: block !important;
 }
 
 .header-full-width.scrolled .newspaper-title::before {
-    left: 0 !important;
+    left: -5px !important;
 }
 
 .header-full-width.scrolled .newspaper-title::after {
-    right: 0 !important;
+    right: -5px !important;
 }
 
 /* NEWSPAPER PRICE e VOLUME quando minimizado - POSIÇÃO ORIGINAL */
@@ -323,16 +323,16 @@
     top: 50%;
     transform: translateY(-50%);
     color: var(--accent-color);
-    font-size: 2.5rem;
+    font-size: 3rem;
     text-shadow: none;
 }
 
 .newspaper-title::before {
-    left: -30px;
+    left: -40px;
 }
 
 .newspaper-title::after {
-    right: -30px;
+    right: -40px;
 }
 
 /* Subtítulo */

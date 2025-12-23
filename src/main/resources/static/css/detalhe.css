@@ -97,16 +97,16 @@ cubic-bezier(0.175, 0.885, 0.32, 1.1);
     top: 50%;
     transform: translateY(-50%);
     color: var(--accent-color);
-    font-size: 2.5rem;
+    font-size: 3rem;
     text-shadow: none;
 }
 
 .recipe-title::before {
-    left: -45px;
+    left: -55px;
 }
 
 .recipe-title::after {
-    right: -45px;
+    right: -55px;
 }
 
 

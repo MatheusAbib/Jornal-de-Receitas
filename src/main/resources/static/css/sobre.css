@@ -82,16 +82,16 @@
       top: 50%;
       transform: translateY(-50%);
       color: var(--accent-color);
-      font-size: 2.5rem;
+      font-size: 3rem;
       text-shadow: none;
     }
     
     .newspaper-title::before {
-      left: -30px;
+      left: -40px;
     }
     
     .newspaper-title::after {
-      right: -30px;
+      right: -40px;
     }
 
     /* Subtítulo */
