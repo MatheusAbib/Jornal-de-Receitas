@@ -7,6 +7,10 @@ Sistema web completo para gerenciamento e compartilhamento de receitas culinári
 **Versão:** 2.0.0  
 **Última Atualização:** junho de 2026
 
+## 𝗣𝗮𝗿𝗮 𝘁𝗲𝘀𝘁𝗮𝗿 𝗮𝘀 𝗽𝗲𝗿𝗺𝗶𝘀𝘀õ𝗲𝘀 𝗮𝗱𝗺𝗶𝗻𝗶𝘀𝘁𝗿𝗮𝘁𝗶𝘃𝗮𝘀, é 𝗽𝗼𝘀𝘀í𝘃𝗲𝗹 𝗮𝗰𝗲𝘀𝘀𝗮𝗿 𝗰𝗼𝗺:
+ - 📧 E-mail: admin@jornal.com
+ - 🔑 Senha: Admin123#
+
 ## ✨ Funcionalidades
 
 ### 👤 Autenticação & Usuários
@@ -38,9 +42,6 @@ Sistema web completo para gerenciamento e compartilhamento de receitas culinári
 - ✅ Exclusão de conteúdo inadequado
 - ✅ Estatísticas básicas
 
-## 𝗣𝗮𝗿𝗮 𝘁𝗲𝘀𝘁𝗮𝗿 𝗮𝘀 𝗽𝗲𝗿𝗺𝗶𝘀𝘀õ𝗲𝘀 𝗮𝗱𝗺𝗶𝗻𝗶𝘀𝘁𝗿𝗮𝘁𝗶𝘃𝗮𝘀, é 𝗽𝗼𝘀𝘀í𝘃𝗲𝗹 𝗮𝗰𝗲𝘀𝘀𝗮𝗿 𝗰𝗼𝗺:
- - 📧 E-mail: admin@jornal.com
- - 🔑 Senha: Admin123#
 
 ## 🚀 Tecnologias
 
