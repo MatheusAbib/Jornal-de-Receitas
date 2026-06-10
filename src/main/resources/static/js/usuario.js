@@ -1,8 +1,6 @@
-   // ===================== VARIÁVEIS GLOBAIS =====================
 let currentDeleteUser = null;
 let currentEditUser = null;
 
-// ===================== FUNÇÕES DE NOTIFICAÇÃO =====================
 function showUserNotification(message, type = 'info') {
   const notification = document.createElement('div');
   notification.className = `user-notification ${type}`;
@@ -13,10 +11,8 @@ function showUserNotification(message, type = 'info') {
   
   document.body.appendChild(notification);
   
-  // Mostrar notificação
   setTimeout(() => notification.classList.add('show'), 10);
   
-  // Remover após 3 segundos
   setTimeout(() => {
     notification.classList.remove('show');
     setTimeout(() => {
@@ -27,7 +23,6 @@ function showUserNotification(message, type = 'info') {
   }, 3000);
 }
 
-// ===================== MODAL DE EXCLUSÃO =====================
 function openDeleteModal(button) {
   currentDeleteUser = {
     id: button.getAttribute('data-id'),
@@ -57,7 +52,6 @@ async function confirmDeleteUser() {
   const originalText = deleteBtn.innerHTML;
   
   try {
-    // Mostrar carregamento
     deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Excluindo...';
     deleteBtn.disabled = true;
     
@@ -69,7 +63,6 @@ async function confirmDeleteUser() {
     if (response.ok) {
       showUserNotification('Usuário excluído com sucesso!', 'success');
       
-      // Fechar modal e recarregar a página após um breve delay
       setTimeout(() => {
         closeDeleteModal();
         location.reload();
@@ -87,50 +80,40 @@ async function confirmDeleteUser() {
   }
 }
 
-// ===================== MODAL DE EDIÇÃO =====================
-// ===================== MODAL DE EDIÇÃO =====================
 function openEditModal(button) {
   currentEditUser = {
     id: button.getAttribute('data-id'),
     nome: button.getAttribute('data-nome'),
     email: button.getAttribute('data-email'),
-    cpf: button.getAttribute('data-cpf'),  // CPF sem formatação
+    cpf: button.getAttribute('data-cpf'),  
     telefone: button.getAttribute('data-telefone') || '',
     genero: button.getAttribute('data-genero') || '',
     role: button.getAttribute('data-role') || 'USER'
   };
   
-  // Preencher formulário
   document.getElementById('editUserId').value = currentEditUser.id;
   document.getElementById('editUserNome').value = currentEditUser.nome;
   document.getElementById('editUserEmail').value = currentEditUser.email;
   
-  // CPF - formatar automaticamente
   let cpfValue = currentEditUser.cpf || '';
   if (cpfValue) {
-    // Remover qualquer formatação existente
     cpfValue = cpfValue.replace(/\D/g, '');
     
-    // Aplicar máscara se tiver 11 dígitos
     if (cpfValue.length === 11) {
       cpfValue = cpfValue.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
     }
   }
   document.getElementById('editUserCpf').value = cpfValue;
   
-  // Telefone - formatar automaticamente
   let telefoneValue = currentEditUser.telefone || '';
   if (telefoneValue) {
-    // Remover qualquer formatação existente
     const digits = telefoneValue.replace(/\D/g, '');
     
-    // Aplicar máscara baseada no tamanho
     if (digits.length === 11) {
       telefoneValue = digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
     } else if (digits.length === 10) {
       telefoneValue = digits.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
     } else if (digits.length > 0) {
-      // Se não tiver tamanho padrão, manter o valor original
       telefoneValue = digits;
     }
   }
@@ -139,11 +122,9 @@ function openEditModal(button) {
   document.getElementById('editUserGenero').value = currentEditUser.genero;
   document.getElementById('editUserRole').value = currentEditUser.role;
   
-  // Limpar campos de senha
   document.getElementById('editUserSenha').value = '';
   document.getElementById('editUserConfirmarSenha').value = '';
   
-  // Configurar ação do formulário
   document.getElementById('editUserForm').action = `/usuarios/editar/${currentEditUser.id}`;
   
   document.getElementById('editUserModal').style.display = 'block';
@@ -158,7 +139,6 @@ function closeEditModal() {
   currentEditUser = null;
 }
 
-// ===================== MODAL DE CONFIRMAÇÃO =====================
 function openConfirmSaveModal() {
   document.getElementById('confirmSaveModal').style.display = 'block';
 }
@@ -167,7 +147,6 @@ function closeConfirmSaveModal() {
   document.getElementById('confirmSaveModal').style.display = 'none';
 }
 
-// ===================== FORMULÁRIO DE EDIÇÃO =====================
 document.getElementById('editUserForm').addEventListener('submit', function(event) {
   event.preventDefault();
   
@@ -186,7 +165,6 @@ async function confirmEditUser() {
   const form = document.getElementById('editUserForm');
   const formData = new FormData(form);
   
-  // Remover máscaras antes de enviar
   const cpfInput = document.getElementById('editUserCpf');
   const telefoneInput = document.getElementById('editUserTelefone');
   
@@ -202,7 +180,6 @@ async function confirmEditUser() {
   const originalText = saveBtn.innerHTML;
   
   try {
-    // Mostrar carregamento
     saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
     saveBtn.disabled = true;
     
@@ -218,7 +195,6 @@ async function confirmEditUser() {
     if (response.ok) {
       showUserNotification('Usuário atualizado com sucesso!', 'success');
       
-      // Fechar modais e recarregar
       setTimeout(() => {
         closeConfirmSaveModal();
         closeEditModal();
@@ -238,9 +214,7 @@ async function confirmEditUser() {
   }
 }
 
-// ===================== CONFIGURAÇÃO DE EVENT LISTENERS =====================
 document.addEventListener('DOMContentLoaded', function() {
-  // Modal de exclusão
   const deleteModal = document.getElementById('deleteUserModal');
   const closeDeleteBtn = document.querySelector('.close-delete-user-modal');
   const cancelDeleteBtn = document.querySelector('#deleteUserModal .modal-button-delete.cancel');
@@ -266,7 +240,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Modal de edição
   const editModal = document.getElementById('editUserModal');
   const closeEditBtn = document.querySelector('.close-edit-user-modal');
   const cancelEditBtn = document.querySelector('#editUserModal .modal-button-edit.cancel');
@@ -287,7 +260,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-    // ========== CONFIGURAR MÁSCARAS NOS CAMPOS ==========
   const cpfInput = document.getElementById('editUserCpf');
   const telefoneInput = document.getElementById('editUserTelefone');
   
@@ -297,7 +269,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     cpfInput.addEventListener('blur', function(e) {
-      // Validar CPF ao sair do campo (opcional)
       const cpfDigits = removerMascara(e.target.value);
       if (cpfDigits.length === 11 && !validarCPF(cpfDigits)) {
         showUserNotification('CPF inválido! Verifique os dígitos.', 'error');
@@ -311,15 +282,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Função opcional para validar CPF
   function validarCPF(cpf) {
     cpf = cpf.replace(/\D/g, '');
     if (cpf.length !== 11) return false;
     
-    // Elimina CPFs conhecidos como inválidos
     if (/^(\d)\1{10}$/.test(cpf)) return false;
     
-    // Validação dos dígitos verificadores
     let soma = 0;
     let resto;
     
@@ -341,7 +309,6 @@ document.addEventListener('DOMContentLoaded', function() {
     return true;
   }
   
-  // Modal de confirmação
   const confirmModal = document.getElementById('confirmSaveModal');
   const closeConfirmBtn = document.querySelector('.close-confirm-save-modal');
   const cancelConfirmBtn = document.querySelector('#confirmSaveModal .modal-button-confirm.cancel');
@@ -367,7 +334,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Fechar modais com ESC
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       closeDeleteModal();
@@ -376,7 +342,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // Toggle switches
   document.querySelectorAll('.switch input').forEach(toggle => {
     toggle.addEventListener('change', function() {
       if (this.checked) {
@@ -389,7 +354,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// ===================== MÁSCARAS PARA CPF E TELEFONE =====================
 function aplicarMascaraCPF(input) {
     let value = input.value.replace(/\D/g, '');
     
@@ -416,10 +380,8 @@ function aplicarMascaraTelefone(input) {
     }
     
     if (value.length === 11) {
-        // Formato: (99) 99999-9999
         value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
     } else if (value.length === 10) {
-        // Formato: (99) 9999-9999
         value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
     } else if (value.length > 6) {
         value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
@@ -436,9 +398,7 @@ function removerMascara(campoComMascara) {
     return campoComMascara.replace(/\D/g, '');
 }
 
-// Responsividade para página de Gerenciamento de Usuários
 function applyResponsiveStylesUsuarios() {
-    // Verifica se já existe o estilo de responsividade
     if (document.getElementById('responsive-styles-usuarios')) return;
     
     const style = document.createElement('style');
@@ -1049,16 +1009,13 @@ function applyResponsiveStylesUsuarios() {
     document.head.appendChild(style);
 }
 
-// Função para ajustar dinamicamente a tabela de usuários
 function adjustTableLayoutForScreenSize() {
     const width = window.innerWidth;
     
-    // Ajustar display da tabela para mobile
     const table = document.querySelector('.users-table');
     const tbody = table?.querySelector('tbody');
     
     if (width <= 768 && tbody) {
-        // Converter tabela para cards em mobile
         const rows = tbody.querySelectorAll('tr');
         rows.forEach(row => {
             const cells = row.querySelectorAll('td');
@@ -1071,7 +1028,6 @@ function adjustTableLayoutForScreenSize() {
         });
     }
     
-    // Ajustar padding do container
     const container = document.querySelector('.users-container');
     if (container) {
         if (width <= 480) {
@@ -1087,7 +1043,6 @@ function adjustTableLayoutForScreenSize() {
     }
   
     
-    // Otimizar para touch
     if ('ontouchstart' in window || navigator.maxTouchPoints) {
         const touchElements = document.querySelectorAll('.action-btn, .switch, .back-link');
         touchElements.forEach(el => {
@@ -1095,7 +1050,6 @@ function adjustTableLayoutForScreenSize() {
             el.style.minWidth = '44px';
         });
         
-        // Ajustar inputs nos modais
         const formInputs = document.querySelectorAll('.form-control-edit');
         formInputs.forEach(input => {
             input.style.minHeight = '44px';
@@ -1106,42 +1060,35 @@ function adjustTableLayoutForScreenSize() {
     }
 }
 
-// Inicializar a responsividade quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
     applyResponsiveStylesUsuarios();
     adjustTableLayoutForScreenSize();
     
-    // Adicionar labels de dados para tabela mobile
     setupMobileTable();
     
-    // Reajustar quando a janela for redimensionada
     window.addEventListener('resize', function() {
         adjustTableLayoutForScreenSize();
         setupMobileTable();
     });
     
-    // Reaplicar estilos se necessário
     window.addEventListener('load', applyResponsiveStylesUsuarios);
 });
 
-// Configurar tabela para mobile (cards)
 function setupMobileTable() {
     const width = window.innerWidth;
     const table = document.querySelector('.users-table');
     
     if (width <= 768 && table) {
-        // Garantir que a tabela esteja em modo card
+
         table.style.display = 'block';
         table.style.overflowX = 'auto';
         table.style.webkitOverflowScrolling = 'touch';
         
-        // Esconder cabeçalho em mobile
         const thead = table.querySelector('thead');
         if (thead) {
             thead.style.display = 'none';
         }
         
-        // Adicionar classes para estilo de card
         const rows = table.querySelectorAll('tbody tr');
         rows.forEach(row => {
             row.style.display = 'block';
@@ -1160,14 +1107,12 @@ function setupMobileTable() {
                 cell.style.borderBottom = '1px solid #eee';
                 cell.style.textAlign = 'right';
                 
-                // Remover borda do último item
                 if (index === cells.length - 1) {
                     cell.style.borderBottom = 'none';
                 }
             });
         });
     } else {
-        // Restaurar estilo normal da tabela
         if (table) {
             table.style.display = 'table';
             const thead = table.querySelector('thead');
@@ -1198,20 +1143,17 @@ function setupMobileTable() {
     }
 }
 
-// Detectar dispositivo e otimizar
 function optimizeUsuariosForMobile() {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobile) {
         document.body.classList.add('mobile-usuarios-view');
         
-        // Otimizar modais para mobile
         const modals = document.querySelectorAll('.modal-content-delete, .modal-content-edit, .modal-content-confirm');
         modals.forEach(modal => {
             modal.classList.add('mobile-optimized-modal');
         });
         
-        // Prevenir zoom em inputs no iOS
         if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
             const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]');
             inputs.forEach(input => {
@@ -1229,10 +1171,8 @@ function optimizeUsuariosForMobile() {
     }
 }
 
-// Executar otimizações
 optimizeUsuariosForMobile();
 
-// Adicionar listener para mudanças de orientação
 window.addEventListener('orientationchange', function() {
     setTimeout(() => {
         adjustTableLayoutForScreenSize();
@@ -1241,25 +1181,21 @@ window.addEventListener('orientationchange', function() {
     }, 100);
 });
 
-// Função para melhorar a experiência em dispositivos móveis
 function enhanceMobileUsuariosExperience() {
     const width = window.innerWidth;
     
     if (width <= 768) {
-        // Adicionar scroll suave para tabela
         const container = document.querySelector('.users-container');
         if (container) {
             container.style.overflowX = 'auto';
             container.style.webkitOverflowScrolling = 'touch';
         }
         
-        // Ajustar botões de ação
         const actionButtons = document.querySelectorAll('.action-btn');
         actionButtons.forEach(btn => {
             btn.style.margin = '2px';
         });
         
-        // Simplificar animações para melhor performance
         const modals = document.querySelectorAll('.modal-content-delete, .modal-content-edit, .modal-content-confirm');
         modals.forEach(modal => {
             modal.style.transition = 'transform 0.2s ease';
@@ -1267,10 +1203,8 @@ function enhanceMobileUsuariosExperience() {
     }
 }
 
-// Executar otimizações
 enhanceMobileUsuariosExperience();
 
-// Função para criar notificação responsiva
 function createResponsiveNotification(message, type = 'success') {
     const notification = document.createElement('div');
     notification.className = `user-notification ${type}`;
@@ -1281,7 +1215,6 @@ function createResponsiveNotification(message, type = 'success') {
     
     document.body.appendChild(notification);
     
-    // Ajustar posição para mobile
     const width = window.innerWidth;
     if (width <= 480) {
         notification.style.left = '10px';

@@ -14,19 +14,16 @@
       return false;
     }
     
-    // Abrir modal
     function openModal(modalId) {
       document.getElementById(modalId).classList.add('active');
       document.body.style.overflow = 'hidden';
     }
     
-    // Fechar modal
     function closeModal(modalId) {
       document.getElementById(modalId).classList.remove('active');
       document.body.style.overflow = 'auto';
     }
     
-    // Fechar modal ao clicar fora dele
     document.querySelectorAll('.modal').forEach(modal => {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
@@ -35,7 +32,6 @@
       });
     });
     
-    // Adicionar animações de entrada para os cards
     document.addEventListener('DOMContentLoaded', function() {
       const cards = document.querySelectorAll('.card');
       cards.forEach((card, index) => {
@@ -43,12 +39,10 @@
       });
     });
     
-    // Função para toggle da sidebar
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('show');
     }
     
-    // Fechar sidebar ao clicar fora dela
     document.addEventListener('click', function(event) {
       const sidebar = document.getElementById('sidebar');
       const menuIcon = document.querySelector('.menu-icon');
@@ -58,15 +52,12 @@
       }
     });
 
-    // Responsividade para página de Receitas Pendentes
 function applyResponsiveStylesPendentes() {
-    // Verifica se já existe o estilo de responsividade
     if (document.getElementById('responsive-styles-pendentes')) return;
     
     const style = document.createElement('style');
     style.id = 'responsive-styles-pendentes';
     style.innerHTML = `
-        /* RESPONSIVIDADE PARA PÁGINA DE RECEITAS PENDENTES */
         
         /* Dispositivos muito pequenos (celulares, até 480px) */
         @media (max-width: 480px) {
@@ -330,11 +321,9 @@ function applyResponsiveStylesPendentes() {
     document.head.appendChild(style);
 }
 
-// Função para ajustar dinamicamente elementos específicos da página pendentes
 function adjustLayoutForScreenSizePendentes() {
     const width = window.innerWidth;
     
-    // Ajustar grid de receitas baseado na largura da tela
     const receitasContainer = document.querySelector('.receitas-container');
     if (receitasContainer) {
         if (width <= 480) {
@@ -353,7 +342,6 @@ function adjustLayoutForScreenSizePendentes() {
         }
     }
     
-    // Ajustar altura das imagens
     const cardImages = document.querySelectorAll('.card-image');
     cardImages.forEach(img => {
         if (width <= 480) {
@@ -365,7 +353,6 @@ function adjustLayoutForScreenSizePendentes() {
         }
     });
     
-    // Ajustar padding do conteúdo
     const contentWrapper = document.querySelector('.content-wrapper');
     if (contentWrapper) {
         if (width <= 480) {
@@ -378,15 +365,12 @@ function adjustLayoutForScreenSizePendentes() {
     }
 }
 
-// Inicializar a responsividade quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
     applyResponsiveStylesPendentes();
     adjustLayoutForScreenSizePendentes();
     
-    // Reajustar quando a janela for redimensionada
     window.addEventListener('resize', adjustLayoutForScreenSizePendentes);
     
-    // Reaplicar estilos se necessário
     window.addEventListener('load', applyResponsiveStylesPendentes);
 });
 

@@ -38,7 +38,6 @@
     }
     
     
-  /* HEADER COM LARGURA TOTAL */
     .header-full-width {
       width: 100vw;
       position: relative;
@@ -103,7 +102,6 @@
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
     
-    /* Tabela estilizada */
     .users-container {
       background: var(--card-bg);
       border-radius: 12px;
@@ -206,7 +204,6 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
     
-/* Container do link de voltar */
 .back-link-container {
   width: 100%;
   max-width: 1400px; 
@@ -218,7 +215,6 @@
   align-items: center; 
 }
 
-/* Link de voltar aprimorado */
 .back-link {
   display: inline-flex;
   align-items: center;
@@ -236,7 +232,6 @@
   transform: translateX(-5px);
 }
     
-    /* Estilo do toggle switch */
     .switch {
       position: relative;
       display: inline-block;
@@ -294,9 +289,8 @@
   padding: 0 20px;
 }
    
-/* ===================== MODAIS PADRONIZADOS ===================== */
 .modal {
-    display: none; /* ← ISSO É CRÍTICO! */
+    display: none; 
     position: fixed;
     top: 0;
     left: 0;
@@ -307,7 +301,7 @@
     overflow-y: auto;
     animation: modalFadeIn 0.3s ease;
 }
-/* Modal de Exclusão de Usuário */
+
 .delete-user-modal .modal-content-delete {
     background: var(--card-bg);
     border-radius: 16px;
@@ -464,7 +458,6 @@
     transform: rotate(90deg);
 }
 
-/* Modal de Edição de Usuário */
 .edit-user-modal .modal-content-edit {
     background: var(--card-bg);
     border-radius: 16px;
@@ -642,7 +635,6 @@
     transform: rotate(90deg);
 }
 
-/* Modal de Confirmação de Salvar */
 .confirm-save-modal .modal-content-confirm {
     background: var(--card-bg);
     border-radius: 16px;
@@ -732,7 +724,6 @@
     transform: rotate(90deg);
 }
 
-/* Notificação */
 .user-notification {
     position: fixed;
     bottom: 20px;

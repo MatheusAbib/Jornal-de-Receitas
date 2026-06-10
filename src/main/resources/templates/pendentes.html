@@ -10,7 +10,6 @@
 
 </head>
 <body>
-  <!-- HEADER COM LARGURA TOTAL -->
 <div class="header-full-width">
   <div class="header-container">
     <div class="header-top">
@@ -20,12 +19,11 @@
         <h1>Receitas Pendentes</h1>
         <p class="page-subtitle">Página do Administrador</p>
       </div>
-      <div style="width: 45px;"></div> <!-- Espaço para alinhamento -->
+      <div style="width: 45px;"></div> 
     </div>
   </div>
 </div>
 
-<!-- CONTEÚDO COM MARGENS -->
 <div class="content-wrapper">
   <a href="/" class="back-link">
     <i class="fas fa-arrow-left"></i> Voltar para a tela inicial
@@ -44,7 +42,6 @@
       <div class="card-content">
         <h2 th:text="${r.titulo}">Título da Receita</h2>
         
-        <!-- Tempo de preparo e porções -->
         <p>
           <i class="fas fa-clock"></i>
           <span th:text="${r.tempoPreparo}">30 min</span>
@@ -54,14 +51,12 @@
         </p>
         
         <div class="card-actions">
-          <!-- Primeira linha: Ver Detalhes -->
           <div class="action-row">
             <a th:href="@{/detalhe/{id}(id=${r.id})}" class="card-link">
               <i class="fas fa-eye"></i> Ver Detalhes
             </a>
           </div>
 
-          <!-- Segunda linha: Aprovar e Rejeitar -->
           <div class="action-row">
             <form th:action="@{/aprovar/{id}(id=${r.id})}" method="post" class="action-form">
               <button type="submit" class="approve-button" onclick="return confirmAction('approve', this)">
@@ -89,7 +84,6 @@
     </a>
   </div>
 
-  <!-- Modal de confirmação para aprovar -->
   <div class="modal approve-modal" id="approveModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -112,7 +106,6 @@
     </div>
   </div>
 
-  <!-- Modal de confirmação para rejeitar -->
   <div class="modal reject-modal" id="rejectModal">
     <div class="modal-content">
       <div class="modal-header">

@@ -126,7 +126,6 @@
                  th:each="item, itemStat : ${carrosselItens}"
                  th:classappend="${itemStat.first} ? 'active'"></div>
                  
-            <!-- FALLBACK SE NÃO HOUVER ITENS -->
             <div class="carousel-indicator active" th:if="${#lists.isEmpty(carrosselItens)}"></div>
             <div class="carousel-indicator" th:if="${#lists.isEmpty(carrosselItens)}"></div>
             <div class="carousel-indicator" th:if="${#lists.isEmpty(carrosselItens)}"></div>
@@ -218,7 +217,6 @@
   </h2>
   
   <div class="receitas" id="salgados-recipes">
-    <!-- Receitas salgadas serão inseridas aqui via Thymeleaf -->
     <div class="card" th:each="r : ${receitas}" 
          th:if="${r.categoria == T(com.receitas.site_receitas.model.Receita.Categoria).SALGADO}">
       <div class="card-image">
@@ -268,7 +266,6 @@
   
 </div>
 
-<!-- SEÇÃO DE DOCES -->
 <div class="category-section" id="doces-section">
   <h2 class="category-title">
     <i class="fas fa-cake-candles"></i> DOCES
@@ -276,7 +273,6 @@
   </h2>
   
   <div class="receitas" id="doces-recipes">
-    <!-- Receitas doces serão inseridas aqui via Thymeleaf -->
     <div class="card" th:each="r : ${receitas}" 
          th:if="${r.categoria == T(com.receitas.site_receitas.model.Receita.Categoria).DOCE}">
       <div class="card-image">
