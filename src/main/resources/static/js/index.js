@@ -1,16 +1,12 @@
       
-// ===================== VARIÁVEIS PARA FILTRO =====================
 let filterTimeout = null;
 let lastFilterValues = {};
 
-
-// ===================== FUNÇÕES GLOBAIS =====================
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   if (sidebar) {
     sidebar.classList.toggle('show');
     
-    // Prevenir rolagem do body quando sidebar está aberta
     if (sidebar.classList.contains('show')) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -43,10 +39,9 @@ function configurarIconeUsuario() {
     userIcon.title = 'Ver meu perfil';
     userIcon.onclick = function() {
       console.log('Ícone do usuário clicado');
-      abrirModalUsuarioSimples(); // Chamar a nova função
+      abrirModalUsuarioSimples(); 
     };
   } else if (userIcon) {
-    // Se não estiver logado, esconder o ícone
     userIcon.style.display = 'none';
   }
 }
@@ -61,7 +56,6 @@ async function abrirModalUsuarioSimples() {
   
   console.log('Abrindo modal do usuário...');
   
-  // Mostrar loading
   const messageEl = document.getElementById('userEditMessage');
   if (messageEl) {
     messageEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando dados do usuário...';
@@ -69,7 +63,6 @@ async function abrirModalUsuarioSimples() {
   }
   
   try {
-    // Buscar dados do usuário logado via API
     const response = await fetch('/perfil/usuario-logado', {
       credentials: 'include' 
     });    
@@ -79,7 +72,6 @@ async function abrirModalUsuarioSimples() {
       
       console.log('Dados do usuário recebidos:', usuario);
       
-      // Preencher os campos do formulário
       if (document.getElementById('editNome')) {
         document.getElementById('editNome').value = usuario.nome || '';
       }
@@ -90,7 +82,6 @@ async function abrirModalUsuarioSimples() {
         document.getElementById('editCpf').value = usuario.cpf || '';
       }
       
-      // TELEFONE: formatar automaticamente
       if (document.getElementById('editTelefone')) {
         let telefoneValue = usuario.telefone || '';
         if (telefoneValue) {
@@ -100,17 +91,14 @@ async function abrirModalUsuarioSimples() {
       }
       
       if (document.getElementById('editGenero')) {
-        // Configurar o valor do select
         const generoSelect = document.getElementById('editGenero');
         const generoValue = (usuario.genero || '').toUpperCase();
         generoSelect.value = generoValue;
       }
       if (document.getElementById('editDataCadastro')) {
-        // Formatar a data
         let dataCadastro = usuario.dataCadastro || '';
         if (dataCadastro) {
           try {
-            // Remover timezone se existir
             const dataString = dataCadastro.split('T')[0];
             const [ano, mes, dia] = dataString.split('-');
             const dataFormatada = `${dia}/${mes}/${ano}`;
@@ -121,7 +109,6 @@ async function abrirModalUsuarioSimples() {
         }
       }
       
-      // Limpar campos de senha
       if (document.getElementById('editSenha')) {
         document.getElementById('editSenha').value = '';
       }
@@ -129,17 +116,14 @@ async function abrirModalUsuarioSimples() {
         document.getElementById('confirmarSenha').value = '';
       }
       
-      // Atualizar mensagem
       if (messageEl) {
         messageEl.innerHTML = '<i class="fas fa-info-circle"></i> Edite suas informações acima. Deixe a senha em branco para mantê-la inalterada.';
         messageEl.className = 'message info';
       }
       
     } else if (response.status === 401) {
-      // Usuário não autenticado
       console.log('Usuário não autenticado');
       
-      // Preencher apenas com o nome que aparece no header
       const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
       const nomeUsuario = nomeUsuarioElement ? nomeUsuarioElement.textContent.trim() : '';
       
@@ -152,7 +136,6 @@ async function abrirModalUsuarioSimples() {
         messageEl.className = 'message info';
       }
     } else {
-      // Outro erro
       console.error('Erro na resposta:', response.status);
       if (messageEl) {
         messageEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erro ao carregar dados do usuário.';
@@ -163,7 +146,6 @@ async function abrirModalUsuarioSimples() {
   } catch (error) {
     console.error('Erro ao buscar dados do usuário:', error);
     
-    // Fallback em caso de erro
     const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
     const nomeUsuario = nomeUsuarioElement ? nomeUsuarioElement.textContent.trim() : '';
     
@@ -177,11 +159,9 @@ async function abrirModalUsuarioSimples() {
     }
   }
   
-  // Mostrar o modal
   modal.style.display = 'block';
   document.body.style.overflow = 'hidden';
   
-  // Focar no primeiro campo
   setTimeout(() => {
     const nomeField = document.getElementById('editNome');
     if (nomeField) {
@@ -237,7 +217,6 @@ function fecharModalUsuario() {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
         
-        // Resetar estilos do modal
         const modalContent = modal.querySelector('.modal-content-user');
         if (modalContent) {
             modalContent.style.overflowY = '';
@@ -253,10 +232,8 @@ function openLoginModal() {
     loginModal.style.display = 'block';
     document.body.style.overflow = 'hidden';
     
-    // Limpar mensagens de erro anteriores
     hideLoginError();
     
-    // Focar no primeiro campo
     setTimeout(() => {
       const usernameField = document.getElementById('username');
       if (usernameField) {
@@ -272,7 +249,6 @@ function closeLoginModal() {
     loginModal.style.display = 'none';
     document.body.style.overflow = 'auto';
     
-    // Limpar formulário
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
       loginForm.reset();
@@ -289,7 +265,6 @@ function showLoginError(message) {
     errorMessage.textContent = message;
     errorDiv.style.display = 'flex';
     
-    // Adicionar efeito shake no formulário
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
       loginForm.classList.add('shake');
@@ -310,11 +285,9 @@ function showLoginSuccess() {
   const submitBtn = document.querySelector('.login-button');
   
   if (errorDiv && submitBtn) {
-    // Mudar aparência do botão
     submitBtn.style.background = 'linear-gradient(135deg, #27ae60, #219653)';
     submitBtn.innerHTML = '<i class="fas fa-check"></i> Login realizado!';
     
-    // Mostrar mensagem de sucesso
     errorDiv.innerHTML = '<i class="fas fa-check-circle"></i> Redirecionando...';
     errorDiv.style.display = 'flex';
     errorDiv.style.background = 'rgba(46, 204, 113, 0.1)';
@@ -337,17 +310,150 @@ function showMessage(message, type) {
   }
 }
 
-// ===================== CÓDIGO PRINCIPAL =====================
+function openCadastroModal() {
+  const modal = document.getElementById('cadastroModal');
+  if (modal) {
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    hideCadastroAlert();
+    setTimeout(() => {
+      const nomeField = document.getElementById('cadastroNome');
+      if (nomeField) nomeField.focus();
+    }, 300);
+  }
+}
+
+function closeCadastroModal() {
+  const modal = document.getElementById('cadastroModal');
+  if (modal) {
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    const form = document.getElementById('cadastroFormModal');
+    if (form) form.reset();
+    clearCadastroValidation();
+    hideCadastroAlert();
+  }
+}
+
+function hideCadastroAlert() {
+  const alert = document.getElementById('cadastroAlert');
+  if (alert) alert.style.display = 'none';
+}
+
+function showCadastroAlert(message, isError = false) {
+  const alert = document.getElementById('cadastroAlert');
+  const messageSpan = document.getElementById('cadastroAlertMessage');
+  if (alert && messageSpan) {
+    messageSpan.textContent = message;
+    alert.className = isError ? 'cadastro-alert error' : 'cadastro-alert';
+    alert.style.display = 'flex';
+    setTimeout(() => {
+      if (alert.style.display === 'flex') {
+        alert.style.opacity = '0';
+        setTimeout(() => {
+          alert.style.display = 'none';
+          alert.style.opacity = '1';
+        }, 3000);
+      }
+    }, 5000);
+  }
+}
+
+function showCadastroError(fieldId, message) {
+  const errorDiv = document.getElementById(`cadastro${fieldId}Error`);
+  if (errorDiv) {
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+    const input = document.getElementById(`cadastro${fieldId}`);
+    if (input) input.style.borderColor = '#e74c3c';
+  }
+}
+
+function clearCadastroError(fieldId) {
+  const errorDiv = document.getElementById(`cadastro${fieldId}Error`);
+  if (errorDiv) {
+    errorDiv.style.display = 'none';
+    const input = document.getElementById(`cadastro${fieldId}`);
+    if (input) input.style.borderColor = '';
+  }
+}
+
+function clearCadastroValidation() {
+  const fields = ['Nome', 'Email', 'Cpf', 'Telefone', 'Genero', 'Senha', 'ConfirmarSenha'];
+  fields.forEach(field => clearCadastroError(field));
+}
+
+function toggleCadastroPassword(inputId) {
+  const input = document.getElementById(inputId);
+  const icon = input.parentElement.querySelector('.password-toggle-cadastro i');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.classList.remove('fa-eye');
+    icon.classList.add('fa-eye-slash');
+  } else {
+    input.type = 'password';
+    icon.classList.remove('fa-eye-slash');
+    icon.classList.add('fa-eye');
+  }
+}
+
+function validateCadastroForm() {
+  let isValid = true;
+  clearCadastroValidation();
+  
+  const nome = document.getElementById('cadastroNome').value.trim();
+  if (nome.length < 3) {
+    showCadastroError('Nome', 'Nome deve ter pelo menos 3 caracteres');
+    isValid = false;
+  }
+  
+  const email = document.getElementById('cadastroEmail').value.trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    showCadastroError('Email', 'Email inválido');
+    isValid = false;
+  }
+  
+  const cpf = document.getElementById('cadastroCpf').value.replace(/\D/g, '');
+  if (cpf.length !== 11) {
+    showCadastroError('Cpf', 'CPF deve ter 11 dígitos');
+    isValid = false;
+  }
+  
+  const telefone = document.getElementById('cadastroTelefone').value.replace(/\D/g, '');
+  if (telefone.length < 10) {
+    showCadastroError('Telefone', 'Telefone inválido');
+    isValid = false;
+  }
+  
+  const genero = document.getElementById('cadastroGenero').value;
+  if (!genero) {
+    showCadastroError('Genero', 'Selecione um gênero');
+    isValid = false;
+  }
+  
+  const senha = document.getElementById('cadastroSenha').value;
+  if (senha.length < 6) {
+    showCadastroError('Senha', 'Senha deve ter pelo menos 6 caracteres');
+    isValid = false;
+  }
+  
+  const confirmarSenha = document.getElementById('cadastroConfirmarSenha').value;
+  if (senha !== confirmarSenha) {
+    showCadastroError('ConfirmarSenha', 'As senhas não coincidem');
+    isValid = false;
+  }
+  
+  return isValid;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-  // ===================== SIDEBAR =====================
   const menuToggle = document.getElementById('menuToggle');
   if (menuToggle) {
     menuToggle.addEventListener('click', toggleSidebar);
   }
   
-  
-  // Fechar sidebar ao clicar fora (quando aberta)
-  document.addEventListener('click', function(event) {
+    document.addEventListener('click', function(event) {
     const sidebar = document.getElementById('sidebar');
     const menuToggle = document.getElementById('menuToggle');
     
@@ -358,7 +464,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // Fechar sidebar com tecla ESC
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       const sidebar = document.getElementById('sidebar');
@@ -375,13 +480,11 @@ document.addEventListener('DOMContentLoaded', function() {
       aplicarMascaraTelefoneInput(e.target);
     });
     
-    // Também para quando o campo perde o foco (caso o usuário cole algo)
     telefoneInput.addEventListener('blur', function(e) {
       aplicarMascaraTelefoneInput(e.target);
     });
   }
 
-  // ===================== CARROSSEL =====================
   function initializeCarousel() {
     const carousel = document.querySelector('.carousel-inner');
     const items = document.querySelectorAll('.carousel-item');
@@ -407,7 +510,6 @@ document.addEventListener('DOMContentLoaded', function() {
         indicator.classList.toggle('active', index === currentIndex);
       });
       
-      // Atualizar classe active nos itens
       items.forEach((item, index) => {
         item.classList.toggle('active', index === currentIndex);
       });
@@ -423,11 +525,9 @@ document.addEventListener('DOMContentLoaded', function() {
       updateCarousel();
     }
     
-    // Configurar botões
     if (nextBtn) nextBtn.addEventListener('click', nextSlide);
     if (prevBtn) prevBtn.addEventListener('click', prevSlide);
     
-    // Configurar indicadores
     indicators.forEach((indicator, index) => {
       indicator.addEventListener('click', () => {
         currentIndex = index;
@@ -435,7 +535,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
     
-    // Iniciar auto-play
     let carouselInterval = setInterval(nextSlide, 5000);
     const carouselContainer = document.querySelector('.carousel-container');
     if (carouselContainer) {
@@ -443,15 +542,12 @@ document.addEventListener('DOMContentLoaded', function() {
       carouselContainer.addEventListener('mouseleave', () => carouselInterval = setInterval(nextSlide, 5000));
     }
     
-    // Inicializar
     updateCarousel();
     console.log(`Carrossel inicializado com ${totalItems} itens`);
   }
 
-  // Inicializar o carrossel quando a página carregar
   initializeCarousel();
 
-  // ===================== MODAL DE EXCLUSÃO =====================
   let currentRecipeToDelete = null;
   let currentDeleteButton = null;
 
@@ -464,34 +560,39 @@ function initializeDeleteButtons() {
       
       const recipeId = this.getAttribute('data-recipe-id');
       const recipeTitle = this.getAttribute('data-recipe-title');
+      const recipeChefe = this.getAttribute('data-recipe-chefe');
       
-      // Armazenar informações para usar no modal
+      console.log('Recipe ID:', recipeId);
+      console.log('Recipe Title:', recipeTitle);
+      console.log('Recipe Chefe:', recipeChefe);
+      
       currentRecipeToDelete = recipeId;
       currentDeleteButton = this;
       
-      // Abrir modal de confirmação
-      openDeleteModal(recipeTitle);
+      openDeleteModal(recipeTitle, recipeChefe);
     });
   });
 }
 
-function openDeleteModal(recipeTitle) {
+function openDeleteModal(recipeTitle, recipeChefe) {
   const modal = document.getElementById('deleteModal');
   const recipeNameElement = document.getElementById('recipeNameToDelete');
+  const chefeInfoContainer = document.getElementById('chefeInfoContainer');
+  const chefeNameElement = document.getElementById('chefeNameToDelete');
   
   if (modal && recipeNameElement) {
-    // Definir o nome da receita no modal
     recipeNameElement.textContent = `"${recipeTitle}"`;
     
-    // Garantir que o modal tenha prioridade
-    modal.style.zIndex = '2000';
+    if (recipeChefe && recipeChefe.trim()) {
+      chefeNameElement.textContent = recipeChefe;
+      chefeInfoContainer.style.display = 'block';
+    } else {
+      chefeInfoContainer.style.display = 'none';
+    }
     
-    // Mostrar modal
+    modal.style.zIndex = '2000';
     modal.style.display = 'block';
     document.body.style.overflow = 'hidden';
-    
-    // Parar a propagação de eventos
-    event.stopPropagation();
   }
 }
 
@@ -501,7 +602,6 @@ function openDeleteModal(recipeTitle) {
       modal.style.display = 'none';
       document.body.style.overflow = 'auto';
       
-      // Limpar variáveis
       currentRecipeToDelete = null;
       currentDeleteButton = null;
     }
@@ -513,7 +613,6 @@ function openDeleteModal(recipeTitle) {
   const cancelBtn = document.querySelector('.delete-modal .cancel');
   const confirmBtn = document.querySelector('.delete-modal .confirm');
   
-  // Fechar modal ao clicar no X
   if (closeBtn) {
     closeBtn.addEventListener('click', function(event) {
       event.stopPropagation();
@@ -521,7 +620,6 @@ function openDeleteModal(recipeTitle) {
     });
   }
   
-  // Fechar modal ao clicar no botão Cancelar
   if (cancelBtn) {
     cancelBtn.addEventListener('click', function(event) {
       event.stopPropagation();
@@ -529,25 +627,21 @@ function openDeleteModal(recipeTitle) {
     });
   }
     
-    // Confirmar exclusão
     if (confirmBtn) {
       confirmBtn.addEventListener('click', async function() {
         if (currentRecipeToDelete && currentDeleteButton) {
-          // Desabilitar botão durante a exclusão
           this.disabled = true;
           this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Excluindo...';
           
           await deleteRecipe(currentRecipeToDelete, currentDeleteButton);
           closeDeleteModal();
           
-          // Reativar botão
           this.disabled = false;
           this.innerHTML = '<i class="fas fa-trash"></i> Excluir';
         }
       });
     }
     
-    // Fechar modal ao clicar fora
     if (modal) {
       modal.addEventListener('click', function(e) {
         if (e.target === modal) {
@@ -568,7 +662,6 @@ function openDeleteModal(recipeTitle) {
       console.log('Resposta do servidor:', response.status, response.statusText);
       
       if (response.ok) {
-        // Animação de exclusão
         const card = buttonElement.closest('.card');
         if (card) {
           card.style.animation = 'fadeOut 0.3s ease forwards';
@@ -577,18 +670,15 @@ function openDeleteModal(recipeTitle) {
             card.remove();
             showDeleteNotification('Receita excluída com sucesso!', true);
             
-            // Atualizar contagem se necessário
             updateCardCount();
           }, 300);
         }
         
-        // Remover dos favoritos
         const favorites = JSON.parse(localStorage.getItem('recipeFavorites')) || [];
         const updatedFavorites = favorites.filter(id => id !== recipeId);
         localStorage.setItem('recipeFavorites', JSON.stringify(updatedFavorites));
         updateFavoriteCount();
         
-        // Recarregar favoritos se a aba estiver aberta
         const favTab = document.getElementById('favoritas');
         if (favTab && favTab.classList.contains('active')) {
           loadFavoriteRecipes();
@@ -631,7 +721,6 @@ function showDeleteNotification(message, isSuccess) {
   }, 3000);
 }
 
-  // Adicionar animação CSS para exclusão
   const style = document.createElement('style');
   style.textContent = `
     @keyframes fadeOut {
@@ -647,11 +736,9 @@ function showDeleteNotification(message, isSuccess) {
   `;
   document.head.appendChild(style);
 
-  // Inicializar botões de excluir
   initializeDeleteButtons();
   setupDeleteModal();
 
-  // ===================== ABAS =====================
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabContents = document.querySelectorAll('.tab-content');
 
@@ -669,7 +756,6 @@ function showDeleteNotification(message, isSuccess) {
     });
   });
 
-  // ===================== FAVORITOS =====================
   let favorites = JSON.parse(localStorage.getItem('recipeFavorites')) || [];
 
   function updateFavoriteCount() {
@@ -709,7 +795,6 @@ function initializeFavoriteButtons() {
         
         console.log(`Receita ${recipeId}: ${recipeTitle} - Favorita: ${favorites.includes(recipeId)}`);
         
-        // Atualizar estado inicial
         if (favorites.includes(recipeId)) {
             button.classList.add('active');
             const icon = button.querySelector('i');
@@ -726,12 +811,10 @@ function initializeFavoriteButtons() {
             }
         }
         
-        // Adicionar evento de clique
         button.addEventListener('click', function() {
             const icon = this.querySelector('i');
             
             if (this.classList.contains('active')) {
-                // Remover dos favoritos
                 favorites = favorites.filter(id => id !== recipeId);
                 this.classList.remove('active');
                 if (icon) {
@@ -740,7 +823,6 @@ function initializeFavoriteButtons() {
                 }
                 console.log(`Removido dos favoritos: ${recipeId}`);
             } else {
-                // Adicionar aos favoritos
                 if (!favorites.includes(recipeId)) {
                     favorites.push(recipeId);
                 }
@@ -752,16 +834,12 @@ function initializeFavoriteButtons() {
                 console.log(`Adicionado aos favoritos: ${recipeId}`);
             }
             
-            // Salvar no localStorage
             localStorage.setItem('recipeFavorites', JSON.stringify(favorites));
             
-            // Atualizar contador
             updateFavoriteCount();
             
-            // Mostrar notificação
             showFavoriteNotification(this.classList.contains('active'));
             
-            // Se a aba de favoritos estiver ativa, recarregar
             const favTab = document.getElementById('favoritas');
             if (favTab && favTab.classList.contains('active')) {
                 loadFavoriteRecipes();
@@ -769,7 +847,6 @@ function initializeFavoriteButtons() {
         });
     });
     
-    // Depurar localStorage
     console.log('Favoritos no localStorage:', JSON.parse(localStorage.getItem('recipeFavorites')) || []);
 }
 
@@ -790,7 +867,6 @@ function initializeFavoriteButtons() {
     emptyState.style.display = 'none';
     favoriteContainer.style.display = 'grid';
     
-    // Buscar todas as receitas das duas categorias
     const allRecipeCards = document.querySelectorAll('#salgados-recipes .card, #doces-recipes .card');
     
     console.log(`Total de cards encontrados: ${allRecipeCards.length}`);
@@ -807,7 +883,6 @@ function initializeFavoriteButtons() {
                 favoriteCardsFound++;
                 const clonedCard = card.cloneNode(true);
                 
-                // Configurar botão de favorito no card clonado
                 const favButton = clonedCard.querySelector('.card-favorite');
                 if (favButton) {
                     favButton.classList.add('active');
@@ -817,19 +892,14 @@ function initializeFavoriteButtons() {
                         icon.classList.add('fas');
                     }
                     
-                    // Adicionar evento de clique para remover dos favoritos
                     favButton.addEventListener('click', function() {
-                        // Remover do array de favoritos
                         favorites = favorites.filter(id => id !== recipeId);
                         localStorage.setItem('recipeFavorites', JSON.stringify(favorites));
                         
-                        // Atualizar contador
                         updateFavoriteCount();
                         
-                        // Remover o card da lista de favoritos
                         this.closest('.card').remove();
                         
-                        // Atualizar o botão de favorito na lista principal
                         const mainButton = document.querySelector(`.card-favorite[data-recipe-id="${recipeId}"]:not(#favorite-recipes .card-favorite)`);
                         if (mainButton) {
                             mainButton.classList.remove('active');
@@ -840,10 +910,8 @@ function initializeFavoriteButtons() {
                             }
                         }
                         
-                        // Mostrar notificação
                         showFavoriteNotification(false);
                         
-                        // Mostrar estado vazio se não houver mais favoritos
                         if (favorites.length === 0) {
                             emptyState.style.display = 'block';
                             favoriteContainer.style.display = 'none';
@@ -858,7 +926,6 @@ function initializeFavoriteButtons() {
     
     console.log(`Cards favoritos encontrados: ${favoriteCardsFound}`);
     
-    // Se não encontrou cards favoritos mas o localStorage diz que tem
     if (favoriteCardsFound === 0 && favorites.length > 0) {
         console.warn('Favoritos no localStorage mas não encontrados no DOM');
         emptyState.style.display = 'block';
@@ -872,7 +939,6 @@ function initializeFavoriteButtons() {
   initializeFavoriteButtons();
   updateFavoriteCount();
 
-  // ===================== EFEITO DE DIGITAÇÃO =====================
   const titleElement = document.querySelector('.newspaper-title');
   if (titleElement) {
     const originalTitle = titleElement.textContent;
@@ -889,17 +955,14 @@ function initializeFavoriteButtons() {
     typeTitle();
   }
 
-  // ===================== MODAL DE LOGIN =====================
   function setupLoginModal() {
     const loginModal = document.getElementById('loginModal');
     const closeBtn = document.querySelector('.close-login-modal');
     
-    // Fechar modal
     if (closeBtn) {
       closeBtn.addEventListener('click', closeLoginModal);
     }
     
-    // Fechar ao clicar fora
     if (loginModal) {
       loginModal.addEventListener('click', function(e) {
         if (e.target === loginModal) {
@@ -908,7 +971,6 @@ function initializeFavoriteButtons() {
       });
     }
     
-    // Configurar link de login no sidebar
     const sidebarLoginLink = document.querySelector('a[onclick*="openLoginModal"]');
     if (sidebarLoginLink) {
       sidebarLoginLink.addEventListener('click', function(e) {
@@ -918,8 +980,6 @@ function initializeFavoriteButtons() {
     }
   }
 
-// ===================== MODAL DE LOGIN =====================
-// Configurar evento de envio do formulário de login
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
   loginForm.addEventListener('submit', async function(event) {
@@ -933,10 +993,8 @@ if (loginForm) {
     const buttonText = submitBtn.querySelector('.button-text');
     const originalText = buttonText.textContent;
     
-    // Limpar erros anteriores
     hideLoginError();
     
-    // Mostrar estado de carregamento
     submitBtn.disabled = true;
     buttonText.textContent = 'Entrando...';
     
@@ -954,7 +1012,7 @@ if (loginForm) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'X-Requested-With': 'XMLHttpRequest' // Indica que é AJAX
+          'X-Requested-With': 'XMLHttpRequest' 
         },
         body: formData
       });
@@ -962,7 +1020,6 @@ if (loginForm) {
       console.log('Status da resposta:', response.status);
       console.log('Content-Type:', response.headers.get('content-type'));
       
-      // Verificar se é JSON
       const contentType = response.headers.get('content-type');
       const isJson = contentType && contentType.includes('application/json');
       
@@ -971,7 +1028,6 @@ if (loginForm) {
         console.log('Resposta JSON:', result);
         
         if (result.success) {
-          // Login bem-sucedido via AJAX
           showLoginSuccess();
           
           setTimeout(() => {
@@ -979,29 +1035,24 @@ if (loginForm) {
           }, 1500);
           
         } else {
-          // Erro do servidor
           showLoginError(result.message || 'Email ou senha incorretos');
           document.getElementById('password').value = '';
           document.getElementById('password').focus();
         }
       } else {
-        // Não é JSON - pode ser redirecionamento HTML normal
         console.log('Resposta não é JSON, tratando como redirecionamento...');
         
         if (response.ok || response.status === 302) {
-          // Login bem-sucedido (redirecionamento normal)
           showLoginSuccess();
           
           setTimeout(() => {
             window.location.reload();
           }, 1000);
         } else if (response.status === 401 || response.status === 403) {
-          // Credenciais inválidas
           showLoginError('Email ou senha incorretos');
           document.getElementById('password').value = '';
           document.getElementById('password').focus();
         } else {
-          // Outro erro
           showLoginError('Erro ao fazer login. Tente novamente.');
         }
       }
@@ -1010,23 +1061,106 @@ if (loginForm) {
       console.error('Erro na requisição:', error);
       showLoginError('Erro de conexão. Verifique sua internet.');
     } finally {
-      // Restaurar botão
       submitBtn.disabled = false;
       buttonText.textContent = originalText;
     }
   });
 }
 
-  // Configurar modal de login
+const cadastroForm = document.getElementById('cadastroFormModal');
+if (cadastroForm) {
+  cadastroForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    if (!validateCadastroForm()) {
+      return;
+    }
+    
+    const submitBtn = this.querySelector('.btn-cadastro');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cadastrando...';
+    submitBtn.disabled = true;
+    
+    const formData = new FormData(this);
+    const dados = {
+      nome: formData.get('nome'),
+      email: formData.get('email'),
+      cpf: formData.get('cpf').replace(/\D/g, ''),
+      telefone: formData.get('telefone').replace(/\D/g, ''),
+      genero: formData.get('genero'),
+      senha: formData.get('senha')
+    };
+    
+    try {
+      const response = await fetch('/cadastro', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dados)
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        showCadastroAlert(result.message || 'Cadastro realizado com sucesso! Faça login.');
+        setTimeout(() => {
+          closeCadastroModal();
+          openLoginModal();
+        }, 2000);
+      } else {
+        showCadastroAlert(result.message || 'Erro ao cadastrar', true);
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      showCadastroAlert('Erro de conexão. Tente novamente.', true);
+    } finally {
+      submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
+    }
+  });
+}
+
+const cadastroCpf = document.getElementById('cadastroCpf');
+if (cadastroCpf) {
+  cadastroCpf.addEventListener('input', function() {
+    let v = this.value.replace(/\D/g, '');
+    if (v.length > 3) v = v.slice(0,3) + '.' + v.slice(3);
+    if (v.length > 7) v = v.slice(0,7) + '.' + v.slice(7);
+    if (v.length > 11) v = v.slice(0,11) + '-' + v.slice(11,13);
+    this.value = v;
+  });
+}
+
+const cadastroTelefone = document.getElementById('cadastroTelefone');
+if (cadastroTelefone) {
+  cadastroTelefone.addEventListener('input', function() {
+    let v = this.value.replace(/\D/g,'');
+    if (v.length > 0) v = '(' + v;
+    if (v.length > 3) v = v.slice(0,3) + ') ' + v.slice(3);
+    if (v.length > 9) v = v.slice(0,9) + '-' + v.slice(9,14);
+    this.value = v;
+  });
+}
+
+const closeCadastroBtn = document.querySelector('.close-cadastro-modal');
+if (closeCadastroBtn) {
+  closeCadastroBtn.addEventListener('click', closeCadastroModal);
+}
+
+const cadastroModal = document.getElementById('cadastroModal');
+if (cadastroModal) {
+  cadastroModal.addEventListener('click', function(e) {
+    if (e.target === this) closeCadastroModal();
+  });
+}
+
   setupLoginModal();
 
-  // ===================== VERIFICAR USUÁRIO LOGADO =====================
   verificarUsuarioAutenticado();
 
-  // ===================== CONFIGURAR ÍCONE DO USUÁRIO =====================
   configurarIconeUsuario();
 
-  // ===================== CONFIGURAR MODAL DE LOGOUT =====================
   const closeLogoutBtn = document.querySelector('.close-logout-modal');
   if (closeLogoutBtn) {
     closeLogoutBtn.addEventListener('click', closeLogoutModal);
@@ -1057,10 +1191,7 @@ if (loginForm) {
     });
   }
 
-  
-
-  // ===================== DATA ATUAL =====================
-  const dateElement = document.getElementById('newspaperDate');
+    const dateElement = document.getElementById('newspaperDate');
   if (dateElement) {
     const today = new Date();
     const meses = [
@@ -1073,13 +1204,11 @@ if (loginForm) {
     dateElement.textContent = `${dia} de ${mes} de ${ano}`;
   }
 
-  // ===================== FILTROS DE RECEITAS COM CATEGORIA =====================
   function setupFilterWithDelay() {
     const nomeInput = document.getElementById('nome');
     const categoriaSelect = document.getElementById('categoria');
     const porcoesInput = document.getElementById('porcoes');
     
-    // Criar elemento de status da busca
     const searchStatus = document.createElement('div');
     searchStatus.id = 'searchStatus';
     searchStatus.style.cssText = `
@@ -1090,60 +1219,48 @@ if (loginForm) {
         display: none;
     `;
     
-    // Inserir após o formulário de filtro
     const filterForm = document.getElementById('filterForm');
     if (filterForm) {
         filterForm.parentNode.insertBefore(searchStatus, filterForm.nextSibling);
     }
     
-    // Função para mostrar status da busca
     function showSearchStatus(message) {
         searchStatus.textContent = message;
         searchStatus.style.display = 'block';
     }
     
-    // Função para esconder status da busca
     function hideSearchStatus() {
         searchStatus.style.display = 'none';
     }
     
-    // Função de filtro com debounce
     function applyFilterWithDelay() {
-        // Limpar timeout anterior
         if (filterTimeout) {
             clearTimeout(filterTimeout);
         }
         
-        // Obter valores atuais
         const currentValues = {
             nome: nomeInput ? nomeInput.value.toLowerCase().trim() : '',
             categoria: categoriaSelect ? categoriaSelect.value : '',
             porcoes: porcoesInput ? porcoesInput.value : ''
         };
         
-        // Verificar se houve mudança
         const hasChanged = JSON.stringify(currentValues) !== JSON.stringify(lastFilterValues);
         
         if (!hasChanged) return;
         
-        // Atualizar valores anteriores
         lastFilterValues = { ...currentValues };
         
-        // Mostrar "Procurando receita..."
         showSearchStatus('Procurando receita...');
         
-        // Configurar delay de 1 segundo
         filterTimeout = setTimeout(() => {
             filtrarReceitasComCategoria(currentValues);
             hideSearchStatus();
         }, 1000);
     }
     
-    // Função principal de filtro
 function filtrarReceitasComCategoria(filtros = {}) {
     const { nome = '', categoria = '', porcoes = '' } = filtros;
     
-    // Selecionar cards de ambas as seções
     const salgadosCards = document.querySelectorAll('#salgados-recipes .card');
     const docesCards = document.querySelectorAll('#doces-recipes .card');
     
@@ -1151,7 +1268,6 @@ function filtrarReceitasComCategoria(filtros = {}) {
     let docesVisiveis = 0;
     let totalVisiveis = 0;
 
-    // OBTER ELEMENTOS DAS SEÇÕES
     const salgadosSection = document.getElementById('salgados-section');
     const docesSection = document.getElementById('doces-section');
     const salgadosEmpty = document.getElementById('salgados-empty');
@@ -1163,7 +1279,6 @@ function filtrarReceitasComCategoria(filtros = {}) {
         if (salgadosSection) salgadosSection.style.display = 'block';
         if (docesSection) docesSection.style.display = 'block';
     } else {
-        // Se filtro por categoria está ativo, ESCOLHER qual seção mostrar
         if (categoria === 'SALGADO') {
             if (salgadosSection) salgadosSection.style.display = 'block';
             if (docesSection) docesSection.style.display = 'none'; 
@@ -1173,16 +1288,13 @@ function filtrarReceitasComCategoria(filtros = {}) {
         }
     }
 
-    // Filtrar receitas SALGADAS
     salgadosCards.forEach(card => {
         const titulo = card.querySelector('h2')?.innerText.toLowerCase() || '';
         const porcoesElement = card.querySelector('.card-meta span:nth-child(2) span');
         const porcoesReceita = porcoesElement ? parseInt(porcoesElement.innerText) : 0;
 
-        // Aplicar filtros
         let mostrar = true;
 
-        // Filtro por nome
         if (nome && !titulo.includes(nome.toLowerCase())) {
             mostrar = false;
         }
@@ -1191,12 +1303,10 @@ function filtrarReceitasComCategoria(filtros = {}) {
             mostrar = false;
         }
 
-        // Filtro por porções
         if (porcoes && porcoesReceita !== parseInt(porcoes)) {
             mostrar = false;
         }
 
-        // Aplicar visibilidade
         if (mostrar) {
             card.style.display = 'flex';
             salgadosVisiveis++;
@@ -1206,31 +1316,25 @@ function filtrarReceitasComCategoria(filtros = {}) {
         }
     });
 
-    // Filtrar receitas DOCES
     docesCards.forEach(card => {
         const titulo = card.querySelector('h2')?.innerText.toLowerCase() || '';
         const porcoesElement = card.querySelector('.card-meta span:nth-child(2) span');
         const porcoesReceita = porcoesElement ? parseInt(porcoesElement.innerText) : 0;
 
-        // Aplicar filtros
         let mostrar = true;
 
-        // Filtro por nome
         if (nome && !titulo.includes(nome.toLowerCase())) {
             mostrar = false;
         }
 
-        // Filtro por categoria (doce só mostra se categoria for DOCE ou vazia)
         if (categoria && categoria !== 'DOCE') {
             mostrar = false;
         }
 
-        // Filtro por porções
         if (porcoes && porcoesReceita !== parseInt(porcoes)) {
             mostrar = false;
         }
 
-        // Aplicar visibilidade
         if (mostrar) {
             card.style.display = 'flex';
             docesVisiveis++;
@@ -1240,7 +1344,6 @@ function filtrarReceitasComCategoria(filtros = {}) {
         }
     });
 
-    // Atualizar contadores de cada seção
     const salgadosCount = document.getElementById('salgados-count');
     const docesCount = document.getElementById('doces-count');
     const salgadosEmptyText = document.getElementById('salgados-empty-text');
@@ -1254,7 +1357,6 @@ function filtrarReceitasComCategoria(filtros = {}) {
         docesCount.textContent = `${docesVisiveis} receita${docesVisiveis !== 1 ? 's' : ''}`;
     }
 
-    // Mostrar/ocultar mensagens de categoria vazia APENAS se a seção estiver visível
     if (salgadosEmpty && salgadosSection && salgadosSection.style.display !== 'none') {
         if (salgadosVisiveis === 0) {
             salgadosEmpty.style.display = 'block';
@@ -1281,7 +1383,6 @@ function filtrarReceitasComCategoria(filtros = {}) {
         }
     }
 
-    // Mostrar mensagem se não houver resultados
     if (searchStatus && totalVisiveis === 0) {
         const hasFilters = nome || categoria || porcoes;
         if (hasFilters) {
@@ -1297,7 +1398,6 @@ function filtrarReceitasComCategoria(filtros = {}) {
     }
 }
     
-    // Adicionar eventos aos campos de filtro
     if (nomeInput) {
         nomeInput.addEventListener('input', applyFilterWithDelay);
     }
@@ -1310,7 +1410,6 @@ function filtrarReceitasComCategoria(filtros = {}) {
         porcoesInput.addEventListener('input', applyFilterWithDelay);
     }
     
-    // Configurar botão "Aplicar Filtros" para aplicar imediatamente
     const aplicarFiltros = document.getElementById('aplicarFiltros');
     if (aplicarFiltros) {
         aplicarFiltros.addEventListener('click', function() {
@@ -1331,44 +1430,37 @@ function filtrarReceitasComCategoria(filtros = {}) {
         });
     }
     
-    // Configurar botão "Limpar Filtros"
 const limparFiltros = document.getElementById('limparFiltros');
-// Atualizar a função do botão "Limpar Filtros"
 if (limparFiltros) {
     limparFiltros.addEventListener('click', function() {
         if (filterTimeout) {
             clearTimeout(filterTimeout);
         }
         
-        // Resetar valores
         if (nomeInput) nomeInput.value = '';
         if (categoriaSelect) categoriaSelect.value = '';
         if (porcoesInput) porcoesInput.value = '';
         
         lastFilterValues = {};
         
-        // Mostrar todas as receitas
         const salgadosCards = document.querySelectorAll('#salgados-recipes .card');
         const docesCards = document.querySelectorAll('#doces-recipes .card');
         
         salgadosCards.forEach(card => card.style.display = 'flex');
         docesCards.forEach(card => card.style.display = 'flex');
         
-        // MOSTRAR AMBAS AS SEÇÕES (IMPORTANTE!)
         const salgadosSection = document.getElementById('salgados-section');
         const docesSection = document.getElementById('doces-section');
         
         if (salgadosSection) salgadosSection.style.display = 'block';
         if (docesSection) docesSection.style.display = 'block';
 
-        // Ocultar mensagens de vazio
         const salgadosEmpty = document.getElementById('salgados-empty');
         const docesEmpty = document.getElementById('doces-empty');
         
         if (salgadosEmpty) salgadosEmpty.style.display = 'none';
         if (docesEmpty) docesEmpty.style.display = 'none';
                 
-        // Atualizar contadores
         const salgadosCount = document.getElementById('salgados-count');
         const docesCount = document.getElementById('doces-count');
         
@@ -1380,13 +1472,11 @@ if (limparFiltros) {
             docesCount.textContent = `${docesCards.length} receita${docesCards.length !== 1 ? 's' : ''}`;
         }
         
-        // Mostrar mensagem de confirmação
         showSearchStatus('Filtros limpos! Mostrando todas as receitas.');
         setTimeout(hideSearchStatus, 1000);
     });
 }
     
-    // Configurar submit do form para prevenir comportamento padrão
     const filterFormElement = document.getElementById('filterForm');
     if (filterFormElement) {
         filterFormElement.addEventListener('submit', function(e) {
@@ -1395,19 +1485,15 @@ if (limparFiltros) {
     }
   }
   
-  // Inicializar o sistema de filtro
   setupFilterWithDelay();
 
-  // ===================== FECHAR MODAIS COM ESC =====================
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-      // Fechar todos os modais abertos
       closeLoginModal();
       closeDeleteModal();
       closeLogoutModal();
       fecharModalUsuario();
       
-      // Fechar sidebar
       const sidebar = document.getElementById('sidebar');
       if (sidebar && sidebar.classList.contains('show')) {
         toggleSidebar();
@@ -1415,7 +1501,6 @@ if (limparFiltros) {
     }
   });
 
-// ===================== FORMULÁRIO DE EDIÇÃO DO USUÁRIO =====================
   const userEditForm = document.getElementById('userEditForm');
   if (userEditForm) {
     userEditForm.addEventListener('submit', async function(event) {
@@ -1423,7 +1508,6 @@ if (limparFiltros) {
       
       const formData = new FormData(this);
       
-      // Remover máscara do telefone antes de enviar
       const telefoneInput = document.getElementById('editTelefone');
       if (telefoneInput && telefoneInput.value) {
         const telefoneSemMascara = telefoneInput.value.replace(/\D/g, '');
@@ -1439,13 +1523,11 @@ if (limparFiltros) {
         confirmarSenha: formData.get('confirmarSenha')
       };
       
-      // Validação de senha
       if (dadosAtualizados.senha && dadosAtualizados.senha !== dadosAtualizados.confirmarSenha) {
         showMessage('As senhas não coincidem', 'error');
         return;
       }
       
-      // Se a senha estiver vazia, remover do objeto
       if (!dadosAtualizados.senha || dadosAtualizados.senha.trim() === '') {
         delete dadosAtualizados.senha;
         delete dadosAtualizados.confirmarSenha;
@@ -1472,7 +1554,6 @@ if (limparFiltros) {
         if (response.ok) {
           showMessage(result.message || 'Perfil atualizado com sucesso!', 'success');
           
-          // Atualizar o nome no header se foi alterado
           if (dadosAtualizados.nome) {
             const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
             if (nomeUsuarioElement) {
@@ -1480,7 +1561,6 @@ if (limparFiltros) {
             }
           }
           
-          // Fechar o modal após 1.5 segundos
           setTimeout(fecharModalUsuario, 1500);
         } else {
           showMessage(result.message || 'Erro ao atualizar perfil', 'error');
@@ -1495,7 +1575,6 @@ if (limparFiltros) {
     });
   }
 
-  // ===================== EVENT LISTENERS PARA FECHAR MODAIS =====================
   const closeUserModalBtn = document.querySelector('.close-user-modal');
   if (closeUserModalBtn) {
     closeUserModalBtn.addEventListener('click', fecharModalUsuario);
@@ -1511,14 +1590,11 @@ if (limparFiltros) {
   }
 });
 
-// ===================== FUNÇÕES DE FORMATAÇÃO =====================
 function formatarTelefone(telefone) {
   if (!telefone) return '';
   
-  // Remove tudo que não é dígito
   const digits = telefone.replace(/\D/g, '');
   
-  // Aplica máscara baseada no tamanho
   if (digits.length === 11) {
     return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
   } else if (digits.length === 10) {
@@ -1529,7 +1605,7 @@ function formatarTelefone(telefone) {
     return digits.replace(/(\d{4})(\d{4})/, '$1-$2');
   }
   
-  return digits; // Retorna sem formatação se não for tamanho conhecido
+  return digits; 
 }
 
 function aplicarMascaraTelefoneInput(input) {
@@ -1540,10 +1616,8 @@ function aplicarMascaraTelefoneInput(input) {
   }
   
   if (value.length === 11) {
-    // Formato: (99) 99999-9999
     value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
   } else if (value.length === 10) {
-    // Formato: (99) 9999-9999
     value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
   } else if (value.length > 6) {
     value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
@@ -1556,9 +1630,7 @@ function aplicarMascaraTelefoneInput(input) {
   input.value = value;
 }
 
-// Responsividade para Jornal de Receitas
 function applyResponsiveStyles() {
-    // Verifica se já existe o estilo de responsividade
     if (document.getElementById('responsive-styles')) return;
     
     const style = document.createElement('style');
@@ -1789,7 +1861,6 @@ function applyResponsiveStyles() {
 
         }
         
-        /* Dispositivos pequenos (celulares, 481px a 768px) */
         @media (min-width: 481px) and (max-width: 768px) {
             .header-container {
                 padding: 15px 20px;
@@ -1799,8 +1870,6 @@ function applyResponsiveStyles() {
                 font-size: 3rem;
                 margin-top: 11%;
             }
-
-
 
             .newspaper-title::before, .newspaper-title::after{
                 display: none;
@@ -1864,7 +1933,6 @@ function applyResponsiveStyles() {
             }
         }
         
-        /* Dispositivos médios (tablets, 769px a 1024px) */
         @media (min-width: 769px) and (max-width: 1024px) {
             .newspaper-title {
                 font-size: 3.5rem;
@@ -1900,7 +1968,6 @@ function applyResponsiveStyles() {
             }
         }
         
-        /* Dispositivos grandes (desktops pequenos, 1025px a 1200px) */
         @media (min-width: 1025px) and (max-width: 1200px) {
             .newspaper-title {
                 font-size: 4rem;
@@ -1916,7 +1983,6 @@ function applyResponsiveStyles() {
             }
         }
         
-        /* Ajustes gerais para todos os dispositivos móveis */
         @media (max-width: 768px) {
             .tab-buttons {
                 flex-direction: column;
@@ -2032,7 +2098,6 @@ function applyResponsiveStyles() {
     }
         }
         
-        /* Ajustes para orientação paisagem em dispositivos móveis */
         @media (max-width: 768px) and (orientation: landscape) {
             .carousel-container {
                 height: 300px;
@@ -2050,7 +2115,6 @@ function applyResponsiveStyles() {
             }
         }
         
-        /* Ajustes para telas muito grandes */
         @media (min-width: 1400px) {
             body {
                 max-width: 1400px;
@@ -2058,7 +2122,6 @@ function applyResponsiveStyles() {
             }
         }
         
-        /* Ajustes para impressão */
         @media print {
             .header-full-width,
             .nav-links,
@@ -2094,11 +2157,9 @@ function applyResponsiveStyles() {
     document.head.appendChild(style);
 }
 
-// Função para ajustar dinamicamente elementos específicos
 function adjustLayoutForScreenSize() {
     const width = window.innerWidth;
     
-    // Ajustar grid de receitas baseado na largura da tela
     const receitasContainer = document.getElementById('all-recipes');
     if (receitasContainer) {
         if (width <= 480) {
@@ -2112,7 +2173,6 @@ function adjustLayoutForScreenSize() {
         }
     }
     
-    // Ajustar altura do carrossel
     const carouselContainer = document.querySelector('.carousel-container');
     if (carouselContainer) {
         if (width <= 480) {
@@ -2126,7 +2186,6 @@ function adjustLayoutForScreenSize() {
         }
     }
     
-    // Ajustar tamanho da fonte do título
     const title = document.querySelector('.newspaper-title');
     if (title) {
         if (width <= 480) {
@@ -2143,24 +2202,19 @@ function adjustLayoutForScreenSize() {
     }
 }
 
-// Inicializar a responsividade quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
     applyResponsiveStyles();
     adjustLayoutForScreenSize();
     
-    // Reajustar quando a janela for redimensionada
     window.addEventListener('resize', adjustLayoutForScreenSize);
     
-    // Reaplicar estilos se necessário
     window.addEventListener('load', applyResponsiveStyles);
 });
 
-// Adicione esta função ao seu código
 function setupMobileModalScroll() {
     const userModal = document.getElementById('userModal');
     
     if (userModal) {
-        // Prevenir que o modal feche ao rolar
         userModal.addEventListener('touchmove', function(e) {
             const modalContent = this.querySelector('.modal-content-user');
             if (modalContent) {
@@ -2168,7 +2222,6 @@ function setupMobileModalScroll() {
                 const isAtTop = modalContent.scrollTop === 0;
                 const isAtBottom = modalContent.scrollTop + modalContent.clientHeight >= modalContent.scrollHeight;
                 
-                // Se o conteúdo do modal não for rolável ou estiver nos limites
                 if (!isScrollable || (e.target === modalContent && ((isAtTop && e.touches[0].clientY > e.touches[0].clientY) || 
                     (isAtBottom && e.touches[0].clientY < e.touches[0].clientY)))) {
                     e.stopPropagation();
@@ -2176,7 +2229,6 @@ function setupMobileModalScroll() {
             }
         }, { passive: false });
         
-        // Ajustar altura do modal quando aberto em mobile
         if (window.innerWidth <= 768) {
             userModal.addEventListener('shown', function() {
                 const modalContent = this.querySelector('.modal-content-user');
@@ -2189,11 +2241,9 @@ function setupMobileModalScroll() {
     }
 }
 
-// Chame esta função no DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
     setupMobileModalScroll();
     
-    // Ajustar modal quando a tela for redimensionada
     window.addEventListener('resize', function() {
         const userModal = document.getElementById('userModal');
         if (userModal && userModal.style.display === 'block') {
@@ -2206,7 +2256,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Adicionar classe de mobile ao body para CSS específico
 function detectMobile() {
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         document.body.classList.add('mobile-device');
@@ -2215,15 +2264,12 @@ function detectMobile() {
     }
 }
 
-// Executar detecção de dispositivo
 detectMobile();
 
-// ===================== SPINNER DE CARREGAMENTO =====================
 function showPageLoader() {
     const loader = document.getElementById('pageLoader');
     if (loader) {
         loader.classList.remove('hidden');
-        // Garantir que o loader esteja visível
         loader.style.display = 'flex';
     }
 }
@@ -2231,20 +2277,16 @@ function showPageLoader() {
 function hidePageLoader() {
     const loader = document.getElementById('pageLoader');
     if (loader) {
-        // Adicionar transição suave
         loader.classList.add('hidden');
-        // Remover completamente após a transição
         setTimeout(() => {
             loader.style.display = 'none';
-        }, 500); // Tempo deve coincidir com a transição CSS
+        }, 500); 
     }
 }
 
-// Mostrar spinner imediatamente
 document.addEventListener('DOMContentLoaded', function() {
     showPageLoader();
     
-    // Esconder spinner quando tudo estiver carregado
     window.addEventListener('load', function() {
         setTimeout(hidePageLoader, 600);
     });
@@ -2252,7 +2294,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(hidePageLoader, 3000);
 });
 
-// Para navegação SPA (se aplicável)
 document.addEventListener('click', function(e) {
     const link = e.target.closest('a');
     if (link && link.href && !link.href.includes('#') && 
@@ -2262,8 +2303,6 @@ document.addEventListener('click', function(e) {
     }
 });
 
-
-// ===================== CONTAR RECEITAS POR CATEGORIA =====================
 function updateCategoryCounts() {
     const salgadosCards = document.querySelectorAll('#salgados-recipes .card');
     const docesCards = document.querySelectorAll('#doces-recipes .card');
@@ -2280,22 +2319,18 @@ function updateCategoryCounts() {
         docesCount.textContent = `${docesCards.length} receita${docesCards.length !== 1 ? 's' : ''}`;
     }
     
-    // Mostrar mensagem se não houver receitas
     if (noRecipesMessage) {
         const totalReceitas = salgadosCards.length + docesCards.length;
         noRecipesMessage.style.display = totalReceitas === 0 ? 'block' : 'none';
     }
 }
 
-// Executar quando a página carregar
 document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(updateCategoryCounts, 500); // Pequeno delay para garantir que o DOM esteja pronto
+    setTimeout(updateCategoryCounts, 500); 
         setupStickyHeader();
 
 });
 
-
-// ===================== HEADER FIXO COM ANIMAÇÃO =====================
 function setupStickyHeader() {
     const header = document.querySelector('.header-full-width');
     const contentWrapper = document.querySelector('.content-wrapper');
@@ -2306,11 +2341,10 @@ function setupStickyHeader() {
     let ticking = false;
     
     function updateHeader(scrollTop) {
-        if (scrollTop > 150) { // Aumentei para 150px para dar mais espaço
+        if (scrollTop > 150) { 
             if (!header.classList.contains('scrolled')) {
                 header.classList.add('scrolled');
                 
-                // Ajustar altura do conteúdo
                 if (contentWrapper) {
                     const headerHeight = header.offsetHeight;
                     contentWrapper.style.marginTop = `${headerHeight}px`;
@@ -2320,7 +2354,6 @@ function setupStickyHeader() {
             if (header.classList.contains('scrolled')) {
                 header.classList.remove('scrolled');
                 
-                // Restaurar margem do conteúdo
                 if (contentWrapper) {
                     contentWrapper.style.marginTop = '0';
                 }
@@ -2341,10 +2374,8 @@ function setupStickyHeader() {
         }
     });
     
-    // Ajustar inicialmente baseado na posição de scroll
     updateHeader(window.pageYOffset || document.documentElement.scrollTop);
     
-    // Reajustar ao redimensionar a janela
     window.addEventListener('resize', function() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         updateHeader(scrollTop);

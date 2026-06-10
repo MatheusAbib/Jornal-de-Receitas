@@ -3,129 +3,176 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jornal de Receitas</title>
+  <title>Nova Receita - Jornal de Receitas</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/css/form.css">
   <link th:href="${faviconUrl}" rel="icon" th:if="${faviconUrl != null}">
-
+  <link rel="stylesheet" href="/css/form.css">
 </head>
 <body>
   
-  <div class="form-container">
-    
-    <a href="/" class="back-link">
-      <i class="fas fa-arrow-left"></i> Voltar para a página inicial
-    </a>
-    
-    <form class="recipe-form" th:action="@{/salvar}" th:object="${receita}" method="post" enctype="multipart/form-data" id="recipeForm">
-      <div class="form-row">
-        <div class="form-group titulo-width">
-          <label for="titulo"><i class="fas fa-heading"></i> Título da Receita</label>
-          <input type="text" id="titulo" class="form-control" th:field="*{titulo}" placeholder="Ex: Bolo de Chocolate com Cacau" required>
-          <div class="error-message" id="tituloError">Por favor, insira um título para a receita</div>
+  <div class="main-layout">
+        <div class="info-card">
+      <div class="info-header">
+        <h3><i class="fas fa-lightbulb"></i> Dicas e Informações</h3>
+      </div>
+      <div class="info-body">
+        <div class="info-section">
+          <h4><i class="fas fa-list-check"></i> Como funciona?</h4>
+          <p>Após enviar sua receita, ela passará por uma análise do nosso administrador. Você será notificado quando for aprovada ou reprovada.</p>
         </div>
 
-        <div class="form-group tempo-width">
-          <label for="tempoPreparo"><i class="fas fa-clock"></i> Preparo</label>
-          <input type="text" id="tempoPreparo" class="form-control" th:field="*{tempoPreparo}" placeholder="Ex: 45 minutos" required>
-          <div class="error-message" id="tempoError">Por favor, informe o tempo de preparo</div>
+        <div class="info-section">
+          <h4><i class="fas fa-circle-check"></i> O que faz uma receita ser aprovada?</h4>
+          <ul>
+            <li><i class="fas fa-check"></i> Título claro e descritivo</li>
+            <li><i class="fas fa-check"></i> Ingredientes com quantidades e unidades corretas</li>
+            <li><i class="fas fa-check"></i> Modo de preparo organizado em passos</li>
+            <li><i class="fas fa-check"></i> Informação correta de tempo e porções</li>
+            <li><i class="fas fa-check"></i> Imagem de qualidade da receita</li>
+            <li><i class="fas fa-check"></i> Textos bem escritos e sem erros</li>
+          </ul>
         </div>
 
-        <div class="form-group porcoes-width">
-          <label for="porcoes"><i class="fas fa-utensils"></i> Porções</label>
-          <input type="number" id="porcoes" class="form-control" th:field="*{porcoes}" placeholder="Ex: 4" min="1" required>
-          <div class="error-message" id="porcoesError">Por favor, informe a quantidade de porções</div>
+        <div class="info-section">
+          <h4><i class="fas fa-circle-xmark"></i> O que causa reprovação?</h4>
+          <ul>
+            <li><i class="fas fa-times"></i> Ingredientes sem quantidade ou unidade</li>
+            <li><i class="fas fa-times"></i> Modo de preparo confuso ou incompleto</li>
+            <li><i class="fas fa-times"></i> Informações inconsistentes</li>
+            <li><i class="fas fa-times"></i> Textos com muitos erros de português</li>
+            <li><i class="fas fa-times"></i> Receita copiada sem autorização</li>
+          </ul>
+        </div>
+
+        <div class="info-section">
+          <h4><i class="fas fa-pen-fancy"></i> Dicas para uma boa receita</h4>
+          <div class="info-tip">
+            <p><i class="fas fa-check-circle"></i> <strong>Revise antes de enviar!</strong> Verifique se todos os ingredientes estão com quantidade e unidade corretas.</p>
+            <p><i class="fas fa-check-circle"></i> <strong>Seja específico</strong> nos passos do preparo.</p>
+            <p><i class="fas fa-check-circle"></i> <strong>Use unidades padronizadas</strong> como xícara, colher, gramas.</p>
+            <p><i class="fas fa-check-circle"></i> <strong>Não use numeração nos passos</strong> (1., 1-, 1) etc. O sistema numera automaticamente.</p>
+          </div>
         </div>
       </div>
+    </div>
+    <div class="form-container">
+      <a href="/" class="back-link">
+        <i class="fas fa-arrow-left"></i> Voltar para a página inicial
+      </a>
+      
+      <form class="recipe-form" th:action="@{/salvar}" th:object="${receita}" method="post" enctype="multipart/form-data" id="recipeForm">
+        <div class="form-row">
+          <div class="form-group titulo-width">
+            <label for="titulo"><i class="fas fa-heading"></i> Título da Receita</label>
+            <input type="text" id="titulo" class="form-control" th:field="*{titulo}" placeholder="Ex: Bolo de Chocolate com Cacau" required>
+            <div class="error-message" id="tituloError">Por favor, insira um título para a receita</div>
+          </div>
 
-      <div class="form-row">
+          <div class="form-group tempo-width">
+            <label for="tempoPreparo"><i class="fas fa-clock"></i> Tempo</label>
+            <input type="text" id="tempoPreparo" class="form-control" th:field="*{tempoPreparo}" placeholder="Ex: 45 minutos" required>
+            <div class="error-message" id="tempoError">Por favor, informe o tempo de preparo</div>
+          </div>
 
-
-        <div class="form-group titulo-width">
-          <label for="chefe"><i class="fas fa-user-tie"></i> Chef</label>
-          <input type="text" id="chefe" class="form-control"
-                th:field="*{chefe}"
-                th:value="${nomeUsuario != null ? nomeUsuario : 'Seu nome'}"
-                placeholder="Digite o nome do chef" required>
-          <div class="error-message" id="chefeError">
-            Por favor, informe o nome do chef
+          <div class="form-group porcoes-width">
+            <label for="porcoes"><i class="fas fa-utensils"></i> Porções</label>
+            <input type="number" id="porcoes" class="form-control" th:field="*{porcoes}" placeholder="Ex: 4" min="1" required>
+            <div class="error-message" id="porcoesError">Por favor, informe a quantidade de porções</div>
           </div>
         </div>
 
-        <!-- Categoria -->
-        <div class="form-group tempo-width">
-          <label for="categoria"><i class="fas fa-tag"></i> Categoria</label>
-          <select id="categoria" class="form-control" th:field="*{categoria}" required>
-            <option value="">Selecione uma categoria</option>
-            <option value="SALGADO">Salgado</option>
-            <option value="DOCE">Doce</option>
-          </select>
-          <div class="error-message" id="categoriaError">
-            Por favor, selecione a categoria da receita
+        <div class="form-row">
+          <div class="form-group titulo-width">
+            <label for="chefe"><i class="fas fa-user-tie"></i> Chef</label>
+            <input type="text" id="chefe" class="form-control" th:field="*{chefe}" th:value="${nomeUsuario != null ? nomeUsuario : 'Seu nome'}" placeholder="Digite o nome do chef" required>
+            <div class="error-message" id="chefeError">Por favor, informe o nome do chef</div>
+          </div>
+
+          <div class="form-group tempo-width">
+            <label for="categoria"><i class="fas fa-tag"></i> Categoria</label>
+            <select id="categoria" class="form-control" th:field="*{categoria}" required>
+              <option value="">Selecione uma categoria</option>
+              <option value="SALGADO">Salgado</option>
+              <option value="DOCE">Doce</option>
+            </select>
+            <div class="error-message" id="categoriaError">Por favor, selecione a categoria da receita</div>
           </div>
         </div>
 
-        <!-- Chef -->
-
-      </div>
-
-
-      <!-- Ingredientes Dinâmicos -->
-      <div class="form-group">
-        <label><i class="fas fa-list-ul"></i> Ingredientes</label>
+        <div class="form-group">
+          <label><i class="fas fa-list-ul"></i> Ingredientes</label>
           <div id="ingredientesContainer">
             <div class="ingrediente-item">
-              <input type="text" name="ingredientes[]" placeholder="Ingrediente 1" required>
+              <div class="ingrediente-row">
+                <input type="number" class="quantidade-input" placeholder="Quant." step="0.01" value="1">
+                <select class="unidade-select">
+                  <option value="g">gramas (g)</option>
+                  <option value="kg">quilogramas (kg)</option>
+                  <option value="ml">mililitros (ml)</option>
+                  <option value="L">litros (L)</option>
+                  <option value="colher (chá)">colher (chá)</option>
+                  <option value="colher (sopa)">colher (sopa)</option>
+                  <option value="xicara">xícara (chá)</option>
+                  <option value="copo">copo (americano)</option>
+                  <option value="unidade">unidade(s)</option>
+                  <option value="pitada">pitada</option>
+                  <option value="fio">fio</option>
+                </select>
+                <input type="text" class="ingrediente-nome-input" placeholder="Nome do ingrediente" required>
+                <div class="input-wrapper" style="width: auto;">
+                  <button type="button" class="remove-btn">×</button>
+                </div>
+              </div>
             </div>
           </div>
-        <button type="button" id="addIngrediente">Adicionar ingrediente</button>
-        <div class="error-message" id="ingredientesError">Por favor, adicione pelo menos um ingrediente</div>
-      </div>
-
-      <!-- Passos Dinâmicos -->
-      <div class="form-group">
-        <label><i class="fas fa-mortar-pestle"></i> Modo de Preparo</label>
-       <div id="modoPreparoContainer">
-        <div class="passo-item">
-          <input type="text" name="modoPreparo[]" placeholder="Passo 1" required>
+          <button type="button" id="addIngrediente">+ Adicionar ingrediente</button>
+          <div class="error-message" id="ingredientesError">Por favor, adicione pelo menos um ingrediente</div>
         </div>
-      </div>
-        <button type="button" id="addPasso">Adicionar passo</button>
-        <div class="error-message" id="modoPreparoError">Por favor, adicione pelo menos um passo</div>
-      </div>
 
-      <!-- Imagem -->
-      <div class="form-group">
-        <label for="imagemFile"><i class="fas fa-camera"></i> Imagem da Receita</label>
-        <div class="file-input-container">
-          <label class="file-input-label">
-            <span class="file-input-text" id="fileText">Selecione uma imagem para sua receita</span>
-            <span class="file-input-button">Escolher arquivo</span>
-            <input type="file" id="imagemFile" name="imagemFile" accept="image/*">
-          </label>
+        <div class="form-group">
+          <label><i class="fas fa-mortar-pestle"></i> Modo de Preparo</label>
+          <div id="modoPreparoContainer">
+            <div class="passo-item">
+              <div class="input-wrapper">
+                <input type="text" class="passo-input" name="modoPreparo[]" placeholder="Passo 1" required>
+                <button type="button" class="remove-btn">×</button>
+              </div>
+            </div>
+          </div>
+          <button type="button" id="addPasso">+ Adicionar passo</button>
+          <div class="error-message" id="modoPreparoError">Por favor, adicione pelo menos um passo</div>
         </div>
-        <div class="image-preview" id="imagePreview">
-          <img src="" alt="Preview da imagem">
-        </div>
-        <div class="error-message" id="imagemError">Formato de arquivo não suportado. Use JPG, PNG ou GIF.</div>
-      </div>
 
-      <button type="submit" class="submit-button">
-        <i class="fas fa-paper-plane button-icon"></i> Enviar para aprovação
-      </button>
-    </form>
+        <div class="form-group">
+          <label for="imagemFile"><i class="fas fa-camera"></i> Imagem da Receita</label>
+          <div class="file-input-container">
+            <label class="file-input-label">
+              <span class="file-input-text" id="fileText">Selecione uma imagem para sua receita</span>
+              <span class="file-input-button">Escolher arquivo</span>
+              <input type="file" id="imagemFile" name="imagemFile" accept="image/*">
+            </label>
+          </div>
+          <div class="image-preview" id="imagePreview">
+            <img src="" alt="Preview da imagem">
+          </div>
+          <div class="error-message" id="imagemError">Formato de arquivo não suportado. Use JPG, PNG ou GIF.</div>
+        </div>
+
+        <button type="submit" class="submit-button">
+          <i class="fas fa-paper-plane button-icon"></i> Enviar para aprovação
+        </button>
+      </form>
+    </div>
+
 
   </div>
 
-<div id="notification"
-     class="user-notification success"
-     th:if="${successMessage}">
-  <i class="fas fa-check-circle"></i>
-  <span th:text="${successMessage}"></span>
-</div>
+  <div id="notification" class="user-notification success" th:if="${successMessage}">
+    <i class="fas fa-check-circle"></i>
+    <span th:text="${successMessage}"></span>
+  </div>
 
-  
-<script src="/js/form.js"></script>
+ <script src="/js/form.js"></script>
+
 </body>
-
 </html>

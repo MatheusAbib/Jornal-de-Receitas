@@ -5,72 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="${receita.titulo}">Detalhes da Receita</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <link rel="stylesheet" href="/css/detalhe.css">
-
   <link th:href="${faviconUrl}" rel="icon" th:if="${faviconUrl != null}">
-
+  <link rel="stylesheet" href="/css/detalhe.css">
 </head>
+
 <body>
-
-  <!-- Decorações de folhas -->
-  <div class="decoration-leaf leaf-1">❦</div>
-  <div class="decoration-leaf leaf-2">❧</div>
-  <div class="decoration-leaf leaf-3">❦</div>
-  <div class="decoration-leaf leaf-4">❧</div>
-  
-
-  <div class="main-container">
-    
-    <!-- Cabeçalho -->
-<header class="recipe-header fade-in">
-  <h1 class="recipe-title" th:text="${receita.titulo}">Título da Receita</h1>
-  
-  <div style="display: flex; align-items: center; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 20px;">
-    <div class="recipe-subtitle">
-      <i class="fas fa-quote-left"></i>
-      Uma receita especial para momentos inesquecíveis
-      <i class="fas fa-quote-right"></i>
+    <div class="action-buttons">
+      <a href="/pendentes" class="btn btn-secondary" th:if="${!receita.aprovada}">
+        <i class="fas fa-clock"></i>
+        <span>Receitas Pendentes</span>
+      </a>
     </div>
-  </div>
-</header>
+  <div class="main-container">
+    <a href="/" class="back-link">
+      <i class="fas fa-arrow-left"></i> Voltar para a página inicial
+    </a>
+    
 
-<div style="display: flex; justify-content: flex-start; margin-bottom: 15px;">
-  <a href="/" class="back-link" 
-     style="display: inline-flex; align-items: center; gap: 8px; 
-            text-decoration: none; 
-            font-weight: 600; transition: var(--transition);
-            padding: 8px 16px; border-radius: 4px; font-size: 18px;">
-    <i class="fas fa-arrow-left"></i> Voltar para a página inicial
-  </a>
-</div>
+    <header class="recipe-header">
+      <h1 class="recipe-title" th:text="${receita.titulo}">Título da Receita</h1>
+    </header>
 
-    <!-- Seção Hero com imagem e informações -->
-    <section class="hero-section slide-up">
-      <!-- Imagem da receita -->
+    <section class="hero-section">
       <div class="recipe-image-wrapper">
-        <!-- Badge de categoria no canto superior direito -->
-        <div class="category-badge" 
-             th:classappend="${receita.categoria == T(com.receitas.site_receitas.model.Receita.Categoria).DOCE} ? 'category-doce' : 'category-salgado'">
-          <i class="fas fa-cake-candles" th:if="${receita.categoria == T(com.receitas.site_receitas.model.Receita.Categoria).DOCE}"></i>          
-            <i class="fas fa-pepper-hot" th:if="${receita.categoria != T(com.receitas.site_receitas.model.Receita.Categoria).DOCE}"></i>
+        <div class="category-badge" th:classappend="${receita.categoria == T(com.receitas.site_receitas.model.Receita.Categoria).DOCE} ? 'category-doce' : 'category-salgado'">
+          <i class="fas fa-cake-candles" th:if="${receita.categoria == T(com.receitas.site_receitas.model.Receita.Categoria).DOCE}"></i>
+          <i class="fas fa-pepper-hot" th:if="${receita.categoria != T(com.receitas.site_receitas.model.Receita.Categoria).DOCE}"></i>
           <span th:text="${receita.categoria == T(com.receitas.site_receitas.model.Receita.Categoria).DOCE} ? 'Doce' : 'Salgado'"></span>
         </div>
         
         <img th:if="${receita.imagem != null and (receita.imagem.startsWith('http') or receita.imagem.startsWith('https'))}" 
-             th:src="${receita.imagem}" 
-             alt="Imagem da receita" 
-             class="recipe-image">
-        
+             th:src="${receita.imagem}" alt="Imagem da receita" class="recipe-image">
         <img th:if="${receita.imagem != null and !(receita.imagem.startsWith('http') or receita.imagem.startsWith('https'))}" 
-             th:src="@{'/uploads/' + ${receita.imagem}}" 
-             alt="Imagem da receita" 
-             class="recipe-image">
-        
-        <img th:if="${receita.imagem == null}" 
-             src="/default-image.jpg" 
-             alt="Imagem padrão da receita" 
-             class="recipe-image">
+             th:src="@{'/uploads/' + ${receita.imagem}}" alt="Imagem da receita" class="recipe-image">
+        <img th:if="${receita.imagem == null}" src="/default-image.jpg" alt="Imagem padrão" class="recipe-image">
         
         <div class="image-overlay">
           <div class="recipe-status">
@@ -78,123 +46,85 @@
             <span th:if="${receita.aprovada}">Receita Aprovada</span>
             <span th:if="${!receita.aprovada}">Aguardando Aprovação</span>
           </div>
-          <div class="image-credit">
-            <i class="fas fa-camera"></i> Foto da receita
-          </div>
         </div>
       </div>
 
+      <div class="info-card">
+        <div class="info-card-header">
+          <i class="fas fa-info-circle"></i>
+          <h2>Informações da Receita</h2>
+        </div>
+        
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-icon"><i class="fas fa-clock"></i></div>
+            <div class="info-content">
+              <span class="info-label">Tempo de Preparo</span>
+              <span class="info-value" th:text="${receita.tempoPreparo}">45 minutos</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-icon"><i class="fas fa-users"></i></div>
+            <div class="info-content">
+              <span class="info-label">Porções</span>
+              <span class="info-value" th:text="${receita.porcoes} + ' porções'">4 porções</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-icon"><i class="fas fa-user-tie"></i></div>
+            <div class="info-content">
+              <span class="info-label">Chef</span>
+              <span class="info-value" th:text="${receita.chefe}">Chef</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <div class="mobile-print-container">
-    <button onclick="window.print()" class="btn btn-outline print-btn mobile-only">
-      <i class="fas fa-print"></i>
-      <span>Imprimir Receita</span>
-    </button>
-  </div>
-
-      <div class="info-card-wrapper">
-    <!-- Botão de imprimir acima do info-card (APENAS DESKTOP) -->
-    <div class="print-button-container desktop-only">
-      <button onclick="window.print()" class="btn btn-outline print-btn">
+    <div class="print-button-container">
+      <button onclick="window.print()" class="btn print-btn">
         <i class="fas fa-print"></i>
         <span>Imprimir Receita</span>
       </button>
     </div>
 
-      <!-- Cartão de informações -->
-      <div class="info-card">
-        <div class="info-card-header">
-          <i class="fas fa-info-circle"></i>
-          <h2>Informações</h2>
+    <div class="two-columns">
+      <div class="content-section">
+        <div class="section-header">
+          <div class="section-icon"><i class="fas fa-list-check"></i></div>
+          <h2 class="section-title">Ingredientes</h2>
+          <div class="section-count" th:text="${ingredientesList.size()} + ' itens'"></div>
         </div>
         
-        <div class="info-grid">
-          <div class="info-item">
-            <div class="info-icon">
-              <i class="fas fa-clock"></i>
-            </div>
-            <div class="info-content">
-              <span class="info-label">Tempo de Preparo</span>
-              <span class="info-value" th:text="${receita.tempoPreparo}"></span>
-            </div>
-          </div>
-          
-          <div class="info-item">
-            <div class="info-icon">
-              <i class="fas fa-users"></i>
-            </div>
-            <div class="info-content">
-              <span class="info-label">Porções</span>
-              <span class="info-value" th:text="${receita.porcoes} + ' porções'">X porções</span>
-            </div>
-          </div>
-          
-          <div class="info-item">
-            <div class="info-icon">
-              <i class="fas fa-user-tie"></i>
-            </div>
-            <div class="info-content">
-              <span class="info-label">Chef</span>
-              <span class="info-value" th:text="${receita.chefe}">Nome do Chef</span>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-    </div>
-    </section>
-
-    <!-- Seção de Ingredientes -->
-<section class="content-section slide-up" style="animation-delay: 0.1s;">
-  <div class="section-header">
-    <div class="section-icon">
-      <i class="fas fa-list-check"></i>
-    </div>
-    <h2 class="section-title">Ingredientes</h2>
-    <div class="section-count" th:text="${ingredientesList.size()} + ' itens'">X itens</div>
-  </div>
-  
-  <div class="ingredients-grid">
-    <div class="ingredient-item" th:each="ingrediente : ${ingredientesList}">
-      <input type="checkbox" class="ingredient-checkbox">
-      <label class="ingredient-text" th:text="${ingrediente}">
-        Ingrediente
-      </label>
-    </div>
-  </div>
-</section>
-
-    <!-- Seção de Modo de Preparo -->
-    <section class="content-section slide-up" style="animation-delay: 0.2s;">
-      <div class="section-header">
-        <div class="section-icon">
-          <i class="fas fa-mortar-pestle"></i>
-        </div>
-        <h2 class="section-title">Modo de Preparo</h2>
-        <div class="section-count" th:text="${modoPreparoList.size()} + ' passos'">X passos</div>
-      </div>
-      
-      <div class="steps-container">
-        <div class="step-item" th:each="passo, iterStat : ${modoPreparoList}">
-          <div class="step-number" th:text="${iterStat.index + 1}"></div>
-          <div class="step-content" th:text="${passo}">
-            Passo do modo de preparo
+        <div class="ingredients-list">
+          <div class="ingredient-item" th:each="ingrediente : ${ingredientesList}">
+            <input type="checkbox" class="ingredient-checkbox" th:id="'ing-' + ${ingredienteStat.index}">
+            <label class="ingredient-text" th:for="'ing-' + ${ingredienteStat.index}" th:text="${ingrediente}">Ingrediente</label>
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- Botões de Ação -->
-    <div class="action-buttons slide-up" style="animation-delay: 0.3s;">      
-      <a href="/pendentes" class="btn btn-secondary" th:if="${!receita.aprovada}">
-        <i class="fas fa-clock"></i>
-        <span>Receitas Pendentes</span>
-      </a>
+      <div class="content-section">
+        <div class="section-header">
+          <div class="section-icon"><i class="fas fa-mortar-pestle"></i></div>
+          <h2 class="section-title">Modo de Preparo</h2>
+          <div class="section-count" th:text="${modoPreparoList.size()} + ' passos'"></div>
+        </div>
+        
+        <div class="steps-list">
+          <div class="step-item" th:each="passo, iterStat : ${modoPreparoList}">
+            <div class="step-number" th:text="${iterStat.index + 1}"></div>
+            <div class="step-content" th:text="${passo}">Passo do preparo</div>
+          </div>
+        </div>
+      </div>
     </div>
+
+
   </div>
 
   <script src="/js/detalhe.js"></script>
-
 </body>
 </html>

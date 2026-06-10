@@ -21,7 +21,6 @@
     }
     
     body {
-      font-family: 'Playfair Display', 'Georgia', serif;
       background-color: var(--main-bg-color);
       color: var(--text-color);
       line-height: 1.7;
@@ -35,86 +34,6 @@
     }
     
     
-    /* HEADER COM LARGURA TOTAL */
-    .header-full-width {
-      width: 100vw;
-      position: relative;
-      left: 50%;
-      right: 50%;
-      margin-left: -50vw;
-      margin-right: -50vw;
-      background: linear-gradient(135deg, var(--header-bg), #8b0000);
-      margin-bottom: 30px;
-      box-shadow: var(--shadow);
-    }
-    
-    .header-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 15px 20px;
-    }
-    
-    .newspaper-header {
-      text-align: center;
-      position: relative;
-      padding: 10px 0 20px;
-    }
-    /* Título do jornal */
-    .newspaper-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 4rem;
-      font-weight: 800;
-      color: white;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      margin: 15px 0 5px;
-      line-height: 1.1;
-      position: relative;
-      display: inline-block;
-      padding: 0 20px;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .newspaper-title::before,
-    .newspaper-title::after {
-      content: "✶";
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--accent-color);
-      font-size: 3rem;
-      text-shadow: none;
-    }
-    
-    .newspaper-title::before {
-      left: -40px;
-    }
-    
-    .newspaper-title::after {
-      right: -40px;
-    }
-
-    /* Subtítulo */
-    .newspaper-subtitle {
-      font-style: italic;
-      font-size: 1.4rem;
-      color: rgba(255, 255, 255, 0.9);
-      margin: 10px 0;
-      letter-spacing: 1px;
-      font-weight: 400;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Data */
-    .newspaper-date {
-      font-size: 1rem;
-      color: rgba(255, 255, 255, 0.8);
-      margin-top: 10px;
-      font-weight: 500;
-    }
-
-    
-    /* Container para o conteúdo com margens */
     .content-wrapper {
       width: 100%;
       max-width: 1400px;
@@ -122,61 +41,6 @@
       padding: 0 20px;
     }
     
-    /* Navegação melhorada */
-    .nav-links {
-      display: flex;
-      justify-content: center;
-      gap: 25px;
-      margin: 40px 0 0;
-      flex-wrap: wrap;
-    }
-    
-    .nav-links a {
-      text-decoration: none;
-      color: var(--header-color);
-      font-weight: 600;
-      padding: 14px 30px;
-      border: 2px solid var(--header-color);
-      border-radius: 50px;
-      transition: var(--transition);
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .nav-links a i {
-      font-size: 1.2rem;
-    }
-    
-    .nav-links a:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 0%;
-      height: 100%;
-      background: var(--header-color);
-      transition: var(--transition);
-      z-index: -1;
-      border-radius: 50px;
-    }
-    
-    .nav-links a:hover:before {
-      width: 100%;
-    }
-    
-    .nav-links a:hover {
-      color: #fff;
-      box-shadow: 0 5px 15px rgba(165, 42, 42, 0.3);
-    }
-    
-    /* Títulos de seção */
     .section-title {
       text-align: center;
       margin: 60px 0 40px;
@@ -185,7 +49,6 @@
     }
     
     .section-title h2 {
-      font-family: 'Playfair Display', serif;
       font-size: 2.8rem;
       color: var(--header-color);
       margin-bottom: 15px;
@@ -211,7 +74,6 @@
       border-radius: 2px;
     }
     
-    /* Conteúdo principal */
     .about-content {
       display: grid;
       gap: 50px;
@@ -219,7 +81,6 @@
     }
     
     
-    /* Linha do Tempo - Jornada */
     .journey-timeline {
       position: relative;
       max-width: 1000px;
@@ -278,7 +139,6 @@
     }
     
     .timeline-year {
-      font-family: 'Playfair Display', serif;
       font-size: 1.5rem;
       font-weight: 700;
       color: var(--header-color);
@@ -291,7 +151,6 @@
       color: var(--text-color);
     }
     
-    /* FAQ */
     .faq-container {
       max-width: 900px;
       margin: 0 auto;
@@ -335,7 +194,7 @@
     }
     
     .faq-item.active .faq-answer {
-      padding: 0 30px 25px;
+      padding: 25px 30px 25px;
       max-height: 500px;
     }
     
@@ -343,7 +202,6 @@
       transform: rotate(180deg);
     }
     
-    /* Criador */
     .creator-container {
       display: flex;
       flex-wrap: wrap;
@@ -375,7 +233,6 @@
     }
     
     .creator-info h3 {
-      font-family: 'Playfair Display', serif;
       font-size: 2.2rem;
       color: var(--header-color);
       margin-bottom: 10px;
@@ -419,7 +276,6 @@
       transform: translateY(-5px);
     }
     
-    /* Rodapé */
     .newspaper-footer {
       text-align: center;
       margin-top: 80px;
@@ -495,9 +351,9 @@
       background: var(--accent-color);
       color: var(--header-color);
     }
+
     
-    /* Animações */
-    @keyframes fadeIn {
+      @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
@@ -506,7 +362,6 @@
       animation: fadeIn 0.6s ease forwards;
     }
     
-    /* Responsividade */
     @media (max-width: 992px) {
       .newspaper-title {
         font-size: 3.5rem;

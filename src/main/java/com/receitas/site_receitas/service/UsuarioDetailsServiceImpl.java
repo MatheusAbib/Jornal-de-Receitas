@@ -27,7 +27,6 @@ public class UsuarioDetailsServiceImpl implements UserDetailsService {
         Usuario usuario = usuarioRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
 
-        // Converte a role do usuário para o formato do Spring Security
         List<GrantedAuthority> authorities = Collections.singletonList(
             new SimpleGrantedAuthority("ROLE_" + usuario.getRole())
         );

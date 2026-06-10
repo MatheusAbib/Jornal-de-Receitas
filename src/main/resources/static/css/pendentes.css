@@ -1,4 +1,3 @@
-   /* Variáveis e reset */
     :root {
       --main-bg-color: #f8f5f0;
       --header-color: #a52a2a;
@@ -11,7 +10,7 @@
       --pending-color: #e67e22;
       --approved-color: #27ae60;
       --rejected-color: #e74c3c;
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      --shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
       --transition: all 0.3s ease;
       --header-bg: #a52a2a;
     }
@@ -36,9 +35,7 @@
       overflow-x: hidden;
     }
     
-    
-    /* HEADER COM LARGURA TOTAL */
-    .header-full-width {
+        .header-full-width {
       width: 100vw;
       position: relative;
       left: 50%;
@@ -102,7 +99,6 @@
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
     
-    /* Container para o conteúdo com margens */
     .content-wrapper {
       width: 100%;
       max-width: 1400px;
@@ -117,7 +113,6 @@
       margin-bottom: 15px;
     }
     
-    /* Botão de voltar */
     .back-button {
       display: inline-flex;
       align-items: center;
@@ -139,7 +134,6 @@
       box-shadow: 0 5px 15px rgba(165, 42, 42, 0.3);
     }
 
-    /* Link de voltar */
     .back-link {
       display: inline-flex;
       align-items: center;
@@ -156,7 +150,6 @@
       transform: translateX(-5px);
     }
     
-    /* Container de receitas */
     .receitas-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -164,7 +157,6 @@
       margin: 20px 0;
     }
     
-    /* Card de receita */
     .card {
       background: var(--card-bg);
       border-radius: 12px;
@@ -331,7 +323,6 @@
       box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
     }
     
-    /* Estado vazio */
     .empty-state {
       text-align: center;
       padding: 60px 20px;
@@ -358,7 +349,6 @@
       margin: 0 auto 30px;
     }
     
-    /* Animações */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -375,7 +365,6 @@
     .card:nth-child(5) { animation-delay: 0.5s; }
     .card:nth-child(6) { animation-delay: 0.6s; }
     
-    /* MODAIS - ESTILO SIMPLIFICADO E CORRETO */
     .modal {
       display: none;
       position: fixed;
@@ -433,7 +422,6 @@
       transform: rotate(90deg);
     }
 
-    /* Cabeçalho dos modais */
     .approve-modal .modal-header,
     .reject-modal .modal-header {
       background: linear-gradient(135deg, var(--header-bg), #8b0000);
@@ -462,12 +450,7 @@ background: linear-gradient(135deg, var(--header-color), #8b0000);
       font-weight: 700;
     }
 
-    .modal-header h3 i {
-      color: var(--accent-color);
-      font-size: 2rem;
-    }
 
-    /* Corpo do modal */
     .modal-body {
       padding: 30px;
       text-align: center;
@@ -481,7 +464,6 @@ background: linear-gradient(135deg, var(--header-color), #8b0000);
       font-family: 'Georgia', serif;
     }
 
-    /* Ações do modal */
     .modal-actions {
       display: flex;
       flex-direction: row-reverse;

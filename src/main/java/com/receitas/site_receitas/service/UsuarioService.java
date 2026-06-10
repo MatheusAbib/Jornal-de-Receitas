@@ -54,17 +54,14 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    // Dentro de UsuarioService
 public void excluirUsuario(Integer id) {
     usuarioRepository.deleteById(id);
 }
 
-// Para ativar/desativar, precisa de um campo ativo no Usuario
 public Usuario ativarDesativarUsuario(Integer id) {
     Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
     if (usuarioOpt.isPresent()) {
         Usuario usuario = usuarioOpt.get();
-        // supondo que você adicione um campo 'ativo' no Usuario
         usuario.setAtivo(!usuario.isAtivo());
         return usuarioRepository.save(usuario);
     }
@@ -76,14 +73,12 @@ public void atualizarUsuario(Integer id, Usuario dadosAtualizados) {
     if(optional.isPresent()) {
         Usuario usuario = optional.get();
 
-        // Atualizar campos permitidos
         usuario.setNome(dadosAtualizados.getNome());
         usuario.setEmail(dadosAtualizados.getEmail());
         usuario.setCpf(dadosAtualizados.getCpf());
         usuario.setTelefone(dadosAtualizados.getTelefone());
         usuario.setGenero(dadosAtualizados.getGenero());
 
-        // Atualizar senha se houver
         if(dadosAtualizados.getSenha() != null && !dadosAtualizados.getSenha().isEmpty()) {
             usuario.setSenha(passwordEncoder.encode(dadosAtualizados.getSenha()));
         }

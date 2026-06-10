@@ -23,17 +23,13 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
     http
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            // Permite acesso público às páginas principais e recursos estáticos
             .requestMatchers("/", "/cadastro", "/css/**", "/js/**", "/uploads/**", 
                            "/api/**", "/detalhe/**", "/login", "/logout").permitAll()
             
-            // Apenas ADMIN vê estas páginas
             .requestMatchers("/pendentes", "/usuarios", "/receitas/excluir/**").hasRole("ADMIN")
             
-            // Apenas usuários autenticados podem criar receitas
             .requestMatchers("/nova", "/salvar").authenticated()
             
-            // Permite todo o resto (para o carrossel funcionar)
             .anyRequest().permitAll()
         )
         .formLogin(form -> form

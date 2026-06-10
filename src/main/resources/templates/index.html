@@ -9,14 +9,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="/css/style.css">
-
-
-<link th:href="${faviconUrl}" rel="icon" th:if="${faviconUrl != null}">
+  <link th:href="${faviconUrl}" rel="icon" th:if="${faviconUrl != null}">
 
 </head>
 <body>
 
-    <!-- Spinner de Carregamento -->
   <div id="pageLoader" class="page-loader">
     <div class="spinner"></div>
     <div class="loader-text">Jornal de Receitas</div>
@@ -27,16 +24,14 @@
   <div class="header-container">
     <header class="newspaper-header">
       <div class="header-top">
-        <div class="newspaper-price">Edição #01</div>
+        <div class="newspaper-price">Edição #02</div>
         <div class="newspaper-volume">
           <span class="menu-icon" id="menuToggle"><i class="fas fa-bars"></i></span>
           
-          <!-- Ícone do usuário aparece apenas se estiver logado -->
           <span sec:authorize="isAuthenticated()" class="user-icon" id="userIcon">
             <i class="fas fa-user-circle"></i>
           </span>
           
-          <!-- ícone de login quando não estiver logado -->
           <span sec:authorize="!isAuthenticated()" class="user-icon" id="loginIcon" 
                 onclick="openLoginModal(); return false;" style="cursor: pointer;">
             <i class="fas fa-sign-in-alt"></i>
@@ -59,55 +54,45 @@
   </div>
 </div>
 
-  <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
     <h3>Jornal de Receitas</h3>
     <a th:href="@{/}"><i class="fas fa-home"></i> Início</a>
 
-    <a th:href="@{/sobre}"><i class="fas fa-user-circle"></i> Quem somos</a>
+    <a th:href="@{/sobre}"><i class="fas fa-user-circle"></i> Sobre o Site</a>
     
-    <!-- Apenas mostra "Se Cadastrar" quando NÃO estiver logado -->
-    <a sec:authorize="!isAuthenticated()" th:href="@{/cadastro}">
-        <i class="fas fa-user-plus"></i> Se Cadastrar
+    <a sec:authorize="!isAuthenticated()" href="#" onclick="openCadastroModal(); return false;">
+      <i class="fas fa-user-plus"></i> Se Cadastrar
     </a>
-    
-    <!-- Apenas mostra "Fazer Login" quando NÃO estiver logado -->
+
     <a sec:authorize="!isAuthenticated()" href="#" onclick="openLoginModal(); return false;">
         <i class="fas fa-sign-in-alt"></i> Fazer Login
     </a>
     
-    <!-- Apenas ADMIN vê Usuários -->
     <a sec:authorize="hasRole('ADMIN')" th:href="@{/usuarios}">
         <i class="fas fa-users"></i> Usuários
     </a>    
     
-    <!-- Apenas ADMIN vê Receitas Pendentes -->
     <a sec:authorize="hasRole('ADMIN')" href="/pendentes">
         <i class="fas fa-clock"></i> Receitas Pendentes
     </a>
     
-    <!-- Apenas usuários logados veem Nova Receita -->
     <a sec:authorize="isAuthenticated()" href="/nova">
-        <i class="fas fa-utensils"></i> Nova Receita
+        <i class="fas fa-utensils"></i> Envie sua Receita
     </a>    
     
-    <!-- Botão Sair - Aparece apenas para usuários logados -->
     <a sec:authorize="isAuthenticated()" href="#" onclick="openLogoutModal(); return false;">
         <i class="fas fa-sign-out-alt"></i> Sair
     </a>
 </div>
 
-  <!-- CONTEÚDO COM MARGENS -->
   <div class="content-wrapper">
     <nav class="nav-links">
-      <!-- Apenas ADMIN vê Receitas Pendentes -->
       <a sec:authorize="hasRole('ADMIN')" href="/pendentes">
         <i class="fas fa-clock"></i> Receitas Pendentes
       </a>
-        <a sec:authorize="isAuthenticated()" href="/nova"><i class="fas fa-plus-circle"></i> Nova Receita</a>
+        <a sec:authorize="isAuthenticated()" href="/nova"><i class="fas fa-plus-circle"></i> Envie sua Receita</a>
     </nav>
 
-  <!-- Abas de conteúdo -->
   <div class="content-tabs">
     <div class="tab-buttons">
       <button class="tab-button active" data-tab="todas-receitas">
@@ -124,7 +109,6 @@
       <div class="carousel-container">
         <div class="carousel">
           <div class="carousel-inner">
-            <!-- ITENS DO CARROSSEL DINÂMICOS -->
             <div class="carousel-item" th:each="item : ${carrosselItens}" th:classappend="${itemStat.first} ? 'active'">
               <img th:src="${item.imagemUrl}" th:alt="${item.titulo}">
               <div class="carousel-caption">
@@ -138,7 +122,6 @@
             <button class="carousel-control next"><i class="fas fa-chevron-right"></i></button>
           </div>
           <div class="carousel-indicators">
-            <!-- INDICADORES DINÂMICOS -->
             <div class="carousel-indicator" 
                  th:each="item, itemStat : ${carrosselItens}"
                  th:classappend="${itemStat.first} ? 'active'"></div>
@@ -155,12 +138,12 @@
           <div class="news-item">
             <div class="news-header">
               <div class="news-icon"><i class="fas fa-bullhorn"></i></div>
-              <div class="news-title">Novidade na Plataforma</div>
+              <div class="news-title">Suas Receitas</div>
             </div>
             <div class="news-content">
-              <p class="news-description">Seja o novo chefe. Mande as suas receitas para aprovação!</p>
+              <p class="news-description">Seja o novo chefe. Mande as suas receitas para aprovação e espere ser publicada!</p>
               <div class="news-date">
-                <i class="far fa-clock"></i> Publicado há 2 horas
+                <i class="far fa-clock"></i> Informação Importante
               </div>
             </div>
           </div>
@@ -190,22 +173,8 @@
               </div>
             </div>
           </div>
-
-          <div class="news-item">
-            <div class="news-header">
-              <div class="news-icon"><i class="fas fa-bowl-food"></i></div>
-              <div class="news-title">Clássico Revitalizado</div>
-            </div>
-            <div class="news-content">
-              <p class="news-description">Panqueca Americana: Nova versão com toque de canela e baunilha</p>
-              <div class="news-date">
-                <i class="far fa-clock"></i> Receita tradicional
-              </div>
-            </div>
-          </div>
         </div>
 
-<!-- Área de filtros -->
 <div class="recipe-filters">
   <h3><i class="fas fa-filter"></i> Filtrar Receitas</h3>
   <form id="filterForm">
@@ -215,7 +184,6 @@
       <input type="text" id="nome" name="nome" placeholder="Digite o nome da receita">
     </div>
     
-    <!-- NOVO: Filtro por categoria -->
     <div class="filter-group">
       <label for="categoria"><i class="fas fa-layer-group"></i> Categoria:</label>
       <i class="fas fa-search filter-icon"></i>
@@ -243,8 +211,6 @@
   </form>
 </div>
 
-
-<!-- SEÇÃO DE SALGADOS -->
 <div class="category-section" id="salgados-section">
   <h2 class="category-title">
     <i class="fas fa-pepper-hot"></i> SALGADOS
@@ -273,20 +239,20 @@
             <span>Salgado</span>
           </span>
         </div>
-        
-        <p>Experimente essa receita deliciosa e compartilhe com amigos e familiares. Perfeita para ocasiões especiais!</p>
-        
+
+        <p>Receita aprovada pelo administrador do site. Aproveite!</p>
+
         <div class="card-actions">
           <a th:href="@{/detalhe/{id}(id=${r.id})}" class="card-link">Ver receita <i class="fas fa-arrow-right"></i></a>
           <button class="card-favorite" th:attr="data-recipe-id=${r.id}">
             <i class="far fa-heart"></i>
           </button>
-          <!-- Botão de excluir - apenas para ADMIN -->
-          <button sec:authorize="hasRole('ADMIN')" class="card-delete" 
-                  th:attr="data-recipe-id=${r.id}" 
-                  th:data-recipe-title="${r.titulo}">
-              <i class="fas fa-trash"></i>
-          </button>
+<button sec:authorize="hasRole('ADMIN')" class="card-delete" 
+        th:attr="data-recipe-id=${r.id}" 
+        th:data-recipe-title="${r.titulo}"
+        th:data-recipe-chefe="${r.chefe}">
+    <i class="fas fa-trash"></i>
+</button>
         </div>
       </div>
     </div>
@@ -331,20 +297,20 @@
             <span>Doce</span>
           </span>
         </div>
-        
-        <p>Experimente essa receita deliciosa e compartilhe com amigos e familiares. Perfeita para ocasiões especiais!</p>
-        
+
+        <p>Receita aprovada pelo administrador do site. Aproveite!</p>
+
         <div class="card-actions">
           <a th:href="@{/detalhe/{id}(id=${r.id})}" class="card-link">Ver receita <i class="fas fa-arrow-right"></i></a>
           <button class="card-favorite" th:attr="data-recipe-id=${r.id}">
             <i class="far fa-heart"></i>
           </button>
-          <!-- Botão de excluir - apenas para ADMIN -->
-          <button sec:authorize="hasRole('ADMIN')" class="card-delete" 
-                  th:attr="data-recipe-id=${r.id}" 
-                  th:data-recipe-title="${r.titulo}">
-              <i class="fas fa-trash"></i>
-          </button>
+<button sec:authorize="hasRole('ADMIN')" class="card-delete" 
+        th:attr="data-recipe-id=${r.id}" 
+        th:data-recipe-title="${r.titulo}"
+        th:data-recipe-chefe="${r.chefe}">
+    <i class="fas fa-trash"></i>
+</button>
         </div>
       </div>
     </div>
@@ -360,7 +326,6 @@
 
 </div>
 
-      <!-- MENSAGEM SE NÃO HOUVER RECEITAS -->
     <div class="empty-category" id="no-recipes-message" style="display: none;">
       <i class="fas fa-utensils"></i>
       <h3>Nenhuma receita cadastrada ainda</h3>
@@ -369,7 +334,7 @@
 
       <div class="section-title">
         <h2>Receitas Rápidas</h2>
-        <p>Pratos deliciosos que você prepara em pouco tempo</p>
+        <p>Pratos deliciosos indicados para que você prepara em pouco tempo</p>
       </div>
       
       <div class="classifieds" id="classifieds">
@@ -456,7 +421,7 @@
   <h2>Jornal de Receitas!</h2>
   <p>Curioso para saber quem eu sou e por que criei este site? Clique aí embaixo!</p>
   <a th:href="@{/sobre}" class="btn">
-    <i class="fas fa-user-circle"></i> Quem sou eu
+     Sobre o Site
   </a>
 </div>
     </div>
@@ -469,7 +434,6 @@
       </div>
       
       <div class="receitas" id="favorite-recipes">
-        <!-- As receitas favoritas serão carregadas via JavaScript -->
       </div>
     </div>
   </div>
@@ -478,7 +442,7 @@
     <div class="footer-content">
       <div class="footer-column">
         <h3>Jornal de Receitas</h3>
-        <p>Aqui é sua fonte para encontrar as melhores<br> receitas caseiras.</p>
+        <p>Aqui é sua fonte para encontrar ótimas receitas <br>e postar suas próprias.</p>
       </div>
       <div class="footer-column">
         <h3>Links Rápidos</h3>
@@ -487,7 +451,7 @@
           <li><a sec:authorize="isAuthenticated()" href="/nova"><i class="fas fa-book"></i> Cadastrar Receitas</a></li>
           <li><a href="#classifieds"><i class="fas fa-star"></i> Destaques</a></li>
 
-          <li><a th:href="@{/sobre}"><i class="fas fa-question-circle"></i> Sobre Nós</a></li>
+          <li><a th:href="@{/sobre}"><i class="fas fa-question-circle"></i> Sobre o Site</a></li>
         </ul>
       </div>
       <div class="footer-column">
@@ -513,7 +477,6 @@
   </footer>
 </div>
 
-<!-- Modal de Login  -->
 <div id="loginModal" class="modal login-modal">
   <div class="modal-content-login">
     <span class="close close-login-modal">&times;</span>
@@ -523,7 +486,6 @@
     
     <div class="modal-body-login">
 
-      <!-- Mensagem de erro será inserida aqui via JavaScript -->
       <div id="loginError" class="login-error" style="display: none;">
         <i class="fas fa-exclamation-circle"></i>
         <span id="errorMessage"></span>
@@ -567,9 +529,7 @@
             <input type="checkbox" id="remember" name="remember">
             Lembrar-me
           </label>
-          <a href="#" class="forgot-password">
-            Esqueci a senha
-          </a>
+    
         </div>
         
         <button type="submit" class="login-button">
@@ -580,13 +540,12 @@
       
       <div class="register-link">
         Não tem uma conta?
-        <a href="/cadastro">Cadastre-se aqui</a>
+        <a href="#" onclick="closeLoginModal(); openCadastroModal(); return false;">Cadastre-se aqui</a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal de informações do usuário -->
 <div id="userModal" class="modal">
   <div class="modal-content-user">
     <div class="modal-header">
@@ -648,7 +607,6 @@
   </div>
 </div>
 
-<!-- Modal de Confirmação de Exclusão -->
 <div id="deleteModal" class="modal delete-modal">
   <div class="modal-content-delete">
     <span class="close close-delete-modal">&times;</span>
@@ -660,6 +618,13 @@
       Tem certeza que deseja excluir a receita
       <span class="recipe-name" id="recipeNameToDelete"></span>
     </div>
+    
+    <div class="modal-chefe-info" id="chefeInfoContainer" style="display: none; margin: 10px 0; padding: 8px 12px; background: rgba(212, 175, 55, 0.1); border-radius: 8px; border-left: 3px solid var(--accent-color);">
+      <i class="fas fa-user-tie"></i>
+      <span>Chef: </span>
+      <strong id="chefeNameToDelete"></strong>
+    </div>
+    
     <div class="modal-warning">
       <i class="fas fa-exclamation-circle"></i>
       Esta ação não pode ser desfeita. A receita será removida permanentemente.
@@ -675,7 +640,6 @@
   </div>
 </div>
 
-  <!-- Modal de Logout -->
 <div id="logoutModal" class="modal logout-modal">
   <div class="modal-content-logout">
     <div class="modal-header-logout">
@@ -686,8 +650,6 @@
     
     <div class="modal-message">
       Tem certeza que deseja sair da sua conta?
-      <br>
-      Você precisará fazer login novamente para acessar recursos exclusivos.
     </div>
     
     <div class="modal-actions">
@@ -697,6 +659,115 @@
       <button class="modal-button logout">
         <i class="fas fa-sign-out-alt"></i> Sair
       </button>
+    </div>
+  </div>
+</div>
+
+
+<div id="cadastroModal" class="modal cadastro-modal">
+  <div class="modal-content-cadastro">
+    <span class="close close-cadastro-modal">&times;</span>
+    <div class="modal-header-cadastro">
+      <h2><i class="fas fa-user-plus"></i> Criar Nova Conta</h2>
+    </div>
+    <div class="modal-body-cadastro">
+      <div id="cadastroAlert" class="cadastro-alert" style="display: none;">
+        <i class="fas fa-info-circle"></i>
+        <span id="cadastroAlertMessage"></span>
+      </div>
+      
+      <form id="cadastroFormModal" method="post">
+        <div class="form-row-cadastro">
+          <div class="form-group-cadastro">
+            <label for="cadastroNome"><i class="fas fa-user"></i> Nome Completo</label>
+            <div class="input-icon-cadastro">
+              <i class="fas fa-user"></i>
+              <input type="text" id="cadastroNome" name="nome" class="form-control-cadastro" required placeholder="Digite seu nome completo">
+            </div>
+            <div id="cadastroNomeError" class="form-error-cadastro" style="display: none;"></div>
+          </div>
+
+          <div class="form-group-cadastro">
+            <label for="cadastroEmail"><i class="fas fa-envelope"></i> E-mail</label>
+            <div class="input-icon-cadastro">
+              <i class="fas fa-envelope"></i>
+              <input type="email" id="cadastroEmail" name="email" class="form-control-cadastro" required placeholder="seu@email.com">
+            </div>
+            <div id="cadastroEmailError" class="form-error-cadastro" style="display: none;"></div>
+          </div>
+        </div>
+
+        <div class="form-row-cadastro">
+          <div class="form-group-cadastro">
+            <label for="cadastroCpf"><i class="fas fa-id-card"></i> CPF</label>
+            <div class="input-icon-cadastro">
+              <i class="fas fa-id-card"></i>
+              <input type="text" id="cadastroCpf" name="cpf" class="form-control-cadastro" required maxlength="14" placeholder="000.000.000-00">
+            </div>
+            <div id="cadastroCpfError" class="form-error-cadastro" style="display: none;"></div>
+          </div>
+
+          <div class="form-group-cadastro">
+            <label for="cadastroTelefone"><i class="fas fa-phone"></i> Telefone</label>
+            <div class="input-icon-cadastro">
+              <i class="fas fa-phone"></i>
+              <input type="text" id="cadastroTelefone" name="telefone" class="form-control-cadastro" required maxlength="15" placeholder="(00) 00000-0000">
+            </div>
+            <div id="cadastroTelefoneError" class="form-error-cadastro" style="display: none;"></div>
+          </div>
+
+          <div class="form-group-cadastro">
+            <label for="cadastroGenero"><i class="fas fa-venus-mars"></i> Gênero</label>
+            <div class="input-icon-cadastro">
+              <i class="fas fa-venus-mars"></i>
+              <select id="cadastroGenero" name="genero" class="form-control-cadastro" required>
+                <option value="">Selecione</option>
+                <option value="MASCULINO">Masculino</option>
+                <option value="FEMININO">Feminino</option>
+                <option value="OUTRO">Outro</option>
+              </select>
+            </div>
+            <div id="cadastroGeneroError" class="form-error-cadastro" style="display: none;"></div>
+          </div>
+        </div>
+
+        <div class="form-row-cadastro">
+          <div class="form-group-cadastro">
+            <label for="cadastroSenha"><i class="fas fa-lock"></i> Senha</label>
+            <div class="input-icon-cadastro">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="cadastroSenha" name="senha" class="form-control-cadastro" required placeholder="Mínimo 6 caracteres">
+              <span class="password-toggle-cadastro" onclick="toggleCadastroPassword('cadastroSenha')">
+                <i class="fas fa-eye"></i>
+              </span>
+            </div>
+            <div id="cadastroSenhaError" class="form-error-cadastro" style="display: none;"></div>
+          </div>
+
+          <div class="form-group-cadastro">
+            <label for="cadastroConfirmarSenha"><i class="fas fa-lock"></i> Confirmar Senha</label>
+            <div class="input-icon-cadastro">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="cadastroConfirmarSenha" name="confirmarSenha" class="form-control-cadastro" required placeholder="Confirme sua senha">
+              <span class="password-toggle-cadastro" onclick="toggleCadastroPassword('cadastroConfirmarSenha')">
+                <i class="fas fa-eye"></i>
+              </span>
+            </div>
+            <div id="cadastroConfirmarSenhaError" class="form-error-cadastro" style="display: none;"></div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-cadastro">
+          <i class="fas fa-user-plus"></i> Criar Conta
+        </button>
+      </form>
+
+      <div class="login-link-cadastro">
+        Já tem uma conta? 
+        <a href="#" onclick="closeCadastroModal(); openLoginModal(); return false;">
+          <i class="fas fa-sign-in-alt"></i> Faça login
+        </a>
+      </div>
     </div>
   </div>
 </div>

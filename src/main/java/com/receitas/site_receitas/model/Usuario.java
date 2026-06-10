@@ -33,11 +33,9 @@ public class Usuario {
     @Column(nullable = false)
     private boolean ativo = true;
 
-    // NOVO CAMPO: papel do usuário
     @Column(nullable = false)
-    private String role = "USER"; // default é usuário normal
+    private String role = "USER"; 
 
-    // Getters e Setters
     public boolean isAtivo() { return ativo; }
     public void setAtivo(boolean ativo) { this.ativo = ativo; }
 
