@@ -158,12 +158,12 @@
   }
 
   .category-doce {
-    background: #c19b76;
+    background: #9f7e5f;
     color: white;
   }
 
   .category-salgado {
-    background:  #8b4513;
+    background:  #9b4e17;
     color: white;
   }
 
@@ -183,7 +183,7 @@
     left: 0;
     right: 0;
     height: 6px;
-    background: linear-gradient(90deg, var(--header-color), var(--accent-color));
+    background: var(--header-color);
   }
 
   .info-card-header {
@@ -220,7 +220,6 @@
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     transition: var(--transition);
-    border-left: 3px solid var(--accent-color);
   }
 
   .info-item:hover {
@@ -281,7 +280,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--header-color), var(--accent-color));
+    background: var(--header-color);
   }
 
   .section-header {
