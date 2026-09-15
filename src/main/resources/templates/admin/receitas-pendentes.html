@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jornal de Receitas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/global/style.css">
+    <link th:href="${faviconUrl}" rel="icon" th:if="${faviconUrl != null}">
+</head>
+<body>
+
+<div th:replace="~{global/cabecalho}"></div>
+
+<main class="admin-content-wrapper">
+
+    <div class="admin-topbar">
+        <h1 th:text="${abaAtiva == 'rejeitadas' ? 'Receitas Rejeitadas' : 'Receitas Pendentes'}">
+            Receitas Pendentes
+        </h1>
+
+        <div class="admin-topbar-actions">
+            <span>
+                <i class="fas fa-utensils"></i>
+                Total:
+                <strong th:text="${totalItems}"></strong>
+            </span>
+
+            <form method="get"
+                  th:action="@{/pendentes}"
+                  class="admin-search-box"
+                  id="pendentesSearchForm">
+
+                <i class="fas fa-search"></i>
+
+                <input type="text"
+                       name="busca"
+                       id="pendentesSearch"
+                       placeholder="Buscar receita..."
+                       th:value="${busca}"
+                       autocomplete="off">
+
+                <input type="hidden"
+                       name="aba"
+                       th:value="${abaAtiva}">
+            </form>
+        </div>
+    </div>
+
+    <div class="admin-table-wrapper">
+
+        <div class="admin-table-container">
+
+            <div class="admin-table-header">
+
+                <div class="admin-recipe-tabs">
+
+                    <a th:href="@{/pendentes(aba='pendentes', page=0, size=${pageSize}, busca=${busca})}"
+                       th:classappend="${abaAtiva == 'pendentes'} ? ' active' : ''">
+
+                        <i class="fas fa-clock"></i>
+
+                        Pendentes
+
+                        <span th:text="${totalPendentes}"></span>
+                    </a>
+
+                    <a th:href="@{/pendentes(aba='rejeitadas', page=0, size=${pageSize}, busca=${busca})}"
+                       th:classappend="${abaAtiva == 'rejeitadas'} ? ' active' : ''">
+
+                        <i class="fas fa-times-circle"></i>
+
+                        Rejeitadas
+
+                        <span th:text="${totalRejeitadas}"></span>
+                    </a>
+
+                </div>
+
+                <div class="count">
+
+                    <i class="fas fa-list"></i>
+
+                    <span th:text="${totalItems}"></span>
+
+                    <span th:text="${abaAtiva == 'rejeitadas' ? 'rejeitadas' : 'aguardando aprovação'}"></span>
+
+                </div>
+
+            </div>
+
+            <div class="admin-cards-scroll">
+
+                <div class="admin-cards-grid"
+                     th:if="${not #lists.isEmpty(receitas)}">
+
+                    <div class="admin-recipe-card"
+                         th:each="r : ${receitas}">
+
+                        <div class="admin-recipe-image">
+
+                            <img th:if="${r.imagem != null}"
+                                 th:src="${#strings.startsWith(r.imagem, 'http') ? r.imagem : '/uploads/' + r.imagem}"
+                                 alt="Imagem da receita">
+
+                            <img th:if="${r.imagem == null}"
+                                 src="/default-image.jpg"
+                                 alt="Sem imagem">
+
+                            <div class="admin-recipe-badge"
+                                 th:classappend="${abaAtiva == 'rejeitadas'} ? ' rejected' : ''">
+
+                                <i th:class="${abaAtiva == 'rejeitadas'} ? 'fas fa-times-circle' : 'fas fa-clock'"></i>
+
+                                <span th:text="${abaAtiva == 'rejeitadas'} ? 'Rejeitada' : 'Pendente'"></span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="admin-recipe-content">
+
+                            <h2 th:text="${r.titulo}">
+                                Título da Receita
+                            </h2>
+
+                            <p class="admin-recipe-meta">
+
+                                <span>
+                                    <i class="fas fa-clock"></i>
+                                    <span th:text="${r.tempoPreparo}">30 min</span>
+                                </span>
+
+                                <span>
+                                    <i class="fas fa-utensils"></i>
+                                    <span th:text="${r.porcoes}">1</span>
+                                    porções
+                                </span>
+
+                            </p>
+
+                            <div class="admin-recipe-actions">
+
+                                <button type="button"
+                                        class="admin-btn admin-btn-view"
+                                        th:attr="data-id=${r.id}, data-contexto=${abaAtiva}"
+                                        onclick="openDetalhesModal(this)">
+
+                                    <i class="fas fa-eye"></i>
+
+                                    Ver Detalhes
+
+                                </button>
+
+                                <th:block th:if="${abaAtiva == 'pendentes'}">
+
+                                    <form th:action="@{/aprovar/{id}(id=${r.id})}"
+                                          method="post"
+                                          class="admin-action-form">
+
+                                        <button type="submit"
+                                                class="admin-btn admin-btn-approve"
+                                                onclick="return confirmAction('approve', this)">
+
+                                            <i class="fas fa-check"></i>
+
+                                            Aprovar
+
+                                        </button>
+
+                                    </form>
+
+                                    <form th:action="@{/rejeitar/{id}(id=${r.id})}"
+                                          method="post"
+                                          class="admin-action-form">
+
+                                        <button type="submit"
+                                                class="admin-btn admin-btn-reject"
+                                                onclick="return confirmAction('reject', this)">
+
+                                            <i class="fas fa-times"></i>
+
+                                            Rejeitar
+
+                                        </button>
+
+                                    </form>
+
+                                </th:block>
+
+                                <th:block th:if="${abaAtiva == 'rejeitadas'}">
+
+                                    <div class="admin-rejection-reason">
+
+                                        <i class="fas fa-comment-alt"></i>
+
+                                        <span th:text="${r.motivoRejeicao != null && !r.motivoRejeicao.isBlank() ? r.motivoRejeicao : 'Sem motivo informado.'}">
+                                            Sem motivo informado.
+                                        </span>
+
+                                    </div>
+
+                                </th:block>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="admin-empty"
+                     th:if="${#lists.isEmpty(receitas)}"
+                     id="receitasEmpty">
+
+                    <i th:class="${abaAtiva == 'rejeitadas'} ? 'fas fa-times-circle' : 'fas fa-inbox'"></i>
+
+                    <h3 th:text="${abaAtiva == 'rejeitadas'} ? 'Nenhuma receita rejeitada' : 'Nenhuma receita pendente'">
+                        Nenhuma receita pendente
+                    </h3>
+
+                    <p th:text="${abaAtiva == 'rejeitadas'} ? 'Não há receitas rejeitadas no momento.' : 'Não há receitas aguardando aprovação no momento.'">
+                        Não há receitas aguardando aprovação no momento.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="admin-table-footer">
+
+                <div class="info">
+
+                    Mostrando
+
+                    <span th:text="${receitas.size()}"></span>
+
+                    de
+
+                    <span th:text="${totalItems}"></span>
+
+                    receitas
+
+                </div>
+
+                <div class="admin-pagination"
+                     th:if="${totalPages > 1}">
+
+                    <a th:if="${currentPage > 0}"
+                       th:href="@{/pendentes(
+                           page=${currentPage - 1},
+                           size=${pageSize},
+                           busca=${busca},
+                           aba=${abaAtiva}
+                       )}">
+
+                        <i class="fas fa-chevron-left"></i>
+
+                    </a>
+
+                    <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                       th:href="@{/pendentes(
+                           page=${i},
+                           size=${pageSize},
+                           busca=${busca},
+                           aba=${abaAtiva}
+                       )}"
+                       th:text="${i + 1}"
+                       th:class="${i == currentPage} ? 'active' : ''">
+                    </a>
+
+                    <a th:if="${currentPage < totalPages - 1}"
+                       th:href="@{/pendentes(
+                           page=${currentPage + 1},
+                           size=${pageSize},
+                           busca=${busca},
+                           aba=${abaAtiva}
+                       )}">
+
+                        <i class="fas fa-chevron-right"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<div th:replace="~{admin/modais/editar-receita :: modais}"></div>
+
+<div id="approveModal"
+     class="modal admin-confirm-modal">
+
+    <div class="modal-content-confirm">
+
+        <span class="close close-confirm-modal"
+              onclick="closeModal('approveModal')">
+            &times;
+        </span>
+
+        <div class="modal-icon-confirm approve">
+            <i class="fas fa-check-circle"></i>
+        </div>
+
+        <h3 class="modal-title">
+            Aprovar Receita
+        </h3>
+
+        <p class="modal-message">
+            Tem certeza que deseja aprovar esta receita? Ela ficará visível para todos os usuários.
+        </p>
+
+        <form id="approveForm"
+              method="post">
+
+            <div class="modal-actions-confirm">
+
+                <button type="button"
+                        class="modal-button-confirm cancel"
+                        onclick="closeModal('approveModal')">
+
+                    <i class="fas fa-times"></i>
+
+                    Cancelar
+
+                </button>
+
+                <button type="submit"
+                        class="modal-button-confirm confirm approve">
+
+                    <i class="fas fa-check"></i>
+
+                    Sim, Aprovar
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div id="rejectModal"
+     class="modal admin-confirm-modal">
+
+    <div class="modal-content-confirm">
+
+        <span class="close close-confirm-modal"
+              onclick="closeModal('rejectModal')">
+            &times;
+        </span>
+
+        <div class="modal-icon-confirm reject">
+            <i class="fas fa-times-circle"></i>
+        </div>
+
+        <h3 class="modal-title">
+            Rejeitar Receita
+        </h3>
+
+        <p class="modal-message">
+            Explique o motivo da rejeição. O autor poderá ver essa mensagem.
+        </p>
+
+        <form id="rejectForm"
+              method="post">
+
+            <div class="reject-motivo-group">
+
+                <textarea id="rejectMotivo"
+                          name="motivo"
+                          rows="4"
+                          placeholder="Ex: Ingredientes sem quantidade ou unidade..."
+                          required></textarea>
+
+            </div>
+
+            <div class="modal-actions-confirm">
+
+                <button type="button"
+                        class="modal-button-confirm cancel"
+                        onclick="closeModal('rejectModal')">
+
+                    <i class="fas fa-times"></i>
+
+                    Cancelar
+
+                </button>
+
+                <button type="submit"
+                        class="modal-button-confirm confirm reject">
+
+                    <i class="fas fa-trash"></i>
+
+                    Sim, Rejeitar
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div th:replace="~{modais/modal-logout}"></div>
+
+<script src="/js/admin/receitas-pendentes.js"></script>
+<script src="/js/admin/modais/modais-receita.js"></script>
+<script src="/js/global/image-loader.js"></script>
+<script th:src="@{/js/global/polling.js}"></script>
+<script src="/js/global/cabecalho.js"></script>
+<script src="/js/modais/modais.js"></script>
+
+</body>
+</html>

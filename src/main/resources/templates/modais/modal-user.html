@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+  <div th:fragment="modal-user">
+    <div id="userModal" class="user-modal-box">
+      <div class="user-modal-content">
+        <div class="user-modal-header">
+          <h2><i class="fas fa-user-circle"></i> Meu Perfil</h2>
+          <span class="user-modal-close close-user-modal">&times;</span>
+        </div>
+        <div class="user-modal-body">
+
+          <div id="userViewMode">
+            <div class="user-view-info">
+              <div class="user-view-item">
+                <span class="user-view-label">Nome</span>
+                <span class="user-view-value" id="viewNome">-</span>
+              </div>
+              <div class="user-view-item">
+                <span class="user-view-label">E-mail</span>
+                <span class="user-view-value" id="viewEmail">-</span>
+              </div>
+              <div class="user-view-item">
+                <span class="user-view-label">CPF</span>
+                <span class="user-view-value" id="viewCpf">-</span>
+              </div>
+              <div class="user-view-item">
+                <span class="user-view-label">Telefone</span>
+                <span class="user-view-value" id="viewTelefone">-</span>
+              </div>
+              <div class="user-view-item">
+                <span class="user-view-label">Gênero</span>
+                <span class="user-view-value" id="viewGenero">-</span>
+              </div>
+              <div class="user-view-item">
+                <span class="user-view-label">Data de Cadastro</span>
+                <span class="user-view-value" id="viewDataCadastro">-</span>
+              </div>
+            </div>
+            <div class="user-modal-actions">
+              <button type="button" class="user-btn-edit" onclick="toggleUserEditMode()">
+                <i class="fas fa-pen"></i> Editar Perfil
+              </button>
+              <button type="button" class="user-btn-cancel" onclick="fecharModalUsuario()">
+                <i class="fas fa-times"></i> Fechar
+              </button>
+            </div>
+          </div>
+
+          <div id="userEditMode" style="display: none;">
+            <form id="userEditForm">
+              <div class="user-form-row">
+                <div class="user-form-group">
+                  <div class="user-input-float">
+                    <input type="text" id="editNome" name="nome" class="user-form-control-float" placeholder=" " required>
+                    <label for="editNome">Nome</label>
+                    <i class="fas fa-user"></i>
+                  </div>
+                </div>
+                <div class="user-form-group">
+                  <div class="user-input-float">
+                    <input type="email" id="editEmail" name="email" class="user-form-control-float" placeholder=" " required>
+                    <label for="editEmail">E-mail</label>
+                    <i class="fas fa-envelope"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="user-form-row">
+                <div class="user-form-group">
+                  <div class="user-input-float">
+                    <input type="text" id="editCpf" name="cpf" class="user-form-control-float" placeholder=" " readonly>
+                    <label for="editCpf">CPF</label>
+                    <i class="fas fa-id-card"></i>
+                  </div>
+                </div>
+                <div class="user-form-group">
+                  <div class="user-input-float">
+                    <input type="tel" id="editTelefone" name="telefone" class="user-form-control-float" placeholder=" ">
+                    <label for="editTelefone">Telefone</label>
+                    <i class="fas fa-phone"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="user-form-row">
+                <div class="user-form-group">
+                  <div class="user-input-float">
+                    <select id="editGenero" name="genero" class="user-form-control-float">
+                      <option value=""></option>
+                      <option value="MASCULINO">Masculino</option>
+                      <option value="FEMININO">Feminino</option>
+                      <option value="OUTRO">Outro</option>
+                    </select>
+                    <label for="editGenero">Gênero</label>
+                    <i class="fas fa-venus-mars"></i>
+                  </div>
+                </div>
+                <div class="user-form-group">
+                  <div class="user-input-float">
+                    <input type="text" id="editDataCadastro" class="user-form-control-float" placeholder=" " readonly>
+                    <label for="editDataCadastro">Data de Cadastro</label>
+                    <i class="fas fa-calendar-alt"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="user-form-row">
+                <div class="user-form-group">
+                  <div class="user-input-float">
+                    <input type="password" id="editSenha" name="senha" class="user-form-control-float" placeholder=" ">
+                    <label for="editSenha">Nova Senha</label>
+                    <i class="fas fa-lock"></i>
+                    <span class="user-password-toggle" onclick="toggleUserPassword('editSenha')"></span>
+                  </div>
+                </div>
+                <div class="user-form-group">
+                  <div class="user-input-float">
+                    <input type="password" id="confirmarSenha" name="confirmarSenha" class="user-form-control-float" placeholder=" ">
+                    <label for="confirmarSenha">Confirmar Senha</label>
+                    <i class="fas fa-lock"></i>
+                    <span class="user-password-toggle" onclick="toggleUserPassword('confirmarSenha')"></span>
+
+                  </div>
+                </div>
+              </div>
+              <div id="userEditMessage" class="user-message"></div>
+              <div class="user-modal-actions">
+              <button type="submit" class="user-btn-save" disabled>
+                <i class="fas fa-save"></i> Salvar Alterações
+              </button>
+                <button type="button" class="user-btn-cancel" onclick="toggleUserEditMode()">
+                  <i class="fas fa-times"></i> Cancelar
+                </button>
+
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

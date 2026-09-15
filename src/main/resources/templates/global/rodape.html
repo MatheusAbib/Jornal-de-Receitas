@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head></head>
+
+<body>
+
+  <div th:fragment="rodape">
+    <footer class="newspaper-footer">
+      <div class="footer-content">
+
+        <div class="footer-column">
+          <h3>Jornal de Receitas</h3>
+          <p>Sua fonte para encontrar ótimas receitas <br>e postar suas próprias.</p>
+        </div>
+
+        <div class="footer-column">
+          <h3>Links Rápidos</h3>
+          <ul>
+            <li><a href="#"><i class="fas fa-utensils"></i> Receitas</a></li>
+            <li><a sec:authorize="isAuthenticated()" href="/nova"><i class="fas fa-book"></i> Cadastrar Receitas</a></li>
+            <li><a href="#classifieds"><i class="fas fa-star"></i> Destaques</a></li>
+            <li><a th:href="@{/sobre}"><i class="fas fa-question-circle"></i> Sobre o Site</a></li>
+          </ul>
+        </div>
+
+<div class="footer-column" id="contato"> <h3>Contato</h3> <ul> <li class="footer-contact-item"><i class="fas fa-envelope"></i> contato@jornaldereceitas.com</li> <li class="footer-contact-item"><i class="fas fa-phone"></i> (11) 9999-9999</li> <li class="footer-contact-item"><i class="fas fa-map-marker-alt"></i> São Paulo, Brasil</li> </ul> </div>
+
+      </div>
+
+      <div class="social-links">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-pinterest"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2025 Jornal de Receitas - Todos os direitos reservados</p>
+      </div>
+    </footer>
+  </div>
+
+</body>
+
+</html>

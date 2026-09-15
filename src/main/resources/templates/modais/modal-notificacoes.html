@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+
+<div th:fragment="modal-notificacoes">
+
+    <div id="notificacoesModal"
+         class="notificacoes-modal-box">
+
+        <div class="notificacoes-modal-content">
+
+            <div class="notificacoes-modal-header">
+
+                <h2>
+                    <i class="fas fa-bell"></i>
+                    Notificações
+                </h2>
+
+                <button type="button"
+                        class="notificacoes-modal-close"
+                        id="notificacoesModalClose">
+                    &times;
+                </button>
+
+            </div>
+
+            <div class="notificacoes-modal-body"
+                 id="notificacoesModalBody">
+
+                <div class="notificacoes-vazia"
+                     id="notificacoesVazia">
+
+                    <i class="fas fa-bell-slash"></i>
+
+                    <h3>Nenhuma notificação</h3>
+
+                    <p>Você não possui novas notificações.</p>
+
+                </div>
+
+            </div>
+
+            <div class="notificacoes-modal-footer">
+                <button type="button"
+                        class="notificacoes-marcar-todas"
+                        id="marcarTodasNotificacoes">
+
+                    <i class="fas fa-check-double"></i>
+                    Marcar todas como lidas
+                </button>
+
+                <button type="button"
+                        class="notificacoes-excluir-todas"
+                        id="excluirTodasNotificacoes">
+
+                    <i class="fas fa-trash"></i>
+                    Excluir todas
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head></head>
+<body>
+  <div th:fragment="receitas" class="receitas-section">
+
+    <div class="category-section" id="salgados-section">
+      <h2 class="category-title">
+        <i class="fas fa-pepper-hot"></i> Salgados
+        <span class="recipe-count" id="salgados-count">0 receitas</span>
+      </h2>
+      <div class="receitas" id="salgados-recipes">
+        <div class="card" th:each="r : ${receitas}"
+             th:if="${r.categoria == T(com.receitas.site_receitas.model.Receita.Categoria).SALGADO}">
+          <div class="card-image">
+            <img th:if="${r.imagem != null and r.imagem.startsWith('http')}" th:src="${r.imagem}" alt="Imagem da receita">
+            <img th:if="${r.imagem != null and !r.imagem.startsWith('http')}" th:src="@{'/uploads/' + ${r.imagem}}" alt="Imagem da receita">
+            <img th:if="${r.imagem == null}" src="/default-image.jpg" alt="Sem imagem">
+
+            <span class="card-badge-categoria salgado">
+              <i class="fas fa-pepper-hot"></i> Salgado
+            </span>
+
+            <button class="card-favorite-btn" th:attr="data-recipe-id=${r.id}">
+              <i class="far fa-heart"></i>
+            </button>
+          </div>
+
+          <div class="card-content">
+            <h3 class="card-titulo" th:text="${r.titulo}">Título da Receita</h3>
+
+<div class="card-meta">
+  <div class="card-meta-row">
+    <span class="card-meta-item">
+      <i class="fas fa-clock"></i>
+      <span th:text="${r.tempoPreparo}">30 min</span>
+    </span>
+    <span class="card-meta-item">
+      <i class="fas fa-utensils"></i>
+      <span th:text="${r.porcoes}">1</span>
+    </span>
+  </div>
+  <span class="card-meta-item card-meta-chefe" id="chef"  th:if="${r.chefe != null and r.chefe != ''}">
+    <i class="fas fa-user"></i>
+    <span th:text="${r.chefe}">Chef</span>
+  </span>
+</div>
+
+            <div class="card-actions">
+              <a th:href="@{/detalhe/{id}(id=${r.id})}" class="card-link">
+                Ver receita <i class="fas fa-arrow-right"></i>
+              </a>
+              <button sec:authorize="hasRole('ADMIN')" class="card-delete"
+                      th:attr="data-recipe-id=${r.id}"
+                      th:data-recipe-title="${r.titulo}"
+                      th:data-recipe-chefe="${r.chefe}">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="empty-category-message" id="salgados-empty" style="display: none;">
+        <div class="empty-state">
+          <i class="fas fa-pepper-hot"></i>
+          <h3>Nenhuma receita salgada encontrada</h3>
+          <p id="salgados-empty-text">Não há receitas salgadas com os filtros aplicados.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="category-section" id="doces-section">
+      <h2 class="category-title">
+        <i class="fas fa-cake-candles"></i> Doces
+        <span class="recipe-count" id="doces-count">0 receitas</span>
+      </h2>
+      <div class="receitas" id="doces-recipes">
+        <div class="card" th:each="r : ${receitas}"
+             th:if="${r.categoria == T(com.receitas.site_receitas.model.Receita.Categoria).DOCE}">
+          <div class="card-image">
+            <img th:if="${r.imagem != null and r.imagem.startsWith('http')}" th:src="${r.imagem}" alt="Imagem da receita">
+            <img th:if="${r.imagem != null and !r.imagem.startsWith('http')}" th:src="@{'/uploads/' + ${r.imagem}}" alt="Imagem da receita">
+            <img th:if="${r.imagem == null}" src="/default-image.jpg" alt="Sem imagem">
+
+            <span class="card-badge-categoria doce">
+              <i class="fas fa-cake-candles"></i> Doce
+            </span>
+
+            <button class="card-favorite-btn" th:attr="data-recipe-id=${r.id}">
+              <i class="far fa-heart"></i>
+            </button>
+          </div>
+
+          <div class="card-content">
+            <h3 class="card-titulo" th:text="${r.titulo}">Título da Receita</h3>
+
+            <div class="card-meta">
+              <span class="card-meta-item">
+                <i class="fas fa-clock"></i>
+                <span th:text="${r.tempoPreparo}">30 min</span>
+              </span>
+              <span class="card-meta-item">
+                <i class="fas fa-utensils"></i>
+                <span th:text="${r.porcoes}">1</span>
+              </span>
+              <span class="card-meta-item" id="chef" th:if="${r.chefe != null and r.chefe != ''}">
+                <i class="fas fa-user"></i>
+                <span th:text="${r.chefe}">Chef</span>
+              </span>
+            </div>
+
+            <div class="card-actions">
+              <a th:href="@{/detalhe/{id}(id=${r.id})}" class="card-link">
+                Ver receita <i class="fas fa-arrow-right"></i>
+              </a>
+              <button sec:authorize="hasRole('ADMIN')" class="card-delete"
+                      th:attr="data-recipe-id=${r.id}"
+                      th:data-recipe-title="${r.titulo}"
+                      th:data-recipe-chefe="${r.chefe}">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="empty-category-message" id="doces-empty" style="display: none;">
+        <div class="empty-state">
+          <i class="fas fa-cake-candles"></i>
+          <h3>Nenhuma receita doce encontrada</h3>
+          <p id="doces-empty-text">Não há receitas doces com os filtros aplicados.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-category" id="no-recipes-message" style="display: none;">
+      <i class="fas fa-utensils"></i>
+      <h3>Nenhuma receita cadastrada ainda</h3>
+      <p>Seja o primeiro a compartilhar sua receita!</p>
+    </div>
+  </div>
+</body>
+</html>

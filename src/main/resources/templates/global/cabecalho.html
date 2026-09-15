@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head></head>
+
+<body>
+
+<div th:fragment="cabecalho">
+
+    <div sec:authorize="!hasRole('ADMIN')" class="header-full-width">
+
+        <div class="header-container">
+
+            <header class="newspaper-header">
+
+                <div class="header-top">
+
+                    <div class="header-left">
+
+                        <button type="button"
+                                class="menu-icon"
+                                id="menuToggle"
+                                aria-label="Abrir menu">
+
+                            <i class="fas fa-bars"></i>
+
+                        </button>
+
+                        <div class="newspaper-price">
+                            Edição #03
+                        </div>
+
+                    </div>
+
+                    <div class="header-center">
+
+                        <h1 class="newspaper-title">
+                            Jornal de Receitas
+                        </h1>
+
+                        <div sec:authorize="isAuthenticated()"
+                             class="header-greeting">
+
+                            <p class="newspaper-subtitle">
+
+                                Bem vindo(a),
+
+                                <span th:text="${nomeUsuario}"
+                                      style="font-weight: 700; color: #d4af37;">
+                                </span>!
+
+                            </p>
+
+                            <p class="newspaper-date header-greeting-date"
+                               id="newspaperDate">
+                            </p>
+
+                        </div>
+
+                        <div sec:authorize="!isAuthenticated()"
+                             class="header-greeting">
+
+                            <p class="newspaper-subtitle">
+                                Delícias do dia a dia para todos os gostos
+                            </p>
+
+                            <p class="newspaper-subtitle">
+                                Faça Login ou Cadastre-se
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="header-right">
+
+                        <div sec:authorize="!isAuthenticated()"
+                             class="newspaper-date"
+                             id="newspaperDate">
+                        </div>
+
+                        <div sec:authorize="isAuthenticated()"
+                             class="header-user-profile header-user-desktop"
+                             onclick="abrirModalUsuarioSimples(); return false;">
+
+                            <i class="fas fa-user-circle"></i>
+
+                            <span th:text="${#strings.substringBefore(nomeUsuario, ' ')}">
+                            </span>
+
+                        </div>
+
+                        <!-- Notificação no topo quando o header estiver scrollado -->
+
+                        <button sec:authorize="isAuthenticated()"
+                                type="button"
+                                class="header-notification-btn header-notification-desktop"
+                                id="notificationButton"
+                                aria-label="Notificações">
+
+                            <i class="fas fa-bell"></i>
+
+                            <span class="notification-badge"
+                                  id="notificationBadge"
+                                  style="display: none;">
+                                0
+                            </span>
+
+                        </button>
+
+                        <a sec:authorize="isAuthenticated()"
+                           href="#"
+                           onclick="openLogoutModal(); return false;"
+                           class="header-logout-btn">
+
+                            <i class="fas fa-sign-out-alt"></i>
+
+                            <span>
+                                Sair
+                            </span>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="header-nav-overlay"
+                     id="headerNavOverlay">
+                </div>
+
+                <nav class="header-nav"
+                     id="headerNav">
+
+                    <div class="header-nav-top">
+
+                        <span class="header-nav-title">
+                            Jornal de Receitas
+                        </span>
+
+                        <button type="button"
+                                class="header-nav-close"
+                                id="headerNavClose"
+                                aria-label="Fechar menu">
+
+                            &times;
+
+                        </button>
+
+                    </div>
+
+                    <a sec:authorize="!hasRole('ADMIN')"
+                       th:href="@{/}"
+                       th:classappend="${paginaAtual == 'inicio'} ? 'active' : ''">
+
+                        <i class="fas fa-home"></i>
+
+                        Início
+
+                    </a>
+
+                    <a th:href="@{/sobre}"
+                       th:classappend="${paginaAtual == 'sobre'} ? 'active' : ''">
+
+                        <i class="fas fa-info-circle"></i>
+
+                        Sobre
+
+                    </a>
+
+                    <a sec:authorize="!isAuthenticated()"
+                       href="#"
+                       onclick="openLoginModal(); return false;">
+
+                        <i class="fas fa-sign-in-alt"></i>
+
+                        Acessar Conta
+
+                    </a>
+
+                    <a sec:authorize="isAuthenticated()"
+                       href="/nova"
+                       th:classappend="${paginaAtual == 'nova'} ? 'active' : ''">
+
+                        <i class="fas fa-utensils"></i>
+
+                        Enviar Receita
+
+                    </a>
+
+                    <a sec:authorize="isAuthenticated()"
+                       href="/minhas-receitas"
+                       th:classappend="${paginaAtual == 'minhas-receitas'} ? 'active' : ''">
+
+                        <i class="fas fa-book"></i>
+
+                        Minhas Receitas
+
+                    </a>
+
+                    <!-- Notificação no NAV quando o header NÃO está scrollado -->
+
+                    <a sec:authorize="isAuthenticated()"
+                       href="#"
+                       onclick="document.getElementById('notificationButton').click(); return false;"
+                       class="header-notification-nav">
+
+                        <i class="fas fa-bell"></i>
+
+                        <span>
+                            Notificações
+                        </span>
+
+                        <span class="notification-sidebar-badge"
+                              id="notificationNavBadge"
+                              style="display: none;">
+                            0
+                        </span>
+
+                    </a>
+
+                    <!-- Perfil para mobile -->
+
+                    <div sec:authorize="isAuthenticated()"
+                         class="header-user-profile header-user-mobile"
+                         onclick="abrirModalUsuarioSimples(); return false;">
+
+                        <i class="fas fa-user-circle"></i>
+
+                        Meu Perfil
+
+                    </div>
+
+                    <!-- Notificação exclusiva da sidebar mobile -->
+
+                    <a sec:authorize="isAuthenticated()"
+                       href="#"
+                       onclick="document.getElementById('notificationButton').click(); return false;"
+                       class="header-notification-sidebar">
+
+                        <i class="fas fa-bell"></i>
+
+                        <span>
+                            Notificações
+                        </span>
+
+                        <span class="notification-sidebar-badge"
+                              id="notificationSidebarBadge"
+                              style="display: none;">
+                            0
+                        </span>
+
+                    </a>
+
+                    <!-- Logout para mobile -->
+
+                    <a sec:authorize="isAuthenticated()"
+                       href="#"
+                       onclick="openLogoutModal(); return false;"
+                       class="header-logout-sidebar">
+
+                        <i class="fas fa-sign-out-alt"></i>
+
+                        Sair
+
+                    </a>
+
+                </nav>
+
+            </header>
+
+        </div>
+
+    </div>
+
+    <!-- HEADER DO ADMIN -->
+
+    <div sec:authorize="hasRole('ADMIN')">
+
+        <header class="admin-mobile-header">
+
+            <button type="button"
+                    class="admin-sidebar-toggle"
+                    id="adminSidebarToggle"
+                    aria-label="Abrir menu">
+
+                <i class="fas fa-bars"></i>
+
+            </button>
+
+            <h1 class="admin-mobile-title">
+                Administrador
+            </h1>
+
+            <span class="admin-mobile-user"
+                  th:text="${#strings.substringBefore(nomeUsuario, ' ')}">
+            </span>
+
+        </header>
+
+        <div class="admin-sidebar-overlay"
+             id="adminSidebarOverlay">
+        </div>
+
+        <aside class="admin-sidebar"
+               id="adminSidebar">
+
+            <div class="admin-sidebar-header">
+
+                <h2>
+                    Administrador
+                </h2>
+                <button type="button" class="admin-sidebar-close" id="adminSidebarClose">
+                    <i class="fas fa-times"></i>
+                </button>
+
+                <span class="admin-user"
+                      th:text="${nomeUsuario}">
+                </span>
+
+            </div>
+
+            <nav class="admin-sidebar-nav">
+
+                <a href="/usuarios"
+                   th:classappend="${paginaAtual == 'usuarios'} ? 'active' : ''">
+
+                    <i class="fas fa-users"></i>
+
+                    Usuários
+
+                </a>
+
+                <a href="/pendentes"
+                   th:classappend="${paginaAtual == 'pendentes'} ? 'active' : ''">
+
+                    <i class="fas fa-clock"></i>
+
+                    Receitas Pendentes
+
+                </a>
+
+                <a href="/receitas-aprovadas"
+                   th:classappend="${paginaAtual == 'receitas-aprovadas'} ? 'active' : ''">
+
+                    <i class="fas fa-book"></i>
+
+                    Receitas Aprovadas
+
+                </a>
+
+            </nav>
+
+            <div class="admin-sidebar-footer">
+
+                <button type="button"
+                        class="admin-sidebar-btn"
+                        onclick="openAdminPerfilModal(); return false;">
+
+                    <i class="fas fa-user-edit"></i>
+
+                    Editar Perfil
+
+                </button>
+
+                <button type="button"
+                        class="admin-sidebar-btn admin-sidebar-btn-sair"
+                        onclick="openLogoutModal(); return false;">
+
+                    <i class="fas fa-sign-out-alt"></i>
+
+                    Sair
+
+                </button>
+
+            </div>
+
+        </aside>
+
+        <div id="adminPerfilModal"
+             class="modal edit-user-modal">
+
+            <div class="modal-content-edit">
+
+                <span class="close close-edit-user-modal"
+                      onclick="closeAdminPerfilModal()">
+
+                    &times;
+
+                </span>
+
+                <div class="modal-header-edit">
+
+                    <h2>
+
+                        <i class="fas fa-user-edit"></i>
+
+                        Editar Perfil
+
+                    </h2>
+
+                </div>
+
+                <div class="modal-body-edit">
+
+                    <form id="adminPerfilForm"
+                          onsubmit="salvarAdminPerfil(event)">
+
+                        <div class="form-grid">
+
+                            <div class="form-group-edit">
+
+                                <div class="input-with-icon">
+
+                                    <input type="text"
+                                           id="adminPerfilNome"
+                                           name="nome"
+                                           class="form-control-edit"
+                                           placeholder=" "
+                                           required>
+
+                                    <label for="adminPerfilNome">
+                                        Nome
+                                    </label>
+
+                                    <i class="fas fa-user"></i>
+
+                                </div>
+
+                            </div>
+
+                            <div class="form-group-edit">
+
+                                <div class="input-with-icon">
+
+                                    <input type="email"
+                                           id="adminPerfilEmail"
+                                           name="email"
+                                           class="form-control-edit"
+                                           placeholder=" "
+                                           required>
+
+                                    <label for="adminPerfilEmail">
+                                        E-mail
+                                    </label>
+
+                                    <i class="fas fa-at"></i>
+
+                                </div>
+
+                            </div>
+
+                            <div class="form-group-edit">
+
+                                <div class="input-with-icon">
+
+                                    <input type="password"
+                                           id="adminPerfilSenha"
+                                           name="senha"
+                                           class="form-control-edit"
+                                           placeholder=" "
+                                           autocomplete="new-password">
+
+                                    <label for="adminPerfilSenha">
+                                        Nova senha
+                                    </label>
+
+                                    <i class="fas fa-key"></i>
+
+                                </div>
+
+                            </div>
+
+                            <div class="form-group-edit">
+
+                                <div class="input-with-icon">
+
+                                    <input type="password"
+                                           id="adminPerfilConfirmarSenha"
+                                           name="confirmarSenha"
+                                           class="form-control-edit"
+                                           placeholder=" "
+                                           autocomplete="new-password">
+
+                                    <label for="adminPerfilConfirmarSenha">
+                                        Confirmar senha
+                                    </label>
+
+                                    <i class="fas fa-key"></i>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div id="adminPerfilErro"
+                             class="admin-perfil-erro"
+                             style="display:none;">
+                        </div>
+
+                        <div class="modal-actions-edit">
+
+                            <button type="button"
+                                    class="modal-button-edit cancel"
+                                    onclick="closeAdminPerfilModal()">
+
+                                <i class="fas fa-times"></i>
+
+                                Cancelar
+
+                            </button>
+
+                            <button type="submit"
+                                    class="modal-button-edit save">
+
+                                <i class="fas fa-save"></i>
+
+                                Salvar
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div th:replace="~{modais/modal-notificacoes}">
+    </div>
+
+</div>
+
+</body>
+
+</html>
+

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head></head>
+
+<body>
+
+  <div th:fragment="modal-cadastro">
+
+    <div id="cadastroModal" class="cadastro-modal-box">
+
+      <div class="cadastro-modal-content">
+
+        <div class="cadastro-modal-header">
+
+          <h2>
+            <i class="fas fa-user-plus"></i>
+            Criar Nova Conta
+          </h2>
+
+          <span class="cadastro-modal-close close-cadastro-modal">
+            &times;
+          </span>
+
+        </div>
+
+
+        <div class="cadastro-modal-body">
+
+          <div id="cadastroAlert"
+               class="cadastro-alert"
+               style="display: none;">
+
+            <i class="fas fa-info-circle"></i>
+
+            <span id="cadastroAlertMessage"></span>
+
+          </div>
+
+
+          <form id="cadastroFormModal" method="post">
+
+
+            <div class="cadastro-form-group">
+
+              <div class="cadastro-input-float">
+
+                <input type="text"
+                       id="cadastroNome"
+                       name="nome"
+                       class="cadastro-form-control-float"
+                       placeholder=" "
+                       required>
+
+                <label for="cadastroNome">
+                  Nome Completo
+                </label>
+
+                <i class="fas fa-user"></i>
+
+              </div>
+
+              <div id="cadastroNomeError"
+                   class="cadastro-form-error">
+              </div>
+
+            </div>
+
+
+
+            <div class="cadastro-form-row">
+
+              <div class="cadastro-form-group">
+
+                <div class="cadastro-input-float">
+
+                  <input type="email"
+                         id="cadastroEmail"
+                         name="email"
+                         class="cadastro-form-control-float"
+                         placeholder=" "
+                         required>
+
+                  <label for="cadastroEmail">
+                    E-mail
+                  </label>
+
+                  <i class="fas fa-envelope"></i>
+
+                </div>
+
+                <div id="cadastroEmailError"
+                     class="cadastro-form-error">
+                </div>
+
+              </div>
+
+
+              <div class="cadastro-form-group">
+
+                <div class="cadastro-input-float">
+
+                  <select id="cadastroGenero"
+                          name="genero"
+                          class="cadastro-form-control-float"
+                          required>
+
+                    <option value=""></option>
+
+                    <option value="MASCULINO">
+                      Masculino
+                    </option>
+
+                    <option value="FEMININO">
+                      Feminino
+                    </option>
+
+                    <option value="OUTRO">
+                      Outro
+                    </option>
+
+                  </select>
+
+                  <label for="cadastroGenero">
+                    Gênero
+                  </label>
+
+                  <i class="fas fa-venus-mars"></i>
+
+                </div>
+
+                <div id="cadastroGeneroError"
+                     class="cadastro-form-error">
+                </div>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="cadastro-form-row">
+
+              <div class="cadastro-form-group">
+
+                <div class="cadastro-input-float">
+
+                  <input type="text"
+                         id="cadastroCpf"
+                         name="cpf"
+                         class="cadastro-form-control-float"
+                         placeholder=" "
+                         required
+                         maxlength="14">
+
+                  <label for="cadastroCpf">
+                    CPF
+                  </label>
+
+                  <i class="fas fa-id-card"></i>
+
+                </div>
+
+                <div id="cadastroCpfError"
+                     class="cadastro-form-error">
+                </div>
+
+              </div>
+
+
+              <div class="cadastro-form-group">
+
+                <div class="cadastro-input-float">
+
+                  <input type="text"
+                         id="cadastroTelefone"
+                         name="telefone"
+                         class="cadastro-form-control-float"
+                         placeholder=" "
+                         required
+                         maxlength="15">
+
+                  <label for="cadastroTelefone">
+                    Telefone
+                  </label>
+
+                  <i class="fas fa-phone"></i>
+
+                </div>
+
+                <div id="cadastroTelefoneError"
+                     class="cadastro-form-error">
+                </div>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="cadastro-form-row">
+
+              <div class="cadastro-form-group">
+
+                <div class="cadastro-input-float">
+
+                  <input type="password"
+                         id="cadastroSenha"
+                         name="senha"
+                         class="cadastro-form-control-float"
+                         placeholder=" "
+                         required>
+
+                  <label for="cadastroSenha">
+                    Senha
+                  </label>
+
+                  <i class="fas fa-lock"></i>
+
+                  <span class="cadastro-password-toggle"
+                        onclick="toggleCadastroPassword('cadastroSenha')">
+                  </span>
+
+                </div>
+
+                <div id="cadastroSenhaError"
+                     class="cadastro-form-error">
+                </div>
+
+              </div>
+
+
+              <div class="cadastro-form-group">
+
+                <div class="cadastro-input-float">
+
+                  <input type="password"
+                         id="cadastroConfirmarSenha"
+                         name="confirmarSenha"
+                         class="cadastro-form-control-float"
+                         placeholder=" "
+                         required>
+
+                  <label for="cadastroConfirmarSenha">
+                    Confirmar Senha
+                  </label>
+
+                  <i class="fas fa-lock"></i>
+
+                  <span class="cadastro-password-toggle"
+                        onclick="toggleCadastroPassword('cadastroConfirmarSenha')">
+                  </span>
+
+                </div>
+
+                <div id="cadastroConfirmarSenhaError"
+                     class="cadastro-form-error">
+                </div>
+
+              </div>
+
+            </div>
+
+
+
+            <button type="submit"
+                    class="cadastro-submit-btn"
+                    disabled>
+
+              <i class="fas fa-user-plus"></i>
+              Criar Conta
+
+            </button>
+
+
+          </form>
+
+
+
+          <div class="cadastro-login-link">
+
+            Já tem uma conta?
+
+            <a href="#"
+               onclick="closeCadastroModal(); openLoginModal(); return false;">
+
+              <i class="fas fa-sign-in-alt"></i>
+              Faça login
+
+            </a>
+
+          </div>
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+
+</html>

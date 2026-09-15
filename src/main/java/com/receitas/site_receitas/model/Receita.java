@@ -12,7 +12,7 @@ public class Receita {
 
     private String titulo;
 
-    @Column(name = "tempo_preparo") 
+    @Column(name = "tempo_preparo")
     private String tempoPreparo;
 
     @Column(columnDefinition = "TEXT")
@@ -21,11 +21,15 @@ public class Receita {
     @Column(name = "modo_preparo", columnDefinition = "TEXT")
     private String modoPreparo;
 
-    @Column(columnDefinition = "TEXT") 
+    @Column(columnDefinition = "TEXT")
     private String imagem;
 
-    @Column(nullable = false)
-    private boolean aprovada = false; // padrão: false, ou seja, pendente
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private StatusReceita status = StatusReceita.PENDENTE;
+
+    @Column(name = "motivo_rejeicao", columnDefinition = "TEXT")
+    private String motivoRejeicao;
 
     private int porcoes = 1;
 
@@ -35,17 +39,19 @@ public class Receita {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    // Novo campo para categoria
     @Enumerated(EnumType.STRING)
-    private Categoria categoria = Categoria.SALGADO; // valor padrão
+    private Categoria categoria = Categoria.SALGADO;
 
-    // Enum para categorias
     public enum Categoria {
         SALGADO,
         DOCE
     }
 
-    // Getters e Setters
+    public enum StatusReceita {
+        PENDENTE,
+        APROVADA,
+        REJEITADA
+    }
 
     public int getPorcoes() {
         return porcoes;
@@ -103,12 +109,20 @@ public class Receita {
         this.imagem = imagem;
     }
 
-    public Boolean getAprovada() {
-        return aprovada;
+    public StatusReceita getStatus() {
+        return status;
     }
 
-    public void setAprovada(Boolean aprovada) {
-        this.aprovada = aprovada;
+    public void setStatus(StatusReceita status) {
+        this.status = status;
+    }
+
+    public String getMotivoRejeicao() {
+        return motivoRejeicao;
+    }
+
+    public void setMotivoRejeicao(String motivoRejeicao) {
+        this.motivoRejeicao = motivoRejeicao;
     }
 
     public String getChefe() {

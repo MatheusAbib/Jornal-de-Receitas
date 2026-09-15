@@ -4,6 +4,8 @@ import com.receitas.site_receitas.model.Usuario;
 import com.receitas.site_receitas.repository.UsuarioRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,6 +44,10 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
+    public Page<Usuario> findAll(Pageable pageable) {
+        return usuarioRepository.findAll(pageable);
+    }
+
     public Optional<Usuario> findById(Integer id) {
         return usuarioRepository.findById(id);
     }
@@ -54,40 +60,40 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-public void excluirUsuario(Integer id) {
-    usuarioRepository.deleteById(id);
-}
-
-public Usuario ativarDesativarUsuario(Integer id) {
-    Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
-    if (usuarioOpt.isPresent()) {
-        Usuario usuario = usuarioOpt.get();
-        usuario.setAtivo(!usuario.isAtivo());
-        return usuarioRepository.save(usuario);
+    public void excluirUsuario(Integer id) {
+        usuarioRepository.deleteById(id);
     }
-    return null;
-}
 
-public void atualizarUsuario(Integer id, Usuario dadosAtualizados) {
-    Optional<Usuario> optional = usuarioRepository.findById(id);
-    if(optional.isPresent()) {
-        Usuario usuario = optional.get();
-
-        usuario.setNome(dadosAtualizados.getNome());
-        usuario.setEmail(dadosAtualizados.getEmail());
-        usuario.setCpf(dadosAtualizados.getCpf());
-        usuario.setTelefone(dadosAtualizados.getTelefone());
-        usuario.setGenero(dadosAtualizados.getGenero());
-
-        if(dadosAtualizados.getSenha() != null && !dadosAtualizados.getSenha().isEmpty()) {
-            usuario.setSenha(passwordEncoder.encode(dadosAtualizados.getSenha()));
+    public Usuario ativarDesativarUsuario(Integer id) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            usuario.setAtivo(!usuario.isAtivo());
+            return usuarioRepository.save(usuario);
         }
+        return null;
+    }
 
+    public void atualizarUsuario(Integer id, Usuario dadosAtualizados) {
+        Optional<Usuario> optional = usuarioRepository.findById(id);
+        if(optional.isPresent()) {
+            Usuario usuario = optional.get();
+
+            usuario.setNome(dadosAtualizados.getNome());
+            usuario.setEmail(dadosAtualizados.getEmail());
+            usuario.setCpf(dadosAtualizados.getCpf());
+            usuario.setTelefone(dadosAtualizados.getTelefone());
+            usuario.setGenero(dadosAtualizados.getGenero());
+
+            if(dadosAtualizados.getSenha() != null && !dadosAtualizados.getSenha().isEmpty()) {
+                usuario.setSenha(passwordEncoder.encode(dadosAtualizados.getSenha()));
+            }
+
+            usuarioRepository.save(usuario);
+        }
+    }
+
+    public void salvarUsuario(Usuario usuario) {
         usuarioRepository.save(usuario);
     }
-}
-
-public void salvarUsuario(Usuario usuario) {
-    usuarioRepository.save(usuario);
-}
 }

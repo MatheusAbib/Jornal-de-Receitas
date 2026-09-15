@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Jornal de Receitas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/global/style.css">
+  <link rel="stylesheet" href="/css/global/loader.css">
+  <link th:href="${faviconUrl}" rel="icon" th:if="${faviconUrl != null}">
+</head>
+<body>
+
+<div th:replace="~{global/loader :: loader}"></div>
+
+<div th:replace="~{global/cabecalho}"></div>
+<div th:replace="~{global/sidebar}"></div>
+<div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<div class="content-wrapper">
+  <main class="about-content">
+
+    <section class="about-section">
+      <h2 class="about-heading">
+        <i class="fas fa-book-open"></i> Nossa Jornada
+      </h2>
+
+      <div class="journey-timeline">
+        <div class="timeline-item">
+          <div class="timeline-year">2025</div>
+          <div class="timeline-content">
+            <h4>O Início</h4>
+            <p>Um blog criado por mim, Matheus Abib, para compartilhar receitas que gosto. Primeiras 6 receitas publicadas manualmente.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-year">2025</div>
+          <div class="timeline-content">
+            <h4>Primeira Grande Atualização</h4>
+            <p>Implementação do sistema de usuários e funcionalidade de favoritos. Lançando o site na web.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-year">2026</div>
+          <div class="timeline-content">
+            <h4>Melhoria na Experiência</h4>
+            <p>Melhor acesso a informações, design mais intuitivo e novas funcionalidades para os usuários.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-section">
+      <h2 class="about-heading">
+        <i class="fas fa-circle-question"></i> Possíveis Dúvidas
+      </h2>
+
+      <div class="faq-container">
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Como posso enviar minha própria receita?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Para enviar sua receita, basta criar uma conta, fazer login e clicar em "Nova Receita" no menu principal. A equipe revisará sua receita em até 48 horas. Se aprovada, ela será publicada com os devidos créditos!</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>As receitas são testadas antes de serem publicadas?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Sim! Todas as receitas passam por um processo de teste. A equipe testa cada receita para garantir que as medidas, tempos e instruções estejam precisos e replicáveis em casa.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>O site é completamente gratuito?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Sim! O Jornal de Receitas é e sempre será gratuito para todos os usuários. A ideia é que seja um site útil para todos que buscam receitas caseiras.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div th:replace="~{global/rodape}"></div>
+</div>
+
+<div th:replace="~{modais/modal-login}"></div>
+<div th:replace="~{modais/modal-cadastro}"></div>
+<div th:replace="~{modais/modal-user}"></div>
+<div th:replace="~{modais/modal-logout}"></div>
+
+<script src="/js/global/loader.js"></script>
+<script src="/js/global/cabecalho.js"></script>
+<script src="/js/global/image-loader.js"></script>
+<script src="/js/modais/modais.js"></script>
+<script src="/js/principal/index.js"></script>
+<script th:src="@{/js/global/polling.js}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const faqItems = document.querySelectorAll('.faq-item');
+
+  faqItems.forEach(item => {
+    const question = item.querySelector('.faq-question');
+
+    question.addEventListener('click', () => {
+      faqItems.forEach(otherItem => {
+        if (otherItem !== item && otherItem.classList.contains('active')) {
+          otherItem.classList.remove('active');
+        }
+      });
+
+      item.classList.toggle('active');
+    });
+  });
+
+  function animateOnScroll() {
+    const elements = document.querySelectorAll('.timeline-item, .faq-item');
+
+    elements.forEach(element => {
+      const elementPosition = element.getBoundingClientRect().top;
+      const screenPosition = window.innerHeight / 1.2;
+
+      if (elementPosition < screenPosition) {
+        element.style.opacity = '1';
+        element.style.transform = 'translateY(0)';
+      }
+    });
+  }
+
+  const animatedElements = document.querySelectorAll('.timeline-item, .faq-item');
+  animatedElements.forEach(element => {
+    element.style.opacity = '0';
+    element.style.transform = 'translateY(20px)';
+    element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  });
+
+  window.addEventListener('scroll', animateOnScroll);
+
+  animateOnScroll();
+});
+</script>
+
+</body>
+</html>
