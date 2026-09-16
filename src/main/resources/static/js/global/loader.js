@@ -1,45 +1,67 @@
 (function () {
-  'use strict';
 
-  const LOADER_ID = 'page-loader';
-  const MIN_VISIBLE_MS = 300;   
-  const MAX_WAIT_MS = 8000;     
+    'use strict';
 
-  const loader = document.getElementById(LOADER_ID);
-  if (!loader) return;
+    const LOADER_ID = 'page-loader';
+    const LOADER_SESSION_KEY = 'page-loader-shown';
+    const LOADER_FORCE_KEY = 'page-loader-force';
+    const MIN_VISIBLE_MS = 250;
+    const MAX_WAIT_MS = 250;
 
-  const startTime = performance.now();
-  let hidden = false;
+    const loader = document.getElementById(LOADER_ID);
 
-  function hideLoader(reason) {
-    if (hidden) return;
-    hidden = true;
+    if (!loader) return;
 
-    const elapsed = performance.now() - startTime;
-    const remaining = Math.max(0, MIN_VISIBLE_MS - elapsed);
+    const forceLoader = sessionStorage.getItem(LOADER_FORCE_KEY) === 'true';
 
-    setTimeout(() => {
-      loader.classList.add('is-hidden');
-      // Remove do DOM depois da transição pra não atrapalhar cliques/scroll
-      loader.addEventListener('transitionend', () => loader.remove(), { once: true });
-      // Fallback caso transitionend não dispare (ex: aba em background)
-      setTimeout(() => loader.remove(), 600);
-    }, remaining);
-
-    if (reason) {
+    if (!forceLoader && sessionStorage.getItem(LOADER_SESSION_KEY) === 'true') {
+        loader.remove();
+        return;
     }
-  }
 
-  if (document.readyState === 'complete') {
-    hideLoader('already-complete');
-    return;
-  }
+    sessionStorage.setItem(LOADER_SESSION_KEY, 'true');
+    sessionStorage.removeItem(LOADER_FORCE_KEY);
 
-  window.addEventListener('load', () => hideLoader('window-load'));
+    const startTime = performance.now();
+    let hidden = false;
 
-  setTimeout(() => hideLoader('timeout'), MAX_WAIT_MS);
+    function hideLoader() {
 
-  window.addEventListener('pageshow', (e) => {
-    if (e.persisted) hideLoader('bfcache');
-  });
+        if (hidden) return;
+
+        hidden = true;
+
+        const elapsed = performance.now() - startTime;
+        const remaining = Math.max(0, MIN_VISIBLE_MS - elapsed);
+
+        setTimeout(() => {
+
+            loader.classList.add('is-hidden');
+
+            loader.addEventListener('transitionend', () => loader.remove(), {
+                once: true
+            });
+
+            setTimeout(() => loader.remove(), 600);
+
+        }, remaining);
+    }
+
+    if (document.readyState === 'complete') {
+        hideLoader();
+        return;
+    }
+
+    window.addEventListener('load', hideLoader);
+
+    setTimeout(hideLoader, MAX_WAIT_MS);
+
+    window.addEventListener('pageshow', (e) => {
+
+        if (e.persisted) {
+            hideLoader();
+        }
+
+    });
+
 })();

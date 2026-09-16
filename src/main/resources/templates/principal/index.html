@@ -16,19 +16,13 @@
 </head>
 <body>
 
-  <div th:replace="~{global/loader :: loader}"></div>
+  <div th:replace="~{global/loader :: loader('')}"></div>
 
   <div th:replace="~{global/cabecalho}"></div>
   <div th:replace="~{global/sidebar}"></div>
   <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
 
   <div class="content-wrapper">
-    <nav class="nav-links">
-      <a sec:authorize="hasRole('ADMIN')" href="/pendentes">
-        <i class="fas fa-clock"></i> Receitas Pendentes
-      </a>
-    </nav>
-
     <div class="carousel-container">
       <div class="carousel">
         <div class="carousel-inner">

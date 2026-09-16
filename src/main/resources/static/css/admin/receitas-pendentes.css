@@ -6,7 +6,7 @@
 .admin-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 28px;
+  gap: 14px;
 }
 
 .admin-recipe-card {

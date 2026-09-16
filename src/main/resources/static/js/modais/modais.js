@@ -144,34 +144,22 @@ function atualizarEstadoBotaoCadastro() {
 
 function confirmLogout() {
 
-  fetch('/logout', {
+    sessionStorage.setItem('page-loader-force', 'true');
 
-    method: 'POST',
-
-    headers: {
-
-      'Content-Type': 'application/json'
-
-    }
-
-  })
-
-  .then(response => response.json())
-
-  .then(data => {
-
-    window.location.href = '/';
-
-  })
-
-  .catch(error => {
-
-    console.error('Erro ao fazer logout:', error);
-
-    window.location.href = '/';
-
-  });
-
+    fetch('/logout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        window.location.href = '/';
+    })
+    .catch(error => {
+        console.error('Erro ao fazer logout:', error);
+        window.location.href = '/';
+    });
 }
 
 
@@ -1659,32 +1647,28 @@ document.addEventListener(
 
     }
 
-    const logoutBtn =
-      document.querySelector(
+const logoutBtn =
+    document.querySelector(
         '.logout-modal .logout'
-      );
+    );
 
-    if (logoutBtn) {
-
-      logoutBtn.addEventListener(
+if (logoutBtn) {
+    logoutBtn.addEventListener(
         'click',
         function() {
+            sessionStorage.setItem('page-loader-force', 'true');
 
-          const form =
-            document.createElement('form');
+            const form =
+                document.createElement('form');
 
-          form.method = 'POST';
+            form.method = 'POST';
+            form.action = '/logout';
 
-          form.action = '/logout';
-
-          document.body.appendChild(form);
-
-          form.submit();
-
+            document.body.appendChild(form);
+            form.submit();
         }
-      );
-
-    }
+    );
+}
 
     const logoutModal =
       document.getElementById(
@@ -1815,27 +1799,17 @@ document.addEventListener(
               await response.json();
 
             if (result.success) {
+                showLoginSuccess();
 
-              showLoginSuccess();
+                sessionStorage.setItem('page-loader-force', 'true');
 
-              setTimeout(() => {
-
-                if (
-                  result.role === 'ADMIN'
-                ) {
-
-                  window.location.href =
-                    '/usuarios';
-
-                } else {
-
-                  window.location.href =
-                    result.redirectUrl || '/';
-
-                }
-
-              }, 2000);
-
+                setTimeout(() => {
+                    if (result.role === 'ADMIN') {
+                        window.location.href = '/usuarios';
+                    } else {
+                        window.location.href = result.redirectUrl || '/';
+                    }
+                }, 2000);
             } else {
 
               showLoginError(

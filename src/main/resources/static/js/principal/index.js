@@ -28,49 +28,71 @@ async function initializeFavoriteButtons() {
         if (!button.dataset.hasListener) {
             button.dataset.hasListener = "true";
 
-            button.addEventListener('click', async function(e) {
-                e.preventDefault();
-                e.stopPropagation();
+ button.addEventListener('click', async function(e) {
+    e.preventDefault();
+    e.stopPropagation();
 
-                const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
-                const isLoggedIn = nomeUsuarioElement && nomeUsuarioElement.textContent.trim();
+    const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
+    const isLoggedIn = nomeUsuarioElement && nomeUsuarioElement.textContent.trim();
 
-                if (!isLoggedIn) {
-                    showNotification('Faça login para favoritar receitas!', false);
-                    return;
+    if (!isLoggedIn) {
+        showNotification('Faça login para favoritar receitas!', false);
+        return;
+    }
+
+    if (this.disabled) return;
+
+    const currentIcon = this.querySelector('i');
+    const estavaFavorito = this.classList.contains('active');
+
+    this.disabled = true;
+
+    if (currentIcon) {
+        currentIcon.className = 'fas fa-spinner fa-spin';
+    }
+
+    try {
+        const success = estavaFavorito
+            ? await removeFavorite(recipeId)
+            : await addFavorite(recipeId);
+
+        if (success) {
+            if (estavaFavorito) {
+                this.classList.remove('active');
+
+                if (currentIcon) {
+                    currentIcon.className = 'far fa-heart';
                 }
 
-                const currentIcon = this.querySelector('i');
+                showNotification('Receita removida dos favoritos!', true);
+            } else {
+                this.classList.add('active');
 
-                if (this.classList.contains('active')) {
-                    const success = await removeFavorite(recipeId);
-                    if (success) {
-                        this.classList.remove('active');
-                        if (currentIcon) {
-                            currentIcon.classList.remove('fas');
-                            currentIcon.classList.add('far');
-                        }
-                        showNotification('Receita removida dos favoritos!', true);
-                    }
-                } else {
-                    const success = await addFavorite(recipeId);
-                    if (success) {
-                        this.classList.add('active');
-                        if (currentIcon) {
-                            currentIcon.classList.remove('far');
-                            currentIcon.classList.add('fas');
-                        }
-                        showNotification('Receita adicionada aos favoritos!', true);
-                    }
+                if (currentIcon) {
+                    currentIcon.className = 'fas fa-heart';
                 }
 
-                updateFavoriteCount();
+                showNotification('Receita adicionada aos favoritos!', true);
+            }
 
-                const favTab = document.getElementById('favoritas');
-                if (favTab && favTab.classList.contains('active')) {
-                    loadFavoriteRecipes();
-                }
-            });
+            await updateFavoriteCount();
+
+            const favTab = document.getElementById('favoritas');
+
+            if (favTab && favTab.classList.contains('active')) {
+                await loadFavoriteRecipes();
+            }
+        } else {
+            if (currentIcon) {
+                currentIcon.className = estavaFavorito
+                    ? 'fas fa-heart'
+                    : 'far fa-heart';
+            }
+        }
+    } finally {
+        this.disabled = false;
+    }
+});
         }
     });
 
@@ -179,42 +201,64 @@ async function loadFavoriteRecipes() {
                         icon.classList.add('fas');
                     }
 
-                    cloneFavBtn.addEventListener('click', async function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
+cloneFavBtn.addEventListener('click', async function(e) {
+    e.preventDefault();
+    e.stopPropagation();
 
-                        const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
-                        const isLoggedIn = nomeUsuarioElement && nomeUsuarioElement.textContent.trim();
+    const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
+    const isLoggedIn = nomeUsuarioElement && nomeUsuarioElement.textContent.trim();
 
-                        if (!isLoggedIn) {
-                            showNotification('Faça login para favoritar receitas!', false);
-                            return;
-                        }
+    if (!isLoggedIn) {
+        showNotification('Faça login para favoritar receitas!', false);
+        return;
+    }
 
-                        const success = await removeFavorite(recipeId);
-                        if (success) {
-                            this.closest('.card').remove();
+    if (this.disabled) return;
 
-                            const mainButton = document.querySelector(`.card-favorite-btn[data-recipe-id="${recipeId}"]:not(#favorite-recipes .card-favorite-btn)`);
-                            if (mainButton) {
-                                mainButton.classList.remove('active');
-                                const mainIcon = mainButton.querySelector('i');
-                                if (mainIcon) {
-                                    mainIcon.classList.remove('fas');
-                                    mainIcon.classList.add('far');
-                                }
-                            }
+    const currentIcon = this.querySelector('i');
 
-                            showNotification('Receita removida dos favoritos!', true);
-                            updateFavoriteCount();
+    this.disabled = true;
 
-                            const remainingCards = favoriteContainer.querySelectorAll('.card');
-                            if (remainingCards.length === 0) {
-                                emptyState.style.display = 'block';
-                                favoriteContainer.style.display = 'none';
-                            }
-                        }
-                    });
+    if (currentIcon) {
+        currentIcon.className = 'fas fa-spinner fa-spin';
+    }
+
+    try {
+        const success = await removeFavorite(recipeId);
+
+        if (success) {
+            this.closest('.card').remove();
+
+            const mainButton = document.querySelector(`.card-favorite-btn[data-recipe-id="${recipeId}"]:not(#favorite-recipes .card-favorite-btn)`);
+
+            if (mainButton) {
+                mainButton.classList.remove('active');
+
+                const mainIcon = mainButton.querySelector('i');
+
+                if (mainIcon) {
+                    mainIcon.className = 'far fa-heart';
+                }
+            }
+
+            showNotification('Receita removida dos favoritos!', true);
+            await updateFavoriteCount();
+
+            const remainingCards = favoriteContainer.querySelectorAll('.card');
+
+            if (remainingCards.length === 0) {
+                emptyState.style.display = 'block';
+                favoriteContainer.style.display = 'none';
+            }
+        } else {
+            if (currentIcon) {
+                currentIcon.className = 'fas fa-heart';
+            }
+        }
+    } finally {
+        this.disabled = false;
+    }
+});
                 }
 
                 favoriteContainer.appendChild(clonedCard);
@@ -843,15 +887,13 @@ function applyResponsiveStyles() {
   const style = document.createElement('style');
   style.id = 'responsive-styles';
   style.innerHTML = `
-    /* ============================================================
-       MEDIA QUERIES EXISTENTES
-       ============================================================ */
 
     @media (max-width: 480px) {
       :root {
         --header-padding: 10px;
         --font-scale: 0.8;
       }
+
       .tab-buttons {
         display: flex;
         justify-content: space-between;
@@ -948,7 +990,7 @@ function applyResponsiveStyles() {
 
       .recipe-filters {
         padding: 15px;
-        margin: 20px 0 0px 0px;
+        margin: 20px 0 0 0;
       }
 
       .recipe-filters h3 {
@@ -1014,7 +1056,6 @@ function applyResponsiveStyles() {
         text-align: left;
       }
 
-
       .user-info-grid {
         grid-template-columns: 1fr;
         gap: 0;
@@ -1048,10 +1089,7 @@ function applyResponsiveStyles() {
       }
 
       .newspaper-subtitle {
-        display: flex;
-        font-size: 0.8rem;
-        justify-content: flex-end;
-        margin: 0;
+        display: none;
       }
 
       .nav-links {
@@ -1095,10 +1133,16 @@ function applyResponsiveStyles() {
     }
 
     @media (min-width: 769px) and (max-width: 1024px) {
-
-
       .newspaper-title {
         font-size: 2rem;
+      }
+
+      .newspaper-date{
+        display: none;
+      }
+
+      .newspaper-price{
+        display: none;
       }
 
       .newspaper-title::before,
@@ -1106,15 +1150,12 @@ function applyResponsiveStyles() {
         display: none;
       }
 
-      .newspaper-price,
       .header-user-profile,
       .header-logout-btn {
         padding: 4px 14px;
       }
 
-      .newspaper-subtitle {
-        display: none;
-      }
+ 
 
       .receitas {
         grid-template-columns: repeat(2, 1fr) !important;
@@ -1138,18 +1179,14 @@ function applyResponsiveStyles() {
     }
 
     @media (min-width: 900px) and (max-width: 1200px) {
-    .form-row{
-            gap: 0px;
+      .form-row {
+        gap: 0;
         display: flex;
         flex-direction: column;
-    }
-      .newspaper-title {
-        font-size: 3rem;
       }
 
-      .newspaper-title::before,
-      .newspaper-title::after {
-        display: none;
+      .newspaper-title {
+        font-size: 3rem;
       }
 
       .receitas {
@@ -1320,10 +1357,6 @@ function applyResponsiveStyles() {
       }
     }
 
-    /* ============================================================
-       MEDIA QUERIES NOVAS (Arquivo 2)
-       ============================================================ */
-
     @media (max-width: 992px) {
       .carousel-container {
         height: 400px;
@@ -1334,6 +1367,7 @@ function applyResponsiveStyles() {
       .classifieds-section .section-title p {
         font-size: 0.85rem;
       }
+
       .nav-links {
         flex-direction: column;
         gap: 10px;
@@ -1456,7 +1490,7 @@ function applyResponsiveStyles() {
 
     @media (max-width: 768px) {
       .minhas-receitas-wrapper {
-        padding: 0px;
+        padding: 0;
         margin-top: 0;
       }
 
@@ -1477,8 +1511,8 @@ function applyResponsiveStyles() {
       }
 
       .minhas-receitas-tabs {
-        gap: 8px;
-        margin: 20px 0 20px;
+        gap: 0;
+        margin: 0 0 20px;
       }
 
       .minhas-tab {
@@ -1486,11 +1520,6 @@ function applyResponsiveStyles() {
         font-size: 0.7rem;
         flex: 1;
         justify-content: center;
-      }
-
-      .minhas-tab:hover {
-        transform: translate(-1px, -1px);
-        box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.25);
       }
 
       .minhas-receitas-grid {
@@ -1540,19 +1569,20 @@ function applyResponsiveStyles() {
         padding: 8px 10px;
         font-size: 0.65rem;
       }
-    }
 
-    @media (max-width: 768px) {
-.minhas-receitas-tabs{
-flex-direction: column;
-align-items: normal;
-}
-}
+      .minhas-receitas-tabs {
+        align-items: normal;
+      }
+    }
 
     @media (max-width: 480px) {
       .minhas-tab {
-        padding: 9px 10px;
+        padding: 8px 10px;
         font-size: 0.65rem;
+      }
+
+      .tab-count{
+      display: none;
       }
 
       .minhas-tab i {
@@ -1666,6 +1696,7 @@ align-items: normal;
       .content-wrapper {
         padding: 0 10px !important;
       }
+
       .newspaper-header {
         padding: 15px 10px !important;
       }
@@ -1676,8 +1707,6 @@ align-items: normal;
       .header-full-width.scrolled {
         padding: 0 30px !important;
       }
-
-
     }
 
     @media (max-width: 768px) {
@@ -1691,12 +1720,6 @@ align-items: normal;
       .receitas-section .card,
       #favorite-recipes .card {
         box-shadow: 3px 3px 0 rgba(139, 0, 0, 0.15);
-      }
-
-      .receitas-section .card:hover,
-      #favorite-recipes .card:hover {
-        transform: translate(-1px, -1px);
-        box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.25);
       }
 
       .receitas-section .card-image,
@@ -1718,7 +1741,7 @@ align-items: normal;
       .receitas-section .card-meta,
       #favorite-recipes .card-meta {
         gap: 6px;
-        margin-bottom: 0px;
+        margin-bottom: 0;
         padding-bottom: 6px;
       }
 
@@ -1791,6 +1814,7 @@ align-items: normal;
         align-content: flex-start;
         align-items: normal;
       }
+
       span#chef {
         display: none;
       }
@@ -1800,6 +1824,7 @@ align-items: normal;
         grid-template-columns: 1fr 1fr !important;
         gap: 5px;
       }
+
       .card-badge-categoria {
         display: none;
       }
@@ -1837,6 +1862,18 @@ align-items: normal;
         height: 28px;
         font-size: 0.8rem;
       }
+    }
+
+    @media(max-width: 378px){
+    .minhas-receitas-tabs{
+      flex-direction: column;
+      }
+          .admin-recipe-tabs a span{
+    display: none;
+    }
+    .admin-table-header .count {
+        font-size: 0.7rem !important;
+    }
     }
 
     @media (min-width: 769px) and (max-width: 1024px) {
@@ -1880,11 +1917,6 @@ align-items: normal;
 
       .classifieds-section .classified-item {
         box-shadow: 3px 3px 0 rgba(139, 0, 0, 0.15);
-      }
-
-      .classifieds-section .classified-item:hover {
-        transform: translate(-1px, -1px);
-        box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.25);
       }
 
       .classifieds-section .classified-image {
@@ -1931,7 +1963,7 @@ align-items: normal;
 
     @media (min-width: 769px) and (max-width: 1024px) {
       .classifieds-section .classifieds {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: repeat(2, 1fr);
         gap: 24px;
       }
     }
@@ -2234,9 +2266,10 @@ align-items: normal;
     }
 
     @media (max-width: 768px) {
-    .detalhe-badge-categoria{
-    display: none;
-    }
+      .detalhe-badge-categoria {
+        display: none;
+      }
+
       .detalhe-topbar {
         height: 56px;
         padding: 0 15px;
@@ -2269,6 +2302,7 @@ align-items: normal;
 
       .detalhe-card {
         box-shadow: 3px 3px 0 rgba(139, 0, 0, 0.15);
+        border: 1px solid var(--header-color);
       }
 
       .detalhe-image {
@@ -2490,18 +2524,22 @@ align-items: normal;
       }
     }
 
-    @media (max-width: 992px) {
+    @media (max-width: 996px) {
       .newspaper-header {
         padding: 20px 0;
       }
 
       .header-nav {
-        gap: 8px;
+            margin-top: 10px;
+      }
+
+      .newspaper-subtitle{
+      font-size: 0.85rem;
       }
 
       .header-nav a {
-        padding: 7px 14px;
-        font-size: 0.72rem;
+        padding: 10px 14px;
+        font-size: 0.75rem;
       }
 
       .newspaper-title {
@@ -2533,6 +2571,11 @@ align-items: normal;
     }
 
     @media (max-width: 768px) {
+      #page-loader {
+        backdrop-filter: blur(25px);
+        background: none;
+      }
+
       .header-container {
         padding: 12px 15px;
       }
@@ -2552,6 +2595,7 @@ align-items: normal;
 
       .header-center {
         justify-content: flex-end;
+        gap: 0;
       }
 
       .header-greeting {
@@ -2562,11 +2606,11 @@ align-items: normal;
         padding: 0;
         font-size: 1.15rem;
         letter-spacing: 1px;
+        text-shadow: none;
       }
 
       .newspaper-title::before,
-      .newspaper-title::after,
-      .newspaper-subtitle {
+      .newspaper-title::after{
         display: none;
       }
 
@@ -2584,6 +2628,7 @@ align-items: normal;
       .header-nav.open .header-notification-desktop {
         display: none !important;
       }
+
       .menu-icon {
         display: flex;
         align-items: center;
@@ -2599,13 +2644,6 @@ align-items: normal;
         border: 2px solid rgba(255, 255, 255, 0.3);
         border-radius: 4px;
         transition: all 0.25s ease;
-      }
-
-      .menu-icon:hover {
-        color: var(--header-color);
-        background: white;
-        border-color: white;
-        transform: none;
       }
 
       .header-nav {
@@ -2655,18 +2693,6 @@ align-items: normal;
         opacity: 1;
       }
 
-      .header-nav a:hover {
-        color: #fff;
-        background: var(--header-color);
-        border-color: var(--header-color);
-        transform: none;
-        box-shadow: none;
-      }
-
-      .header-nav a:hover i {
-        color: #fff;
-      }
-
       .header-nav a.active {
         color: var(--header-color);
         background: var(--accent-color);
@@ -2714,11 +2740,6 @@ align-items: normal;
         transition: all 0.3s ease;
       }
 
-      .header-nav.open .header-nav-close:hover {
-        opacity: 1;
-        transform: rotate(90deg);
-      }
-
       .header-nav .header-user-profile,
       .header-nav .header-user-mobile,
       .header-nav .header-notification-sidebar,
@@ -2747,25 +2768,6 @@ align-items: normal;
       .header-nav .header-notification-sidebar i,
       .header-nav .header-logout-sidebar i {
         color: var(--header-color);
-      }
-
-      .header-nav .header-user-profile:hover,
-      .header-nav .header-user-mobile:hover,
-      .header-nav .header-notification-sidebar:hover,
-      .header-nav .header-logout-sidebar:hover {
-        color: #fff;
-        background: var(--header-color);
-        border-color: var(--header-color);
-        transform: none;
-        box-shadow: none;
-      }
-
-      .header-nav .header-user-profile:hover i,
-      .header-nav .header-user-profile:hover span,
-      .header-nav .header-user-mobile:hover i,
-      .header-nav .header-notification-sidebar:hover i,
-      .header-nav .header-logout-sidebar:hover i {
-        color: #fff;
       }
 
       .header-nav .header-notification-sidebar .notification-sidebar-badge {
@@ -2854,11 +2856,10 @@ align-items: normal;
 
     @media (max-width: 768px) {
       .admin-table-header .count {
-        font-size: 0.9rem !important;
+        font-size: 0.9rem;
       }
 
       .admin-recipe-tabs {
-        flex-direction: column;
         align-items: stretch;
         gap: 6px;
         margin-bottom: 15px;
@@ -2866,11 +2867,10 @@ align-items: normal;
       }
 
       .admin-recipe-tabs a {
-        width: 100%;
         min-width: 0;
         flex: none;
-        padding: 10px 12px;
-        font-size: 0.75rem;
+        padding: 8px 10px;
+        font-size: 0.65rem;
       }
 
       .admin-rejection-reason {
@@ -2901,6 +2901,7 @@ align-items: normal;
     }
 
     @media (max-width: 480px) {
+
       .admin-cards-grid {
         gap: 16px;
       }
@@ -2924,6 +2925,345 @@ align-items: normal;
       .admin-btn {
         padding: 9px 12px;
         font-size: 0.78rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .minhas-tab:hover {
+        color: var(--light-text);
+        background: transparent;
+      }
+
+      .minha-receita-card:hover {
+        box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.15);
+      }
+
+      .minha-receita-card:hover .minha-receita-imagem img {
+        transform: none;
+      }
+
+      .btn-ver:hover {
+        background: var(--header-color);
+        border-color: var(--header-color);
+        transform: none;
+        box-shadow: none;
+      }
+
+      .btn-motivo:hover {
+        background: #fff;
+        color: #e67e22;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .btn-excluir:hover {
+        background: #fff;
+        color: var(--rejected-color);
+        transform: none;
+        box-shadow: none;
+      }
+
+      .receita-topbar-back:hover {
+        background: transparent;
+        color: white;
+        border-color: rgba(255, 255, 255, 0.25);
+        transform: none;
+        box-shadow: 3px 3px 0 rgba(139, 0, 0, 0.15);
+      }
+
+      .tempo-toggle-btn:hover {
+        background: #fff;
+        color: var(--header-color);
+      }
+
+      .tempo-toggle-btn:hover i {
+        color: var(--accent-color);
+      }
+
+      .file-input-label:hover {
+        border-color: rgba(139, 0, 0, 0.3);
+        background: #faf8f5;
+      }
+
+      .file-input-label:hover .file-input-button {
+        background: var(--header-color);
+      }
+
+      .submit-button:hover {
+        background: var(--header-color);
+        color: #fff;
+        border: 2px solid var(--header-color);
+      }
+
+      #addIngrediente:hover,
+      #addPasso:hover {
+        color: var(--accent-color);
+        background-color: white;
+        border: 2px solid var(--accent-color);
+      }
+
+      .remove-btn:hover {
+        background: var(--rejected-color);
+      }
+
+      .tab-button:hover {
+        color: var(--light-text);
+        background: transparent;
+      }
+
+      #aplicarFiltros:hover {
+        background: var(--header-color);
+      }
+
+      #limparFiltros:hover {
+        transform: none;
+      }
+
+      .receitas-section .card:hover,
+      #favorite-recipes .card:hover {
+        transform: none;
+        box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.15);
+      }
+
+      .receitas-section .card-favorite-btn:hover,
+      #favorite-recipes .card-favorite-btn:hover {
+        background: #fff;
+        color: var(--header-color);
+      }
+
+      .receitas-section .card-link:hover,
+      #favorite-recipes .card-link:hover {
+        background: var(--header-color);
+        color: #fff;
+      }
+
+      .receitas-section .card-link:hover i,
+      #favorite-recipes .card-link:hover i {
+        transform: none;
+      }
+
+      .receitas-section .card-delete:hover,
+      #favorite-recipes .card-delete:hover {
+        background: #fff;
+        color: var(--header-color);
+        border-color: var(--header-color);
+      }
+
+      .detalhe-topbar-back:hover {
+        background: transparent;
+        color: white;
+        border-color: rgba(255, 255, 255, 0.25);
+        transform: none;
+        box-shadow: 3px 3px 0 rgba(139, 0, 0, 0.15);
+      }
+
+      .detalhe-favorite-btn:hover,
+      .detalhe-print-btn:hover {
+        transform: none;
+        box-shadow: 3px 3px 0 rgba(139, 0, 0, 0.15);
+      }
+        
+        .receitas-section .card-favorite-btn.active:hover{
+            background: var(--favorite-color);
+            color: #fff;
+        }
+
+      .detalhe-print-btn:hover {
+        background: #fff;
+        color: var(--light-text);
+        border-color: transparent;
+        box-shadow: none;
+      }
+
+      .detalhe-ingrediente-item:hover {
+        border-color: rgba(139, 0, 0, 0.15);
+        transform: none;
+      }
+
+      .detalhe-preparo-item:hover {
+        border-color: rgba(139, 0, 0, 0.15);
+        transform: none;
+      }
+
+      .classifieds-section .classified-item:hover {
+        transform: none;
+        box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.15);
+      }
+
+      .classifieds-section .classified-link:hover {
+        background: var(--header-color);
+        color: #fff;
+      }
+
+      .classifieds-section .classified-link:hover i {
+        transform: none;
+      }
+
+      .carousel-control:hover {
+        background: #fff;
+        color: var(--header-color);
+        transform: none;
+        box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.25);
+      }
+
+      .admin-recipe-card:hover {
+        box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.15);
+      }
+
+      .admin-recipe-card:hover .admin-recipe-image img {
+        transform: none;
+        filter: saturate(0.95);
+      }
+
+      .admin-btn-view:hover {
+        background: #fff;
+        color: var(--header-color);
+        transform: none;
+        box-shadow: 2px 2px 0 rgba(139, 0, 0, 0.15);
+      }
+
+      .admin-btn-approve:hover {
+        background: #fff;
+        color: #27ae60;
+        transform: none;
+        box-shadow: 2px 2px 0 rgba(139, 0, 0, 0.15);
+      }
+
+      .admin-btn-reject:hover {
+        background: #fff;
+        color: var(--rejected-color, #8b0000);
+        transform: none;
+        box-shadow: 2px 2px 0 rgba(139, 0, 0, 0.15);
+      }
+
+      .admin-recipe-tabs a:hover {
+        color: var(--light-text);
+        background: transparent;
+      }
+
+      .action-btn.btn-view:hover {
+        transform: none;
+      }
+
+      .header-nav a:hover {
+        color: white;
+        background: transparent;
+        border-color: rgba(255, 255, 255, 0.25);
+        transform: none;
+        box-shadow: none;
+      }
+
+      .header-nav a:hover i {
+        color: white;
+        opacity: 0.9;
+      }
+
+      .header-nav a.active:hover {
+        color: var(--header-color);
+        background: var(--accent-color);
+        border-color: var(--accent-color);
+        transform: none;
+        box-shadow: none;
+      }
+
+      .header-user-profile:hover,
+      .header-logout-btn:hover,
+      .header-notification-btn:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.25);
+        transform: none;
+        box-shadow: none;
+      }
+
+      .header-full-width.scrolled .menu-icon:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+
+      .header-nav.open .header-nav-close:hover {
+        opacity: 0.7;
+        transform: none;
+      }
+
+      .header-full-width.scrolled .header-nav.open > a:hover {
+        color: var(--header-color);
+        background: transparent;
+        border-color: var(--header-color);
+      }
+
+      .header-full-width.scrolled .header-nav.open > a:hover i {
+        color: var(--header-color);
+      }
+
+      .header-full-width.scrolled .header-nav.open .header-user-profile:hover {
+        color: var(--header-color);
+        background: transparent;
+        border-color: var(--header-color);
+        transform: none;
+        box-shadow: none;
+      }
+
+      .header-full-width.scrolled .header-nav.open .header-user-profile:hover i,
+      .header-full-width.scrolled .header-nav.open .header-user-profile:hover span {
+        color: var(--header-color);
+      }
+
+      .header-nav .header-user-profile:hover,
+      .header-nav .header-user-mobile:hover,
+      .header-nav .header-notification-sidebar:hover,
+      .header-nav .header-logout-sidebar:hover {
+        color: var(--header-color);
+        background: transparent;
+        border-color: var(--header-color);
+      }
+
+      .header-nav .header-user-profile:hover i,
+      .header-nav .header-user-profile:hover span,
+      .header-nav .header-user-mobile:hover i,
+      .header-nav .header-notification-sidebar:hover i,
+      .header-nav .header-logout-sidebar:hover i {
+        color: var(--header-color);
+      }
+
+      .menu-icon:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+
+      .admin-sidebar-nav a:hover {
+        color: var(--header-color);
+        background: transparent;
+        border-color: var(--header-color);
+      }
+
+      .admin-sidebar-nav a:hover i {
+        color: var(--header-color);
+      }
+
+      .admin-sidebar-btn:hover {
+        color: var(--header-color);
+        background: transparent;
+        border-color: var(--header-color);
+      }
+
+      .admin-sidebar-btn:hover i {
+        color: var(--header-color);
+      }
+
+      .admin-sidebar-btn-sair:hover,
+      .admin-sidebar-btn-sair:hover i {
+        color: var(--header-color);
+        background: transparent;
+        border-color: var(--header-color);
+      }
+
+      .admin-sidebar-toggle:hover {
+        color: white;
+        background: none;
+        border-color: white;
       }
     }
   `;

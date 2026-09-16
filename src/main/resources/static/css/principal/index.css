@@ -203,6 +203,7 @@ body {
   background-size: 12px;
   cursor: pointer;
   font-family: inherit;
+  color: var(--light-text);
 }
 
 .filter-select:focus {

@@ -25,21 +25,19 @@
 
             </div>
 
-            <div class="notificacoes-modal-body"
-                 id="notificacoesModalBody">
+                <div class="notificacoes-modal-body"
+                    id="notificacoesModalBody">
 
-                <div class="notificacoes-vazia"
-                     id="notificacoesVazia">
+                    <div th:replace="~{global/loader :: loader('modal-loader')}"></div>
 
-                    <i class="fas fa-bell-slash"></i>
-
-                    <h3>Nenhuma notificação</h3>
-
-                    <p>Você não possui novas notificações.</p>
+                    <div class="notificacoes-vazia"
+                        id="notificacoesVazia">
+                        <i class="fas fa-bell-slash"></i>
+                        <h3>Nenhuma notificação</h3>
+                        <p>Você não possui novas notificações.</p>
+                    </div>
 
                 </div>
-
-            </div>
 
             <div class="notificacoes-modal-footer">
                 <button type="button"

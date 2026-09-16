@@ -1,4 +1,3 @@
-
 function verificarUsuarioAutenticado() {
     const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
     const estaLogado = nomeUsuarioElement && nomeUsuarioElement.textContent.trim();
@@ -36,13 +35,20 @@ function setupStickyHeader() {
     const header = document.querySelector('.header-full-width');
     const contentWrapper = document.querySelector('.content-wrapper');
 
-    if (!header) return;
+    if (!header || !contentWrapper) return;
+
+    const OFFSET = 65; 
+
+    let ultimaAltura = 0;
 
     function updateHeaderPadding() {
-        if (contentWrapper) {
-            const headerHeight = header.offsetHeight;
-            contentWrapper.style.marginTop = headerHeight + 'px';
-        }
+        const alturaAtual = header.offsetHeight;
+
+        if (alturaAtual === ultimaAltura) return;
+
+        ultimaAltura = alturaAtual;
+
+        contentWrapper.style.marginTop = (alturaAtual - OFFSET) + 'px';
     }
 
     function handleScroll() {
@@ -55,9 +61,17 @@ function setupStickyHeader() {
         } else {
             header.classList.remove('scrolled');
         }
+
+        requestAnimationFrame(updateHeaderPadding);
     }
 
     updateHeaderPadding();
+
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(updateHeaderPadding);
+    }
+
+    window.addEventListener('load', updateHeaderPadding);
 
     let resizeTimeout;
 
@@ -93,6 +107,11 @@ function setupStickyHeader() {
             requestAnimationFrame(updateHeaderPadding);
         }
     });
+
+    if ('ResizeObserver' in window) {
+        const observer = new ResizeObserver(updateHeaderPadding);
+        observer.observe(header);
+    }
 
     setTimeout(
         updateHeaderPadding,
@@ -543,20 +562,23 @@ function mostrarNovaNotificacao() {
 
 async function carregarNotificacoes() {
     const body =
-        document.getElementById(
-            'notificacoesModalBody'
-        );
+        document.getElementById('notificacoesModalBody');
+
+    const loader =
+        body?.querySelector('.modal-loader');
 
     if (!body) return;
+
+    if (loader) {
+        loader.classList.remove('is-hidden');
+    }
 
     try {
         const response =
             await fetch('/api/notificacoes');
 
         if (!response.ok) {
-            throw new Error(
-                'Erro ao buscar notificações'
-            );
+            throw new Error('Erro ao buscar notificações');
         }
 
         const data =
@@ -565,97 +587,112 @@ async function carregarNotificacoes() {
         const notificacoes =
             data.notificacoes || [];
 
-        body.innerHTML = '';
+        body.querySelectorAll(
+            '.notificacao-item, .notificacoes-vazia'
+        ).forEach(elemento => elemento.remove());
 
         if (notificacoes.length === 0) {
-
-            body.innerHTML = `
-                <div class="notificacoes-vazia">
-                    <i class="fas fa-bell-slash"></i>
-                    <h3>Nenhuma notificação</h3>
-                    <p>Você não possui novas notificações.</p>
-                </div>
-            `;
-
-            return;
-        }
-
-        notificacoes.forEach(notificacao => {
-
-            const item =
+            const vazia =
                 document.createElement('div');
 
-            item.className =
-                'notificacao-item';
+            vazia.className =
+                'notificacoes-vazia';
 
-            if (!notificacao.lida) {
-                item.classList.add(
-                    'nao-lida'
-                );
-            }
-
-            const icone =
-                obterIconeNotificacao(
-                    notificacao.tipo
-                );
-
-            const dataFormatada =
-                formatarDataNotificacao(
-                    notificacao.dataHora
-                );
-
-            item.innerHTML = `
-                <div class="notificacao-icon">
-                    <i class="${icone}"></i>
-                </div>
-
-                <div class="notificacao-info">
-                    <p class="notificacao-mensagem">
-                        ${escaparHtml(notificacao.mensagem)}
-                    </p>
-
-                    <span class="notificacao-data">
-                        ${dataFormatada}
-                    </span>
-                </div>
-
-                ${
-                    !notificacao.lida
-                        ? '<span class="notificacao-nao-lida-indicador"></span>'
-                        : ''
-                }
+            vazia.innerHTML = `
+                <i class="fas fa-bell-slash"></i>
+                <h3>Nenhuma notificação</h3>
+                <p>Você não possui novas notificações.</p>
             `;
 
-            if (!notificacao.lida) {
+            body.appendChild(vazia);
+        } else {
+            notificacoes.forEach(notificacao => {
+                const item =
+                    document.createElement('div');
 
-                item.addEventListener(
-                    'click',
-                    function () {
-                        marcarNotificacaoComoLida(
-                            notificacao.id,
-                            item
-                        );
+                item.className =
+                    'notificacao-item';
+
+                if (!notificacao.lida) {
+                    item.classList.add('nao-lida');
+                }
+
+                const icone =
+                    obterIconeNotificacao(
+                        notificacao.tipo
+                    );
+
+                const dataFormatada =
+                    formatarDataNotificacao(
+                        notificacao.dataHora
+                    );
+
+                item.innerHTML = `
+                    <div class="notificacao-icon">
+                        <i class="${icone}"></i>
+                    </div>
+
+                    <div class="notificacao-info">
+                        <p class="notificacao-mensagem">
+                            ${escaparHtml(notificacao.mensagem)}
+                        </p>
+
+                        <span class="notificacao-data">
+                            ${dataFormatada}
+                        </span>
+                    </div>
+
+                    ${
+                        !notificacao.lida
+                            ? '<span class="notificacao-nao-lida-indicador"></span>'
+                            : ''
                     }
-                );
-            }
+                `;
 
-            body.appendChild(item);
-        });
+                if (!notificacao.lida) {
+                    item.addEventListener(
+                        'click',
+                        function () {
+                            marcarNotificacaoComoLida(
+                                notificacao.id,
+                                item
+                            );
+                        }
+                    );
+                }
+
+                body.appendChild(item);
+            });
+        }
 
     } catch (error) {
-
         console.error(
             'Erro ao carregar notificações:',
             error
         );
 
-        body.innerHTML = `
-            <div class="notificacoes-vazia">
-                <i class="fas fa-exclamation-triangle"></i>
-                <h3>Erro ao carregar</h3>
-                <p>Não foi possível carregar suas notificações.</p>
-            </div>
+        body.querySelectorAll(
+            '.notificacao-item, .notificacoes-vazia'
+        ).forEach(elemento => elemento.remove());
+
+        const erro =
+            document.createElement('div');
+
+        erro.className =
+            'notificacoes-vazia';
+
+        erro.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Erro ao carregar</h3>
+            <p>Não foi possível carregar suas notificações.</p>
         `;
+
+        body.appendChild(erro);
+
+    } finally {
+        if (loader) {
+            loader.classList.add('is-hidden');
+        }
     }
 }
 
@@ -1085,6 +1122,59 @@ function salvarAdminPerfil(event) {
         });
 }
 
+
+function configurarLoaderNavegacao() {
+    const elementos = document.querySelectorAll(
+        '.header-full-width a, .header-full-width button, .header-full-width [role="button"], .admin-sidebar a, .admin-sidebar button, .admin-sidebar [role="button"], .sidebar a, .sidebar button, .sidebar [role="button"]'
+    );
+
+    elementos.forEach(elemento => {
+        if (elemento.dataset.loaderConfigurado) return;
+
+        elemento.dataset.loaderConfigurado = 'true';
+
+        elemento.addEventListener('click', function (event) {
+
+          if (
+            elemento.classList.contains('sidebar-close') ||
+            elemento.classList.contains('header-nav-close') ||
+            elemento.classList.contains('admin-sidebar-close') ||
+            elemento.id === 'menuToggle' ||
+            elemento.id === 'adminSidebarToggle' ||
+            elemento.id === 'notificationButton' ||
+            elemento.onclick?.toString().includes('openLogoutModal') ||
+            elemento.onclick?.toString().includes('openAdminPerfilModal') ||
+            elemento.onclick?.toString().includes('abrirModalUsuarioSimples') ||
+            elemento.getAttribute('onclick')?.includes('openLogoutModal') ||
+            elemento.getAttribute('onclick')?.includes('openAdminPerfilModal') ||
+            elemento.getAttribute('onclick')?.includes('abrirModalUsuarioSimples')
+        ) {
+            return;
+        }
+
+            const link = elemento.closest('a');
+
+            if (link && link.getAttribute('href') === '#') {
+                return;
+            }
+
+            sessionStorage.setItem('page-loader-force', 'true');
+
+            const icon = elemento.querySelector('i');
+
+            if (icon) {
+                icon.dataset.loaderOriginalClass = icon.className;
+                icon.className = 'fas fa-spinner fa-spin';
+            } else {
+                elemento.dataset.loaderOriginalContent = elemento.innerHTML;
+                elemento.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            }
+
+            elemento.style.pointerEvents = 'none';
+        });
+    });
+}
+
 function verificarNotificacaoPerfil() {
     if (
         sessionStorage.getItem(
@@ -1158,24 +1248,20 @@ document.addEventListener(
 document.addEventListener(
     'DOMContentLoaded',
     function () {
-
         const isAdmin =
             document.querySelector(
                 '.admin-sidebar'
             );
 
         if (isAdmin) {
-
             setupSidebarAdmin();
-
         } else {
-
             setupCabecalhoCliente();
             setupSidebarCliente();
         }
 
         configurarNotificacoes();
+        configurarLoaderNavegacao();
         verificarNotificacaoPerfil();
     }
 );
-
