@@ -138,8 +138,6 @@ Constrói objetos passo a passo (`ReceitaBuilder`, `UsuarioBuilder`, `Notificaca
 
 ## 🗄️ Banco de dados
 
-Tabelas principais:
-
 | Tabela | Descrição |
 |---|---|
 | `usuario` | Usuários cadastrados (nome, email, cpf, senha, role, ativo) |
