@@ -103,7 +103,6 @@
     justify-content: center;
     background: var(--header-color);
     border: 2px solid var(--header-color);
-    border-radius: 4px;
     color: #fff;
     font-size: 0.9rem;
 }
@@ -177,7 +176,6 @@
     background: #fff;
     color: var(--header-color);
     padding: 9px 15px;
-    border-radius: 4px;
     cursor: pointer;
     font-family: inherit;
     font-size: 0.75rem;
@@ -192,7 +190,6 @@
     background: #fff;
     color: var(--rejected-color);
     padding: 9px 15px;
-    border-radius: 4px;
     cursor: pointer;
     font-family: inherit;
     font-size: 0.75rem;
@@ -219,13 +216,11 @@
     .notificacoes-marcar-todas:hover {
         background: var(--header-color);
         color: #fff;
-        transform: translate(-2px, -2px);
     }
 
     .notificacoes-excluir-todas:hover {
         background: var(--rejected-color);
         color: #fff;
-        transform: translate(-2px, -2px);
     }
 }
 

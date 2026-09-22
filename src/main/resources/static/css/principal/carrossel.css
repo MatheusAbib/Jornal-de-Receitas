@@ -78,7 +78,6 @@
   border: 2px solid var(--header-color);
   width: 52px;
   height: 52px;
-  border-radius: 4px;
   font-size: 1.2rem;
   cursor: pointer;
   display: flex;

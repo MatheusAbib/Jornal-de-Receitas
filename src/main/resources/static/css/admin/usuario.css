@@ -48,10 +48,6 @@ gap: 12px;
 margin: 0;
 }
 
-.admin-topbar h1 i {
-color: var(--accent-color);
-font-size: 1.3rem;
-}
 
 .admin-topbar-actions {
 display: flex;
@@ -78,7 +74,6 @@ position: relative;
 .admin-search-box input {
 padding: 12px 15px 12px 40px;
 border: 2px solid rgba(139, 0, 0, 0.2);
-border-radius: 4px;
 font-size: 0.95rem;
 width: 280px;
 transition: all 0.25s ease;
@@ -113,7 +108,6 @@ flex: 1;
 
 .admin-table-container {
 background: #fff;
-border-radius: 4px;
 overflow: hidden;
 }
 
@@ -146,7 +140,6 @@ margin-right: 8px;
 color: var(--header-color);
 background: rgba(212, 175, 55, 0.15);
 padding: 2px 8px;
-border-radius: 4px;
 }
 
 .admin-table-scroll {
@@ -416,13 +409,8 @@ border-color: #5c0000;
 background: #faf8f5;
 }
 
-.action-btn.btn-edit:hover,
-.action-btn.btn-delete:hover {
-transform: translate(-2px, -2px);
-}
 
 .admin-pagination a:hover {
-transform: translate(-2px, -2px);
 box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.25);
 background: var(--header-color);
 color: #fff;

@@ -105,7 +105,7 @@
 
 .receitas-section .card-favorite-btn:hover,
 #favorite-recipes .card-favorite-btn:hover {
-  background: var(--header-color);
+  background: var(--favorite-color);
   color: #fff;
 }
 

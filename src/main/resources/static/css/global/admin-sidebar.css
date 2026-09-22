@@ -81,7 +81,6 @@
     letter-spacing: 0.5px;
     background: transparent;
     border: 2px solid var(--header-color);
-    border-radius: 4px;
     transition: all 0.25s ease;
     transform: none;
 }
@@ -134,7 +133,6 @@
     cursor: pointer;
     background: transparent;
     border: 2px solid var(--header-color);
-    border-radius: 4px;
     transition: all 0.25s ease;
 }
 
@@ -292,7 +290,6 @@
         cursor: pointer;
         background: none;
         border: 2px solid white;
-        border-radius: 4px;
         transition: all 0.25s ease;
     }
 

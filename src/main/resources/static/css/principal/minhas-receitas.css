@@ -13,7 +13,6 @@
     padding: 18px 20px;
     background: #fff;
     border: 2px solid var(--header-color);
-    border-radius: 4px;
     box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.15);
     transition: all 0.3s ease;
 }
@@ -296,7 +295,6 @@
   flex: 1;
   min-width: 120px;
   padding: 10px 14px;
-  border-radius: 4px;
   font-family: inherit;
   font-size: 0.75rem;
   font-weight: 700;
@@ -321,7 +319,6 @@
 .btn-ver:hover {
   background: var(--accent-color);
   border-color: var(--accent-color);
-  transform: translate(-2px, -2px);
   box-shadow: 4px 4px 0 rgba(212, 175, 55, 0.4);
 }
 
@@ -334,7 +331,6 @@
 .btn-motivo:hover {
   background: #e67e22;
   color: #fff;
-  transform: translate(-2px, -2px);
   box-shadow: 4px 4px 0 rgba(230, 126, 34, 0.4);
 }
 
@@ -347,7 +343,6 @@
 .btn-excluir:hover {
   background: var(--rejected-color);
   color: #fff;
-  transform: translate(-2px, -2px);
   box-shadow: 4px 4px 0 rgba(231, 76, 60, 0.4);
 }
 

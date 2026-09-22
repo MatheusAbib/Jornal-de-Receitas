@@ -85,7 +85,6 @@
     background: #fff;
     border: 2px solid rgba(139, 0, 0, 0.15);
     border-left: 4px solid var(--header-color);
-    border-radius: 4px;
     transition: all 0.25s ease;
 }
 
@@ -116,7 +115,6 @@
 .user-btn-cancel,
 .user-btn-save {
     padding: 11px 22px;
-    border-radius: 4px;
     font-family: inherit;
     font-weight: 700;
     font-size: 0.8rem;
@@ -167,7 +165,6 @@
     width: 100%;
     padding: 12px 15px 12px 42px;
     border: 2px solid rgba(139, 0, 0, 0.2);
-    border-radius: 4px;
     font-size: 0.95rem;
     background: #faf8f5;
     box-sizing: border-box;
@@ -277,7 +274,6 @@ select.user-form-control-float:not(:placeholder-shown) ~ i {
 .user-message {
     margin: 15px 0;
     padding: 12px 15px;
-    border-radius: 4px;
     text-align: center;
     font-size: 0.9rem;
     font-weight: 600;
@@ -314,16 +310,11 @@ select.user-form-control-float:not(:placeholder-shown) ~ i {
     }
 
     .user-btn-edit:hover {
-        transform: translate(-2px, -2px);
         box-shadow: 4px 4px 0 rgba(212, 175, 55, 0.4);
     }
 
-    .user-btn-cancel:hover {
-        transform: translate(-2px, -2px);
-    }
 
     .user-btn-save:hover {
-        transform: translate(-2px, -2px);
         box-shadow: 4px 4px 0 rgba(39, 174, 96, 0.4);
     }
 
