@@ -1,20 +1,31 @@
 package com.receitas.site_receitas.controller;
 
+import com.receitas.site_receitas.command.AprovarReceitaCommand;
+import com.receitas.site_receitas.command.Command;
+import com.receitas.site_receitas.command.CommandInvoker;
+import com.receitas.site_receitas.command.ExcluirReceitaCommand;
+import com.receitas.site_receitas.command.RejeitarReceitaCommand;
 import com.receitas.site_receitas.model.Receita;
 import com.receitas.site_receitas.model.Receita.StatusReceita;
-import com.receitas.site_receitas.repository.ReceitaRepository;
 import com.receitas.site_receitas.model.Usuario;
-import com.receitas.site_receitas.repository.UsuarioRepository;
 import com.receitas.site_receitas.model.CarrosselItem;
-import com.receitas.site_receitas.repository.CarrosselRepository;
-import com.receitas.site_receitas.service.SiteConfigService;
 import com.receitas.site_receitas.model.Notificacao;
-import com.receitas.site_receitas.repository.NotificacaoRepository;
+import com.receitas.site_receitas.factory.NotificacaoFactory;
+import com.receitas.site_receitas.factory.ReceitaFactory;
+import com.receitas.site_receitas.service.CarrosselService;
+import com.receitas.site_receitas.service.EstatisticasService;
+import com.receitas.site_receitas.service.FavoritoService;
+import com.receitas.site_receitas.service.NotificacaoService;
+import com.receitas.site_receitas.service.ReceitaService;
+import com.receitas.site_receitas.service.SiteConfigService;
+import com.receitas.site_receitas.service.UploadService;
+import com.receitas.site_receitas.service.UsuarioService;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -36,31 +47,42 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@Tag(name = "Receitas", description = "Endpoints de receitas")
 public class ReceitaController {
 
-    private final ReceitaRepository repository;
-    private final UsuarioRepository usuarioRepository;
+    private final ReceitaService receitaService;
+    private final UsuarioService usuarioService;
 
     @Autowired
-    private NotificacaoRepository notificacaoRepository;
-
-    @Autowired
-    private CarrosselRepository carrosselRepository;
+    private CarrosselService carrosselService;
 
     @Autowired
     private SiteConfigService siteConfigService;
 
+    @Autowired
+    private UploadService uploadService;
+
+    @Autowired
+    private NotificacaoService notificacaoService;
+
+    @Autowired
+    private FavoritoService favoritoService;
+
+    @Autowired
+    private EstatisticasService estatisticasService;
+
+    @Autowired
+    private CommandInvoker commandInvoker;
+
     public ReceitaController(
-            ReceitaRepository repository,
-            UsuarioRepository usuarioRepository) {
-        this.repository = repository;
-        this.usuarioRepository = usuarioRepository;
+            ReceitaService receitaService,
+            UsuarioService usuarioService) {
+        this.receitaService = receitaService;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping("/")
-    public String index(
-            Model model,
-            Authentication authentication) {
+    public String index(Model model, Authentication authentication) {
 
         if (authentication != null
                 && authentication.isAuthenticated()
@@ -76,36 +98,17 @@ public class ReceitaController {
 
         model.addAttribute("paginaAtual", "inicio");
 
-        model.addAttribute(
-                "receitas",
-                repository.findByStatus(StatusReceita.APROVADA)
-        );
+        model.addAttribute("receitas", receitaService.listarAprovadas());
 
-        List<CarrosselItem> carrosselItens =
-                carrosselRepository.findByAtivoTrueOrderByOrdemExibicaoAsc();
+        List<CarrosselItem> carrosselItens = carrosselService.listarAtivos();
 
         model.addAttribute("carrosselItens", carrosselItens);
 
-        String faviconUrl =
-                siteConfigService.getConfigValue("favicon_url");
-
-        String ganacheUrl =
-                siteConfigService.getConfigValue("ganache_url");
-
-        String sopaUrl =
-                siteConfigService.getConfigValue("sopa_url");
-
-        String pestoUrl =
-                siteConfigService.getConfigValue("pesto_url");
-
-        String bolinhoUrl =
-                siteConfigService.getConfigValue("bolinho_url");
-
-        model.addAttribute("faviconUrl", faviconUrl);
-        model.addAttribute("ganacheUrl", ganacheUrl);
-        model.addAttribute("sopaUrl", sopaUrl);
-        model.addAttribute("pestoUrl", pestoUrl);
-        model.addAttribute("bolinhoUrl", bolinhoUrl);
+        model.addAttribute("faviconUrl", siteConfigService.getConfigValue("favicon_url"));
+        model.addAttribute("ganacheUrl", siteConfigService.getConfigValue("ganache_url"));
+        model.addAttribute("sopaUrl", siteConfigService.getConfigValue("sopa_url"));
+        model.addAttribute("pestoUrl", siteConfigService.getConfigValue("pesto_url"));
+        model.addAttribute("bolinhoUrl", siteConfigService.getConfigValue("bolinho_url"));
 
         if (authentication != null
                 && authentication.isAuthenticated()
@@ -113,19 +116,12 @@ public class ReceitaController {
 
             String email = authentication.getName();
 
-            Optional<Usuario> usuario =
-                    usuarioRepository.findByEmail(email);
+            Optional<Usuario> usuario = usuarioService.findByEmail(email);
 
             if (usuario.isPresent()) {
-                model.addAttribute(
-                        "nomeUsuario",
-                        usuario.get().getNome()
-                );
+                model.addAttribute("nomeUsuario", usuario.get().getNome());
             } else {
-                model.addAttribute(
-                        "nomeUsuario",
-                        email
-                );
+                model.addAttribute("nomeUsuario", email);
             }
         }
 
@@ -149,12 +145,9 @@ public class ReceitaController {
 
         String email = authentication.getName();
 
-        Optional<Usuario> usuarioOpt =
-                usuarioRepository.findByEmail(email);
+        Optional<Usuario> usuarioOpt = usuarioService.findByEmail(email);
 
-        Receita receita = new Receita();
-
-        receita.setPorcoes(1);
+        Receita receita = ReceitaFactory.criarPendente(null, usuarioOpt.orElse(null));
 
         if (usuarioOpt.isPresent()) {
             receita.setChefe(usuarioOpt.get().getNome());
@@ -165,40 +158,31 @@ public class ReceitaController {
         model.addAttribute("receita", receita);
 
         if (usuarioOpt.isPresent()) {
-            model.addAttribute(
-                    "nomeUsuario",
-                    usuarioOpt.get().getNome()
-            );
+            model.addAttribute("nomeUsuario", usuarioOpt.get().getNome());
         } else {
-            model.addAttribute(
-                    "nomeUsuario",
-                    email
-            );
+            model.addAttribute("nomeUsuario", email);
         }
 
-        String faviconUrl =
-                siteConfigService.getFaviconUrl();
-
-        model.addAttribute(
-                "faviconUrl",
-                faviconUrl
-        );
+        model.addAttribute("faviconUrl", siteConfigService.getFaviconUrl());
 
         return "principal/receita/form-receita";
     }
 
+    @Operation(
+        summary = "Salvar nova receita",
+        description = "Cria uma nova receita no sistema com status PENDENTE. Recebe os dados da receita via formulário, processa ingredientes e modo de preparo, faz upload da imagem e notifica administradores e o autor."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "302", description = "Receita salva e redirecionada para minhas-receitas"),
+        @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @PostMapping("/salvar")
     public String salvarReceita(
             @ModelAttribute Receita receita,
             @RequestParam("imagemFile") MultipartFile imagemFile,
-            @RequestParam(
-                    required = false,
-                    name = "ingredientes[]"
-            ) List<String> ingredientes,
-            @RequestParam(
-                    required = false,
-                    name = "modoPreparo[]"
-            ) List<String> modoPreparo,
+            @RequestParam(required = false, name = "ingredientes[]") List<String> ingredientes,
+            @RequestParam(required = false, name = "modoPreparo[]") List<String> modoPreparo,
             RedirectAttributes redirectAttributes) throws Exception {
 
         Authentication authentication =
@@ -213,121 +197,81 @@ public class ReceitaController {
 
         String email = authentication.getName();
 
-        Optional<Usuario> usuarioOpt =
-                usuarioRepository.findByEmail(email);
+        Optional<Usuario> usuarioOpt = usuarioService.findByEmail(email);
 
         if (usuarioOpt.isPresent()) {
-
             receita.setUsuario(usuarioOpt.get());
-
-            if (receita.getChefe() == null
-                    || receita.getChefe().isBlank()) {
-
-                receita.setChefe(
-                        usuarioOpt.get().getNome()
-                );
+            if (receita.getChefe() == null || receita.getChefe().isBlank()) {
+                receita.setChefe(usuarioOpt.get().getNome());
             }
-
         } else {
-
-            if (receita.getChefe() == null
-                    || receita.getChefe().isBlank()) {
-
+            if (receita.getChefe() == null || receita.getChefe().isBlank()) {
                 receita.setChefe(email);
             }
         }
 
-        if (ingredientes != null) {
+        String ingredientesStr = ingredientes != null
+                ? ingredientes.stream()
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .reduce((a, b) -> a + "||" + b)
+                        .orElse("")
+                : "";
 
-            receita.setIngredientes(
-                    ingredientes.stream()
-                            .map(String::trim)
-                            .filter(s -> !s.isEmpty())
-                            .reduce((a, b) -> a + "||" + b)
-                            .orElse("")
-            );
-        }
+        String modoPreparoStr = modoPreparo != null
+                ? modoPreparo.stream()
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .reduce((a, b) -> a + "||" + b)
+                        .orElse("")
+                : "";
 
-        if (modoPreparo != null) {
+        String nomeArquivo = uploadService.salvarImagem(imagemFile);
 
-            receita.setModoPreparo(
-                    modoPreparo.stream()
-                            .map(String::trim)
-                            .filter(s -> !s.isEmpty())
-                            .reduce((a, b) -> a + "||" + b)
-                            .orElse("")
-            );
-        }
-
-        if (!imagemFile.isEmpty()) {
-
-            String uploadDir = "uploads/";
-
-            Files.createDirectories(
-                    Paths.get(uploadDir)
-            );
-
-            String filename =
-                    System.currentTimeMillis()
-                            + "_"
-                            + imagemFile.getOriginalFilename();
-
-            Files.write(
-                    Paths.get(uploadDir, filename),
-                    imagemFile.getBytes()
-            );
-
-            receita.setImagem(filename);
-        }
+        receita.atualizarDados(
+                receita.getTitulo(),
+                receita.getChefe(),
+                receita.getTempoPreparo(),
+                receita.getPorcoes(),
+                receita.getCategoria(),
+                ingredientesStr,
+                modoPreparoStr,
+                nomeArquivo
+        );
 
         receita.setStatus(StatusReceita.PENDENTE);
 
-        repository.save(receita);
+        receitaService.salvar(receita);
 
-        /*
-         * NOTIFICAÇÃO PARA OS ADMINISTRADORES
-         *
-         * O administrador que também for o autor da receita
-         * não recebe a notificação de aprovação da própria receita.
-         */
-        List<Usuario> administradores =
-                usuarioRepository.findByRole("ADMIN");
+        if (receita.getUsuario() != null) {
+            Command cmdEstatisticas = new com.receitas.site_receitas.command.AtualizarEstatisticasCommand(
+                    receitaService,
+                    favoritoService,
+                    estatisticasService,
+                    notificacaoService,
+                    receita.getUsuario()
+            );
+            commandInvoker.executar(cmdEstatisticas);
+        }
+
+        List<Usuario> administradores = usuarioService.listarPorRole("ADMIN");
 
         for (Usuario admin : administradores) {
-
             if (receita.getUsuario() != null
                     && admin.getId().equals(receita.getUsuario().getId())) {
-
                 continue;
             }
 
-            Notificacao notificacaoAdmin =
-                    new Notificacao(
-                            admin,
-                            "Nova receita enviada para aprovação: \""
-                                    + receita.getTitulo()
-                                    + "\".",
-                            Notificacao.TipoNotificacao.NOVA_RECEITA
-                    );
-
-            notificacaoRepository.save(notificacaoAdmin);
+            Notificacao notificacaoAdmin = NotificacaoFactory.novaReceitaParaAdmin(admin, receita.getTitulo());
+            notificacaoService.salvar(notificacaoAdmin);
         }
 
-        /*
-         * NOTIFICAÇÃO PARA O AUTOR DA RECEITA
-         */
         if (receita.getUsuario() != null) {
-
-            Notificacao notificacaoAutor =
-                    new Notificacao(
-                            receita.getUsuario(),
-                            "Sua receita \""
-                                    + receita.getTitulo()
-                                    + "\" foi enviada para aprovação.",
-                            Notificacao.TipoNotificacao.NOVA_RECEITA
-                    );
-
-            notificacaoRepository.save(notificacaoAutor);
+            Notificacao notificacaoAutor = NotificacaoFactory.receitaEnviadaParaAutor(
+                    receita.getUsuario(),
+                    receita.getTitulo()
+            );
+            notificacaoService.salvar(notificacaoAutor);
         }
 
         redirectAttributes.addFlashAttribute(
@@ -338,112 +282,44 @@ public class ReceitaController {
         return "redirect:/minhas-receitas?enviada=1";
     }
 
+    @GetMapping("/pendentes")
+    public String pendentes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(required = false) String busca,
+            @RequestParam(defaultValue = "pendentes") String aba,
+            Model model) {
 
-@GetMapping("/pendentes")
-public String pendentes(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "12") int size,
-        @RequestParam(required = false) String busca,
-        @RequestParam(defaultValue = "pendentes") String aba,
-        Model model) {
-
-    Pageable pageable = PageRequest.of(
-            page,
-            size,
-            Sort.by(
-                    Sort.Direction.DESC,
-                    "id"
-            )
-    );
-
-    Page<Receita> pagina;
-
-    StatusReceita status = "rejeitadas".equals(aba)
-            ? StatusReceita.REJEITADA
-            : StatusReceita.PENDENTE;
-
-    if (busca != null && !busca.isBlank()) {
-        pagina = repository.findByStatusAndTituloContainingIgnoreCase(
-                status,
-                busca,
-                pageable
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "id")
         );
-    } else {
-        pagina = repository.findByStatus(
-                status,
-                pageable
-        );
+
+        StatusReceita status = "rejeitadas".equals(aba)
+                ? StatusReceita.REJEITADA
+                : StatusReceita.PENDENTE;
+
+        Page<Receita> pagina = receitaService.listarPorStatusEBusca(status, busca, pageable);
+
+        long totalPendentes = receitaService.contarPorStatus(StatusReceita.PENDENTE);
+        long totalRejeitadas = receitaService.contarPorStatus(StatusReceita.REJEITADA);
+
+        model.addAttribute("paginaAtual", "pendentes");
+        model.addAttribute("abaAtiva", aba);
+        model.addAttribute("receitas", pagina.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pagina.getTotalPages());
+        model.addAttribute("totalItems", pagina.getTotalElements());
+        model.addAttribute("totalPendentes", totalPendentes);
+        model.addAttribute("totalRejeitadas", totalRejeitadas);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("busca", busca);
+
+        model.addAttribute("faviconUrl", siteConfigService.getFaviconUrl());
+
+        return "admin/receitas-pendentes";
     }
-
-    long totalPendentes =
-            repository.countByStatus(StatusReceita.PENDENTE);
-
-    long totalRejeitadas =
-            repository.countByStatus(StatusReceita.REJEITADA);
-
-    model.addAttribute(
-            "paginaAtual",
-            "pendentes"
-    );
-
-    model.addAttribute(
-            "abaAtiva",
-            aba
-    );
-
-    model.addAttribute(
-            "receitas",
-            pagina.getContent()
-    );
-
-    model.addAttribute(
-            "currentPage",
-            page
-    );
-
-    model.addAttribute(
-            "totalPages",
-            pagina.getTotalPages()
-    );
-
-    model.addAttribute(
-            "totalItems",
-            pagina.getTotalElements()
-    );
-
-    model.addAttribute(
-            "totalPendentes",
-            totalPendentes
-    );
-
-    model.addAttribute(
-            "totalRejeitadas",
-            totalRejeitadas
-    );
-
-    model.addAttribute(
-            "pageSize",
-            size
-    );
-
-    model.addAttribute(
-            "busca",
-            busca
-    );
-
-    String faviconUrl =
-            siteConfigService.getFaviconUrl();
-
-    model.addAttribute(
-            "faviconUrl",
-            faviconUrl
-    );
-
-    return "admin/receitas-pendentes";
-}
-
-
-
 
     @GetMapping("/receitas-aprovadas")
     public String receitasAprovadas(
@@ -452,78 +328,27 @@ public String pendentes(
             @RequestParam(required = false) String busca,
             Model model) {
 
-        Pageable pageable =
-                PageRequest.of(
-                        page,
-                        size,
-                        Sort.by(
-                                Sort.Direction.ASC,
-                                "titulo"
-                        )
-                );
-
-        Page<Receita> pagina;
-
-        if (busca != null && !busca.isBlank()) {
-
-            pagina =
-                    repository.findByStatusAndTituloContainingIgnoreCase(
-                            StatusReceita.APROVADA,
-                            busca,
-                            pageable
-                    );
-
-        } else {
-
-            pagina =
-                    repository.findByStatus(
-                            StatusReceita.APROVADA,
-                            pageable
-                    );
-        }
-
-        model.addAttribute(
-                "paginaAtual",
-                "receitas-aprovadas"
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.ASC, "titulo")
         );
 
-        model.addAttribute(
-                "receitas",
-                pagina.getContent()
+        Page<Receita> pagina = receitaService.listarPorStatusEBusca(
+                StatusReceita.APROVADA,
+                busca,
+                pageable
         );
 
-        model.addAttribute(
-                "currentPage",
-                page
-        );
+        model.addAttribute("paginaAtual", "receitas-aprovadas");
+        model.addAttribute("receitas", pagina.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pagina.getTotalPages());
+        model.addAttribute("totalItems", pagina.getTotalElements());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("busca", busca);
 
-        model.addAttribute(
-                "totalPages",
-                pagina.getTotalPages()
-        );
-
-        model.addAttribute(
-                "totalItems",
-                pagina.getTotalElements()
-        );
-
-        model.addAttribute(
-                "pageSize",
-                size
-        );
-
-        model.addAttribute(
-                "busca",
-                busca
-        );
-
-        String faviconUrl =
-                siteConfigService.getFaviconUrl();
-
-        model.addAttribute(
-                "faviconUrl",
-                faviconUrl
-        );
+        model.addAttribute("faviconUrl", siteConfigService.getFaviconUrl());
 
         return "admin/receitas-aprovadas";
     }
@@ -533,47 +358,27 @@ public String pendentes(
             @PathVariable Long id,
             Model model) {
 
-        Receita receita =
-                repository.findById(id).orElse(null);
+        Receita receita = receitaService.buscarPorId(id).orElse(null);
 
         if (receita == null) {
             return "redirect:/receitas-aprovadas";
         }
 
-        List<String> ingredientesList =
-                receita.getIngredientes() != null
-                        ? Arrays.stream(
-                                receita.getIngredientes()
-                                        .split("\\|\\|")
-                        )
+        List<String> ingredientesList = receita.getIngredientes() != null
+                ? Arrays.stream(receita.getIngredientes().split("\\|\\|"))
                         .filter(s -> !s.isEmpty())
                         .toList()
-                        : List.of();
+                : List.of();
 
-        List<String> modoPreparoList =
-                receita.getModoPreparo() != null
-                        ? Arrays.stream(
-                                receita.getModoPreparo()
-                                        .split("\\|\\|")
-                        )
+        List<String> modoPreparoList = receita.getModoPreparo() != null
+                ? Arrays.stream(receita.getModoPreparo().split("\\|\\|"))
                         .filter(s -> !s.isEmpty())
                         .toList()
-                        : List.of();
+                : List.of();
 
-        model.addAttribute(
-                "receita",
-                receita
-        );
-
-        model.addAttribute(
-                "ingredientesList",
-                ingredientesList
-        );
-
-        model.addAttribute(
-                "modoPreparoList",
-                modoPreparoList
-        );
+        model.addAttribute("receita", receita);
+        model.addAttribute("ingredientesList", ingredientesList);
+        model.addAttribute("modoPreparoList", modoPreparoList);
 
         return "admin/modais/visualizar-receita-admin :: conteudo";
     }
@@ -583,47 +388,27 @@ public String pendentes(
             @PathVariable Long id,
             Model model) {
 
-        Receita receita =
-                repository.findById(id).orElse(null);
+        Receita receita = receitaService.buscarPorId(id).orElse(null);
 
         if (receita == null) {
             return "redirect:/pendentes";
         }
 
-        List<String> ingredientesList =
-                receita.getIngredientes() != null
-                        ? Arrays.stream(
-                                receita.getIngredientes()
-                                        .split("\\|\\|")
-                        )
+        List<String> ingredientesList = receita.getIngredientes() != null
+                ? Arrays.stream(receita.getIngredientes().split("\\|\\|"))
                         .filter(s -> !s.isEmpty())
                         .toList()
-                        : List.of();
+                : List.of();
 
-        List<String> modoPreparoList =
-                receita.getModoPreparo() != null
-                        ? Arrays.stream(
-                                receita.getModoPreparo()
-                                        .split("\\|\\|")
-                        )
+        List<String> modoPreparoList = receita.getModoPreparo() != null
+                ? Arrays.stream(receita.getModoPreparo().split("\\|\\|"))
                         .filter(s -> !s.isEmpty())
                         .toList()
-                        : List.of();
+                : List.of();
 
-        model.addAttribute(
-                "receita",
-                receita
-        );
-
-        model.addAttribute(
-                "ingredientesList",
-                ingredientesList
-        );
-
-        model.addAttribute(
-                "modoPreparoList",
-                modoPreparoList
-        );
+        model.addAttribute("receita", receita);
+        model.addAttribute("ingredientesList", ingredientesList);
+        model.addAttribute("modoPreparoList", modoPreparoList);
 
         return "admin/modais/visualizar-receita-admin :: conteudo";
     }
@@ -632,91 +417,46 @@ public String pendentes(
     public String editarReceitaPendente(
             @PathVariable Long id,
             @ModelAttribute Receita receita,
-            @RequestParam(
-                    value = "imagemFile",
-                    required = false
-            ) MultipartFile imagemFile,
-            @RequestParam(
-                    value = "ingredientes[]",
-                    required = false
-            ) List<String> ingredientes,
-            @RequestParam(
-                    value = "modoPreparo[]",
-                    required = false
-            ) List<String> modoPreparo) throws Exception {
+            @RequestParam(value = "imagemFile", required = false) MultipartFile imagemFile,
+            @RequestParam(value = "ingredientes[]", required = false) List<String> ingredientes,
+            @RequestParam(value = "modoPreparo[]", required = false) List<String> modoPreparo) throws Exception {
 
-        Receita existente =
-                repository.findById(id).orElse(null);
+        Receita existente = receitaService.buscarPorId(id).orElse(null);
 
         if (existente == null) {
             return "redirect:/pendentes";
         }
 
-        existente.setTitulo(
-                receita.getTitulo()
+        String ingredientesStr = ingredientes != null
+                ? ingredientes.stream()
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .reduce((a, b) -> a + "||" + b)
+                        .orElse("")
+                : null;
+
+        String modoPreparoStr = modoPreparo != null
+                ? modoPreparo.stream()
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .reduce((a, b) -> a + "||" + b)
+                        .orElse("")
+                : null;
+
+        String nomeArquivo = uploadService.salvarImagem(imagemFile);
+
+        existente.atualizarDados(
+                receita.getTitulo(),
+                receita.getChefe(),
+                receita.getTempoPreparo(),
+                receita.getPorcoes(),
+                receita.getCategoria(),
+                ingredientesStr,
+                modoPreparoStr,
+                nomeArquivo
         );
 
-        existente.setChefe(
-                receita.getChefe()
-        );
-
-        existente.setTempoPreparo(
-                receita.getTempoPreparo()
-        );
-
-        existente.setPorcoes(
-                receita.getPorcoes()
-        );
-
-        existente.setCategoria(
-                receita.getCategoria()
-        );
-
-        if (ingredientes != null) {
-
-            existente.setIngredientes(
-                    ingredientes.stream()
-                            .map(String::trim)
-                            .filter(s -> !s.isEmpty())
-                            .reduce((a, b) -> a + "||" + b)
-                            .orElse("")
-            );
-        }
-
-        if (modoPreparo != null) {
-
-            existente.setModoPreparo(
-                    modoPreparo.stream()
-                            .map(String::trim)
-                            .filter(s -> !s.isEmpty())
-                            .reduce((a, b) -> a + "||" + b)
-                            .orElse("")
-            );
-        }
-
-        if (imagemFile != null
-                && !imagemFile.isEmpty()) {
-
-            String uploadDir = "uploads/";
-
-            Files.createDirectories(
-                    Paths.get(uploadDir)
-            );
-
-            String filename =
-                    System.currentTimeMillis()
-                            + "_"
-                            + imagemFile.getOriginalFilename();
-
-            Files.write(
-                    Paths.get(uploadDir, filename),
-                    imagemFile.getBytes()
-            );
-
-            existente.setImagem(filename);
-        }
-
-        repository.save(existente);
+        receitaService.salvar(existente);
 
         return "redirect:/pendentes?ok=editada";
     }
@@ -725,247 +465,110 @@ public String pendentes(
     public String editarReceitaAprovada(
             @PathVariable Long id,
             @ModelAttribute Receita receita,
-            @RequestParam(
-                    value = "imagemFile",
-                    required = false
-            ) MultipartFile imagemFile,
-            @RequestParam(
-                    value = "ingredientes[]",
-                    required = false
-            ) List<String> ingredientes,
-            @RequestParam(
-                    value = "modoPreparo[]",
-                    required = false
-            ) List<String> modoPreparo,
+            @RequestParam(value = "imagemFile", required = false) MultipartFile imagemFile,
+            @RequestParam(value = "ingredientes[]", required = false) List<String> ingredientes,
+            @RequestParam(value = "modoPreparo[]", required = false) List<String> modoPreparo,
             RedirectAttributes redirectAttributes) throws Exception {
 
-        Receita existente =
-                repository.findById(id).orElse(null);
+        Receita existente = receitaService.buscarPorId(id).orElse(null);
 
         if (existente == null) {
             return "redirect:/receitas-aprovadas";
         }
 
-        existente.setTitulo(
-                receita.getTitulo()
+        String ingredientesStr = ingredientes != null
+                ? ingredientes.stream()
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .reduce((a, b) -> a + "||" + b)
+                        .orElse("")
+                : null;
+
+        String modoPreparoStr = modoPreparo != null
+                ? modoPreparo.stream()
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .reduce((a, b) -> a + "||" + b)
+                        .orElse("")
+                : null;
+
+        String nomeArquivo = uploadService.salvarImagem(imagemFile);
+
+        existente.atualizarDados(
+                receita.getTitulo(),
+                receita.getChefe(),
+                receita.getTempoPreparo(),
+                receita.getPorcoes(),
+                receita.getCategoria(),
+                ingredientesStr,
+                modoPreparoStr,
+                nomeArquivo
         );
 
-        existente.setChefe(
-                receita.getChefe()
-        );
+        receitaService.salvar(existente);
 
-        existente.setTempoPreparo(
-                receita.getTempoPreparo()
-        );
-
-        existente.setPorcoes(
-                receita.getPorcoes()
-        );
-
-        existente.setCategoria(
-                receita.getCategoria()
-        );
-
-        if (ingredientes != null) {
-
-            existente.setIngredientes(
-                    ingredientes.stream()
-                            .map(String::trim)
-                            .filter(s -> !s.isEmpty())
-                            .reduce((a, b) -> a + "||" + b)
-                            .orElse("")
-            );
-        }
-
-        if (modoPreparo != null) {
-
-            existente.setModoPreparo(
-                    modoPreparo.stream()
-                            .map(String::trim)
-                            .filter(s -> !s.isEmpty())
-                            .reduce((a, b) -> a + "||" + b)
-                            .orElse("")
-            );
-        }
-
-        if (imagemFile != null
-                && !imagemFile.isEmpty()) {
-
-            String uploadDir = "uploads/";
-
-            Files.createDirectories(
-                    Paths.get(uploadDir)
-            );
-
-            String filename =
-                    System.currentTimeMillis()
-                            + "_"
-                            + imagemFile.getOriginalFilename();
-
-            Files.write(
-                    Paths.get(uploadDir, filename),
-                    imagemFile.getBytes()
-            );
-
-            existente.setImagem(filename);
-        }
-
-        repository.save(existente);
-
-        redirectAttributes.addFlashAttribute(
-                "ok",
-                "editada"
-        );
+        redirectAttributes.addFlashAttribute("ok", "editada");
 
         return "redirect:/receitas-aprovadas";
     }
 
     @PostMapping("/receitas-aprovadas/excluir/{id}")
-    public String excluirReceitaAprovada(
-            @PathVariable Long id) {
-
-        Receita receita =
-                repository.findById(id).orElse(null);
-
-        if (receita != null
-                && receita.getImagem() != null
-                && !receita.getImagem().startsWith("http")) {
-
-            try {
-
-                Path imagePath =
-                        Paths.get(
-                                "uploads/"
-                                        + receita.getImagem()
-                        );
-
-                Files.deleteIfExists(imagePath);
-
-            } catch (IOException e) {
-
-                System.err.println(
-                        "Erro ao excluir imagem: "
-                                + e.getMessage()
-                );
-            }
-        }
-
-        repository.deleteById(id);
-
+    public String excluirReceitaAprovada(@PathVariable Long id) {
+        Command command = new ExcluirReceitaCommand(
+                receitaService,
+                notificacaoService,
+                favoritoService,
+                estatisticasService,
+                uploadService,
+                id
+        );
+        commandInvoker.executar(command);
         return "redirect:/receitas-aprovadas?ok=excluida";
     }
 
+    @Operation(
+        summary = "Aprovar receita",
+        description = "Aprova uma receita com status PENDENTE. Executa o AprovarReceitaCommand que altera o status, notifica o autor e todos os usuários, e recalcula as estatísticas."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "302", description = "Receita aprovada e redirecionada para pendentes"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @PostMapping("/aprovar/{id}")
-    public String aprovarReceita(
-            @PathVariable Long id) {
-
-        Receita receita =
-                repository.findById(id).orElse(null);
-
-        if (receita != null) {
-
-            receita.setStatus(
-                    StatusReceita.APROVADA
-            );
-
-            repository.save(receita);
-
-            Usuario autor =
-                    receita.getUsuario();
-
-            if (autor != null) {
-
-                Notificacao notificacaoAutor =
-                        new Notificacao(
-                                autor,
-                                "Sua receita \""
-                                        + receita.getTitulo()
-                                        + "\" foi aprovada pelo administrador.",
-                                Notificacao.TipoNotificacao.RECEITA_APROVADA
-                        );
-
-                notificacaoRepository.save(
-                        notificacaoAutor
-                );
-            }
-
-            List<Usuario> usuarios =
-                    usuarioRepository.findAll();
-
-            for (Usuario usuario : usuarios) {
-
-                if ("ADMIN".equals(usuario.getRole())) {
-                    continue;
-                }
-
-                if (autor != null
-                        && usuario.getId().equals(
-                                autor.getId()
-                        )) {
-                    continue;
-                }
-
-                Notificacao notificacao =
-                        new Notificacao(
-                                usuario,
-                                "Nova receita publicada: \""
-                                        + receita.getTitulo()
-                                        + "\".",
-                                Notificacao.TipoNotificacao.NOVA_RECEITA
-                        );
-
-                notificacaoRepository.save(
-                        notificacao
-                );
-            }
-        }
-
+    public String aprovarReceita(@PathVariable Long id) {
+        Command command = new AprovarReceitaCommand(
+                receitaService,
+                usuarioService,
+                notificacaoService,
+                favoritoService,
+                estatisticasService,
+                id
+        );
+        commandInvoker.executar(command);
         return "redirect:/pendentes?ok=aprovada";
     }
 
+    @Operation(
+        summary = "Rejeitar receita",
+        description = "Rejeita uma receita com status PENDENTE, registrando o motivo. Executa o RejeitarReceitaCommand que altera o status para REJEITADA, notifica o autor e recalcula as estatísticas."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "302", description = "Receita rejeitada e redirecionada para pendentes"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @PostMapping("/rejeitar/{id}")
     public String rejeitarReceita(
             @PathVariable Long id,
             @RequestParam(required = false) String motivo) {
-
-        Receita receita =
-                repository.findById(id).orElse(null);
-
-        if (receita != null) {
-
-            receita.setStatus(
-                    StatusReceita.REJEITADA
-            );
-
-            String motivoFinal =
-                    motivo != null && !motivo.isBlank()
-                            ? motivo
-                            : "Sem motivo informado.";
-
-            receita.setMotivoRejeicao(
-                    motivoFinal
-            );
-
-            repository.save(receita);
-
-            if (receita.getUsuario() != null) {
-
-                Notificacao notificacao =
-                        new Notificacao(
-                                receita.getUsuario(),
-                                "Sua receita \""
-                                        + receita.getTitulo()
-                                        + "\" foi rejeitada. Motivo: "
-                                        + motivoFinal,
-                                Notificacao.TipoNotificacao.RECEITA_REJEITADA
-                        );
-
-                notificacaoRepository.save(
-                        notificacao
-                );
-            }
-        }
-
+        Command command = new RejeitarReceitaCommand(
+                receitaService,
+                notificacaoService,
+                favoritoService,
+                estatisticasService,
+                id,
+                motivo
+        );
+        commandInvoker.executar(command);
         return "redirect:/pendentes?ok=rejeitada";
     }
 
@@ -974,189 +577,80 @@ public String pendentes(
             @PathVariable Long id,
             Model model) {
 
-        model.addAttribute(
-                "paginaAtual",
-                "detalhe"
-        );
+        model.addAttribute("paginaAtual", "detalhe");
 
-        Receita receita =
-                repository.findById(id).orElse(null);
+        Receita receita = receitaService.buscarPorId(id).orElse(null);
 
         if (receita == null) {
             return "redirect:/";
         }
 
-        List<String> ingredientesList =
-                receita.getIngredientes() != null
-                        ? Arrays.stream(
-                                receita.getIngredientes()
-                                        .split("\\|\\|")
-                        )
+        List<String> ingredientesList = receita.getIngredientes() != null
+                ? Arrays.stream(receita.getIngredientes().split("\\|\\|"))
                         .filter(s -> !s.isEmpty())
                         .toList()
-                        : List.of();
+                : List.of();
 
-        List<String> modoPreparoList =
-                receita.getModoPreparo() != null
-                        ? Arrays.stream(
-                                receita.getModoPreparo()
-                                        .split("\\|\\|")
-                        )
+        List<String> modoPreparoList = receita.getModoPreparo() != null
+                ? Arrays.stream(receita.getModoPreparo().split("\\|\\|"))
                         .filter(s -> !s.isEmpty())
                         .toList()
-                        : List.of();
+                : List.of();
 
-        model.addAttribute(
-                "receita",
-                receita
-        );
+        model.addAttribute("receita", receita);
+        model.addAttribute("ingredientesList", ingredientesList);
+        model.addAttribute("modoPreparoList", modoPreparoList);
 
-        model.addAttribute(
-                "ingredientesList",
-                ingredientesList
-        );
-
-        model.addAttribute(
-                "modoPreparoList",
-                modoPreparoList
-        );
-
-        String faviconUrl =
-                siteConfigService.getFaviconUrl();
-
-        model.addAttribute(
-                "faviconUrl",
-                faviconUrl
-        );
+        model.addAttribute("faviconUrl", siteConfigService.getFaviconUrl());
 
         return "principal/receita/detalhes-receita";
     }
 
+    @Operation(
+        summary = "Excluir receita (REST)",
+        description = "Exclui uma receita do sistema via API REST. Executa o ExcluirReceitaCommand que remove a imagem, notifica o autor, deleta do banco e atualiza as estatísticas."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Receita excluída com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Receita não encontrada"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @PostMapping("/receitas/excluir/{id}")
     @ResponseBody
-    public ResponseEntity<?> excluirReceita(
-            @PathVariable Long id) {
-
+    public ResponseEntity<?> excluirReceita(@PathVariable Long id) {
         try {
-
-            if (!repository.existsById(id)) {
-
-                return ResponseEntity
-                        .status(HttpStatus.NOT_FOUND)
-                        .body(
-                                Map.of(
-                                        "message",
-                                        "Receita não encontrada"
-                                )
-                        );
+            if (!receitaService.existe(id)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "Receita não encontrada"));
             }
 
-            Receita receita =
-                    repository.findById(id).orElse(null);
-
-            if (receita != null
-                    && receita.getImagem() != null
-                    && !receita.getImagem().startsWith("http")) {
-
-                try {
-
-                    Path imagePath =
-                            Paths.get(
-                                    "uploads/"
-                                            + receita.getImagem()
-                            );
-
-                    Files.deleteIfExists(imagePath);
-
-                } catch (IOException e) {
-
-                    System.err.println(
-                            "Erro ao excluir imagem: "
-                                    + e.getMessage()
-                    );
-                }
-            }
-
-            
-                        if (receita != null && receita.getUsuario() != null) {
-                        Notificacao notificacao =
-                                new Notificacao(
-                                        receita.getUsuario(),
-                                        "Sua receita \"" + receita.getTitulo() + "\" foi excluída.",
-                                        Notificacao.TipoNotificacao.RECEITA_EXCLUIDA
-                                );
-
-                        notificacaoRepository.save(notificacao);
-                        }
-
-                        repository.deleteById(id);
-                return ResponseEntity.ok().body(
-                        Map.of(
-                                "message",
-                                "Receita excluída com sucesso",
-                                "id",
-                                id
-                        )
-                );
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
-            return ResponseEntity
-                    .status(
-                            HttpStatus.INTERNAL_SERVER_ERROR
-                    )
-                    .body(
-                            Map.of(
-                                    "message",
-                                    "Erro interno do servidor: "
-                                            + e.getMessage()
-                            )
-                    );
-        }
-    }
-
-    @GetMapping("/debug/carrossel")
-    @ResponseBody
-    public List<CarrosselItem> debugCarrossel() {
-
-        List<CarrosselItem> itens =
-                carrosselRepository
-                        .findByAtivoTrueOrderByOrdemExibicaoAsc();
-
-        System.out.println(
-                "DEBUG - Itens do carrossel encontrados: "
-                        + itens.size()
-        );
-
-        for (CarrosselItem item : itens) {
-
-            System.out.println(
-                    "Item: "
-                            + item.getTitulo()
-                            + " - URL: "
-                            + item.getImagemUrl()
+            Command command = new ExcluirReceitaCommand(
+                    receitaService,
+                    notificacaoService,
+                    favoritoService,
+                    estatisticasService,
+                    uploadService,
+                    id
             );
-        }
+            commandInvoker.executar(command);
 
-        return itens;
+            return ResponseEntity.ok().body(
+                    Map.of("message", "Receita excluída com sucesso", "id", id)
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Erro interno do servidor"));
+        }
     }
 
     @GetMapping("/minhas-receitas")
     public String minhasReceitas(
-            @RequestParam(
-                    defaultValue = "pendentes"
-            ) String aba,
-            @RequestParam(
-                    defaultValue = "0"
-            ) int page,
+            @RequestParam(defaultValue = "pendentes") String aba,
+            @RequestParam(defaultValue = "0") int page,
             Model model) {
 
         Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
+                SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null
                 || !authentication.isAuthenticated()
@@ -1165,131 +659,60 @@ public String pendentes(
             return "redirect:/";
         }
 
-        String email =
-                authentication.getName();
+        String email = authentication.getName();
 
-        Usuario usuario =
-                usuarioRepository
-                        .findByEmail(email)
-                        .orElse(null);
+        Usuario usuario = usuarioService.findByEmail(email).orElse(null);
 
         if (usuario == null) {
             return "redirect:/";
         }
 
-        Pageable pageable =
-                PageRequest.of(
-                        page,
-                        5,
-                        Sort.by(
-                                Sort.Direction.DESC,
-                                "id"
-                        )
-                );
-
-        Page<Receita> pendentesPage =
-                repository.findByUsuarioIdAndStatus(
-                        usuario.getId(),
-                        StatusReceita.PENDENTE,
-                        pageable
-                );
-
-        Page<Receita> aprovadasPage =
-                repository.findByUsuarioIdAndStatus(
-                        usuario.getId(),
-                        StatusReceita.APROVADA,
-                        pageable
-                );
-
-        Page<Receita> rejeitadasPage =
-                repository.findByUsuarioIdAndStatus(
-                        usuario.getId(),
-                        StatusReceita.REJEITADA,
-                        pageable
-                );
-
-        model.addAttribute(
-                "paginaAtual",
-                "minhas-receitas"
+        Pageable pageable = PageRequest.of(
+                page,
+                5,
+                Sort.by(Sort.Direction.DESC, "id")
         );
 
-        model.addAttribute(
-                "nomeUsuario",
-                usuario.getNome()
-        );
+        Page<Receita> pendentesPage = receitaService.listarPorUsuarioEStatus(
+                usuario.getId(), StatusReceita.PENDENTE, pageable);
 
-        model.addAttribute(
-                "abaAtiva",
-                aba
-        );
+        Page<Receita> aprovadasPage = receitaService.listarPorUsuarioEStatus(
+                usuario.getId(), StatusReceita.APROVADA, pageable);
 
-        model.addAttribute(
-                "pendentes",
-                pendentesPage.getContent()
-        );
+        Page<Receita> rejeitadasPage = receitaService.listarPorUsuarioEStatus(
+                usuario.getId(), StatusReceita.REJEITADA, pageable);
 
-        model.addAttribute(
-                "pendentesPage",
-                pendentesPage.getNumber()
-        );
+        long curtidasTotal = favoritoService.contarCurtidasPorUsuario(usuario.getId());
+        model.addAttribute("curtidasTotal", curtidasTotal);
 
-        model.addAttribute(
-                "pendentesTotalPages",
-                pendentesPage.getTotalPages()
-        );
+        Map<Long, Long> curtidasPorReceita = new java.util.HashMap<>();
+        
+        pendentesPage.getContent().forEach(r -> curtidasPorReceita.put(r.getId(), favoritoService.contarCurtidas(r)));
+        aprovadasPage.getContent().forEach(r -> curtidasPorReceita.put(r.getId(), favoritoService.contarCurtidas(r)));
+        rejeitadasPage.getContent().forEach(r -> curtidasPorReceita.put(r.getId(), favoritoService.contarCurtidas(r)));
 
-        model.addAttribute(
-                "pendentesTotal",
-                pendentesPage.getTotalElements()
-        );
+        model.addAttribute("curtidasPorReceita", curtidasPorReceita);
 
-        model.addAttribute(
-                "aprovadas",
-                aprovadasPage.getContent()
-        );
+        model.addAttribute("paginaAtual", "minhas-receitas");
+        model.addAttribute("nomeUsuario", usuario.getNome());
+        model.addAttribute("abaAtiva", aba);
 
-        model.addAttribute(
-                "aprovadasPage",
-                aprovadasPage.getNumber()
-        );
+        model.addAttribute("pendentes", pendentesPage.getContent());
+        model.addAttribute("pendentesPage", pendentesPage.getNumber());
+        model.addAttribute("pendentesTotalPages", pendentesPage.getTotalPages());
+        model.addAttribute("pendentesTotal", pendentesPage.getTotalElements());
 
-        model.addAttribute(
-                "aprovadasTotalPages",
-                aprovadasPage.getTotalPages()
-        );
+        model.addAttribute("aprovadas", aprovadasPage.getContent());
+        model.addAttribute("aprovadasPage", aprovadasPage.getNumber());
+        model.addAttribute("aprovadasTotalPages", aprovadasPage.getTotalPages());
+        model.addAttribute("aprovadasTotal", aprovadasPage.getTotalElements());
 
-        model.addAttribute(
-                "aprovadasTotal",
-                aprovadasPage.getTotalElements()
-        );
+        model.addAttribute("rejeitadas", rejeitadasPage.getContent());
+        model.addAttribute("rejeitadasPage", rejeitadasPage.getNumber());
+        model.addAttribute("rejeitadasTotalPages", rejeitadasPage.getTotalPages());
+        model.addAttribute("rejeitadasTotal", rejeitadasPage.getTotalElements());
 
-        model.addAttribute(
-                "rejeitadas",
-                rejeitadasPage.getContent()
-        );
-
-        model.addAttribute(
-                "rejeitadasPage",
-                rejeitadasPage.getNumber()
-        );
-
-        model.addAttribute(
-                "rejeitadasTotalPages",
-                rejeitadasPage.getTotalPages()
-        );
-
-        model.addAttribute(
-                "rejeitadasTotal",
-                rejeitadasPage.getTotalElements()
-        );
-
-        String faviconUrl =
-                siteConfigService.getFaviconUrl();
-
-        model.addAttribute(
-                "faviconUrl",
-                faviconUrl
-        );
+        model.addAttribute("faviconUrl", siteConfigService.getFaviconUrl());
 
         return "principal/minhas-receitas";
     }
@@ -1299,99 +722,104 @@ public String pendentes(
             @PathVariable Long id,
             Model model) {
 
-        Receita receita =
-                repository.findById(id).orElse(null);
+        Receita receita = receitaService.buscarPorId(id).orElse(null);
 
         if (receita == null) {
             return "redirect:/minhas-receitas";
         }
 
-        List<String> ingredientesList =
-                receita.getIngredientes() != null
-                        ? Arrays.stream(
-                                receita.getIngredientes()
-                                        .split("\\|\\|")
-                        )
+        List<String> ingredientesList = receita.getIngredientes() != null
+                ? Arrays.stream(receita.getIngredientes().split("\\|\\|"))
                         .filter(s -> !s.isEmpty())
                         .toList()
-                        : List.of();
+                : List.of();
 
-        List<String> modoPreparoList =
-                receita.getModoPreparo() != null
-                        ? Arrays.stream(
-                                receita.getModoPreparo()
-                                        .split("\\|\\|")
-                        )
+        List<String> modoPreparoList = receita.getModoPreparo() != null
+                ? Arrays.stream(receita.getModoPreparo().split("\\|\\|"))
                         .filter(s -> !s.isEmpty())
                         .toList()
-                        : List.of();
+                : List.of();
 
-        model.addAttribute(
-                "receita",
-                receita
-        );
-
-        model.addAttribute(
-                "ingredientesList",
-                ingredientesList
-        );
-
-        model.addAttribute(
-                "modoPreparoList",
-                modoPreparoList
-        );
+        model.addAttribute("receita", receita);
+        model.addAttribute("ingredientesList", ingredientesList);
+        model.addAttribute("modoPreparoList", modoPreparoList);
+        model.addAttribute("totalFavoritos", favoritoService.contarCurtidas(receita));
 
         return "modais/visualizar-receita :: conteudo";
+    }
+
+    @GetMapping("/admin/dashboard")
+    public String adminDashboard(Model model) {
+
+        List<Usuario> usuarios = usuarioService.listarTodos();
+
+        long totalUsuarios = usuarios.size();
+
+        long usuariosAtivos = usuarios.stream()
+                .filter(Usuario::isAtivo)
+                .count();
+
+        long totalPendentes = receitaService.contarPorStatus(StatusReceita.PENDENTE);
+        long totalAprovadas = receitaService.contarPorStatus(StatusReceita.APROVADA);
+        long totalRejeitadas = receitaService.contarPorStatus(StatusReceita.REJEITADA);
+
+        List<Receita> aprovadas = receitaService.listarAprovadas();
+
+        long totalFavoritos = aprovadas.stream()
+                .mapToLong(favoritoService::contarCurtidas)
+                .sum();
+
+        List<Map<String, Object>> topReceitas = new java.util.ArrayList<>();
+
+        aprovadas.stream()
+                .map(r -> {
+                    Map<String, Object> mapa = new java.util.LinkedHashMap<>();
+                    mapa.put("titulo", r.getTitulo());
+                    mapa.put("total", favoritoService.contarCurtidas(r));
+                    return mapa;
+                })
+                .sorted((a, b) -> Long.compare((Long) b.get("total"), (Long) a.get("total")))
+                .limit(5)
+                .forEach(topReceitas::add);
+
+        model.addAttribute("paginaAtual", "dashboard");
+        model.addAttribute("totalUsuarios", totalUsuarios);
+        model.addAttribute("usuariosAtivos", usuariosAtivos);
+        model.addAttribute("totalPendentes", totalPendentes);
+        model.addAttribute("totalAprovadas", totalAprovadas);
+        model.addAttribute("totalRejeitadas", totalRejeitadas);
+        model.addAttribute("totalFavoritos", totalFavoritos);
+        model.addAttribute("topReceitas", topReceitas);
+        model.addAttribute("faviconUrl", siteConfigService.getFaviconUrl());
+
+        return "admin/dashboard";
     }
 
     @GetMapping("/sobre")
     public String sobre(Model model) {
 
-        model.addAttribute(
-                "paginaAtual",
-                "sobre"
-        );
+        model.addAttribute("paginaAtual", "sobre");
 
         Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
+                SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null
                 && authentication.isAuthenticated()
                 && !authentication.getName().equals("anonymousUser")) {
 
-            String email =
-                    authentication.getName();
+            String email = authentication.getName();
 
-            Optional<Usuario> usuario =
-                    usuarioRepository.findByEmail(email);
+            Optional<Usuario> usuario = usuarioService.findByEmail(email);
 
             if (usuario.isPresent()) {
-
-                model.addAttribute(
-                        "nomeUsuario",
-                        usuario.get().getNome()
-                );
-
+                model.addAttribute("nomeUsuario", usuario.get().getNome());
             } else {
-
-                model.addAttribute(
-                        "nomeUsuario",
-                        email
-                );
+                model.addAttribute("nomeUsuario", email);
             }
         }
 
-        String faviconUrl =
-                siteConfigService.getFaviconUrl();
-
-        model.addAttribute(
-                "faviconUrl",
-                faviconUrl
-        );
+        model.addAttribute("faviconUrl", siteConfigService.getFaviconUrl());
 
         return "principal/sobre";
     }
 }
-

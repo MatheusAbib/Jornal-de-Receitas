@@ -112,8 +112,7 @@ function atualizarEstadoBotaoCadastro() {
       email.value.trim()
     );
 
-  const cpfValido =
-    cpf.value.replace(/\D/g, '').length === 11;
+const cpfValido = validarCpf(cpf.value);
 
   const telefoneValido =
     telefone.value.replace(/\D/g, '').length >= 10;
@@ -511,6 +510,30 @@ function toggleCadastroPassword(inputId) {
 
 }
 
+function validarCpf(cpf) {
+    cpf = cpf.replace(/\D/g, '');
+
+    if (cpf.length !== 11) return false;
+    if (/^(\d)\1{10}$/.test(cpf)) return false;
+
+    let soma = 0;
+    for (let i = 0; i < 9; i++) {
+        soma += parseInt(cpf.charAt(i)) * (10 - i);
+    }
+    let resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(9))) return false;
+
+    soma = 0;
+    for (let i = 0; i < 10; i++) {
+        soma += parseInt(cpf.charAt(i)) * (11 - i);
+    }
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(10))) return false;
+
+    return true;
+}
 function validateCadastroForm() {
 
   let isValid = true;
@@ -552,21 +575,12 @@ function validateCadastroForm() {
 
   }
 
-  const cpf =
-    document.getElementById('cadastroCpf')
-      .value
-      .replace(/\D/g, '');
+const cpf = document.getElementById('cadastroCpf').value.replace(/\D/g, '');
 
-  if (cpf.length !== 11) {
-
-    showCadastroError(
-      'Cpf',
-      'CPF deve ter 11 dígitos'
-    );
-
+if (!validarCpf(cpf)) {
+    showCadastroError('Cpf', 'CPF inválido');
     isValid = false;
-
-  }
+}
 
   const telefone =
     document.getElementById('cadastroTelefone')
@@ -711,33 +725,6 @@ function fecharModalUsuario() {
 
   }
 
-}
-
-const editTelefone =
-    document.getElementById('editTelefone');
-
-if (editTelefone) {
-    editTelefone.addEventListener('input', function () {
-        let valor = this.value.replace(/\D/g, '');
-
-        if (valor.length > 11) {
-            valor = valor.substring(0, 11);
-        }
-
-        if (valor.length <= 10) {
-            valor = valor.replace(
-                /^(\d{2})(\d{4})(\d{0,4}).*/,
-                '($1) $2-$3'
-            );
-        } else {
-            valor = valor.replace(
-                /^(\d{2})(\d{5})(\d{0,4}).*/,
-                '($1) $2-$3'
-            );
-        }
-
-        this.value = valor;
-    });
 }
 
 function toggleUserEditMode() {
@@ -1078,11 +1065,18 @@ async function abrirModalUsuarioSimples() {
 
       }
 
-      if (document.getElementById('editCpf')) {
-
-        document.getElementById('editCpf').value =
-          usuario.cpf || '';
-
+    if (document.getElementById('editCpf')) {
+          let cpfValue = usuario.cpf || '';
+          if (cpfValue) {
+              cpfValue = cpfValue.replace(/\D/g, '');
+              if (cpfValue.length === 11) {
+                  cpfValue = cpfValue.replace(
+                      /(\d{3})(\d{3})(\d{3})(\d{2})/,
+                      '$1.$2.$3-$4'
+                  );
+              }
+          }
+          document.getElementById('editCpf').value = cpfValue;
       }
 
       if (document.getElementById('editTelefone')) {
@@ -1146,11 +1140,8 @@ async function abrirModalUsuarioSimples() {
               'editDataCadastro'
             ).value =
               dataCadastro;
-
           }
-
         }
-
       }
 
       document.getElementById('viewNome').textContent =
@@ -1159,11 +1150,18 @@ async function abrirModalUsuarioSimples() {
       document.getElementById('viewEmail').textContent =
         usuario.email || '-';
 
-      document.getElementById('viewCpf').textContent =
-        usuario.cpf || '-';
-
-      document.getElementById('viewTelefone').textContent =
-        usuario.telefone || '-';
+        let cpfView = usuario.cpf || '';
+        if (cpfView) {
+            cpfView = cpfView.replace(/\D/g, '');
+            if (cpfView.length === 11) {
+                cpfView = cpfView.replace(
+                    /(\d{3})(\d{3})(\d{3})(\d{2})/,
+                    '$1.$2.$3-$4'
+                );
+            }
+        }
+        document.getElementById('viewCpf').textContent = cpfView || '-';
+        document.getElementById('viewTelefone').textContent = formatarTelefone(usuario.telefone) || '-';
 
       const generoMap = {
         'MASCULINO': 'Masculino',
@@ -1531,8 +1529,49 @@ document.addEventListener(
 
         }
       );
-
     }
+
+    const editCpf = document.getElementById('editCpf');
+
+  if (editCpf) {
+      editCpf.addEventListener('input', function() {
+          let v = this.value.replace(/\D/g, '');
+
+          if (v.length > 3) v = v.slice(0, 3) + '.' + v.slice(3);
+          if (v.length > 7) v = v.slice(0, 7) + '.' + v.slice(7);
+          if (v.length > 11) v = v.slice(0, 11) + '-' + v.slice(11, 13);
+
+          this.value = v;
+      });
+  }
+
+  
+const editTelefone =
+    document.getElementById('editTelefone');
+
+if (editTelefone) {
+    editTelefone.addEventListener('input', function () {
+        let valor = this.value.replace(/\D/g, '');
+
+        if (valor.length > 11) {
+            valor = valor.substring(0, 11);
+        }
+
+        if (valor.length <= 10) {
+            valor = valor.replace(
+                /^(\d{2})(\d{4})(\d{0,4}).*/,
+                '($1) $2-$3'
+            );
+        } else {
+            valor = valor.replace(
+                /^(\d{2})(\d{5})(\d{0,4}).*/,
+                '($1) $2-$3'
+            );
+        }
+
+        this.value = valor;
+    });
+}
 
 
     const telefoneInput =
@@ -1804,9 +1843,9 @@ if (logoutBtn) {
                 sessionStorage.setItem('page-loader-force', 'true');
 
                 setTimeout(() => {
-                    if (result.role === 'ADMIN') {
-                        window.location.href = '/usuarios';
-                    } else {
+if (result.role === 'ADMIN') {
+    window.location.href = '/admin/dashboard';
+} else {
                         window.location.href = result.redirectUrl || '/';
                     }
                 }, 2000);
@@ -2052,47 +2091,35 @@ if (logoutBtn) {
     }
 
 
-    const cadastroCpf =
-      document.getElementById(
-        'cadastroCpf'
-      );
+const cadastroCpf = document.getElementById('cadastroCpf');
 
-    if (cadastroCpf) {
+if (cadastroCpf) {
+    cadastroCpf.addEventListener('input', function() {
+        let v = this.value.replace(/\D/g, '');
 
-      cadastroCpf.addEventListener(
-        'input',
-        function() {
+        if (v.length > 3) v = v.slice(0, 3) + '.' + v.slice(3);
+        if (v.length > 7) v = v.slice(0, 7) + '.' + v.slice(7);
+        if (v.length > 11) v = v.slice(0, 11) + '-' + v.slice(11, 13);
 
-          let v =
-            this.value.replace(/\D/g, '');
+        this.value = v;
 
-          if (v.length > 3)
-            v =
-              v.slice(0, 3) +
-              '.' +
-              v.slice(3);
+        const cpfNumeros = v.replace(/\D/g, '');
 
-          if (v.length > 7)
-            v =
-              v.slice(0, 7) +
-              '.' +
-              v.slice(7);
-
-          if (v.length > 11)
-            v =
-              v.slice(0, 11) +
-              '-' +
-              v.slice(11, 13);
-
-          this.value = v;
-
-          atualizarEstadoBotaoCadastro();
-
+        if (cpfNumeros.length === 0) {
+            clearCadastroError('Cpf');
+        } else if (cpfNumeros.length === 11) {
+            if (!validarCpf(cpfNumeros)) {
+                showCadastroError('Cpf', 'CPF inválido');
+            } else {
+                clearCadastroError('Cpf');
+            }
+        } else {
+            showCadastroError('Cpf', 'CPF deve ter 11 dígitos');
         }
-      );
 
-    }
-
+        atualizarEstadoBotaoCadastro();
+    });
+}
 
     const cadastroTelefone =
       document.getElementById(

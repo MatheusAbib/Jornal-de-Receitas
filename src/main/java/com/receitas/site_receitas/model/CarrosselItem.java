@@ -1,9 +1,13 @@
 package com.receitas.site_receitas.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "carrossel")
+@Getter
+@Setter
 public class CarrosselItem {
 
     @Id
@@ -28,7 +32,6 @@ public class CarrosselItem {
     @Column(name = "link_destino")
     private String linkDestino;
 
-    // Construtores
     public CarrosselItem() {
     }
 
@@ -40,60 +43,21 @@ public class CarrosselItem {
         this.ativo = true;
     }
 
-    // Getters e Setters
-    public Long getId() {
-        return id;
+    public void alternarAtivo() {
+        this.ativo = !this.ativo;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void atualizarDados(String titulo, String descricao, String imagemUrl, Integer ordem, String linkDestino) {
+        if (titulo != null && !titulo.isBlank()) this.titulo = titulo;
+        if (descricao != null) this.descricao = descricao;
+        if (imagemUrl != null && !imagemUrl.isBlank()) this.imagemUrl = imagemUrl;
+        if (ordem != null) this.ordemExibicao = ordem;
+        if (linkDestino != null) this.linkDestino = linkDestino;
     }
 
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public String getImagemUrl() {
-        return imagemUrl;
-    }
-
-    public void setImagemUrl(String imagemUrl) {
-        this.imagemUrl = imagemUrl;
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
-
-    public Integer getOrdemExibicao() {
-        return ordemExibicao;
-    }
-
-    public void setOrdemExibicao(Integer ordemExibicao) {
-        this.ordemExibicao = ordemExibicao;
-    }
-
-    public String getLinkDestino() {
-        return linkDestino;
-    }
-
-    public void setLinkDestino(String linkDestino) {
-        this.linkDestino = linkDestino;
+    public void definirOrdem(Integer ordem) {
+        if (ordem != null && ordem > 0) {
+            this.ordemExibicao = ordem;
+        }
     }
 }

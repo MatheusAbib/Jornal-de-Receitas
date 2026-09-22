@@ -1,9 +1,13 @@
 package com.receitas.site_receitas.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "receita")
+@Getter
+@Setter
 public class Receita {
 
     @Id
@@ -53,99 +57,30 @@ public class Receita {
         REJEITADA
     }
 
-    public int getPorcoes() {
-        return porcoes;
+    public void aprovar() {
+        if (this.status != StatusReceita.PENDENTE) {
+            throw new IllegalStateException("Só receitas pendentes podem ser aprovadas");
+        }
+        this.status = StatusReceita.APROVADA;
     }
 
-    public void setPorcoes(int porcoes) {
-        this.porcoes = porcoes;
+    public void rejeitar(String motivo) {
+        if (this.status != StatusReceita.PENDENTE) {
+            throw new IllegalStateException("Só receitas pendentes podem ser rejeitadas");
+        }
+        this.status = StatusReceita.REJEITADA;
+        this.motivoRejeicao = (motivo != null && !motivo.isBlank()) ? motivo : "Sem motivo informado.";
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public String getTempoPreparo() {
-        return tempoPreparo;
-    }
-
-    public void setTempoPreparo(String tempoPreparo) {
-        this.tempoPreparo = tempoPreparo;
-    }
-
-    public String getIngredientes() {
-        return ingredientes;
-    }
-
-    public void setIngredientes(String ingredientes) {
-        this.ingredientes = ingredientes;
-    }
-
-    public String getModoPreparo() {
-        return modoPreparo;
-    }
-
-    public void setModoPreparo(String modoPreparo) {
-        this.modoPreparo = modoPreparo;
-    }
-
-    public String getImagem() {
-        return imagem;
-    }
-
-    public void setImagem(String imagem) {
-        this.imagem = imagem;
-    }
-
-    public StatusReceita getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusReceita status) {
-        this.status = status;
-    }
-
-    public String getMotivoRejeicao() {
-        return motivoRejeicao;
-    }
-
-    public void setMotivoRejeicao(String motivoRejeicao) {
-        this.motivoRejeicao = motivoRejeicao;
-    }
-
-    public String getChefe() {
-        return chefe;
-    }
-
-    public void setChefe(String chefe) {
-        this.chefe = chefe;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public Categoria getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
+    public void atualizarDados(String titulo, String chefe, String tempoPreparo, Integer porcoes,
+                            Categoria categoria, String ingredientes, String modoPreparo, String imagem) {
+        if (titulo != null && !titulo.isBlank()) this.titulo = titulo;
+        if (chefe != null) this.chefe = chefe;
+        if (tempoPreparo != null) this.tempoPreparo = tempoPreparo;
+        if (porcoes > 0) this.porcoes = porcoes;
+        if (categoria != null) this.categoria = categoria;
+        if (ingredientes != null) this.ingredientes = ingredientes;
+        if (modoPreparo != null) this.modoPreparo = modoPreparo;
+        if (imagem != null) this.imagem = imagem;
     }
 }

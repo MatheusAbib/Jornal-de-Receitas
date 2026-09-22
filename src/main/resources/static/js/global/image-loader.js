@@ -6,6 +6,15 @@ function applyImageLoader() {
       return;
     }
     
+    if (img.parentElement && img.parentElement.classList.contains('image-loader-wrapper')) {
+      return;
+    }
+    
+    if (img.complete && img.naturalWidth === 0) {
+      img.style.display = 'none';
+      return;
+    }
+    
     const wrapper = document.createElement('div');
     wrapper.className = 'image-loader-wrapper';
     wrapper.style.cssText = `
@@ -88,6 +97,15 @@ function applyCarouselImageLoader() {
   carouselItems.forEach(item => {
     const img = item.querySelector('img');
     if (!img) return;
+    
+    if (img.parentElement && img.parentElement.classList.contains('carousel-image-wrapper')) {
+      return;
+    }
+    
+    if (img.complete && img.naturalWidth === 0) {
+      img.style.display = 'none';
+      return;
+    }
     
     const wrapper = document.createElement('div');
     wrapper.className = 'carousel-image-wrapper';
@@ -181,6 +199,15 @@ function applyCardImageLoader() {
   cards.forEach(card => {
     const img = card.querySelector('.card-image img');
     if (!img) return;
+    
+    if (img.parentElement && img.parentElement.classList.contains('card-image-wrapper')) {
+      return;
+    }
+    
+    if (img.complete && img.naturalWidth === 0) {
+      img.style.display = 'none';
+      return;
+    }
     
     const wrapper = document.createElement('div');
     wrapper.className = 'card-image-wrapper';
@@ -281,6 +308,15 @@ function applyClassifiedImageLoader() {
     const img = item.querySelector('.classified-image img');
     if (!img) return;
     
+    if (img.parentElement && img.parentElement.classList.contains('classified-image-wrapper')) {
+      return;
+    }
+    
+    if (img.complete && img.naturalWidth === 0) {
+      img.style.display = 'none';
+      return;
+    }
+    
     const wrapper = document.createElement('div');
     wrapper.className = 'classified-image-wrapper';
     wrapper.style.cssText = `
@@ -376,6 +412,15 @@ function applyClassifiedImageLoader() {
 function applyDetalheImageLoader() {
   const img = document.querySelector('.detalhe-image img');
   if (!img) return;
+  
+  if (img.parentElement && img.parentElement.classList.contains('detalhe-image-wrapper')) {
+    return;
+  }
+  
+  if (img.complete && img.naturalWidth === 0) {
+    img.style.display = 'none';
+    return;
+  }
   
   const wrapper = document.createElement('div');
   wrapper.className = 'detalhe-image-wrapper';

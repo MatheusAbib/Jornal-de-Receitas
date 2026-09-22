@@ -14,15 +14,10 @@
   border: 2px solid var(--header-color);
   border-radius: 0;
   overflow: hidden;
-  box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.15);
   transition: all 0.25s ease;
   display: flex;
   flex-direction: column;
   position: relative;
-}
-
-.admin-recipe-card:hover {
-  box-shadow: 7px 7px 0 rgba(139, 0, 0, 0.22);
 }
 
 .admin-recipe-image {
@@ -137,7 +132,6 @@
   transition: all 0.25s ease;
   width: 100%;
   background: #fff;
-  box-shadow: 2px 2px 0 rgba(139, 0, 0, 0.15);
 }
 
 .admin-btn-view {
@@ -148,7 +142,6 @@
 .admin-btn-view:hover {
   background: var(--header-color);
   color: #fff;
-  transform: translate(-2px, -2px);
   box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.25);
 }
 
@@ -160,7 +153,6 @@
 .admin-btn-approve:hover {
   background: #27ae60;
   color: #fff;
-  transform: translate(-2px, -2px);
   box-shadow: 4px 4px 0 rgba(39, 174, 96, 0.3);
 }
 
@@ -172,7 +164,6 @@
 .admin-btn-reject:hover {
   background: var(--rejected-color, #8b0000);
   color: #fff;
-  transform: translate(-2px, -2px);
   box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.3);
 }
 

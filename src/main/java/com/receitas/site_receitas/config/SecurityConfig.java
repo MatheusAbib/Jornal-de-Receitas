@@ -14,12 +14,16 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/").hasRole("USER")
-                .requestMatchers("/cadastro", "/css/**", "/js/**", "/uploads/**", 
-                               "/api/**", "/detalhe/**", "/login", "/logout", "/sobre").permitAll()
-                .requestMatchers("/pendentes", "/usuarios", "/usuarios/**").hasRole("ADMIN")
-                .requestMatchers("/nova", "/salvar", "/receitas/excluir/**").authenticated()
-                .anyRequest().permitAll()
+                .requestMatchers("/cadastro", "/css/**", "/js/**", "/uploads/**",
+                                 "/detalhe/**", "/login", "/logout", "/sobre").permitAll()
+                .requestMatchers("/swagger-ui/**", "/swagger-ui.html",
+                                 "/v3/api-docs/**", "/swagger-resources/**",
+                                 "/webjars/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/**").authenticated()
+                                .requestMatchers("/pendentes", "/usuarios", "/usuarios/**", "/receitas-aprovadas/**", "/admin/dashboard", "/carrossel/admin", "/carrossel/adicionar", "/carrossel/editar/**", "/carrossel/toggle/**", "/carrossel/excluir/**").hasRole("ADMIN")
+                .requestMatchers("/nova", "/salvar", "/receitas/excluir/**", "/minhas-receitas/**").authenticated()
+                .anyRequest().authenticated()
             )
             .formLogin(form -> form.disable())
             .httpBasic(httpBasic -> httpBasic.disable())

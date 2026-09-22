@@ -1,12 +1,15 @@
 package com.receitas.site_receitas.service;
 
+import com.receitas.site_receitas.builder.FavoritoBuilder;
+import com.receitas.site_receitas.command.AtualizarEstatisticasCommand;
+import com.receitas.site_receitas.command.Command;
+import com.receitas.site_receitas.command.CommandInvoker;
+import com.receitas.site_receitas.dao.favorito.IFavoritoDAO;
+import com.receitas.site_receitas.factory.NotificacaoFactory;
 import com.receitas.site_receitas.model.Favorito;
+import com.receitas.site_receitas.model.Notificacao;
 import com.receitas.site_receitas.model.Receita;
 import com.receitas.site_receitas.model.Usuario;
-import com.receitas.site_receitas.model.Notificacao;
-import com.receitas.site_receitas.repository.FavoritoRepository;
-import com.receitas.site_receitas.repository.ReceitaRepository;
-import com.receitas.site_receitas.repository.NotificacaoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,29 +22,30 @@ import java.util.stream.Collectors;
 public class FavoritoService {
 
     @Autowired
-    private FavoritoRepository favoritoRepository;
+    private IFavoritoDAO favoritoDAO;
 
     @Autowired
-    private ReceitaRepository receitaRepository;
+    private ReceitaService receitaService;
 
     @Autowired
-    private NotificacaoRepository notificacaoRepository;
+    private NotificacaoService notificacaoService;
 
-    @Transactional
+    @Autowired
+    private EstatisticasService estatisticasService;
+
+    @Autowired
+    private CommandInvoker commandInvoker;
+
+    @Transactional(readOnly = true)
     public boolean isFavorito(Usuario usuario, Long receitaId) {
-        Receita receita = receitaRepository.findById(receitaId).orElse(null);
-
-        if (receita == null) {
-            return false;
-        }
-
-        return favoritoRepository.existsByUsuarioAndReceita(usuario, receita);
+        Receita receita = receitaService.buscarPorId(receitaId).orElse(null);
+        if (receita == null) return false;
+        return favoritoDAO.existePorUsuarioEReceita(usuario, receita);
     }
 
     @Transactional(readOnly = true)
     public List<Long> getFavoritosIds(Usuario usuario) {
-        List<Favorito> favoritos = favoritoRepository.findByUsuario(usuario);
-
+        List<Favorito> favoritos = favoritoDAO.listarPorUsuario(usuario);
         return favoritos.stream()
                 .map(f -> f.getReceita().getId())
                 .collect(Collectors.toList());
@@ -49,46 +53,62 @@ public class FavoritoService {
 
     @Transactional
     public void adicionarFavorito(Usuario usuario, Long receitaId) {
+        Receita receita = receitaService.buscarPorId(receitaId).orElse(null);
+        if (receita == null) return;
 
-        Receita receita = receitaRepository.findById(receitaId).orElse(null);
+        if (!favoritoDAO.existePorUsuarioEReceita(usuario, receita)) {
+            Favorito favorito = new FavoritoBuilder()
+                .doUsuario(usuario)
+                .daReceita(receita)
+                .build();
+            favoritoDAO.salvar(favorito);
 
-        if (receita == null) {
-            return;
-        }
+Notificacao notificacao = NotificacaoFactory.favoritou(usuario, receita.getTitulo());
+notificacaoService.salvar(notificacao);
 
-        if (!favoritoRepository.existsByUsuarioAndReceita(usuario, receita)) {
-
-            Favorito favorito = new Favorito(usuario, receita);
-
-            favoritoRepository.save(favorito);
-
-            Notificacao notificacao = new Notificacao(
-                    usuario,
-                    "Você adicionou \"" + receita.getTitulo() + "\" aos favoritos.",
-                    Notificacao.TipoNotificacao.FAVORITOU
-            );
-
-            notificacaoRepository.save(notificacao);
+Command cmdEstatisticas = new AtualizarEstatisticasCommand(
+        receitaService,
+        this,
+        estatisticasService,
+        notificacaoService,
+        usuario
+);
+            commandInvoker.executar(cmdEstatisticas);
         }
     }
 
     @Transactional
     public void removerFavorito(Usuario usuario, Long receitaId) {
+        Receita receita = receitaService.buscarPorId(receitaId).orElse(null);
+        if (receita == null) return;
 
-        Receita receita = receitaRepository.findById(receitaId).orElse(null);
+        favoritoDAO.deletarPorUsuarioEReceita(usuario, receita);
 
-        if (receita == null) {
-            return;
-        }
+        Notificacao notificacao = NotificacaoFactory.desfavoritou(usuario, receita.getTitulo());
+        notificacaoService.salvar(notificacao);
 
-        favoritoRepository.deleteByUsuarioAndReceita(usuario, receita);
-
-        Notificacao notificacao = new Notificacao(
-                usuario,
-                "Você removeu \"" + receita.getTitulo() + "\" dos favoritos.",
-                Notificacao.TipoNotificacao.DESFAVORITOU
+        Command cmdEstatisticas = new AtualizarEstatisticasCommand(
+                receitaService,
+                this,
+                estatisticasService,
+                notificacaoService,
+                usuario
         );
-
-        notificacaoRepository.save(notificacao);
+        commandInvoker.executar(cmdEstatisticas);
     }
+
+    @Transactional(readOnly = true)
+    public List<Favorito> listarPorUsuario(Usuario usuario) {
+        return favoritoDAO.listarPorUsuario(usuario);
+    }
+
+    @Transactional(readOnly = true)
+    public long contarCurtidas(Receita receita) {
+        return favoritoDAO.contarPorReceita(receita);
+    }
+
+    @Transactional(readOnly = true)
+        public long contarCurtidasPorUsuario(Integer usuarioId) {
+            return favoritoDAO.contarCurtidasPorUsuario(usuarioId);
+        }
 }

@@ -1,81 +1,123 @@
 package com.receitas.site_receitas.controller;
 
 import com.receitas.site_receitas.model.CarrosselItem;
-import com.receitas.site_receitas.repository.CarrosselRepository;
+import com.receitas.site_receitas.service.CarrosselService;
+import com.receitas.site_receitas.service.SiteConfigService;
+import com.receitas.site_receitas.service.UploadService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/carrossel")
+@Tag(name = "Carrossel", description = "Endpoints de gerenciamento do carrossel de imagens da home")
 public class CarrosselController {
 
     @Autowired
-    private CarrosselRepository carrosselRepository;
+    private CarrosselService carrosselService;
 
-    // Método para obter os itens do carrossel ativos (para ser usado no index)
+    @Autowired
+    private UploadService uploadService;
+
+    @Autowired
+    private SiteConfigService siteConfigService;
+
     @ModelAttribute("carrosselItens")
     public List<CarrosselItem> getCarrosselItens() {
-        return carrosselRepository.findByAtivoTrueOrderByOrdemExibicaoAsc();
+        return carrosselService.listarAtivos();
     }
 
-    // Página de administração do carrossel (apenas ADMIN)
     @GetMapping("/admin")
     public String adminCarrossel(Model model) {
-        model.addAttribute("carrosselItens", carrosselRepository.findAll());
+        model.addAttribute("paginaAtual", "carrossel");
+        model.addAttribute("carrosselItens", carrosselService.listarTodos());
         model.addAttribute("novoItem", new CarrosselItem());
-        return "admin/carrossel"; // Você pode criar este template depois se quiser
+        model.addAttribute("faviconUrl", siteConfigService.getFaviconUrl());
+        return "admin/carrossel";
     }
 
-    // Adicionar novo item ao carrossel (apenas ADMIN)
+    @Operation(
+        summary = "Adicionar item ao carrossel",
+        description = "Cria um novo item no carrossel. Aceita URL de imagem ou upload de arquivo. Se um arquivo for enviado, ele é salvo em /uploads e seu nome substitui a URL."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "302", description = "Item adicionado e redirecionado para o admin do carrossel"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @PostMapping("/adicionar")
-    public String adicionarItem(@ModelAttribute CarrosselItem carrosselItem) {
-        if (carrosselItem.getOrdemExibicao() == null) {
-            // Se não tiver ordem definida, coloca como último
-            long count = carrosselRepository.countByAtivoTrue();
-            carrosselItem.setOrdemExibicao((int) count + 1);
+    public String adicionarItem(
+            @ModelAttribute CarrosselItem carrosselItem,
+            @RequestParam(value = "imagemFile", required = false) MultipartFile imagemFile) throws Exception {
+
+        String nomeArquivo = uploadService.salvarImagem(imagemFile);
+
+        if (nomeArquivo != null) {
+            carrosselItem.setImagemUrl(nomeArquivo);
         }
-        carrosselItem.setAtivo(true);
-        carrosselRepository.save(carrosselItem);
-        return "redirect:/carrossel/admin";
+
+        carrosselService.salvar(carrosselItem);
+        return "redirect:/carrossel/admin?ok=adicionada";
     }
 
-    // Editar item do carrossel (apenas ADMIN)
+    @Operation(
+        summary = "Editar item do carrossel",
+        description = "Atualiza um item existente do carrossel. Aceita URL de imagem ou upload de arquivo. Se um arquivo for enviado, ele é salvo em /uploads e seu nome substitui a URL."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "302", description = "Item atualizado e redirecionado para o admin do carrossel"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @PostMapping("/editar/{id}")
-    public String editarItem(@PathVariable Long id, @ModelAttribute CarrosselItem itemAtualizado) {
-        Optional<CarrosselItem> itemOptional = carrosselRepository.findById(id);
-        if (itemOptional.isPresent()) {
-            CarrosselItem item = itemOptional.get();
-            item.setTitulo(itemAtualizado.getTitulo());
-            item.setDescricao(itemAtualizado.getDescricao());
-            item.setImagemUrl(itemAtualizado.getImagemUrl());
-            item.setOrdemExibicao(itemAtualizado.getOrdemExibicao());
-            item.setLinkDestino(itemAtualizado.getLinkDestino());
-            carrosselRepository.save(item);
+    public String editarItem(
+            @PathVariable Long id,
+            @ModelAttribute CarrosselItem itemAtualizado,
+            @RequestParam(value = "imagemFile", required = false) MultipartFile imagemFile) throws Exception {
+
+        String nomeArquivo = uploadService.salvarImagem(imagemFile);
+
+        if (nomeArquivo != null) {
+            itemAtualizado.setImagemUrl(nomeArquivo);
         }
-        return "redirect:/carrossel/admin";
+
+        carrosselService.atualizar(id, itemAtualizado);
+        return "redirect:/carrossel/admin?ok=editada";
     }
 
-    // Alternar status ativo/inativo (apenas ADMIN)
+    @Operation(
+        summary = "Alternar status do item do carrossel",
+        description = "Ativa ou desativa um item do carrossel. Itens inativos não aparecem na home."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "302", description = "Status alterado e redirecionado para o admin do carrossel"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @PostMapping("/toggle/{id}")
     public String toggleAtivo(@PathVariable Long id) {
-        Optional<CarrosselItem> itemOptional = carrosselRepository.findById(id);
-        if (itemOptional.isPresent()) {
-            CarrosselItem item = itemOptional.get();
-            item.setAtivo(!item.isAtivo());
-            carrosselRepository.save(item);
-        }
-        return "redirect:/carrossel/admin";
+        carrosselService.alternarAtivo(id);
+        return "redirect:/carrossel/admin?ok=alternada";
     }
 
-    // Excluir item do carrossel (apenas ADMIN)
+    @Operation(
+        summary = "Excluir item do carrossel",
+        description = "Remove permanentemente um item do carrossel."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "302", description = "Item excluído e redirecionado para o admin do carrossel"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @PostMapping("/excluir/{id}")
     public String excluirItem(@PathVariable Long id) {
-        carrosselRepository.deleteById(id);
-        return "redirect:/carrossel/admin";
+        carrosselService.excluir(id);
+        return "redirect:/carrossel/admin?ok=excluida";
     }
 }

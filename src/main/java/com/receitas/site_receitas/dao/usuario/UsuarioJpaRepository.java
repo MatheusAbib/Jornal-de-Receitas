@@ -1,4 +1,4 @@
-package com.receitas.site_receitas.repository;
+package com.receitas.site_receitas.dao.usuario;
 
 import com.receitas.site_receitas.model.Usuario;
 
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
+public interface UsuarioJpaRepository extends JpaRepository<Usuario, Integer> {
 
     boolean existsByEmail(String email);
 

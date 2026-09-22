@@ -1,51 +1,59 @@
 package com.receitas.site_receitas.service;
 
+import com.receitas.site_receitas.builder.SiteConfigBuilder;
+import com.receitas.site_receitas.dao.siteconfig.ISiteConfigDAO;
 import com.receitas.site_receitas.model.SiteConfig;
-import com.receitas.site_receitas.repository.SiteConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SiteConfigService {
-    
+
     @Autowired
-    private SiteConfigRepository siteConfigRepository;
-    
-    public String getFaviconUrl() {
-        return siteConfigRepository.findByChave("favicon_url")
-                .map(SiteConfig::getValor)
-                .orElse(null); 
-    }
-    
-    public String getGanacheUrl() {
-        return siteConfigRepository.findByChave("ganache_url")
-                .map(SiteConfig::getValor)
-                .orElse(null); 
-    }
-    
-    // NOVOS MÉTODOS SEM FALLBACK:
-    public String getSopaUrl() {
-        return siteConfigRepository.findByChave("sopa_url")
-                .map(SiteConfig::getValor)
-                .orElse(null); 
-    }
-    
-    public String getPestoUrl() {
-        return siteConfigRepository.findByChave("pesto_url")
-                .map(SiteConfig::getValor)
-                .orElse(null); 
-    }
-    
-    public String getBolinhoUrl() {
-        return siteConfigRepository.findByChave("bolinho_url")
-                .map(SiteConfig::getValor)
-                .orElse(null); 
-    }
-    
-    // Método genérico SEM FALLBACK
+    private ISiteConfigDAO siteConfigDAO;
+
+    @Transactional(readOnly = true)
     public String getConfigValue(String chave) {
-        return siteConfigRepository.findByChave(chave)
+        return siteConfigDAO.buscarPorChave(chave)
                 .map(SiteConfig::getValor)
                 .orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public String getFaviconUrl() {
+        return getConfigValue("favicon_url");
+    }
+
+    @Transactional(readOnly = true)
+    public String getGanacheUrl() {
+        return getConfigValue("ganache_url");
+    }
+
+    @Transactional(readOnly = true)
+    public String getSopaUrl() {
+        return getConfigValue("sopa_url");
+    }
+
+    @Transactional(readOnly = true)
+    public String getPestoUrl() {
+        return getConfigValue("pesto_url");
+    }
+
+    @Transactional(readOnly = true)
+    public String getBolinhoUrl() {
+        return getConfigValue("bolinho_url");
+    }
+
+    @Transactional
+    public SiteConfig criar(String chave, String valor, String descricao) {
+        SiteConfig config = new SiteConfigBuilder()
+                .comChave(chave)
+                .comValor(valor)
+                .comDescricao(descricao)
+                .ativo(true)
+                .build();
+
+        return siteConfigDAO.salvar(config);
     }
 }

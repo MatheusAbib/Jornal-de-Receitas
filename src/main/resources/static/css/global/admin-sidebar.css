@@ -179,6 +179,10 @@
         box-shadow: none;
     }
 
+    .admin-sidebar-nav a.active:hover i{
+        color: var(--header-color);
+    } 
+
     .admin-sidebar-btn:hover {
         color: #fff;
         background: var(--header-color);
@@ -205,6 +209,14 @@
 }
 
 @media (max-width: 768px) {
+
+      .admin-sidebar .fa-spinner {
+        color: var(--header-color) !important;
+    }
+
+    .admin-sidebar-btn .fa-spinner {
+        color: var(--accent-color) !important;
+    }
     .admin-sidebar-close {
         display: block;
         align-items: center;

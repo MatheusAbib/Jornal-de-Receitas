@@ -119,6 +119,32 @@ function setupStickyHeader() {
     );
 }
 
+function configurarSpinnerTopbar() {
+    const botoesTopbar = document.querySelectorAll(
+        '.receita-topbar-back, .detalhe-topbar-back'
+    );
+
+    botoesTopbar.forEach(botao => {
+        if (botao.dataset.spinnerConfigurado) return;
+
+        botao.dataset.spinnerConfigurado = 'true';
+
+        botao.addEventListener('click', function() {
+            const icon = botao.querySelector('i');
+
+            if (icon) {
+                icon.dataset.originalClass = icon.className;
+                icon.className = 'fas fa-spinner fa-spin';
+            }
+
+            botao.style.pointerEvents = 'none';
+            botao.style.opacity = '0.7';
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', configurarSpinnerTopbar);
+
 function detectMobile() {
     if (
         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
@@ -1140,14 +1166,7 @@ function configurarLoaderNavegacao() {
             elemento.classList.contains('header-nav-close') ||
             elemento.classList.contains('admin-sidebar-close') ||
             elemento.id === 'menuToggle' ||
-            elemento.id === 'adminSidebarToggle' ||
-            elemento.id === 'notificationButton' ||
-            elemento.onclick?.toString().includes('openLogoutModal') ||
-            elemento.onclick?.toString().includes('openAdminPerfilModal') ||
-            elemento.onclick?.toString().includes('abrirModalUsuarioSimples') ||
-            elemento.getAttribute('onclick')?.includes('openLogoutModal') ||
-            elemento.getAttribute('onclick')?.includes('openAdminPerfilModal') ||
-            elemento.getAttribute('onclick')?.includes('abrirModalUsuarioSimples')
+            elemento.id === 'adminSidebarToggle'
         ) {
             return;
         }
@@ -1174,7 +1193,6 @@ function configurarLoaderNavegacao() {
         });
     });
 }
-
 function verificarNotificacaoPerfil() {
     if (
         sessionStorage.getItem(

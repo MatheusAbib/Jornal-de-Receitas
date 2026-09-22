@@ -1,11 +1,15 @@
 package com.receitas.site_receitas.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "favorito", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"usuario_id", "receita_id"})
 })
+@Getter
+@Setter
 public class Favorito {
 
     @Id
@@ -20,19 +24,11 @@ public class Favorito {
     @JoinColumn(name = "receita_id", nullable = false)
     private Receita receita;
 
-    public Favorito() {}
+    public Favorito() {
+    }
 
     public Favorito(Usuario usuario, Receita receita) {
         this.usuario = usuario;
         this.receita = receita;
     }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
-
-    public Receita getReceita() { return receita; }
-    public void setReceita(Receita receita) { this.receita = receita; }
 }

@@ -324,6 +324,18 @@
 
             <nav class="admin-sidebar-nav">
 
+                
+            <nav class="admin-sidebar-nav">
+
+                <a href="/admin/dashboard"
+                   th:classappend="${paginaAtual == 'dashboard'} ? 'active' : ''">
+
+                    <i class="fas fa-chart-line"></i>
+
+                    Dashboard
+
+                </a>
+
                 <a href="/usuarios"
                    th:classappend="${paginaAtual == 'usuarios'} ? 'active' : ''">
 
@@ -348,6 +360,15 @@
                     <i class="fas fa-book"></i>
 
                     Receitas Aprovadas
+
+                </a>
+
+                <a href="/carrossel/admin"
+                   th:classappend="${paginaAtual == 'carrossel'} ? 'active' : ''">
+
+                    <i class="fas fa-images"></i>
+
+                    Carrossel
 
                 </a>
 

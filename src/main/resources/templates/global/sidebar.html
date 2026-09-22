@@ -41,6 +41,13 @@
         </a>
 
         <a sec:authorize="hasRole('ADMIN')"
+           th:href="@{/admin/dashboard}"
+           th:classappend="${paginaAtual == 'dashboard'} ? 'active' : ''"
+           data-page-loader>
+            <i class="fas fa-chart-line"></i> Dashboard
+        </a>
+
+        <a sec:authorize="hasRole('ADMIN')"
            th:href="@{/usuarios}"
            th:classappend="${paginaAtual == 'usuarios'} ? 'active' : ''"
            data-page-loader>

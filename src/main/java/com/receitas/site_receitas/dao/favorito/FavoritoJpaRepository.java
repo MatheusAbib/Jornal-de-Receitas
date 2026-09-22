@@ -1,4 +1,4 @@
-package com.receitas.site_receitas.repository;
+package com.receitas.site_receitas.dao.favorito;
 
 import com.receitas.site_receitas.model.Favorito;
 import com.receitas.site_receitas.model.Usuario;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface FavoritoRepository extends JpaRepository<Favorito, Long> {
+public interface FavoritoJpaRepository extends JpaRepository<Favorito, Long> {
 
     List<Favorito> findByUsuario(Usuario usuario);
 
@@ -21,4 +21,8 @@ public interface FavoritoRepository extends JpaRepository<Favorito, Long> {
     boolean existsByUsuarioAndReceita(Usuario usuario, Receita receita);
 
     void deleteByReceita(Receita receita);
+
+    long countByReceita(Receita receita);
+
+    long countByReceita_Usuario_Id(Integer usuarioId);
 }

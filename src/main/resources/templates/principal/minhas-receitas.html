@@ -23,6 +23,57 @@
 <div class="content-wrapper">
   <main class="minhas-receitas-wrapper">
 
+    <div class="minhas-receitas-stats">
+    <div class="stat-card">
+        <div class="stat-icon total">
+            <i class="fas fa-book"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" th:text="${pendentesTotal + aprovadasTotal + rejeitadasTotal}">0</span>
+            <span class="stat-label">Total</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon aprovadas">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" th:text="${aprovadasTotal}">0</span>
+            <span class="stat-label">Aprovadas</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon pendentes">
+            <i class="fas fa-clock"></i>
+    </div>
+        <div class="stat-info">
+            <span class="stat-value" th:text="${pendentesTotal}">0</span>
+            <span class="stat-label">Pendentes</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon rejeitadas">
+            <i class="fas fa-times-circle"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" th:text="${rejeitadasTotal}">0</span>
+            <span class="stat-label">Rejeitadas</span>
+        </div>
+    </div>
+
+    <div class="stat-card destaque">
+        <div class="stat-icon curtidas">
+            <i class="fas fa-heart"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" th:text="${curtidasTotal}">0</span>
+            <span class="stat-label">Curtidas</span>
+        </div>
+    </div>
+</div>
 
     <div class="minhas-receitas-tabs">
       <button type="button" class="minhas-tab" th:classappend="${abaAtiva == 'pendentes'} ? 'active'" onclick="trocarAba('pendentes')">
@@ -252,6 +303,7 @@
 <script src="/js/modais/modais.js"></script>
 <script src="/js/principal/minhas-receitas.js"></script>
 <script src="/js/principal/index.js"></script>
+<script src="/js/global/global-loader-buttons.js"></script>
 <script th:src="@{/js/global/polling.js}"></script>
 </body>
 </html>

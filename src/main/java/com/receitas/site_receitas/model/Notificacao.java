@@ -1,10 +1,15 @@
 package com.receitas.site_receitas.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notificacao")
+@Getter
+@Setter
 public class Notificacao {
 
     @Id
@@ -22,20 +27,21 @@ public class Notificacao {
     @Column(nullable = false, length = 30)
     private TipoNotificacao tipo;
 
-    @Column(name = "data_hora", nullable = false, columnDefinition = "DATETIME")
+    @Column(name = "data_hora", nullable = false)
     private LocalDateTime dataHora;
 
     @Column(nullable = false)
     private boolean lida = false;
 
-public enum TipoNotificacao {
-    NOVA_RECEITA,
-    FAVORITOU,
-    DESFAVORITOU,
-    RECEITA_APROVADA,
-    RECEITA_REJEITADA,
-    RECEITA_EXCLUIDA
-}
+    public enum TipoNotificacao {
+        NOVA_RECEITA,
+        FAVORITOU,
+        DESFAVORITOU,
+        RECEITA_APROVADA,
+        RECEITA_REJEITADA,
+        RECEITA_EXCLUIDA
+    }
+
     public Notificacao() {
     }
 
@@ -47,51 +53,11 @@ public enum TipoNotificacao {
         this.lida = false;
     }
 
-    public Long getId() {
-        return id;
+    public void marcarComoLida() {
+        this.lida = true;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public String getMensagem() {
-        return mensagem;
-    }
-
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
-    }
-
-    public TipoNotificacao getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(TipoNotificacao tipo) {
-        this.tipo = tipo;
-    }
-
-    public LocalDateTime getDataHora() {
-        return dataHora;
-    }
-
-    public void setDataHora(LocalDateTime dataHora) {
-        this.dataHora = dataHora;
-    }
-
-    public boolean isLida() {
-        return lida;
-    }
-
-    public void setLida(boolean lida) {
-        this.lida = lida;
+    public void marcarComoNaoLida() {
+        this.lida = false;
     }
 }

@@ -28,76 +28,77 @@ async function initializeFavoriteButtons() {
         if (!button.dataset.hasListener) {
             button.dataset.hasListener = "true";
 
- button.addEventListener('click', async function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+            button.addEventListener('click', async function (e) {
+                e.preventDefault();
+                e.stopPropagation();
 
-    const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
-    const isLoggedIn = nomeUsuarioElement && nomeUsuarioElement.textContent.trim();
+                const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
+                const isLoggedIn = nomeUsuarioElement && nomeUsuarioElement.textContent.trim();
 
-    if (!isLoggedIn) {
-        showNotification('Faça login para favoritar receitas!', false);
-        return;
-    }
-
-    if (this.disabled) return;
-
-    const currentIcon = this.querySelector('i');
-    const estavaFavorito = this.classList.contains('active');
-
-    this.disabled = true;
-
-    if (currentIcon) {
-        currentIcon.className = 'fas fa-spinner fa-spin';
-    }
-
-    try {
-        const success = estavaFavorito
-            ? await removeFavorite(recipeId)
-            : await addFavorite(recipeId);
-
-        if (success) {
-            if (estavaFavorito) {
-                this.classList.remove('active');
-
-                if (currentIcon) {
-                    currentIcon.className = 'far fa-heart';
+                if (!isLoggedIn) {
+                    showNotification('Faça login para favoritar receitas!', false);
+                    return;
                 }
 
-                showNotification('Receita removida dos favoritos!', true);
-            } else {
-                this.classList.add('active');
+                if (this.disabled) return;
+
+                const currentIcon = this.querySelector('i');
+                const estavaFavorito = this.classList.contains('active');
+
+                this.disabled = true;
 
                 if (currentIcon) {
-                    currentIcon.className = 'fas fa-heart';
+                    currentIcon.className = 'fas fa-spinner fa-spin';
                 }
 
-                showNotification('Receita adicionada aos favoritos!', true);
-            }
+                try {
+                    const success = estavaFavorito
+                        ? await removeFavorite(recipeId)
+                        : await addFavorite(recipeId);
 
-            await updateFavoriteCount();
+                    if (success) {
+                        if (estavaFavorito) {
+                            this.classList.remove('active');
 
-            const favTab = document.getElementById('favoritas');
+                            if (currentIcon) {
+                                currentIcon.className = 'far fa-heart';
+                            }
 
-            if (favTab && favTab.classList.contains('active')) {
-                await loadFavoriteRecipes();
-            }
-        } else {
-            if (currentIcon) {
-                currentIcon.className = estavaFavorito
-                    ? 'fas fa-heart'
-                    : 'far fa-heart';
-            }
-        }
-    } finally {
-        this.disabled = false;
-    }
-});
+                            showNotification('Receita removida dos favoritos!', true);
+                        } else {
+                            this.classList.add('active');
+
+                            if (currentIcon) {
+                                currentIcon.className = 'fas fa-heart';
+                            }
+
+                            showNotification('Receita adicionada aos favoritos!', true);
+                        }
+
+                        await updateFavoriteCount();
+
+                        const favTab = document.getElementById('favoritas');
+
+                        if (favTab && favTab.classList.contains('active')) {
+                            await loadFavoriteRecipes();
+                        }
+                    } else {
+                        if (currentIcon) {
+                            currentIcon.className = estavaFavorito
+                                ? 'fas fa-heart'
+                                : 'far fa-heart';
+                        }
+                    }
+                } finally {
+                    this.disabled = false;
+                }
+            });
         }
     });
 
     updateFavoriteCount();
 }
+
 async function loadFavoritesFromServer() {
     const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
 
@@ -201,64 +202,64 @@ async function loadFavoriteRecipes() {
                         icon.classList.add('fas');
                     }
 
-cloneFavBtn.addEventListener('click', async function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+                    cloneFavBtn.addEventListener('click', async function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
 
-    const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
-    const isLoggedIn = nomeUsuarioElement && nomeUsuarioElement.textContent.trim();
+                        const nomeUsuarioElement = document.querySelector('.newspaper-subtitle span');
+                        const isLoggedIn = nomeUsuarioElement && nomeUsuarioElement.textContent.trim();
 
-    if (!isLoggedIn) {
-        showNotification('Faça login para favoritar receitas!', false);
-        return;
-    }
+                        if (!isLoggedIn) {
+                            showNotification('Faça login para favoritar receitas!', false);
+                            return;
+                        }
 
-    if (this.disabled) return;
+                        if (this.disabled) return;
 
-    const currentIcon = this.querySelector('i');
+                        const currentIcon = this.querySelector('i');
 
-    this.disabled = true;
+                        this.disabled = true;
 
-    if (currentIcon) {
-        currentIcon.className = 'fas fa-spinner fa-spin';
-    }
+                        if (currentIcon) {
+                            currentIcon.className = 'fas fa-spinner fa-spin';
+                        }
 
-    try {
-        const success = await removeFavorite(recipeId);
+                        try {
+                            const success = await removeFavorite(recipeId);
 
-        if (success) {
-            this.closest('.card').remove();
+                            if (success) {
+                                this.closest('.card').remove();
 
-            const mainButton = document.querySelector(`.card-favorite-btn[data-recipe-id="${recipeId}"]:not(#favorite-recipes .card-favorite-btn)`);
+                                const mainButton = document.querySelector(`.card-favorite-btn[data-recipe-id="${recipeId}"]:not(#favorite-recipes .card-favorite-btn)`);
 
-            if (mainButton) {
-                mainButton.classList.remove('active');
+                                if (mainButton) {
+                                    mainButton.classList.remove('active');
 
-                const mainIcon = mainButton.querySelector('i');
+                                    const mainIcon = mainButton.querySelector('i');
 
-                if (mainIcon) {
-                    mainIcon.className = 'far fa-heart';
-                }
-            }
+                                    if (mainIcon) {
+                                        mainIcon.className = 'far fa-heart';
+                                    }
+                                }
 
-            showNotification('Receita removida dos favoritos!', true);
-            await updateFavoriteCount();
+                                showNotification('Receita removida dos favoritos!', true);
+                                await updateFavoriteCount();
 
-            const remainingCards = favoriteContainer.querySelectorAll('.card');
+                                const remainingCards = favoriteContainer.querySelectorAll('.card');
 
-            if (remainingCards.length === 0) {
-                emptyState.style.display = 'block';
-                favoriteContainer.style.display = 'none';
-            }
-        } else {
-            if (currentIcon) {
-                currentIcon.className = 'fas fa-heart';
-            }
-        }
-    } finally {
-        this.disabled = false;
-    }
-});
+                                if (remainingCards.length === 0) {
+                                    emptyState.style.display = 'block';
+                                    favoriteContainer.style.display = 'none';
+                                }
+                            } else {
+                                if (currentIcon) {
+                                    currentIcon.className = 'fas fa-heart';
+                                }
+                            }
+                        } finally {
+                            this.disabled = false;
+                        }
+                    });
                 }
 
                 favoriteContainer.appendChild(clonedCard);
@@ -267,194 +268,184 @@ cloneFavBtn.addEventListener('click', async function(e) {
     });
 }
 
-  function showNotification(message, isSuccess = false) {
+function showNotification(message, isSuccess = false) {
     const notification = document.createElement('div');
     notification.className = 'user-notification';
     notification.innerHTML = `
       <i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
       ${message}
     `;
-    
+
     if (isSuccess) {
-      notification.classList.add('success');
+        notification.classList.add('success');
     } else {
-      notification.classList.add('error');
+        notification.classList.add('error');
     }
-    
+
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
-      notification.classList.add('show');
+        notification.classList.add('show');
     }, 10);
-    
+
     setTimeout(() => {
-      notification.classList.remove('show');
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.parentNode.removeChild(notification);
-        }
-      }, 300);
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
     }, 3000);
-  }
+}
 
-document.addEventListener('DOMContentLoaded', function() {
-  initializeCarousel();
+document.addEventListener('DOMContentLoaded', function () {
+    initializeCarousel();
 
-  let currentRecipeToDelete = null;
-  let currentDeleteButton = null;
+    let currentRecipeToDelete = null;
+    let currentDeleteButton = null;
 
-  function initializeDeleteButtons() {
-    const deleteButtons = document.querySelectorAll('.card-delete');
-    deleteButtons.forEach(button => {
-      button.addEventListener('click', function(event) {
-        event.preventDefault();
-        event.stopPropagation();
-        
-        const recipeId = this.getAttribute('data-recipe-id');
-        const recipeTitle = this.getAttribute('data-recipe-title');
-        const recipeChefe = this.getAttribute('data-recipe-chefe');
-        
-        console.log('Recipe ID:', recipeId);
-        console.log('Recipe Title:', recipeTitle);
-        console.log('Recipe Chefe:', recipeChefe);
-        
-        currentRecipeToDelete = recipeId;
-        currentDeleteButton = this;
-        
-        openDeleteModal(recipeTitle, recipeChefe);
-      });
-    });
-  }
+    function initializeDeleteButtons() {
+        const deleteButtons = document.querySelectorAll('.card-delete');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
 
-  function openDeleteModal(recipeTitle, recipeChefe) {
-    const modal = document.getElementById('deleteModal');
-    const recipeNameElement = document.getElementById('recipeNameToDelete');
-    const chefeInfoContainer = document.getElementById('chefeInfoContainer');
-    const chefeNameElement = document.getElementById('chefeNameToDelete');
-    
-    if (modal && recipeNameElement) {
-      recipeNameElement.textContent = `"${recipeTitle}"`;
-      
-      if (recipeChefe && recipeChefe.trim()) {
-        chefeNameElement.textContent = recipeChefe;
-        chefeInfoContainer.style.display = 'block';
-      } else {
-        chefeInfoContainer.style.display = 'none';
-      }
-      
-      modal.style.zIndex = '2000';
-      modal.style.display = 'block';
-      document.body.style.overflow = 'hidden';
+                const recipeId = this.getAttribute('data-recipe-id');
+                const recipeTitle = this.getAttribute('data-recipe-title');
+                const recipeChefe = this.getAttribute('data-recipe-chefe');
+
+                currentRecipeToDelete = recipeId;
+                currentDeleteButton = this;
+
+                openDeleteModal(recipeTitle, recipeChefe);
+            });
+        });
     }
-  }
 
-  function closeDeleteModal() {
-    const modal = document.getElementById('deleteModal');
-    if (modal) {
-      modal.style.display = 'none';
-      document.body.style.overflow = 'auto';
-      
-      currentRecipeToDelete = null;
-      currentDeleteButton = null;
-    }
-  }
+    function openDeleteModal(recipeTitle, recipeChefe) {
+        const modal = document.getElementById('deleteModal');
+        const recipeNameElement = document.getElementById('recipeNameToDelete');
+        const chefeInfoContainer = document.getElementById('chefeInfoContainer');
+        const chefeNameElement = document.getElementById('chefeNameToDelete');
 
-  function setupDeleteModal() {
-    const modal = document.getElementById('deleteModal');
-    const closeBtn = document.querySelector('.close-delete-modal');
-    const cancelBtn = document.querySelector('.delete-modal .cancel');
-    const confirmBtn = document.querySelector('.delete-modal .confirm');
-    
-    if (closeBtn) {
-      closeBtn.addEventListener('click', function(event) {
-        event.stopPropagation();
-        closeDeleteModal();
-      });
-    }
-    
-    if (cancelBtn) {
-      cancelBtn.addEventListener('click', function(event) {
-        event.stopPropagation();
-        closeDeleteModal();
-      });
-    }
-      
-    if (confirmBtn) {
-      confirmBtn.addEventListener('click', async function() {
-        if (currentRecipeToDelete && currentDeleteButton) {
-          this.disabled = true;
-          this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Excluindo...';
-          
-          await deleteRecipe(currentRecipeToDelete, currentDeleteButton);
-          closeDeleteModal();
-          
-          this.disabled = false;
-          this.innerHTML = '<i class="fas fa-trash"></i> Excluir';
+        if (modal && recipeNameElement) {
+            recipeNameElement.textContent = `"${recipeTitle}"`;
+
+            if (recipeChefe && recipeChefe.trim()) {
+                chefeNameElement.textContent = recipeChefe;
+                chefeInfoContainer.style.display = 'block';
+            } else {
+                chefeInfoContainer.style.display = 'none';
+            }
+
+            modal.style.zIndex = '2000';
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
         }
-      });
     }
-    
-    if (modal) {
-      modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-          closeDeleteModal();
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+
+            currentRecipeToDelete = null;
+            currentDeleteButton = null;
         }
-      });
     }
-  }
 
-  async function deleteRecipe(recipeId, buttonElement) {
-    try {
-      console.log('Tentando excluir receita ID:', recipeId);
-      
-      const response = await fetch(`/rejeitar/${recipeId}`, {
-        method: 'POST'
-      });
-      
-      console.log('Resposta do servidor:', response.status, response.statusText);
-      
-      if (response.ok) {
-        const card = buttonElement.closest('.card');
-        if (card) {
-          card.style.animation = 'fadeOut 0.3s ease forwards';
-          
-          setTimeout(() => {
-            card.remove();
-            showDeleteNotification('Receita excluída com sucesso!', true);
-            
-            updateCardCount();
-          }, 300);
+    function setupDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        const closeBtn = document.querySelector('.close-delete-modal');
+        const cancelBtn = document.querySelector('.delete-modal .cancel');
+        const confirmBtn = document.querySelector('.delete-modal .confirm');
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function (event) {
+                event.stopPropagation();
+                closeDeleteModal();
+            });
         }
-        
-        const favorites = JSON.parse(localStorage.getItem('recipeFavorites')) || [];
-        const updatedFavorites = favorites.filter(id => id !== recipeId);
-        localStorage.setItem('recipeFavorites', JSON.stringify(updatedFavorites));
-        updateFavoriteCount();
-        
-        const favTab = document.getElementById('favoritas');
-        if (favTab && favTab.classList.contains('active')) {
-          loadFavoriteRecipes();
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function (event) {
+                event.stopPropagation();
+                closeDeleteModal();
+            });
         }
-        
-        console.log('Receita excluída com sucesso!');
-      } else {
-        console.error('Erro ao excluir receita:', response.status);
-        showDeleteNotification('Erro ao excluir receita', false);
-      }
-    } catch (error) {
-      console.error('Erro na requisição:', error);
-      showDeleteNotification('Erro de conexão', false);
+
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', async function () {
+                if (currentRecipeToDelete && currentDeleteButton) {
+                    this.disabled = true;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Excluindo...';
+
+                    await deleteRecipe(currentRecipeToDelete, currentDeleteButton);
+                    closeDeleteModal();
+
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fas fa-trash"></i> Excluir';
+                }
+            });
+        }
+
+        if (modal) {
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) {
+                    closeDeleteModal();
+                }
+            });
+        }
     }
-  }
 
-  function updateCardCount() {
-    const cards = document.querySelectorAll('#all-recipes .card');
-    console.log(`Restam ${cards.length} receitas`);
-  }
+    async function deleteRecipe(recipeId, buttonElement) {
+        try {
+            const response = await fetch(`/rejeitar/${recipeId}`, {
+                method: 'POST'
+            });
 
-  function showDeleteNotification(message, isSuccess) {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
+            if (response.ok) {
+                const card = buttonElement.closest('.card');
+                if (card) {
+                    card.style.animation = 'fadeOut 0.3s ease forwards';
+
+                    setTimeout(() => {
+                        card.remove();
+                        showDeleteNotification('Receita excluída com sucesso!', true);
+
+                        updateCardCount();
+                    }, 300);
+                }
+
+                const favorites = JSON.parse(localStorage.getItem('recipeFavorites')) || [];
+                const updatedFavorites = favorites.filter(id => id !== recipeId);
+                localStorage.setItem('recipeFavorites', JSON.stringify(updatedFavorites));
+                updateFavoriteCount();
+
+                const favTab = document.getElementById('favoritas');
+                if (favTab && favTab.classList.contains('active')) {
+                    loadFavoriteRecipes();
+                }
+            } else {
+                console.error('Erro ao excluir receita:', response.status);
+                showDeleteNotification('Erro ao excluir receita', false);
+            }
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+            showDeleteNotification('Erro de conexão', false);
+        }
+    }
+
+    function updateCardCount() {
+        const cards = document.querySelectorAll('#all-recipes .card');
+        console.log(`Restam ${cards.length} receitas`);
+    }
+
+    function showDeleteNotification(message, isSuccess) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
       position: fixed; bottom: 20px; right: 20px;
       background: ${isSuccess ? 'linear-gradient(135deg, #27ae60, #2ecc71)' : '#e74c3c'};
       color: white; padding: 12px 20px; border-radius: 50px;
@@ -462,19 +453,19 @@ document.addEventListener('DOMContentLoaded', function() {
       z-index: 1000; display: flex; align-items: center; gap: 10px;
       opacity: 0; transform: translateY(20px); transition: all 0.3s ease;
     `;
-    notification.innerHTML = `<i class="fas ${isSuccess ? 'fa-check' : 'fa-exclamation'}"></i> ${message}`;
-    document.body.appendChild(notification);
-    
-    setTimeout(() => { notification.style.opacity = '1'; notification.style.transform = 'translateY(0)'; }, 10);
-    setTimeout(() => {
-      notification.style.opacity = '0';
-      notification.style.transform = 'translateY(20px)';
-      setTimeout(() => document.body.removeChild(notification), 300);
-    }, 3000);
-  }
+        notification.innerHTML = `<i class="fas ${isSuccess ? 'fa-check' : 'fa-exclamation'}"></i> ${message}`;
+        document.body.appendChild(notification);
 
-  const style = document.createElement('style');
-  style.textContent = `
+        setTimeout(() => { notification.style.opacity = '1'; notification.style.transform = 'translateY(0)'; }, 10);
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(20px)';
+            setTimeout(() => document.body.removeChild(notification), 300);
+        }, 3000);
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
     @keyframes fadeOut {
       from { opacity: 1; transform: translateY(0); }
       to { opacity: 0; transform: translateY(-20px); }
@@ -486,407 +477,430 @@ document.addEventListener('DOMContentLoaded', function() {
       20%, 40%, 60%, 80% { transform: translateX(5px); }
     }
   `;
-  document.head.appendChild(style);
+    document.head.appendChild(style);
 
-  initializeDeleteButtons();
-  setupDeleteModal();
+    initializeDeleteButtons();
+    setupDeleteModal();
 
-  const tabButtons = document.querySelectorAll('.tab-button');
-  const tabContents = document.querySelectorAll('.tab-content');
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
 
-  tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const tabId = button.getAttribute('data-tab');
-      tabButtons.forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
-      tabContents.forEach(content => content.classList.remove('active'));
-      const targetTab = document.getElementById(tabId);
-      if (targetTab) {
-        targetTab.classList.add('active');
-      }
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabId = button.getAttribute('data-tab');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            tabContents.forEach(content => content.classList.remove('active'));
+            const targetTab = document.getElementById(tabId);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
 
-      if (tabId === 'favoritas') {
-        loadFavoriteRecipes();
-      } else {
-        const allRecipeCards = document.querySelectorAll('#salgados-recipes .card, #doces-recipes .card');
-        allRecipeCards.forEach(card => {
-          card.style.display = 'flex';
+            if (tabId === 'favoritas') {
+                loadFavoriteRecipes();
+            } else {
+                const allRecipeCards = document.querySelectorAll('#salgados-recipes .card, #doces-recipes .card');
+                allRecipeCards.forEach(card => {
+                    card.style.display = 'flex';
+                });
+            }
         });
-      }
     });
-  });
 
+    initializeFavoriteButtons();
+    updateFavoriteCount();
 
-initializeFavoriteButtons();
-updateFavoriteCount();
+    document.addEventListener('pollingUpdated', async function () {
+        await initializeFavoriteButtons();
+        await updateFavoriteCount();
+        updateCategoryCounts();
+        await atualizarContadorNotificacoes();
+    });
 
-document.addEventListener('pollingUpdated', async function () {
-    await initializeFavoriteButtons();
-    await updateFavoriteCount();
-    updateCategoryCounts();
-    await atualizarContadorNotificacoes();
-});
+    function setupFilterWithDelay() {
+        const nomeInput = document.getElementById('nome');
+        const categoriaSelect = document.getElementById('categoria');
+        const porcoesInput = document.getElementById('porcoes');
 
-  function setupFilterWithDelay() {
-    const nomeInput = document.getElementById('nome');
-    const categoriaSelect = document.getElementById('categoria');
-    const porcoesInput = document.getElementById('porcoes');
-    
-    const searchStatus = document.createElement('div');
-    searchStatus.id = 'searchStatus';
-    searchStatus.style.cssText = `
+        const searchStatus = document.createElement('div');
+        searchStatus.id = 'searchStatus';
+        searchStatus.style.cssText = `
       text-align: center;
       padding: 10px;
       color: var(--light-text);
       font-style: italic;
       display: none;
     `;
-    
-    const filterForm = document.getElementById('filterForm');
-    if (filterForm) {
-      filterForm.parentNode.insertBefore(searchStatus, filterForm.nextSibling);
-    }
-    
-    function showSearchStatus(message) {
-      searchStatus.textContent = message;
-      searchStatus.style.display = 'block';
-    }
-    
-    function hideSearchStatus() {
-      searchStatus.style.display = 'none';
-    }
-    
-    function applyFilterWithDelay() {
-      if (filterTimeout) {
-        clearTimeout(filterTimeout);
-      }
-      
-      const currentValues = {
-        nome: nomeInput ? nomeInput.value.toLowerCase().trim() : '',
-        categoria: categoriaSelect ? categoriaSelect.value : '',
-        porcoes: porcoesInput ? porcoesInput.value : ''
-      };
-      
-      const hasChanged = JSON.stringify(currentValues) !== JSON.stringify(lastFilterValues);
-      
-      if (!hasChanged) return;
-      
-      lastFilterValues = { ...currentValues };
-      
-      showSearchStatus('Procurando receita...');
-      
-      filterTimeout = setTimeout(() => {
-        filtrarReceitasComCategoria(currentValues);
-        hideSearchStatus();
-      }, 1000);
-    }
-    
-    function filtrarReceitasComCategoria(filtros = {}) {
-      const { nome = '', categoria = '', porcoes = '' } = filtros;
-      
-      const salgadosCards = document.querySelectorAll('#salgados-recipes .card');
-      const docesCards = document.querySelectorAll('#doces-recipes .card');
-      
-      let salgadosVisiveis = 0;
-      let docesVisiveis = 0;
-      let totalVisiveis = 0;
 
-      const salgadosSection = document.getElementById('salgados-section');
-      const docesSection = document.getElementById('doces-section');
-      const salgadosEmpty = document.getElementById('salgados-empty');
-      const docesEmpty = document.getElementById('doces-empty');
-      
-      const filtroCategoriaAtivo = categoria !== '';
-      
-      if (!filtroCategoriaAtivo) {
-        if (salgadosSection) salgadosSection.style.display = 'block';
-        if (docesSection) docesSection.style.display = 'block';
-      } else {
-        if (categoria === 'SALGADO') {
-          if (salgadosSection) salgadosSection.style.display = 'block';
-          if (docesSection) docesSection.style.display = 'none'; 
-        } else if (categoria === 'DOCE') {
-          if (salgadosSection) salgadosSection.style.display = 'none'; 
-          if (docesSection) docesSection.style.display = 'block';
-        }
-      }
-
-      salgadosCards.forEach(card => {
-        const titulo = card.querySelector('h2')?.innerText.toLowerCase() || '';
-        const porcoesElement = card.querySelector('.card-meta span:nth-child(2) span');
-        const porcoesReceita = porcoesElement ? parseInt(porcoesElement.innerText) : 0;
-
-        let mostrar = true;
-
-        if (nome && !titulo.includes(nome.toLowerCase())) {
-          mostrar = false;
+        const filterForm = document.getElementById('filterForm');
+        if (filterForm) {
+            filterForm.parentNode.insertBefore(searchStatus, filterForm.nextSibling);
         }
 
-        if (categoria && categoria !== 'SALGADO') {
-          mostrar = false;
+        function showSearchStatus(message) {
+            searchStatus.textContent = message;
+            searchStatus.style.display = 'block';
         }
 
-        if (porcoes && porcoesReceita !== parseInt(porcoes)) {
-          mostrar = false;
+        function hideSearchStatus() {
+            searchStatus.style.display = 'none';
         }
 
-        if (mostrar) {
-          card.style.display = 'flex';
-          salgadosVisiveis++;
-          totalVisiveis++;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-
-      docesCards.forEach(card => {
-        const titulo = card.querySelector('h2')?.innerText.toLowerCase() || '';
-        const porcoesElement = card.querySelector('.card-meta span:nth-child(2) span');
-        const porcoesReceita = porcoesElement ? parseInt(porcoesElement.innerText) : 0;
-
-        let mostrar = true;
-
-        if (nome && !titulo.includes(nome.toLowerCase())) {
-          mostrar = false;
-        }
-
-        if (categoria && categoria !== 'DOCE') {
-          mostrar = false;
-        }
-
-        if (porcoes && porcoesReceita !== parseInt(porcoes)) {
-          mostrar = false;
-        }
-
-        if (mostrar) {
-          card.style.display = 'flex';
-          docesVisiveis++;
-          totalVisiveis++;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-
-      const salgadosCount = document.getElementById('salgados-count');
-      const docesCount = document.getElementById('doces-count');
-      const salgadosEmptyText = document.getElementById('salgados-empty-text');
-      const docesEmptyText = document.getElementById('doces-empty-text');
-
-      if (salgadosCount) {
-        salgadosCount.textContent = `${salgadosVisiveis} receita${salgadosVisiveis !== 1 ? 's' : ''}`;
-      }
-
-      if (docesCount) {
-        docesCount.textContent = `${docesVisiveis} receita${docesVisiveis !== 1 ? 's' : ''}`;
-      }
-
-      if (salgadosEmpty && salgadosSection && salgadosSection.style.display !== 'none') {
-        if (salgadosVisiveis === 0) {
-          salgadosEmpty.style.display = 'block';
-          if (salgadosEmptyText) {
-            salgadosEmptyText.textContent = categoria === 'SALGADO' 
-              ? 'Não há receitas salgadas com os filtros aplicados.' 
-              : 'Não há receitas salgadas disponíveis.';
-          }
-        } else {
-          salgadosEmpty.style.display = 'none';
-        }
-      }
-
-      if (docesEmpty && docesSection && docesSection.style.display !== 'none') {
-        if (docesVisiveis === 0) {
-          docesEmpty.style.display = 'block';
-          if (docesEmptyText) {
-            docesEmptyText.textContent = categoria === 'DOCE' 
-              ? 'Não há receitas doces com os filtros aplicados.' 
-              : 'Não há receitas doces disponíveis.';
-          }
-        } else {
-          docesEmpty.style.display = 'none';
-        }
-      }
-
-      if (searchStatus && totalVisiveis === 0) {
-        const hasFilters = nome || categoria || porcoes;
-        if (hasFilters) {
-          showSearchStatus('Nenhuma receita encontrada com esses filtros.');
-          setTimeout(() => {
-            if (searchStatus.textContent.includes('Nenhuma receita')) {
-              hideSearchStatus();
+        function applyFilterWithDelay() {
+            if (filterTimeout) {
+                clearTimeout(filterTimeout);
             }
-          }, 2000);
-        }
-      } else if (searchStatus) {
-        hideSearchStatus();
-      }
-    }
-    
-    if (nomeInput) {
-      nomeInput.addEventListener('input', applyFilterWithDelay);
-    }
-    
-    if (categoriaSelect) {
-      categoriaSelect.addEventListener('change', applyFilterWithDelay);
-    }
-    
-    if (porcoesInput) {
-      porcoesInput.addEventListener('input', applyFilterWithDelay);
-    }
-    
-    const aplicarFiltros = document.getElementById('aplicarFiltros');
-    if (aplicarFiltros) {
-      aplicarFiltros.addEventListener('click', function() {
-        if (filterTimeout) {
-          clearTimeout(filterTimeout);
-        }
-        
-        showSearchStatus('Aplicando filtros...');
-        
-        const currentValues = {
-          nome: nomeInput ? nomeInput.value.toLowerCase().trim() : '',
-          categoria: categoriaSelect ? categoriaSelect.value : '',
-          porcoes: porcoesInput ? porcoesInput.value : ''
-        };
-        
-        filtrarReceitasComCategoria(currentValues);
-        setTimeout(hideSearchStatus, 500);
-      });
-    }
-    
-    const limparFiltros = document.getElementById('limparFiltros');
-    if (limparFiltros) {
-      limparFiltros.addEventListener('click', function() {
-        if (filterTimeout) {
-          clearTimeout(filterTimeout);
-        }
-        
-        if (nomeInput) nomeInput.value = '';
-        if (categoriaSelect) categoriaSelect.value = '';
-        if (porcoesInput) porcoesInput.value = '';
-        
-        lastFilterValues = {};
-        
-        const salgadosCards = document.querySelectorAll('#salgados-recipes .card');
-        const docesCards = document.querySelectorAll('#doces-recipes .card');
-        
-        salgadosCards.forEach(card => card.style.display = 'flex');
-        docesCards.forEach(card => card.style.display = 'flex');
-        
-        const salgadosSection = document.getElementById('salgados-section');
-        const docesSection = document.getElementById('doces-section');
-        
-        if (salgadosSection) salgadosSection.style.display = 'block';
-        if (docesSection) docesSection.style.display = 'block';
 
-        const salgadosEmpty = document.getElementById('salgados-empty');
-        const docesEmpty = document.getElementById('doces-empty');
-        
-        if (salgadosEmpty) salgadosEmpty.style.display = 'none';
-        if (docesEmpty) docesEmpty.style.display = 'none';
-                
-        const salgadosCount = document.getElementById('salgados-count');
-        const docesCount = document.getElementById('doces-count');
-        
-        if (salgadosCount) {
-          salgadosCount.textContent = `${salgadosCards.length} receita${salgadosCards.length !== 1 ? 's' : ''}`;
-        }
-        
-        if (docesCount) {
-          docesCount.textContent = `${docesCards.length} receita${docesCards.length !== 1 ? 's' : ''}`;
-        }
-        
-        showSearchStatus('Filtros limpos! Mostrando todas as receitas.');
-        setTimeout(hideSearchStatus, 1000);
-      });
-    }
-    
-    const filterFormElement = document.getElementById('filterForm');
-    if (filterFormElement) {
-      filterFormElement.addEventListener('submit', function(e) {
-        e.preventDefault();
-      });
-    }
-  }
-  
-  setupFilterWithDelay();
+            const currentValues = {
+                nome: nomeInput ? nomeInput.value.toLowerCase().trim() : '',
+                categoria: categoriaSelect ? categoriaSelect.value : '',
+                porcoes: porcoesInput ? porcoesInput.value : ''
+            };
 
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      closeLoginModal();
-      closeDeleteModal();
-      closeLogoutModal();
-      fecharModalUsuario();
+            const hasChanged = JSON.stringify(currentValues) !== JSON.stringify(lastFilterValues);
+
+            if (!hasChanged) return;
+
+            lastFilterValues = { ...currentValues };
+
+            showSearchStatus('Procurando receita...');
+
+            filterTimeout = setTimeout(() => {
+                filtrarReceitasComCategoria(currentValues);
+                hideSearchStatus();
+            }, 1000);
+        }
+
+        function filtrarReceitasComCategoria(filtros = {}) {
+            const { nome = '', categoria = '', porcoes = '' } = filtros;
+
+            const salgadosCards = document.querySelectorAll('#salgados-recipes .card');
+            const docesCards = document.querySelectorAll('#doces-recipes .card');
+
+            let salgadosVisiveis = 0;
+            let docesVisiveis = 0;
+            let totalVisiveis = 0;
+
+            const salgadosSection = document.getElementById('salgados-section');
+            const docesSection = document.getElementById('doces-section');
+            const salgadosEmpty = document.getElementById('salgados-empty');
+            const docesEmpty = document.getElementById('doces-empty');
+
+            const filtroCategoriaAtivo = categoria !== '';
+
+            if (!filtroCategoriaAtivo) {
+                if (salgadosSection) salgadosSection.style.display = 'block';
+                if (docesSection) docesSection.style.display = 'block';
+            } else {
+                if (categoria === 'SALGADO') {
+                    if (salgadosSection) salgadosSection.style.display = 'block';
+                    if (docesSection) docesSection.style.display = 'none';
+                } else if (categoria === 'DOCE') {
+                    if (salgadosSection) salgadosSection.style.display = 'none';
+                    if (docesSection) docesSection.style.display = 'block';
+                }
+            }
+
+            salgadosCards.forEach(card => {
+                const titulo = card.querySelector('h2')?.innerText.toLowerCase() || '';
+                const porcoesElement = card.querySelector('.card-meta span:nth-child(2) span');
+                const porcoesReceita = porcoesElement ? parseInt(porcoesElement.innerText) : 0;
+
+                let mostrar = true;
+
+                if (nome && !titulo.includes(nome.toLowerCase())) {
+                    mostrar = false;
+                }
+
+                if (categoria && categoria !== 'SALGADO') {
+                    mostrar = false;
+                }
+
+                if (porcoes && porcoesReceita !== parseInt(porcoes)) {
+                    mostrar = false;
+                }
+
+                if (mostrar) {
+                    card.style.display = 'flex';
+                    salgadosVisiveis++;
+                    totalVisiveis++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            docesCards.forEach(card => {
+                const titulo = card.querySelector('h2')?.innerText.toLowerCase() || '';
+                const porcoesElement = card.querySelector('.card-meta span:nth-child(2) span');
+                const porcoesReceita = porcoesElement ? parseInt(porcoesElement.innerText) : 0;
+
+                let mostrar = true;
+
+                if (nome && !titulo.includes(nome.toLowerCase())) {
+                    mostrar = false;
+                }
+
+                if (categoria && categoria !== 'DOCE') {
+                    mostrar = false;
+                }
+
+                if (porcoes && porcoesReceita !== parseInt(porcoes)) {
+                    mostrar = false;
+                }
+
+                if (mostrar) {
+                    card.style.display = 'flex';
+                    docesVisiveis++;
+                    totalVisiveis++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            const salgadosCount = document.getElementById('salgados-count');
+            const docesCount = document.getElementById('doces-count');
+            const salgadosEmptyText = document.getElementById('salgados-empty-text');
+            const docesEmptyText = document.getElementById('doces-empty-text');
+
+            if (salgadosCount) {
+                salgadosCount.textContent = `${salgadosVisiveis} receita${salgadosVisiveis !== 1 ? 's' : ''}`;
+            }
+
+            if (docesCount) {
+                docesCount.textContent = `${docesVisiveis} receita${docesVisiveis !== 1 ? 's' : ''}`;
+            }
+
+            if (salgadosEmpty && salgadosSection && salgadosSection.style.display !== 'none') {
+                if (salgadosVisiveis === 0) {
+                    salgadosEmpty.style.display = 'block';
+                    if (salgadosEmptyText) {
+                        salgadosEmptyText.textContent = categoria === 'SALGADO'
+                            ? 'Não há receitas salgadas com os filtros aplicados.'
+                            : 'Não há receitas salgadas disponíveis.';
+                    }
+                } else {
+                    salgadosEmpty.style.display = 'none';
+                }
+            }
+
+            if (docesEmpty && docesSection && docesSection.style.display !== 'none') {
+                if (docesVisiveis === 0) {
+                    docesEmpty.style.display = 'block';
+                    if (docesEmptyText) {
+                        docesEmptyText.textContent = categoria === 'DOCE'
+                            ? 'Não há receitas doces com os filtros aplicados.'
+                            : 'Não há receitas doces disponíveis.';
+                    }
+                } else {
+                    docesEmpty.style.display = 'none';
+                }
+            }
+
+            if (searchStatus && totalVisiveis === 0) {
+                const hasFilters = nome || categoria || porcoes;
+                if (hasFilters) {
+                    showSearchStatus('Nenhuma receita encontrada com esses filtros.');
+                    setTimeout(() => {
+                        if (searchStatus.textContent.includes('Nenhuma receita')) {
+                            hideSearchStatus();
+                        }
+                    }, 2000);
+                }
+            } else if (searchStatus) {
+                hideSearchStatus();
+            }
+        }
+
+        if (nomeInput) {
+            nomeInput.addEventListener('input', applyFilterWithDelay);
+        }
+
+        if (categoriaSelect) {
+            categoriaSelect.addEventListener('change', applyFilterWithDelay);
+        }
+
+        if (porcoesInput) {
+            porcoesInput.addEventListener('input', applyFilterWithDelay);
+        }
+
+        const aplicarFiltros = document.getElementById('aplicarFiltros');
+        if (aplicarFiltros) {
+            aplicarFiltros.addEventListener('click', function () {
+                if (filterTimeout) {
+                    clearTimeout(filterTimeout);
+                }
+
+                showSearchStatus('Aplicando filtros...');
+
+                const currentValues = {
+                    nome: nomeInput ? nomeInput.value.toLowerCase().trim() : '',
+                    categoria: categoriaSelect ? categoriaSelect.value : '',
+                    porcoes: porcoesInput ? porcoesInput.value : ''
+                };
+
+                filtrarReceitasComCategoria(currentValues);
+                setTimeout(hideSearchStatus, 500);
+            });
+        }
+
+        const limparFiltros = document.getElementById('limparFiltros');
+        if (limparFiltros) {
+            limparFiltros.addEventListener('click', function () {
+                if (filterTimeout) {
+                    clearTimeout(filterTimeout);
+                }
+
+                if (nomeInput) nomeInput.value = '';
+                if (categoriaSelect) categoriaSelect.value = '';
+                if (porcoesInput) porcoesInput.value = '';
+
+                lastFilterValues = {};
+
+                const salgadosCards = document.querySelectorAll('#salgados-recipes .card');
+                const docesCards = document.querySelectorAll('#doces-recipes .card');
+
+                salgadosCards.forEach(card => card.style.display = 'flex');
+                docesCards.forEach(card => card.style.display = 'flex');
+
+                const salgadosSection = document.getElementById('salgados-section');
+                const docesSection = document.getElementById('doces-section');
+
+                if (salgadosSection) salgadosSection.style.display = 'block';
+                if (docesSection) docesSection.style.display = 'block';
+
+                const salgadosEmpty = document.getElementById('salgados-empty');
+                const docesEmpty = document.getElementById('doces-empty');
+
+                if (salgadosEmpty) salgadosEmpty.style.display = 'none';
+                if (docesEmpty) docesEmpty.style.display = 'none';
+
+                const salgadosCount = document.getElementById('salgados-count');
+                const docesCount = document.getElementById('doces-count');
+
+                if (salgadosCount) {
+                    salgadosCount.textContent = `${salgadosCards.length} receita${salgadosCards.length !== 1 ? 's' : ''}`;
+                }
+
+                if (docesCount) {
+                    docesCount.textContent = `${docesCards.length} receita${docesCards.length !== 1 ? 's' : ''}`;
+                }
+
+                showSearchStatus('Filtros limpos! Mostrando todas as receitas.');
+                setTimeout(hideSearchStatus, 1000);
+            });
+        }
+
+        const filterFormElement = document.getElementById('filterForm');
+        if (filterFormElement) {
+            filterFormElement.addEventListener('submit', function (e) {
+                e.preventDefault();
+            });
+        }
     }
-  });
+
+    setupFilterWithDelay();
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeLoginModal();
+            closeDeleteModal();
+            closeLogoutModal();
+            fecharModalUsuario();
+        }
+    });
 });
 
-function initializeCarousel() {
+function initializeCarousel(indiceInicial) {
   const carousel = document.querySelector('.carousel-inner');
   const items = document.querySelectorAll('.carousel-item');
   const prevBtn = document.querySelector('.carousel-control.prev');
   const nextBtn = document.querySelector('.carousel-control.next');
-  const indicators = document.querySelectorAll('.carousel-indicator');
-  
-  console.log('Itens do carrossel encontrados:', items.length);
-  
+
   if (items.length === 0) {
-    console.log('Nenhum item encontrado no carrossel');
     return;
   }
-  
-  let currentIndex = 0;
+
+  let currentIndex = (typeof indiceInicial === 'number' && indiceInicial >= 0 && indiceInicial < items.length)
+    ? indiceInicial
+    : 0;
+
   const totalItems = items.length;
-  
+
   function updateCarousel() {
     if (carousel) {
       carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
     }
-    indicators.forEach((indicator, index) => {
+
+    const indicadoresAtuais = document.querySelectorAll('.carousel-indicator');
+    indicadoresAtuais.forEach((indicator, index) => {
       indicator.classList.toggle('active', index === currentIndex);
     });
-    
-    items.forEach((item, index) => {
+
+    const itensAtuais = document.querySelectorAll('.carousel-item');
+    itensAtuais.forEach((item, index) => {
       item.classList.toggle('active', index === currentIndex);
     });
   }
-  
+
   function nextSlide() {
     currentIndex = (currentIndex + 1) % totalItems;
     updateCarousel();
   }
-  
+
   function prevSlide() {
     currentIndex = (currentIndex - 1 + totalItems) % totalItems;
     updateCarousel();
   }
-  
-  if (nextBtn) nextBtn.addEventListener('click', nextSlide);
-  if (prevBtn) prevBtn.addEventListener('click', prevSlide);
-  
-  indicators.forEach((indicator, index) => {
-    indicator.addEventListener('click', () => {
-      currentIndex = index;
-      updateCarousel();
-    });
-  });
-  
-  let carouselInterval = setInterval(nextSlide, 5000);
-  const carouselContainer = document.querySelector('.carousel-container');
-  if (carouselContainer) {
-    carouselContainer.addEventListener('mouseenter', () => clearInterval(carouselInterval));
-    carouselContainer.addEventListener('mouseleave', () => carouselInterval = setInterval(nextSlide, 5000));
+
+  function irParaSlide(index) {
+    currentIndex = index;
+    updateCarousel();
   }
-  
+
+  if (nextBtn) {
+    const novo = nextBtn.cloneNode(true);
+    nextBtn.replaceWith(novo);
+    novo.addEventListener('click', nextSlide);
+  }
+
+  if (prevBtn) {
+    const novo = prevBtn.cloneNode(true);
+    prevBtn.replaceWith(novo);
+    novo.addEventListener('click', prevSlide);
+  }
+
+  const indicadores = document.querySelectorAll('.carousel-indicator');
+  indicadores.forEach((indicator, index) => {
+    const novo = indicator.cloneNode(true);
+    indicator.replaceWith(novo);
+    novo.addEventListener('click', () => irParaSlide(index));
+  });
+
+  if (window.carouselInterval) {
+    clearInterval(window.carouselInterval);
+  }
+
+  window.carouselInterval = setInterval(nextSlide, 5000);
+
+  const carouselContainer = document.querySelector('.carousel-container');
+  if (carouselContainer && !carouselContainer.dataset.hoverListener) {
+    carouselContainer.dataset.hoverListener = 'true';
+    carouselContainer.addEventListener('mouseenter', () => clearInterval(window.carouselInterval));
+    carouselContainer.addEventListener('mouseleave', () => {
+      clearInterval(window.carouselInterval);
+      window.carouselInterval = setInterval(nextSlide, 5000);
+    });
+  }
+
   updateCarousel();
-  console.log(`Carrossel inicializado com ${totalItems} itens`);
 }
 
 function applyResponsiveStyles() {
-  if (document.getElementById('responsive-styles')) return;
+    if (document.getElementById('responsive-styles')) return;
 
-  const style = document.createElement('style');
-  style.id = 'responsive-styles';
-  style.innerHTML = `
+    const style = document.createElement('style');
+    style.id = 'responsive-styles';
+    style.innerHTML = `
 
     @media (max-width: 480px) {
       :root {
@@ -1155,8 +1169,6 @@ function applyResponsiveStyles() {
         padding: 4px 14px;
       }
 
- 
-
       .receitas {
         grid-template-columns: repeat(2, 1fr) !important;
       }
@@ -1423,7 +1435,7 @@ function applyResponsiveStyles() {
       }
 
       .content-wrapper {
-        padding: 0 5px !important;
+        padding: 25px 5px !important;
       }
 
       .header-container {
@@ -3268,108 +3280,107 @@ function applyResponsiveStyles() {
     }
   `;
 
-  document.head.appendChild(style);
+    document.head.appendChild(style);
 }
 
 function adjustLayoutForScreenSize() {
-  const width = window.innerWidth;
-  
-  const receitasContainer = document.getElementById('all-recipes');
-  if (receitasContainer) {
-    if (width <= 480) {
-      receitasContainer.style.gridTemplateColumns = '1fr';
-    } else if (width <= 768) {
-      receitasContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
-    } else if (width <= 1024) {
-      receitasContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
-    } else {
-      receitasContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(350px, 1fr))';
+    const width = window.innerWidth;
+
+    const receitasContainer = document.getElementById('all-recipes');
+    if (receitasContainer) {
+        if (width <= 480) {
+            receitasContainer.style.gridTemplateColumns = '1fr';
+        } else if (width <= 768) {
+            receitasContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        } else if (width <= 1024) {
+            receitasContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        } else {
+            receitasContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(350px, 1fr))';
+        }
     }
-  }
-  
-  const carouselContainer = document.querySelector('.carousel-container');
-  if (carouselContainer) {
-    if (width <= 480) {
-      carouselContainer.style.height = '250px';
-    } else if (width <= 768) {
-      carouselContainer.style.height = '350px';
-    } else if (width <= 1024) {
-      carouselContainer.style.height = '400px';
-    } else {
-      carouselContainer.style.height = '500px';
+
+    const carouselContainer = document.querySelector('.carousel-container');
+    if (carouselContainer) {
+        if (width <= 480) {
+            carouselContainer.style.height = '250px';
+        } else if (width <= 768) {
+            carouselContainer.style.height = '350px';
+        } else if (width <= 1024) {
+            carouselContainer.style.height = '400px';
+        } else {
+            carouselContainer.style.height = '500px';
+        }
     }
-  }
-  
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  applyResponsiveStyles();
-  adjustLayoutForScreenSize();
-  
-  window.addEventListener('resize', adjustLayoutForScreenSize);
-  
-  window.addEventListener('load', applyResponsiveStyles);
+document.addEventListener('DOMContentLoaded', function () {
+    applyResponsiveStyles();
+    adjustLayoutForScreenSize();
+
+    window.addEventListener('resize', adjustLayoutForScreenSize);
+
+    window.addEventListener('load', applyResponsiveStyles);
 });
 
 function showPageLoader() {
-  const loader = document.getElementById('pageLoader');
-  if (loader) {
-    loader.classList.remove('hidden');
-    loader.style.display = 'flex';
-  }
+    const loader = document.getElementById('pageLoader');
+    if (loader) {
+        loader.classList.remove('hidden');
+        loader.style.display = 'flex';
+    }
 }
 
 function hidePageLoader() {
-  const loader = document.getElementById('pageLoader');
-  if (loader) {
-    loader.classList.add('hidden');
-    setTimeout(() => {
-      loader.style.display = 'none';
-    }, 500);
-  }
+    const loader = document.getElementById('pageLoader');
+    if (loader) {
+        loader.classList.add('hidden');
+        setTimeout(() => {
+            loader.style.display = 'none';
+        }, 500);
+    }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  showPageLoader();
-  
-  window.addEventListener('load', function() {
-    setTimeout(hidePageLoader, 600);
-  });
-  
-  setTimeout(hidePageLoader, 3000);
+document.addEventListener('DOMContentLoaded', function () {
+    showPageLoader();
+
+    window.addEventListener('load', function () {
+        setTimeout(hidePageLoader, 600);
+    });
+
+    setTimeout(hidePageLoader, 3000);
 });
 
-document.addEventListener('click', function(e) {
-  const link = e.target.closest('a');
-  if (link && link.href && !link.href.includes('#') && 
-    link.href.startsWith(window.location.origin) &&
-    !link.hasAttribute('target')) {
-    showPageLoader();
-  }
+document.addEventListener('click', function (e) {
+    const link = e.target.closest('a');
+    if (link && link.href && !link.href.includes('#') &&
+        link.href.startsWith(window.location.origin) &&
+        !link.hasAttribute('target')) {
+        showPageLoader();
+    }
 });
 
 function updateCategoryCounts() {
-  const salgadosCards = document.querySelectorAll('#salgados-recipes .card');
-  const docesCards = document.querySelectorAll('#doces-recipes .card');
-  
-  const salgadosCount = document.getElementById('salgados-count');
-  const docesCount = document.getElementById('doces-count');
-  const noRecipesMessage = document.getElementById('no-recipes-message');
-  
-  if (salgadosCount) {
-    salgadosCount.textContent = `${salgadosCards.length} receita${salgadosCards.length !== 1 ? 's' : ''}`;
-  }
-  
-  if (docesCount) {
-    docesCount.textContent = `${docesCards.length} receita${docesCards.length !== 1 ? 's' : ''}`;
-  }
-  
-  if (noRecipesMessage) {
-    const totalReceitas = salgadosCards.length + docesCards.length;
-    noRecipesMessage.style.display = totalReceitas === 0 ? 'block' : 'none';
-  }
+    const salgadosCards = document.querySelectorAll('#salgados-recipes .card');
+    const docesCards = document.querySelectorAll('#doces-recipes .card');
+
+    const salgadosCount = document.getElementById('salgados-count');
+    const docesCount = document.getElementById('doces-count');
+    const noRecipesMessage = document.getElementById('no-recipes-message');
+
+    if (salgadosCount) {
+        salgadosCount.textContent = `${salgadosCards.length} receita${salgadosCards.length !== 1 ? 's' : ''}`;
+    }
+
+    if (docesCount) {
+        docesCount.textContent = `${docesCards.length} receita${docesCards.length !== 1 ? 's' : ''}`;
+    }
+
+    if (noRecipesMessage) {
+        const totalReceitas = salgadosCards.length + docesCards.length;
+        noRecipesMessage.style.display = totalReceitas === 0 ? 'block' : 'none';
+    }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(updateCategoryCounts, 500);
+document.addEventListener('DOMContentLoaded', function () {
+    setTimeout(updateCategoryCounts, 500);
 });

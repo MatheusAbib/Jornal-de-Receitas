@@ -1,3 +1,99 @@
+
+.minhas-receitas-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin: 20px 0 30px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    background: #fff;
+    border: 2px solid var(--header-color);
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 rgba(139, 0, 0, 0.25);
+}
+
+.stat-card.destaque {
+    border-color: var(--accent-color);
+    box-shadow: 4px 4px 0 rgba(212, 175, 55, 0.35);
+}
+
+.stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    color: #fff;
+    font-size: 1.2rem;
+}
+
+.stat-icon.total      { background: var(--header-color); }
+.stat-icon.aprovadas  { background: #27ae60; }
+.stat-icon.pendentes  { background: #e67e22; }
+.stat-icon.rejeitadas { background: #e74c3c; }
+.stat-icon.curtidas   { background: var(--accent-color); }
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--header-color);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--light-text);
+    margin-top: 4px;
+}
+
+@media (max-width: 480px) {
+    .minhas-receitas-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+    }
+
+    .stat-card {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .stat-icon {
+        width: 26px;
+        height: 26px;
+        font-size: 0.7rem;
+    }
+
+    .stat-value {
+        font-size: 1.1rem;
+    }
+
+    .stat-label {
+        font-size: 0.5rem;
+    }
+}
+
 .minhas-receitas-wrapper {
   max-width: 1400px;
 }

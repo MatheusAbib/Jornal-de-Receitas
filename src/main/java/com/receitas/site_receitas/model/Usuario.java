@@ -1,10 +1,16 @@
 package com.receitas.site_receitas.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "usuario")
+@Getter
+@Setter
 public class Usuario {
 
     @Id
@@ -34,35 +40,28 @@ public class Usuario {
     private boolean ativo = true;
 
     @Column(nullable = false)
-    private String role = "USER"; 
+    private String role = "USER";
 
-    public boolean isAtivo() { return ativo; }
-    public void setAtivo(boolean ativo) { this.ativo = ativo; }
+    @JsonIgnore
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Estatisticas estatisticas;
 
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    public void alternarAtivo() {
+    this.ativo = !this.ativo;
+    }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public void alterarSenha(String senhaCriptografada) {
+        if (senhaCriptografada == null || senhaCriptografada.isBlank()) {
+            throw new IllegalArgumentException("Senha não pode ser vazia");
+        }
+        this.senha = senhaCriptografada;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getCpf() { return cpf; }
-    public void setCpf(String cpf) { this.cpf = cpf; }
-
-    public String getTelefone() { return telefone; }
-    public void setTelefone(String telefone) { this.telefone = telefone; }
-
-    public String getGenero() { return genero; }
-    public void setGenero(String genero) { this.genero = genero; }
-
-    public String getSenha() { return senha; }
-    public void setSenha(String senha) { this.senha = senha; }
-
-    public LocalDate getDataCadastro() { return dataCadastro; }
-    public void setDataCadastro(LocalDate dataCadastro) { this.dataCadastro = dataCadastro; }
-
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public void editarPerfil(String nome, String email, String cpf, String telefone, String genero) {
+        if (nome != null && !nome.isBlank()) this.nome = nome;
+        if (email != null && !email.isBlank()) this.email = email;
+        if (cpf != null && !cpf.isBlank()) this.cpf = cpf;
+        if (telefone != null) this.telefone = telefone;
+        if (genero != null) this.genero = genero;
+    }
 }

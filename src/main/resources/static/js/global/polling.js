@@ -180,7 +180,55 @@
 
             });
 
+                      const carrosselAtual = document.querySelector('.carousel-inner');
+            const carrosselNovo = novoDoc.querySelector('.carousel-inner');
+
+            if (carrosselAtual && carrosselNovo) {
+
+                const itensAtuais = [
+                    ...carrosselAtual.querySelectorAll('.carousel-item')
+                ].map(item => ({
+                    html: item.innerHTML.trim(),
+                    img: item.querySelector('img')?.getAttribute('src') || ''
+                }));
+
+                const itensNovos = [
+                    ...carrosselNovo.querySelectorAll('.carousel-item')
+                ].map(item => ({
+                    html: item.innerHTML.trim(),
+                    img: item.querySelector('img')?.getAttribute('src') || ''
+                }));
+
+                if (JSON.stringify(itensAtuais) !== JSON.stringify(itensNovos)) {
+
+                    const indicadorAtivo = document.querySelector('.carousel-indicator.active');
+                    const indicadoresTodos = document.querySelectorAll('.carousel-indicator');
+                    const indiceAtual = Array.from(indicadoresTodos).indexOf(indicadorAtivo);
+
+                    carrosselAtual.innerHTML = carrosselNovo.innerHTML;
+
+                    const indicadoresAtual = document.querySelector('.carousel-indicators');
+                    const indicadoresNovo = novoDoc.querySelector('.carousel-indicators');
+
+                    if (indicadoresAtual && indicadoresNovo) {
+                        indicadoresAtual.innerHTML = indicadoresNovo.innerHTML;
+                    }
+
+                    if (typeof initializeCarousel === 'function') {
+                        initializeCarousel(indiceAtual >= 0 ? indiceAtual : 0);
+                    }
+
+                    houveAlteracao = true;
+
+                }
+
+            }
+
             if (houveAlteracao) {
+
+                if (typeof initImageLoaders === 'function') {
+                    initImageLoaders();
+                }
 
                 document.dispatchEvent(
                     new CustomEvent('pollingUpdated', {

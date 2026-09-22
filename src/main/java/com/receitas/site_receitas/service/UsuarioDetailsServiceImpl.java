@@ -1,7 +1,6 @@
 package com.receitas.site_receitas.service;
 
 import com.receitas.site_receitas.model.Usuario;
-import com.receitas.site_receitas.repository.UsuarioRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -16,15 +15,15 @@ import java.util.List;
 @Service
 public class UsuarioDetailsServiceImpl implements UserDetailsService {
 
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
 
-    public UsuarioDetailsServiceImpl(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
+    public UsuarioDetailsServiceImpl(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByEmail(email)
+        Usuario usuario = usuarioService.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
 
         List<GrantedAuthority> authorities = Collections.singletonList(
