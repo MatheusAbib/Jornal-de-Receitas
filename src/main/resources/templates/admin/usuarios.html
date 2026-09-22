@@ -119,24 +119,7 @@
   </div>
 </main>
 
-<div id="confirmSaveModal" class="modal confirm-save-modal">
-  <div class="modal-content-confirm">
-    <span class="close close-confirm-save-modal">&times;</span>
-    <div class="modal-icon-confirm">
-      <i class="fas fa-question-circle"></i>
-    </div>
-    <h3 class="modal-title">Confirmar Alterações</h3>
-    <p class="modal-message">Tem certeza que deseja salvar as alterações deste usuário?</p>
-    <div class="modal-actions-confirm">
-      <button class="modal-button-confirm cancel">
-        <i class="fas fa-times"></i> Cancelar
-      </button>
-      <button class="modal-button-confirm confirm">
-        <i class="fas fa-check"></i> Confirmar
-      </button>
-    </div>
-  </div>
-</div>
+
 
 <div id="deleteUserModal" class="modal delete-user-modal">
   <div class="modal-content-delete">
@@ -172,7 +155,7 @@
       <button class="modal-button-delete cancel">
         <i class="fas fa-times"></i> Cancelar
       </button>
-      <button class="modal-button-delete confirm">
+      <button type="button" class="modal-button-delete confirm" data-spinner="true">
         <i class="fas fa-trash"></i> Excluir
       </button>
     </div>
@@ -258,7 +241,7 @@
           <button type="button" class="modal-button-edit cancel">
             <i class="fas fa-times"></i> Cancelar
           </button>
-          <button type="submit" class="modal-button-edit save">
+          <button type="submit" class="modal-button-edit save" disabled>
             <i class="fas fa-save"></i> Salvar
           </button>
         </div>

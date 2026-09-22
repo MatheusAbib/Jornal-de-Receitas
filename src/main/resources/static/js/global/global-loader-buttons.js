@@ -20,6 +20,7 @@
             if (elemento.classList.contains(classe)) return true;
         }
         if (elemento.dataset.semSpinner === 'true') return true;
+        if (elemento.dataset.spinner === 'true') return false;
         if (elemento.disabled) return true;
         return false;
     }
@@ -59,20 +60,6 @@
         delete elemento.dataset.spinnerAplicado;
     }
 
-    const fetchOriginal = window.fetch;
-
-    window.fetch = function (...args) {
-        const promessa = fetchOriginal.apply(this, args);
-
-        promessa.then(() => {
-            document.querySelectorAll('[data-spinner-aplicado="true"]').forEach(restaurarSpinner);
-        }).catch(() => {
-            document.querySelectorAll('[data-spinner-aplicado="true"]').forEach(restaurarSpinner);
-        });
-
-        return promessa;
-    };
-
     document.addEventListener('click', function (event) {
         const alvo = event.target.closest(
             'button, a, [role="button"], .header-user-profile, .header-logout-btn, .header-notification-btn, .header-logout-sidebar, .header-notification-nav, .header-notification-sidebar'
@@ -93,6 +80,11 @@
         if (alvo.tagName === 'BUTTON' || alvo.tagName === 'INPUT') {
             const tipo = (alvo.getAttribute('type') || '').toLowerCase();
 
+            if (alvo.dataset.spinner === 'true') {
+                aplicarSpinner(alvo);
+                return;
+            }
+
             if (tipo === 'submit') {
                 return;
             }
@@ -101,7 +93,6 @@
                 return;
             }
         }
-
         aplicarSpinner(alvo);
     }, true);
 

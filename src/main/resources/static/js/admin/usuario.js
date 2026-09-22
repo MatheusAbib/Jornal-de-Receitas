@@ -1,6 +1,7 @@
 let currentDeleteUser = null;
 let currentEditUser = null;
 let searchTimeout = null;
+let estadoOriginalUsuario = null;
 
 function showUserNotification(message, type = 'info') {
   const notification = document.createElement('div');
@@ -119,6 +120,7 @@ function filterUsers() {
     loaderEl.style.display = 'none';
   }, 500);
 }
+
 function openDeleteModal(button) {
   currentDeleteUser = {
     id: button.getAttribute('data-id'),
@@ -225,90 +227,83 @@ function openEditModal(button) {
   
   document.getElementById('editUserModal').style.display = 'block';
   document.body.style.overflow = 'hidden';
+
+  capturarEstadoOriginalUsuario();
+  atualizarEstadoBotaoSalvarUsuario();
 }
 
 function closeEditModal() {
   document.getElementById('editUserModal').style.display = 'none';
   document.body.style.overflow = 'auto';
   currentEditUser = null;
+  estadoOriginalUsuario = null;
 }
 
-function openConfirmSaveModal() {
-  document.getElementById('confirmSaveModal').style.display = 'block';
+function capturarEstadoOriginalUsuario() {
+  estadoOriginalUsuario = {
+    nome: document.getElementById('editUserNome')?.value.trim() || '',
+    email: document.getElementById('editUserEmail')?.value.trim() || '',
+    telefone: document.getElementById('editUserTelefone')?.value.trim() || '',
+    genero: document.getElementById('editUserGenero')?.value || '',
+    role: document.getElementById('editUserRole')?.value || ''
+  };
 }
 
-function closeConfirmSaveModal() {
-  document.getElementById('confirmSaveModal').style.display = 'none';
-}
+function atualizarEstadoBotaoSalvarUsuario() {
+  const form = document.getElementById('editUserForm');
+  if (!form) return;
 
-document.getElementById('editUserForm').addEventListener('submit', function(event) {
-  event.preventDefault();
-  
-  const senha = document.getElementById('editUserSenha').value;
-  const confirmarSenha = document.getElementById('editUserConfirmarSenha').value;
-  
-  if (senha && senha !== confirmarSenha) {
-    showUserNotification('As senhas não coincidem!', 'error');
+  const submitBtn = form.querySelector('button[type="submit"]');
+  if (!submitBtn) return;
+
+  const nome = document.getElementById('editUserNome')?.value.trim() || '';
+  const email = document.getElementById('editUserEmail')?.value.trim() || '';
+  const telefone = document.getElementById('editUserTelefone')?.value.trim() || '';
+  const genero = document.getElementById('editUserGenero')?.value || '';
+  const role = document.getElementById('editUserRole')?.value || '';
+  const senha = document.getElementById('editUserSenha')?.value || '';
+  const confirmarSenha = document.getElementById('editUserConfirmarSenha')?.value || '';
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const nomeValido = nome.length >= 3;
+  const emailValido = emailRegex.test(email);
+  const telefoneValido = telefone.replace(/\D/g, '').length >= 10;
+  const generoValido = genero.trim() !== '';
+
+  let senhaValida = true;
+  if (senha || confirmarSenha) {
+    senhaValida = senha.length >= 6 && senha === confirmarSenha;
+  }
+
+  const formularioValido =
+    nomeValido && emailValido && telefoneValido && generoValido && senhaValida;
+
+  if (!estadoOriginalUsuario) {
+    submitBtn.disabled = true;
     return;
   }
-  
-  openConfirmSaveModal();
-});
 
-async function confirmEditUser() {
-  const form = document.getElementById('editUserForm');
-  const formData = new FormData(form);
-  
-  const cpfInput = document.getElementById('editUserCpf');
-  const telefoneInput = document.getElementById('editUserTelefone');
-  
-  if (cpfInput) {
-    formData.set('cpf', removerMascara(cpfInput.value));
-  }
-  
-  if (telefoneInput && telefoneInput.value) {
-    formData.set('telefone', removerMascara(telefoneInput.value));
-  }
-  
-  const saveBtn = document.querySelector('#confirmSaveModal .modal-button-confirm.confirm');
-  const originalText = saveBtn.innerHTML;
-  
-  try {
-    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
-    saveBtn.disabled = true;
-    
-    const response = await fetch(form.action, {
-      method: 'POST',
-      body: new URLSearchParams([...formData]),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      credentials: 'include'
-    });
-    
-    if (response.ok) {
-      showUserNotification('Usuário atualizado com sucesso!', 'success');
-      
-      setTimeout(() => {
-        closeConfirmSaveModal();
-        closeEditModal();
-        location.reload();
-      }, 1000);
-      
-    } else {
-      const errorText = await response.text();
-      throw new Error(errorText || 'Erro ao atualizar usuário');
-    }
-    
-  } catch (error) {
-    console.error('Erro:', error);
-    showUserNotification('Erro ao atualizar usuário', 'error');
-    saveBtn.innerHTML = originalText;
-    saveBtn.disabled = false;
-  }
+  const mudou =
+    nome !== estadoOriginalUsuario.nome ||
+    email !== estadoOriginalUsuario.email ||
+    telefone !== estadoOriginalUsuario.telefone ||
+    genero !== estadoOriginalUsuario.genero ||
+    role !== estadoOriginalUsuario.role ||
+    senha.length > 0 ||
+    confirmarSenha.length > 0;
+
+  submitBtn.disabled = !(formularioValido && mudou);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+
+  const editForm = document.getElementById('editUserForm');
+  if (editForm) {
+    const submitBtn = editForm.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.disabled = true;
+  }
+
   const deleteModal = document.getElementById('deleteUserModal');
   const closeDeleteBtn = document.querySelector('.close-delete-user-modal');
   const cancelDeleteBtn = document.querySelector('#deleteUserModal .modal-button-delete.cancel');
@@ -402,37 +397,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     return true;
   }
-  
-  const confirmModal = document.getElementById('confirmSaveModal');
-  const closeConfirmBtn = document.querySelector('.close-confirm-save-modal');
-  const cancelConfirmBtn = document.querySelector('#confirmSaveModal .modal-button-confirm.cancel');
-  const confirmSaveBtn = document.querySelector('#confirmSaveModal .modal-button-confirm.confirm');
-  
-  if (closeConfirmBtn) {
-    closeConfirmBtn.addEventListener('click', closeConfirmSaveModal);
-  }
-  
-  if (cancelConfirmBtn) {
-    cancelConfirmBtn.addEventListener('click', closeConfirmSaveModal);
-  }
-  
-  if (confirmSaveBtn) {
-    confirmSaveBtn.addEventListener('click', confirmEditUser);
-  }
-  
-  if (confirmModal) {
-    confirmModal.addEventListener('click', function(e) {
-      if (e.target === confirmModal) {
-        closeConfirmSaveModal();
-      }
-    });
-  }
-  
+
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       closeDeleteModal();
       closeEditModal();
-      closeConfirmSaveModal();
     }
   });
   
@@ -447,11 +416,86 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  ['editUserNome', 'editUserEmail', 'editUserTelefone', 'editUserGenero', 'editUserRole', 'editUserSenha', 'editUserConfirmarSenha']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', atualizarEstadoBotaoSalvarUsuario);
+        el.addEventListener('change', atualizarEstadoBotaoSalvarUsuario);
+      }
+    });
+
   const searchInput = document.getElementById('userSearch');
   if (searchInput) {
     searchInput.addEventListener('keyup', filterUsers);
   }
 });
+
+document.getElementById('editUserForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+  
+  const senha = document.getElementById('editUserSenha').value;
+  const confirmarSenha = document.getElementById('editUserConfirmarSenha').value;
+  
+  if (senha && senha !== confirmarSenha) {
+    showUserNotification('As senhas não coincidem!', 'error');
+    return;
+  }
+  
+  confirmEditUser();
+});
+
+async function confirmEditUser() {
+  const form = document.getElementById('editUserForm');
+  const formData = new FormData(form);
+  
+  const cpfInput = document.getElementById('editUserCpf');
+  const telefoneInput = document.getElementById('editUserTelefone');
+  
+  if (cpfInput) {
+    formData.set('cpf', removerMascara(cpfInput.value));
+  }
+  
+  if (telefoneInput && telefoneInput.value) {
+    formData.set('telefone', removerMascara(telefoneInput.value));
+  }
+  
+  const saveBtn = document.querySelector('#editUserForm button[type="submit"]');
+  const originalText = saveBtn.innerHTML;
+  
+  try {
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+    saveBtn.disabled = true;
+    
+    const response = await fetch(form.action, {
+      method: 'POST',
+      body: new URLSearchParams([...formData]),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      credentials: 'include'
+    });
+    
+    if (response.ok) {
+      showUserNotification('Usuário atualizado com sucesso!', 'success');
+      
+      setTimeout(() => {
+        closeEditModal();
+        location.reload();
+      }, 1000);
+      
+    } else {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Erro ao atualizar usuário');
+    }
+    
+  } catch (error) {
+    console.error('Erro:', error);
+    showUserNotification('Erro ao atualizar usuário', 'error');
+    saveBtn.innerHTML = originalText;
+    saveBtn.disabled = false;
+  }
+}
 
 function aplicarMascaraCPF(input) {
   let value = input.value.replace(/\D/g, '');

@@ -4,7 +4,6 @@ function verificarUsuarioAutenticado() {
 
     if (estaLogado) {
         const userIcon = document.getElementById('userIcon');
-
         if (userIcon) {
             userIcon.style.cursor = 'pointer';
             userIcon.title = 'Ver meu perfil';
@@ -25,7 +24,6 @@ function configurarIconeUsuario() {
         userIcon.onclick = function () {
             abrirModalUsuarioSimples();
         };
-
     } else if (userIcon) {
         userIcon.style.display = 'none';
     }
@@ -37,24 +35,18 @@ function setupStickyHeader() {
 
     if (!header || !contentWrapper) return;
 
-    const OFFSET = 65; 
-
+    const OFFSET = 65;
     let ultimaAltura = 0;
 
     function updateHeaderPadding() {
         const alturaAtual = header.offsetHeight;
-
         if (alturaAtual === ultimaAltura) return;
-
         ultimaAltura = alturaAtual;
-
         contentWrapper.style.marginTop = (alturaAtual - OFFSET) + 'px';
     }
 
     function handleScroll() {
-        const scrollTop =
-            window.pageYOffset ||
-            document.documentElement.scrollTop;
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
         if (scrollTop > 150) {
             header.classList.add('scrolled');
@@ -74,36 +66,24 @@ function setupStickyHeader() {
     window.addEventListener('load', updateHeaderPadding);
 
     let resizeTimeout;
-
     window.addEventListener('resize', function () {
         clearTimeout(resizeTimeout);
-
-        resizeTimeout = setTimeout(
-            updateHeaderPadding,
-            200
-        );
+        resizeTimeout = setTimeout(updateHeaderPadding, 200);
     });
 
     let ticking = false;
-
     window.addEventListener('scroll', function () {
         if (!ticking) {
-
             window.requestAnimationFrame(function () {
                 handleScroll();
                 ticking = false;
             });
-
             ticking = true;
         }
     });
 
     header.addEventListener('transitionend', function (e) {
-        if (
-            e.propertyName === 'padding-top' ||
-            e.propertyName === 'padding' ||
-            e.propertyName === 'padding-bottom'
-        ) {
+        if (e.propertyName === 'padding-top' || e.propertyName === 'padding' || e.propertyName === 'padding-bottom') {
             requestAnimationFrame(updateHeaderPadding);
         }
     });
@@ -113,30 +93,22 @@ function setupStickyHeader() {
         observer.observe(header);
     }
 
-    setTimeout(
-        updateHeaderPadding,
-        100
-    );
+    setTimeout(updateHeaderPadding, 100);
 }
 
 function configurarSpinnerTopbar() {
-    const botoesTopbar = document.querySelectorAll(
-        '.receita-topbar-back, .detalhe-topbar-back'
-    );
+    const botoesTopbar = document.querySelectorAll('.receita-topbar-back, .detalhe-topbar-back');
 
     botoesTopbar.forEach(botao => {
         if (botao.dataset.spinnerConfigurado) return;
-
         botao.dataset.spinnerConfigurado = 'true';
 
-        botao.addEventListener('click', function() {
+        botao.addEventListener('click', function () {
             const icon = botao.querySelector('i');
-
             if (icon) {
                 icon.dataset.originalClass = icon.className;
                 icon.className = 'fas fa-spinner fa-spin';
             }
-
             botao.style.pointerEvents = 'none';
             botao.style.opacity = '0.7';
         });
@@ -146,36 +118,25 @@ function configurarSpinnerTopbar() {
 document.addEventListener('DOMContentLoaded', configurarSpinnerTopbar);
 
 function detectMobile() {
-    if (
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
-            .test(navigator.userAgent)
-    ) {
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         document.body.classList.add('mobile-device');
     } else {
         document.body.classList.add('desktop-device');
     }
 }
 
-
 function setupCabecalhoCliente() {
     const titleElement = document.querySelector('.newspaper-title');
 
     if (titleElement && window.innerWidth > 828) {
-
         const originalTitle = titleElement.textContent.trim();
-
         titleElement.textContent = '';
-
         let charIndex = 0;
 
         function typeTitle() {
             if (charIndex < originalTitle.length) {
-
-                titleElement.textContent +=
-                    originalTitle.charAt(charIndex);
-
+                titleElement.textContent += originalTitle.charAt(charIndex);
                 charIndex++;
-
                 setTimeout(typeTitle, 150);
             }
         }
@@ -183,33 +144,15 @@ function setupCabecalhoCliente() {
         typeTitle();
     }
 
-    const dateElement =
-        document.getElementById('newspaperDate');
+    const dateElement = document.getElementById('newspaperDate');
 
     if (dateElement) {
         const today = new Date();
-
-        const meses = [
-            'janeiro',
-            'fevereiro',
-            'março',
-            'abril',
-            'maio',
-            'junho',
-            'julho',
-            'agosto',
-            'setembro',
-            'outubro',
-            'novembro',
-            'dezembro'
-        ];
-
+        const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
         const dia = today.getDate();
         const mes = meses[today.getMonth()];
         const ano = today.getFullYear();
-
-        dateElement.textContent =
-            `${dia} de ${mes} de ${ano}`;
+        dateElement.textContent = `${dia} de ${mes} de ${ano}`;
     }
 
     verificarUsuarioAutenticado();
@@ -218,19 +161,12 @@ function setupCabecalhoCliente() {
     detectMobile();
 }
 
-
 function toggleSidebarCliente() {
-    const nav =
-        document.getElementById('headerNav');
-
-    const overlay =
-        document.getElementById('headerNavOverlay');
+    const nav = document.getElementById('headerNav');
+    const overlay = document.getElementById('headerNavOverlay');
 
     if (nav) {
-
-        const isOpening =
-            !nav.classList.contains('open');
-
+        const isOpening = !nav.classList.contains('open');
         nav.classList.toggle('open');
 
         if (overlay) {
@@ -238,34 +174,21 @@ function toggleSidebarCliente() {
         }
 
         if (isOpening) {
-
-            const scrollbarWidth =
-                window.innerWidth -
-                document.documentElement.clientWidth;
-
+            const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
             document.body.style.overflow = 'hidden';
-
-            document.body.style.paddingRight =
-                scrollbarWidth + 'px';
-
+            document.body.style.paddingRight = scrollbarWidth + 'px';
         } else {
-
             document.body.style.overflow = 'auto';
-
             document.body.style.paddingRight = '';
         }
     }
 }
 
 function closeSidebarCliente() {
-    const nav =
-        document.getElementById('headerNav');
-
-    const overlay =
-        document.getElementById('headerNavOverlay');
+    const nav = document.getElementById('headerNav');
+    const overlay = document.getElementById('headerNavOverlay');
 
     if (nav) {
-
         nav.classList.remove('open');
 
         if (overlay) {
@@ -273,52 +196,32 @@ function closeSidebarCliente() {
         }
 
         document.body.style.overflow = 'auto';
-
         document.body.style.paddingRight = '';
     }
 }
 
 function setupSidebarCliente() {
-    const menuToggle =
-        document.getElementById('menuToggle');
-
-    const overlay =
-        document.getElementById('headerNavOverlay');
-
-    const closeBtn =
-        document.getElementById('headerNavClose');
+    const menuToggle = document.getElementById('menuToggle');
+    const overlay = document.getElementById('headerNavOverlay');
+    const closeBtn = document.getElementById('headerNavClose');
 
     if (menuToggle) {
-        menuToggle.addEventListener(
-            'click',
-            toggleSidebarCliente
-        );
+        menuToggle.addEventListener('click', toggleSidebarCliente);
     }
 
     if (overlay) {
-        overlay.addEventListener(
-            'click',
-            closeSidebarCliente
-        );
+        overlay.addEventListener('click', closeSidebarCliente);
     }
 
     if (closeBtn) {
-        closeBtn.addEventListener(
-            'click',
-            closeSidebarCliente
-        );
+        closeBtn.addEventListener('click', closeSidebarCliente);
     }
 }
 
 function abrirSidebarAdmin() {
-    const sidebar =
-        document.getElementById('adminSidebar');
-
-    const overlay =
-        document.getElementById('adminSidebarOverlay');
-
-    const toggle =
-        document.getElementById('adminSidebarToggle');
+    const sidebar = document.getElementById('adminSidebar');
+    const overlay = document.getElementById('adminSidebarOverlay');
+    const toggle = document.getElementById('adminSidebarToggle');
 
     if (!sidebar) return;
 
@@ -336,14 +239,9 @@ function abrirSidebarAdmin() {
 }
 
 function fecharSidebarAdmin() {
-    const sidebar =
-        document.getElementById('adminSidebar');
-
-    const overlay =
-        document.getElementById('adminSidebarOverlay');
-
-    const toggle =
-        document.getElementById('adminSidebarToggle');
+    const sidebar = document.getElementById('adminSidebar');
+    const overlay = document.getElementById('adminSidebarOverlay');
+    const toggle = document.getElementById('adminSidebarToggle');
 
     if (!sidebar) return;
 
@@ -361,121 +259,70 @@ function fecharSidebarAdmin() {
 }
 
 function setupSidebarAdmin() {
-    const toggle =
-        document.getElementById('adminSidebarToggle');
-
-    const overlay =
-        document.getElementById('adminSidebarOverlay');
-
-    const closeBtn =
-        document.getElementById('adminSidebarClose');
+    const toggle = document.getElementById('adminSidebarToggle');
+    const overlay = document.getElementById('adminSidebarOverlay');
+    const closeBtn = document.getElementById('adminSidebarClose');
 
     if (toggle) {
-        toggle.addEventListener(
-            'click',
-            abrirSidebarAdmin
-        );
+        toggle.addEventListener('click', abrirSidebarAdmin);
     }
 
     if (overlay) {
-        overlay.addEventListener(
-            'click',
-            fecharSidebarAdmin
-        );
+        overlay.addEventListener('click', fecharSidebarAdmin);
     }
 
     if (closeBtn) {
-        closeBtn.addEventListener(
-            'click',
-            fecharSidebarAdmin
-        );
+        closeBtn.addEventListener('click', fecharSidebarAdmin);
     }
 
-    const links =
-        document.querySelectorAll(
-            '.admin-sidebar-nav a'
-        );
+    const links = document.querySelectorAll('.admin-sidebar-nav a');
 
     links.forEach(link => {
-        link.addEventListener(
-            'click',
-            function () {
-                if (window.innerWidth <= 768) {
-                    fecharSidebarAdmin();
-                }
+        link.addEventListener('click', function () {
+            if (window.innerWidth <= 768) {
+                fecharSidebarAdmin();
             }
-        );
+        });
     });
 }
-
 
 let quantidadeNotificacoesAnterior = null;
 let ultimoIdNotificacao = null;
 
 async function atualizarContadorNotificacoes() {
-    const badge =
-        document.getElementById('notificationBadge');
+    const badge = document.getElementById('notificationBadge');
+    const navBadge = document.getElementById('notificationNavBadge');
+    const sidebarBadge = document.getElementById('notificationSidebarBadge');
 
-    const navBadge =
-        document.getElementById('notificationNavBadge');
-
-    const sidebarBadge =
-        document.getElementById('notificationSidebarBadge');
-
-    if (
-        !badge &&
-        !navBadge &&
-        !sidebarBadge
-    ) {
+    if (!badge && !navBadge && !sidebarBadge) {
         return;
     }
 
     try {
-        const response =
-            await fetch('/api/notificacoes/contador');
+        const response = await fetch('/api/notificacoes/contador');
 
         if (!response.ok) {
             return;
         }
 
-        const data =
-            await response.json();
+        const data = await response.json();
+        const quantidade = Number(data.quantidade || 0);
 
-        const quantidade =
-            Number(data.quantidade || 0);
-
-        const responseNotificacoes =
-            await fetch('/api/notificacoes');
+        const responseNotificacoes = await fetch('/api/notificacoes');
 
         if (responseNotificacoes.ok) {
-            const dataNotificacoes =
-                await responseNotificacoes.json();
-
-            const notificacoes =
-                dataNotificacoes.notificacoes || [];
+            const dataNotificacoes = await responseNotificacoes.json();
+            const notificacoes = dataNotificacoes.notificacoes || [];
 
             if (notificacoes.length > 0) {
-                const maiorId =
-                    Math.max(
-                        ...notificacoes.map(notificacao =>
-                            Number(notificacao.id)
-                        )
-                    );
+                const maiorId = Math.max(...notificacoes.map(notificacao => Number(notificacao.id)));
 
                 if (ultimoIdNotificacao !== null) {
-                    const novasNotificacoes =
-                        notificacoes.filter(
-                            notificacao =>
-                                Number(notificacao.id) >
-                                ultimoIdNotificacao
-                        );
+                    const novasNotificacoes = notificacoes.filter(notificacao => Number(notificacao.id) > ultimoIdNotificacao);
 
-                    const possuiNotificacaoQueDeveAvisar =
-                        novasNotificacoes.some(
-                            notificacao =>
-                                notificacao.tipo !== 'FAVORITOU' &&
-                                notificacao.tipo !== 'DESFAVORITOU'
-                        );
+                    const possuiNotificacaoQueDeveAvisar = novasNotificacoes.some(
+                        notificacao => notificacao.tipo !== 'FAVORITOU' && notificacao.tipo !== 'DESFAVORITOU'
+                    );
 
                     if (possuiNotificacaoQueDeveAvisar) {
                         mostrarNovaNotificacao();
@@ -486,13 +333,9 @@ async function atualizarContadorNotificacoes() {
             }
         }
 
-        quantidadeNotificacoesAnterior =
-            quantidade;
+        quantidadeNotificacoesAnterior = quantidade;
 
-        const texto =
-            quantidade > 99
-                ? '99+'
-                : quantidade;
+        const texto = quantidade > 99 ? '99+' : quantidade;
 
         if (quantidade > 0) {
             if (badge) {
@@ -510,37 +353,22 @@ async function atualizarContadorNotificacoes() {
                 sidebarBadge.style.display = 'inline-flex';
             }
         } else {
-            if (badge) {
-                badge.style.display = 'none';
-            }
-
-            if (navBadge) {
-                navBadge.style.display = 'none';
-            }
-
-            if (sidebarBadge) {
-                sidebarBadge.style.display = 'none';
-            }
+            if (badge) badge.style.display = 'none';
+            if (navBadge) navBadge.style.display = 'none';
+            if (sidebarBadge) sidebarBadge.style.display = 'none';
         }
     } catch (error) {
-        console.error(
-            'Erro ao buscar notificações:',
-            error
-        );
+        console.error('Erro ao buscar notificações:', error);
     }
 }
 
 function mostrarNotificacaoPerfil(message, type) {
-    const notif =
-        document.createElement('div');
+    const notif = document.createElement('div');
+    notif.className = `user-notification ${type}`;
 
-    notif.className =
-        `user-notification ${type}`;
-
-    notif.innerHTML =
-        type === 'success'
-            ? `<i class="fas fa-check-circle"></i> ${message}`
-            : `<i class="fas fa-exclamation-circle"></i> ${message}`;
+    notif.innerHTML = type === 'success'
+        ? `<i class="fas fa-check-circle"></i> ${message}`
+        : `<i class="fas fa-exclamation-circle"></i> ${message}`;
 
     document.body.appendChild(notif);
 
@@ -550,7 +378,6 @@ function mostrarNotificacaoPerfil(message, type) {
 
     setTimeout(() => {
         notif.classList.remove('show');
-
         setTimeout(() => {
             notif.remove();
         }, 300);
@@ -558,16 +385,9 @@ function mostrarNotificacaoPerfil(message, type) {
 }
 
 function mostrarNovaNotificacao() {
-    const notif =
-        document.createElement('div');
-
-    notif.className =
-        'user-notification nova-notificacao';
-
-    notif.innerHTML = `
-        <i class="fas fa-bell"></i>
-        Nova notificação
-    `;
+    const notif = document.createElement('div');
+    notif.className = 'user-notification nova-notificacao';
+    notif.innerHTML = `<i class="fas fa-bell"></i> Nova notificação`;
 
     document.body.appendChild(notif);
 
@@ -576,22 +396,16 @@ function mostrarNovaNotificacao() {
     }, 10);
 
     setTimeout(() => {
-
         notif.classList.remove('show');
-
         setTimeout(() => {
             notif.remove();
         }, 300);
-
     }, 3000);
 }
 
 async function carregarNotificacoes() {
-    const body =
-        document.getElementById('notificacoesModalBody');
-
-    const loader =
-        body?.querySelector('.modal-loader');
+    const body = document.getElementById('notificacoesModalBody');
+    const loader = body?.querySelector('.modal-loader');
 
     if (!body) return;
 
@@ -600,29 +414,20 @@ async function carregarNotificacoes() {
     }
 
     try {
-        const response =
-            await fetch('/api/notificacoes');
+        const response = await fetch('/api/notificacoes');
 
         if (!response.ok) {
             throw new Error('Erro ao buscar notificações');
         }
 
-        const data =
-            await response.json();
+        const data = await response.json();
+        const notificacoes = data.notificacoes || [];
 
-        const notificacoes =
-            data.notificacoes || [];
-
-        body.querySelectorAll(
-            '.notificacao-item, .notificacoes-vazia'
-        ).forEach(elemento => elemento.remove());
+        body.querySelectorAll('.notificacao-item, .notificacoes-vazia').forEach(elemento => elemento.remove());
 
         if (notificacoes.length === 0) {
-            const vazia =
-                document.createElement('div');
-
-            vazia.className =
-                'notificacoes-vazia';
+            const vazia = document.createElement('div');
+            vazia.className = 'notificacoes-vazia';
 
             vazia.innerHTML = `
                 <i class="fas fa-bell-slash"></i>
@@ -633,25 +438,15 @@ async function carregarNotificacoes() {
             body.appendChild(vazia);
         } else {
             notificacoes.forEach(notificacao => {
-                const item =
-                    document.createElement('div');
-
-                item.className =
-                    'notificacao-item';
+                const item = document.createElement('div');
+                item.className = 'notificacao-item';
 
                 if (!notificacao.lida) {
                     item.classList.add('nao-lida');
                 }
 
-                const icone =
-                    obterIconeNotificacao(
-                        notificacao.tipo
-                    );
-
-                const dataFormatada =
-                    formatarDataNotificacao(
-                        notificacao.dataHora
-                    );
+                const icone = obterIconeNotificacao(notificacao.tipo);
+                const dataFormatada = formatarDataNotificacao(notificacao.dataHora);
 
                 item.innerHTML = `
                     <div class="notificacao-icon">
@@ -662,50 +457,30 @@ async function carregarNotificacoes() {
                         <p class="notificacao-mensagem">
                             ${escaparHtml(notificacao.mensagem)}
                         </p>
-
                         <span class="notificacao-data">
                             ${dataFormatada}
                         </span>
                     </div>
 
-                    ${
-                        !notificacao.lida
-                            ? '<span class="notificacao-nao-lida-indicador"></span>'
-                            : ''
-                    }
+                    ${!notificacao.lida ? '<span class="notificacao-nao-lida-indicador"></span>' : ''}
                 `;
 
                 if (!notificacao.lida) {
-                    item.addEventListener(
-                        'click',
-                        function () {
-                            marcarNotificacaoComoLida(
-                                notificacao.id,
-                                item
-                            );
-                        }
-                    );
+                    item.addEventListener('click', function () {
+                        marcarNotificacaoComoLida(notificacao.id, item);
+                    });
                 }
 
                 body.appendChild(item);
             });
         }
-
     } catch (error) {
-        console.error(
-            'Erro ao carregar notificações:',
-            error
-        );
+        console.error('Erro ao carregar notificações:', error);
 
-        body.querySelectorAll(
-            '.notificacao-item, .notificacoes-vazia'
-        ).forEach(elemento => elemento.remove());
+        body.querySelectorAll('.notificacao-item, .notificacoes-vazia').forEach(elemento => elemento.remove());
 
-        const erro =
-            document.createElement('div');
-
-        erro.className =
-            'notificacoes-vazia';
+        const erro = document.createElement('div');
+        erro.className = 'notificacoes-vazia';
 
         erro.innerHTML = `
             <i class="fas fa-exclamation-triangle"></i>
@@ -714,7 +489,6 @@ async function carregarNotificacoes() {
         `;
 
         body.appendChild(erro);
-
     } finally {
         if (loader) {
             loader.classList.add('is-hidden');
@@ -724,22 +498,16 @@ async function carregarNotificacoes() {
 
 function obterIconeNotificacao(tipo) {
     switch (tipo) {
-
         case 'FAVORITOU':
             return 'fas fa-heart';
-
         case 'DESFAVORITOU':
             return 'fas fa-heart-broken';
-
         case 'NOVA_RECEITA':
             return 'fas fa-utensils';
-
         case 'RECEITA_APROVADA':
             return 'fas fa-check-circle';
-
         case 'RECEITA_REJEITADA':
             return 'fas fa-times-circle';
-
         default:
             return 'fas fa-bell';
     }
@@ -748,35 +516,26 @@ function obterIconeNotificacao(tipo) {
 function formatarDataNotificacao(dataHora) {
     if (!dataHora) return '';
 
-    const data =
-        new Date(dataHora);
+    const data = new Date(dataHora);
 
     if (Number.isNaN(data.getTime())) {
         return '';
     }
 
-    return data.toLocaleString(
-        'pt-BR',
-        {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        }
-    );
+    return data.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
 
 function escaparHtml(texto) {
-    const div =
-        document.createElement('div');
-
-    div.textContent =
-        texto || '';
-
+    const div = document.createElement('div');
+    div.textContent = texto || '';
     return div.innerHTML;
 }
-
 
 async function excluirTodasNotificacoes() {
     try {
@@ -791,369 +550,241 @@ async function excluirTodasNotificacoes() {
         await carregarNotificacoes();
         await atualizarContadorNotificacoes();
 
-        mostrarNotificacaoPerfil(
-            'Todas as notificações foram excluídas',
-            'success'
-        );
-
+        mostrarNotificacaoPerfil('Todas as notificações foram excluídas', 'success');
     } catch (error) {
         console.error('Erro ao excluir todas as notificações:', error);
-
-        mostrarNotificacaoPerfil(
-            'Erro ao excluir notificações',
-            'error'
-        );
+        mostrarNotificacaoPerfil('Erro ao excluir notificações', 'error');
     }
 }
 
-async function marcarNotificacaoComoLida(
-    id,
-    elemento
-) {
+async function marcarNotificacaoComoLida(id, elemento) {
     try {
-
-        const response =
-            await fetch(
-                `/api/notificacoes/${id}/ler`,
-                {
-                    method: 'PATCH'
-                }
-            );
+        const response = await fetch(`/api/notificacoes/${id}/ler`, {
+            method: 'PATCH'
+        });
 
         if (!response.ok) {
-            throw new Error(
-                'Erro ao marcar notificação como lida'
-            );
+            throw new Error('Erro ao marcar notificação como lida');
         }
 
-        elemento.classList.remove(
-            'nao-lida'
-        );
+        elemento.classList.remove('nao-lida');
 
-        const indicador =
-            elemento.querySelector(
-                '.notificacao-nao-lida-indicador'
-            );
+        const indicador = elemento.querySelector('.notificacao-nao-lida-indicador');
 
         if (indicador) {
             indicador.remove();
         }
 
         await atualizarContadorNotificacoes();
-
     } catch (error) {
-
-        console.error(
-            'Erro ao marcar notificação como lida:',
-            error
-        );
+        console.error('Erro ao marcar notificação como lida:', error);
     }
 }
 
 async function marcarTodasNotificacoesComoLidas() {
     try {
-
-        const response =
-            await fetch(
-                '/api/notificacoes/ler-todas',
-                {
-                    method: 'PATCH'
-                }
-            );
+        const response = await fetch('/api/notificacoes/ler-todas', {
+            method: 'PATCH'
+        });
 
         if (!response.ok) {
-            throw new Error(
-                'Erro ao marcar notificações como lidas'
-            );
+            throw new Error('Erro ao marcar notificações como lidas');
         }
 
         await carregarNotificacoes();
         await atualizarContadorNotificacoes();
-
     } catch (error) {
-
-        console.error(
-            'Erro ao marcar todas as notificações como lidas:',
-            error
-        );
+        console.error('Erro ao marcar todas as notificações como lidas:', error);
     }
 }
 
 function configurarNotificacoes() {
-    const botaoDesktop =
-        document.getElementById(
-            'notificationButton'
-        );
-
-    const botaoSidebar =
-        document.querySelector(
-            '.header-notification-sidebar'
-        );
-
-    const modal =
-        document.getElementById(
-            'notificacoesModal'
-        );
-
-    const fechar =
-        document.getElementById(
-            'notificacoesModalClose'
-        );
-
-    const marcarTodas =
-        document.getElementById(
-            'marcarTodasNotificacoes'
-        );
-
-    const excluirTodas =
-    document.getElementById(
-        'excluirTodasNotificacoes'
-    );
+    const botaoDesktop = document.getElementById('notificationButton');
+    const botaoSidebar = document.querySelector('.header-notification-sidebar');
+    const modal = document.getElementById('notificacoesModal');
+    const fechar = document.getElementById('notificacoesModalClose');
+    const marcarTodas = document.getElementById('marcarTodasNotificacoes');
+    const excluirTodas = document.getElementById('excluirTodasNotificacoes');
 
     if (!modal) return;
 
     async function abrirNotificacoes(event) {
-
         if (event) {
             event.preventDefault();
         }
 
         modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
 
-        document.body.style.overflow =
-            'hidden';
+        setTimeout(() => {
+            const botoes = [
+                document.getElementById('notificationButton'),
+                document.querySelector('.header-notification-sidebar'),
+                document.querySelector('.header-notification-nav')
+            ];
+
+            botoes.forEach(botao => {
+                if (botao && typeof restaurarSpinnerElemento === 'function') {
+                    restaurarSpinnerElemento(botao);
+                }
+            });
+        }, 50);
 
         await carregarNotificacoes();
         await atualizarContadorNotificacoes();
     }
-
     function fecharNotificacoes() {
-
         modal.classList.remove('show');
-
-        document.body.style.overflow =
-            'auto';
+        document.body.style.overflow = 'auto';
     }
 
     if (botaoDesktop) {
-        botaoDesktop.addEventListener(
-            'click',
-            abrirNotificacoes
-        );
+        botaoDesktop.addEventListener('click', abrirNotificacoes);
     }
 
     if (botaoSidebar) {
-        botaoSidebar.addEventListener(
-            'click',
-            abrirNotificacoes
-        );
+        botaoSidebar.addEventListener('click', abrirNotificacoes);
     }
 
     if (fechar) {
-        fechar.addEventListener(
-            'click',
-            fecharNotificacoes
-        );
+        fechar.addEventListener('click', fecharNotificacoes);
     }
 
     if (marcarTodas) {
-        marcarTodas.addEventListener(
-            'click',
-            marcarTodasNotificacoesComoLidas
-        );
+        marcarTodas.addEventListener('click', marcarTodasNotificacoesComoLidas);
     }
 
     if (excluirTodas) {
-        excluirTodas.addEventListener(
-            'click',
-            excluirTodasNotificacoes
-        );
+        excluirTodas.addEventListener('click', excluirTodasNotificacoes);
     }
 
-    modal.addEventListener(
-        'click',
-        function (event) {
-            if (event.target === modal) {
-                fecharNotificacoes();
-            }
+    modal.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            fecharNotificacoes();
         }
-    );
+    });
 
     atualizarContadorNotificacoes();
 }
 
-function openAdminPerfilModal() {
-    const modal =
-        document.getElementById(
-            'adminPerfilModal'
-        );
+function aplicarSpinnerElemento(elemento) {
+    if (elemento.dataset.spinnerAplicado === 'true') return;
 
+    const icon = elemento.querySelector('i');
+
+    if (!icon) return;
+
+    elemento.dataset.spinnerAplicado = 'true';
+    icon.dataset.loaderOriginalClass = icon.className;
+    icon.className = 'fas fa-spinner fa-spin';
+    elemento.style.pointerEvents = 'none';
+    elemento.style.opacity = '0.7';
+}
+
+function restaurarSpinnerElemento(elemento) {
+    if (!elemento || elemento.dataset.spinnerAplicado !== 'true') return;
+
+    const icon = elemento.querySelector('i');
+
+    if (icon && icon.dataset.loaderOriginalClass) {
+        icon.className = icon.dataset.loaderOriginalClass;
+    }
+
+    elemento.style.pointerEvents = '';
+    elemento.style.opacity = '';
+    delete elemento.dataset.spinnerAplicado;
+}
+
+function openAdminPerfilModal() {
+    const modal = document.getElementById('adminPerfilModal');
     if (!modal) return;
 
-    const erro =
-        document.getElementById(
-            'adminPerfilErro'
-        );
+    const botao = document.querySelector('.admin-sidebar-btn');
+    const erro = document.getElementById('adminPerfilErro');
 
-    erro.style.display =
-        'none';
+    erro.style.display = 'none';
 
     fetch('/perfil/usuario-logado')
         .then(r => r.json())
         .then(data => {
+            document.getElementById('adminPerfilNome').value = data.usuario.nome || '';
+            document.getElementById('adminPerfilEmail').value = data.usuario.email || '';
+            document.getElementById('adminPerfilSenha').value = '';
+            document.getElementById('adminPerfilConfirmarSenha').value = '';
 
-            document.getElementById(
-                'adminPerfilNome'
-            ).value =
-                data.usuario.nome || '';
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
 
-            document.getElementById(
-                'adminPerfilEmail'
-            ).value =
-                data.usuario.email || '';
-
-            document.getElementById(
-                'adminPerfilSenha'
-            ).value = '';
-
-            document.getElementById(
-                'adminPerfilConfirmarSenha'
-            ).value = '';
-
-            modal.style.display =
-                'block';
-
-            document.body.style.overflow =
-                'hidden';
+            if (botao) restaurarSpinnerElemento(botao);
         })
         .catch(() => {
+            erro.textContent = 'Erro ao carregar dados do perfil.';
+            erro.style.display = 'block';
 
-            erro.textContent =
-                'Erro ao carregar dados do perfil.';
-
-            erro.style.display =
-                'block';
+            if (botao) restaurarSpinnerElemento(botao);
         });
 }
 
 function closeAdminPerfilModal() {
-    const modal =
-        document.getElementById(
-            'adminPerfilModal'
-        );
-
+    const modal = document.getElementById('adminPerfilModal');
     if (!modal) return;
 
-    modal.style.display =
-        'none';
-
-    document.body.style.overflow =
-        'auto';
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
 }
 
 function salvarAdminPerfil(event) {
     event.preventDefault();
 
-    const nome =
-        document.getElementById(
-            'adminPerfilNome'
-        ).value.trim();
+    const nome = document.getElementById('adminPerfilNome').value.trim();
+    const email = document.getElementById('adminPerfilEmail').value.trim();
+    const senha = document.getElementById('adminPerfilSenha').value;
+    const confirmarSenha = document.getElementById('adminPerfilConfirmarSenha').value;
+    const erro = document.getElementById('adminPerfilErro');
 
-    const email =
-        document.getElementById(
-            'adminPerfilEmail'
-        ).value.trim();
-
-    const senha =
-        document.getElementById(
-            'adminPerfilSenha'
-        ).value;
-
-    const confirmarSenha =
-        document.getElementById(
-            'adminPerfilConfirmarSenha'
-        ).value;
-
-    const erro =
-        document.getElementById(
-            'adminPerfilErro'
-        );
-
-    if (
-        senha &&
-        senha !== confirmarSenha
-    ) {
-        erro.textContent =
-            'As senhas não coincidem.';
-
-        erro.style.display =
-            'block';
-
+    if (senha && senha !== confirmarSenha) {
+        erro.textContent = 'As senhas não coincidem.';
+        erro.style.display = 'block';
         return;
     }
 
-    const dados = {
-        nome,
-        email
-    };
+    const dados = { nome, email };
 
     if (senha) {
         dados.senha = senha;
-        dados.confirmarSenha =
-            confirmarSenha;
+        dados.confirmarSenha = confirmarSenha;
     }
 
     fetch('/perfil/editar', {
         method: 'POST',
         headers: {
-            'Content-Type':
-                'application/json'
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(dados)
     })
         .then(r => r.json())
         .then(data => {
-
-            if (
-                data.message &&
-                data.message.includes('sucesso')
-            ) {
-
+            if (data.message && data.message.includes('sucesso')) {
                 closeAdminPerfilModal();
 
-                sessionStorage.setItem(
-                    'perfilAtualizado',
-                    '1'
-                );
+                sessionStorage.setItem('perfilAtualizado', '1');
 
                 window.location.reload();
-
             } else {
-
-                erro.textContent =
-                    data.message ||
-                    'Erro ao salvar.';
-
-                erro.style.display =
-                    'block';
+                erro.textContent = data.message || 'Erro ao salvar.';
+                erro.style.display = 'block';
             }
         })
         .catch(() => {
-
-            erro.textContent =
-                'Erro ao salvar.';
-
-            erro.style.display =
-                'block';
+            erro.textContent = 'Erro ao salvar.';
+            erro.style.display = 'block';
         });
 }
 
-
 function configurarLoaderNavegacao() {
     const elementos = document.querySelectorAll(
-        '.header-full-width a, .header-full-width button, .header-full-width [role="button"], .admin-sidebar a, .admin-sidebar button, .admin-sidebar [role="button"], .sidebar a, .sidebar button, .sidebar [role="button"]'
+        '.header-full-width a, .header-full-width button, .header-full-width [role="button"], .header-full-width .header-user-profile, .admin-sidebar a, .admin-sidebar button, .admin-sidebar [role="button"], .sidebar a, .sidebar button, .sidebar [role="button"]'
     );
-
     elementos.forEach(elemento => {
         if (elemento.dataset.loaderConfigurado) return;
 
@@ -1161,19 +792,34 @@ function configurarLoaderNavegacao() {
 
         elemento.addEventListener('click', function (event) {
 
-          if (
-            elemento.classList.contains('sidebar-close') ||
-            elemento.classList.contains('header-nav-close') ||
-            elemento.classList.contains('admin-sidebar-close') ||
-            elemento.id === 'menuToggle' ||
-            elemento.id === 'adminSidebarToggle'
-        ) {
-            return;
-        }
+            if (
+                elemento.classList.contains('sidebar-close') ||
+                elemento.classList.contains('header-nav-close') ||
+                elemento.classList.contains('admin-sidebar-close') ||
+                elemento.id === 'menuToggle' ||
+                elemento.id === 'adminSidebarToggle'
+            ) {
+                return;
+            }
 
             const link = elemento.closest('a');
 
             if (link && link.getAttribute('href') === '#') {
+                return;
+            }
+
+            const ehBotaoNotificacao =
+                elemento.id === 'notificationButton' ||
+                elemento.classList.contains('header-notification-nav') ||
+                elemento.classList.contains('header-notification-sidebar');
+
+            if (elemento.dataset.semSpinner === 'true') {
+                aplicarSpinnerElemento(elemento);
+                return;
+            }
+
+            if (ehBotaoNotificacao) {
+                aplicarSpinnerElemento(elemento);
                 return;
             }
 
@@ -1193,27 +839,15 @@ function configurarLoaderNavegacao() {
         });
     });
 }
-function verificarNotificacaoPerfil() {
-    if (
-        sessionStorage.getItem(
-            'perfilAtualizado'
-        ) === '1'
-    ) {
 
-        sessionStorage.removeItem(
-            'perfilAtualizado'
-        );
+function verificarNotificacaoPerfil() {
+    if (sessionStorage.getItem('perfilAtualizado') === '1') {
+        sessionStorage.removeItem('perfilAtualizado');
 
         setTimeout(() => {
-
-            const notif =
-                document.createElement('div');
-
-            notif.className =
-                'user-notification success';
-
-            notif.innerHTML =
-                '<i class="fas fa-check-circle"></i> Perfil atualizado com sucesso!';
+            const notif = document.createElement('div');
+            notif.className = 'user-notification success';
+            notif.innerHTML = '<i class="fas fa-check-circle"></i> Perfil atualizado com sucesso!';
 
             document.body.appendChild(notif);
 
@@ -1222,64 +856,43 @@ function verificarNotificacaoPerfil() {
             }, 10);
 
             setTimeout(() => {
-
                 notif.classList.remove('show');
 
                 setTimeout(() => {
                     notif.remove();
                 }, 300);
-
             }, 3000);
-
         }, 300);
     }
 }
 
-document.addEventListener(
-    'click',
-    function (e) {
+document.addEventListener('click', function (e) {
+    const modal = document.getElementById('adminPerfilModal');
 
-        const modal =
-            document.getElementById(
-                'adminPerfilModal'
-            );
-
-        if (e.target === modal) {
-            closeAdminPerfilModal();
-        }
+    if (e.target === modal) {
+        closeAdminPerfilModal();
     }
-);
+});
 
-document.addEventListener(
-    'keydown',
-    function (e) {
-
-        if (e.key === 'Escape') {
-
-            closeSidebarCliente();
-            fecharSidebarAdmin();
-            closeAdminPerfilModal();
-        }
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        closeSidebarCliente();
+        fecharSidebarAdmin();
+        closeAdminPerfilModal();
     }
-);
+});
 
-document.addEventListener(
-    'DOMContentLoaded',
-    function () {
-        const isAdmin =
-            document.querySelector(
-                '.admin-sidebar'
-            );
+document.addEventListener('DOMContentLoaded', function () {
+    const isAdmin = document.querySelector('.admin-sidebar');
 
-        if (isAdmin) {
-            setupSidebarAdmin();
-        } else {
-            setupCabecalhoCliente();
-            setupSidebarCliente();
-        }
-
-        configurarNotificacoes();
-        configurarLoaderNavegacao();
-        verificarNotificacaoPerfil();
+    if (isAdmin) {
+        setupSidebarAdmin();
+    } else {
+        setupCabecalhoCliente();
+        setupSidebarCliente();
     }
-);
+
+    configurarNotificacoes();
+    configurarLoaderNavegacao();
+    verificarNotificacaoPerfil();
+});

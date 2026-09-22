@@ -123,7 +123,7 @@ line-height: 1.5;
 margin: 0;
 display: -webkit-box;
 -webkit-line-clamp: 3;
- -webkit-box-orient: vertical;
+-webkit-box-orient: vertical;
 overflow: hidden;
 }
 
@@ -218,68 +218,6 @@ color: var(--light-text);
 font-size: 0.95rem;
 }
 
-.carrossel-modal {
-display: none;
-position: fixed;
-inset: 0;
-background: rgba(0, 0, 0, 0.6);
-z-index: 2000;
-justify-content: center;
-align-items: center;
-padding: 5px;
-overflow-y: auto;
-}
-
-.carrossel-modal-content {
-background: #fff;
-border: 3px solid var(--header-color);
-box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.3);
-width: 100%;
-max-width: 560px;
-max-height: 90vh;
-overflow-y: auto;
-}
-
-.carrossel-modal-header {
-background: var(--header-color);
-color: #fff;
-padding: 18px 24px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-border-bottom: 2px solid var(--header-color);
-}
-
-.carrossel-modal-header h2 {
-font-family: 'Playfair Display', serif;
-font-size: 1.25rem;
-font-weight: 700;
-text-transform: uppercase;
-letter-spacing: 0.6px;
-display: flex;
-align-items: center;
-gap: 10px;
-margin: 0;
-}
-
-
-.carrossel-modal-close {
-font-size: 1.8rem;
-line-height: 1;
-cursor: pointer;
-color: #fff;
-opacity: 0.85;
-transition: opacity 0.2s ease;
-}
-
-.carrossel-modal-close:hover {
-opacity: 1;
-}
-
-.carrossel-modal-content form {
-padding: 22px 24px;
-}
-
 .carrossel-form-group {
 display: flex;
 flex-direction: column;
@@ -372,88 +310,6 @@ color: var(--accent-color);
 display: grid;
 grid-template-columns: 1fr 1fr;
 gap: 14px;
-}
-
-.carrossel-modal-actions {
-display: flex;
-gap: 10px;
-justify-content: flex-end;
-margin-top: 8px;
-padding-top: 16px;
-border-top: 2px dashed rgba(139, 0, 0, 0.2);
-}
-
-.carrossel-btn {
-padding: 11px 22px;
-border: 2px solid;
-font-family: inherit;
-font-weight: 700;
-font-size: 0.82rem;
-text-transform: uppercase;
-letter-spacing: 0.5px;
-cursor: pointer;
-display: inline-flex;
-align-items: center;
-gap: 8px;
-transition: all 0.25s ease;
-}
-
-.carrossel-btn.cancel {
-background: #fff;
-border-color: var(--header-color);
-color: var(--header-color);
-}
-
-.carrossel-btn.cancel:hover {
-background: var(--header-color);
-color: #fff;
-}
-
-.carrossel-btn.save {
-background: var(--header-color);
-border-color: var(--header-color);
-color: #fff;
-box-shadow: 3px 3px 0 rgba(139, 0, 0, 0.2);
-}
-
-.carrossel-btn.save:hover {
-box-shadow: 5px 5px 0 rgba(139, 0, 0, 0.3);
-background: #a00000;
-}
-
-.carrossel-btn.delete {
-background: var(--rejected-color, #e74c3c);
-border-color: var(--rejected-color, #e74c3c);
-color: #fff;
-box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
-}
-
-.carrossel-btn.delete:hover {
-box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.3);
-background: #c0392b;
-}
-
-.carrossel-modal-delete .carrossel-delete-msg {
-padding: 24px 24px 8px;
-font-size: 1rem;
-color: #333;
-text-align: center;
-}
-
-.carrossel-modal-delete .carrossel-delete-msg strong {
-color: var(--header-color);
-}
-
-.carrossel-delete-warning {
-padding: 0 24px 16px;
-font-size: 0.85rem;
-color: var(--rejected-color, #e74c3c);
-font-weight: 700;
-text-align: center;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 6px;
 }
 
 .carrossel-preview-wrapper {

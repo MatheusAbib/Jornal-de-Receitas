@@ -1,8 +1,7 @@
-.modal {
+.modal,
+.carrossel-modal {
 display: none;
 position: fixed;
-top: 0;
-left: 0;
 width: 100%;
 height: 100%;
 background-color: rgba(0, 0, 0, 0.5);
@@ -11,12 +10,27 @@ z-index: 1000;
 overflow-y: auto;
 }
 
+.modal {
+top: 0;
+left: 0;
+}
+
+.carrossel-modal {
+inset: 0;
+background: rgba(0, 0, 0, 0.6);
+z-index: 2000;
+justify-content: center;
+align-items: center;
+padding: 5px;
+}
+
 .modal[style*="display: block"],
 .detalhes-modal-box[style*="display: block"] {
 display: flex !important;
 align-items: center;
 justify-content: center;
 padding: 30px 15px;
+z-index: 9999;
 }
 
 .detalhes-modal-box {
@@ -39,7 +53,8 @@ padding: 30px 15px;
 .delete-user-modal .modal-content-delete,
 .confirm-save-modal .modal-content-confirm,
 .admin-confirm-modal .modal-content-confirm,
-.detalhes-modal-content {
+.detalhes-modal-content,
+.carrossel-modal-content {
 background: #fff;
 border: 2px solid var(--header-color);
 border-radius: 4px;
@@ -76,9 +91,18 @@ text-align: center;
 max-width: 900px;
 }
 
+.carrossel-modal-content {
+max-width: 560px;
+max-height: 90vh;
+overflow-y: auto;
+border: 3px solid var(--header-color);
+box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.3);
+}
+
 .edit-user-modal .modal-header-edit,
 .delete-user-modal .modal-header-delete,
-.detalhes-modal-header {
+.detalhes-modal-header,
+.carrossel-modal-header {
 color: #fff;
 position: relative;
 margin: 0;
@@ -95,9 +119,17 @@ padding: 20px 30px;
 padding: 18px 25px;
 }
 
+.carrossel-modal-header {
+padding: 18px 24px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
 .edit-user-modal .modal-header-edit h2,
 .delete-user-modal .modal-header-delete h2,
-.detalhes-modal-header h2 {
+.detalhes-modal-header h2,
+.carrossel-modal-header h2 {
 margin: 0;
 font-family: 'DM Serif Display', serif;
 font-size: 1.2rem;
@@ -115,7 +147,8 @@ padding-right: 30px;
 
 .edit-user-modal .modal-header-edit h2 i,
 .delete-user-modal .modal-header-delete h2 i,
-.detalhes-modal-header h2 i {
+.detalhes-modal-header h2 i,
+.carrossel-modal-header h2 i {
 font-size: 1.2rem;
 }
 
@@ -123,7 +156,8 @@ font-size: 1.2rem;
 .delete-user-modal .close-delete-user-modal,
 .confirm-save-modal .close-confirm-save-modal,
 .admin-confirm-modal .close-confirm-modal,
-.detalhes-modal-close {
+.detalhes-modal-close,
+.carrossel-modal-close {
 position: absolute;
 top: 15px;
 right: 18px;
@@ -142,7 +176,8 @@ padding: 0;
 
 .edit-user-modal .close-edit-user-modal,
 .delete-user-modal .close-delete-user-modal,
-.detalhes-modal-close {
+.detalhes-modal-close,
+.carrossel-modal-close {
 font-size: 1.8rem;
 color: #fff;
 }
@@ -158,6 +193,10 @@ right: 15px;
 .edit-user-modal .modal-body-edit,
 .detalhes-modal-body {
 padding: 26px 30px;
+}
+
+.carrossel-modal-content form {
+padding: 22px 24px;
 }
 
 .edit-user-modal .form-grid {
@@ -259,7 +298,8 @@ background-size: 12px;
 .delete-user-modal .modal-actions-delete,
 .confirm-save-modal .modal-actions-confirm,
 .admin-confirm-modal .modal-actions-confirm,
-.detalhes-modal-actions {
+.detalhes-modal-actions,
+.carrossel-modal-actions {
 display: flex;
 gap: 12px;
 margin-top: 20px;
@@ -269,8 +309,15 @@ border-top: 1px dashed rgba(139, 0, 0, 0.2);
 
 .edit-user-modal .modal-actions-edit,
 .delete-user-modal .modal-actions-delete,
-.detalhes-modal-actions {
+.detalhes-modal-actions,
+.carrossel-modal-actions {
 justify-content: flex-end;
+}
+
+.carrossel-modal-actions {
+gap: 10px;
+margin-top: 8px;
+padding-top: 16px;
 }
 
 .delete-user-modal .modal-actions-delete {
@@ -288,10 +335,10 @@ padding-top: 20px;
 .delete-user-modal .modal-button-delete,
 .confirm-save-modal .modal-button-confirm,
 .admin-confirm-modal .modal-button-confirm,
-.detalhes-modal-btn-editar {
+.detalhes-modal-btn-editar,
+.carrossel-btn {
 padding: 11px 22px;
 border: none;
-border-radius: 4px;
 font-family: inherit;
 font-weight: 700;
 font-size: 0.8rem;
@@ -308,19 +355,44 @@ background: #fff;
 color: var(--light-text);
 }
 
+.carrossel-btn {
+border: 2px solid;
+font-size: 0.82rem;
+min-width: 0;
+}
+
 .edit-user-modal .modal-button-edit.save,
 .confirm-save-modal .modal-button-confirm.confirm,
-.admin-confirm-modal .modal-button-confirm.confirm.approve {
+.admin-confirm-modal .modal-button-confirm.confirm.approve,
+.carrossel-btn.save {
 background: #27ae60;
 color: #fff;
 border: none;
 }
 
 .delete-user-modal .modal-button-delete.confirm,
-.admin-confirm-modal .modal-button-confirm.confirm.reject {
+.admin-confirm-modal .modal-button-confirm.confirm.reject,
+.carrossel-btn.delete {
 background: #e74c3c;
 color: #fff;
 border-color: #b91c1c;
+}
+
+.carrossel-btn.delete {
+background: var(--rejected-color, #e74c3c);
+border-color: var(--rejected-color, #e74c3c);
+box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.carrossel-btn.cancel {
+background: #fff;
+border: none;
+color: var(--light-text);
+}
+
+.carrossel-btn.cancel:hover {
+background: var(--header-color);
+color: #fff;
 }
 
 .detalhes-modal-btn-editar {
@@ -349,7 +421,8 @@ color: #27ae60;
 
 .delete-user-modal .modal-message,
 .confirm-save-modal .modal-message,
-.admin-confirm-modal .modal-message {
+.admin-confirm-modal .modal-message,
+.carrossel-modal-delete .carrossel-delete-msg {
 color: var(--light-text);
 line-height: 1.5;
 font-size: 0.95rem;
@@ -363,6 +436,17 @@ text-align: center;
 .confirm-save-modal .modal-message,
 .admin-confirm-modal .modal-message {
 margin-bottom: 20px;
+}
+
+.carrossel-modal-delete .carrossel-delete-msg {
+padding: 24px 24px 8px;
+font-size: 1rem;
+color: #333;
+text-align: center;
+}
+
+.carrossel-modal-delete .carrossel-delete-msg strong {
+color: var(--header-color);
 }
 
 .confirm-save-modal .modal-title,
@@ -409,17 +493,29 @@ width: 14px;
 font-size: 0.85rem;
 }
 
-.delete-user-modal .modal-warning {
+.delete-user-modal .modal-warning,
+.carrossel-delete-warning {
 color: #e74c3c;
 font-size: 0.85rem;
-margin: 12px 25px;
-padding: 10px 12px;
 background: rgba(231, 76, 60, 0.06);
 border-radius: 4px;
 border-left: 4px solid #e74c3c;
 display: flex;
 align-items: flex-start;
 gap: 8px;
+}
+
+.delete-user-modal .modal-warning {
+margin: 12px 25px;
+padding: 10px 12px;
+}
+
+.carrossel-delete-warning {
+padding: 0 24px 16px;
+color: var(--rejected-color, #e74c3c);
+font-weight: 700;
+text-align: center;
+justify-content: center;
 }
 
 .delete-user-modal .modal-warning i {
@@ -432,7 +528,6 @@ width: 100%;
 border-radius: 4px;
 overflow: hidden;
 margin-bottom: 20px;
-
 }
 
 .detalhes-modal-imagem img {
@@ -441,7 +536,6 @@ height: auto;
 max-height: 230px;
 object-fit: contain;
 display: block;
-
 }
 
 .detalhes-modal-meta {
@@ -710,12 +804,19 @@ transform: translateY(0) scale(1);
 }
 }
 
+.carrossel-btn.save:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+pointer-events: none;
+}
+
 @media (min-width: 769px) {
 .edit-user-modal .close-edit-user-modal:hover,
 .delete-user-modal .close-delete-user-modal:hover,
 .confirm-save-modal .close-confirm-save-modal:hover,
 .admin-confirm-modal .close-confirm-modal:hover,
-.detalhes-modal-close:hover {
+.detalhes-modal-close:hover,
+.carrossel-modal-close:hover {
 opacity: 1;
 transform: rotate(90deg);
 }
@@ -728,30 +829,29 @@ color: var(--header-color);
 .edit-user-modal .modal-button-edit.cancel:hover,
 .delete-user-modal .modal-button-delete.cancel:hover,
 .confirm-save-modal .modal-button-confirm.cancel:hover,
-.admin-confirm-modal .modal-button-confirm.cancel:hover {
+.admin-confirm-modal .modal-button-confirm.cancel:hover,
+.carrossel-btn.cancel:hover {
 background: var(--header-color);
 color: #fff;
-transform: translate(-2px, -2px);
 box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.25);
 }
 
 .edit-user-modal .modal-button-edit.save:hover,
 .confirm-save-modal .modal-button-confirm.confirm:hover,
-.admin-confirm-modal .modal-button-confirm.confirm.approve:hover {
+.admin-confirm-modal .modal-button-confirm.confirm.approve:hover,
+.carrossel-btn.save:hover {
 background: #1e8449;
-transform: translate(-2px, -2px);
 box-shadow: 4px 4px 0 rgba(39, 174, 96, 0.4);
 }
 
 .delete-user-modal .modal-button-delete.confirm:hover,
-.admin-confirm-modal .modal-button-confirm.confirm.reject:hover {
+.admin-confirm-modal .modal-button-confirm.confirm.reject:hover,
+.carrossel-btn.delete:hover {
 background: #b91c1c;
-transform: translate(-2px, -2px);
 box-shadow: 4px 4px 0 rgba(231, 76, 60, 0.4);
 }
 
 .detalhes-modal-btn-editar:hover {
-transform: translate(-2px, -2px);
 box-shadow: 4px 4px 0 rgba(212, 175, 55, 0.4);
 }
 
@@ -759,7 +859,6 @@ box-shadow: 4px 4px 0 rgba(212, 175, 55, 0.4);
 background: var(--header-color);
 color: #fff;
 border-color: var(--header-color);
-transform: translate(-2px, -2px);
 box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.25);
 }
 
@@ -769,98 +868,105 @@ color: #fff;
 }
 
 @media (max-width: 768px) {
-  .edit-user-modal .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .modal,
-  .detalhes-modal-box {
-    padding: 12px 5px !important;
-    align-items: flex-start !important;
-  }
-
-  .detalhes-modal-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .edit-user-modal .modal-content-edit,
-  .delete-user-modal .modal-content-delete,
-  .confirm-save-modal .modal-content-confirm,
-  .admin-confirm-modal .modal-content-confirm,
-  .detalhes-modal-content {
-    max-width: 100% !important;
-    max-height: 92vh;
-    overflow-y: auto;
-  }
-
-  .detalhes-modal-imagem img {
-    max-height: 260px;
-    object-fit: cover;
-  }
+.edit-user-modal .form-grid {
+grid-template-columns: 1fr;
 }
+
+.modal,
+.detalhes-modal-box {
+padding: 12px 5px !important;
+align-items: flex-start !important;
+}
+
+.detalhes-modal-grid {
+grid-template-columns: 1fr;
+gap: 20px;
+}
+
+.edit-user-modal .modal-content-edit,
+.delete-user-modal .modal-content-delete,
+.confirm-save-modal .modal-content-confirm,
+.admin-confirm-modal .modal-content-confirm,
+.detalhes-modal-content,
+.carrossel-modal-content {
+max-width: 100% !important;
+max-height: 92vh;
+overflow-y: auto;
+}
+
+.detalhes-modal-imagem img {
+max-height: 260px;
+object-fit: cover;
+}
+
+.carrossel-modal {
+padding: 5px;
+}
+}
+
 @media (max-width: 480px) {
-  .modal,
-  .detalhes-modal-box {
-    padding: 8px 6px !important;
-  }
+.modal,
+.detalhes-modal-box {
+padding: 8px 6px !important;
+}
 
-  .edit-user-modal .modal-content-edit,
-  .delete-user-modal .modal-content-delete,
-  .confirm-save-modal .modal-content-confirm,
-  .admin-confirm-modal .modal-content-confirm,
-  .detalhes-modal-content {
-    max-width: 100% !important;
-  }
+.edit-user-modal .modal-content-edit,
+.delete-user-modal .modal-content-delete,
+.confirm-save-modal .modal-content-confirm,
+.admin-confirm-modal .modal-content-confirm,
+.detalhes-modal-content,
+.carrossel-modal-content {
+max-width: 100% !important;
+}
 
-  .edit-user-modal .modal-body-edit {
-    padding: 18px;
-  }
+.edit-user-modal .modal-body-edit {
+padding: 18px;
+}
 
-  .edit-user-modal .modal-header-edit h2 {
-    font-size: 1rem;
-  }
+.edit-user-modal .modal-header-edit h2 {
+font-size: 1rem;
+}
 
-  .detalhes-modal-header {
-    padding: 15px 20px;
-  }
+.detalhes-modal-header {
+padding: 15px 20px;
+}
 
-  .detalhes-modal-header h2 {
-    font-size: 1rem;
-  }
+.detalhes-modal-header h2 {
+font-size: 1rem;
+}
 
-  .detalhes-modal-body {
-    padding: 15px 20px;
-  }
+.detalhes-modal-body {
+padding: 15px 20px;
+}
 
-  .detalhes-modal-imagem img {
-    max-height: 200px;
-  }
+.detalhes-modal-imagem img {
+max-height: 200px;
+}
 
-  .detalhes-modal-meta {
-    grid-template-columns: 1fr;
-  }
+.detalhes-modal-meta {
+grid-template-columns: 1fr;
+}
 
-  .imagem-upload-box {
-    flex-direction: column;
-    text-align: center;
-  }
+.imagem-upload-box {
+flex-direction: column;
+text-align: center;
+}
 
-  .imagem-upload-info {
-    width: 100%;
-  }
+.imagem-upload-info {
+width: 100%;
+}
 
-  .edit-user-modal .modal-actions-edit,
-  .delete-user-modal .modal-actions-delete,
-  .confirm-save-modal .modal-actions-confirm,
-  .admin-confirm-modal .modal-actions-confirm {
-    flex-direction: column;
-  }
+.edit-user-modal .modal-actions-edit,
+.delete-user-modal .modal-actions-delete,
+.confirm-save-modal .modal-actions-confirm,
+.admin-confirm-modal .modal-actions-confirm {
+flex-direction: column;
+}
 
-  .edit-user-modal .modal-button-edit,
-  .delete-user-modal .modal-button-delete,
-  .confirm-save-modal .modal-button-confirm,
-  .admin-confirm-modal .modal-button-confirm {
-    width: 100%;
-  }
+.edit-user-modal .modal-button-edit,
+.delete-user-modal .modal-button-delete,
+.confirm-save-modal .modal-button-confirm,
+.admin-confirm-modal .modal-button-confirm {
+width: 100%;
+}
 }
