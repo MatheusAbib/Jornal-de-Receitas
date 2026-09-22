@@ -42,8 +42,6 @@ Constrói objetos passo a passo (`ReceitaBuilder`, `UsuarioBuilder`, `Notificaca
 - **I:** interfaces específicas por entidade
 - **D:** Services e Controllers dependem de abstrações (interfaces DAO)
 
-📐 **Diagramas completos:** [`/Diagramas`](./Diagramas)
-
 ---
 
 ## ✨ Funcionalidades
@@ -188,7 +186,6 @@ Total de **21 diagramas**, organizados por domínio:
 A API REST está documentada com **SpringDoc OpenAPI**.
 
 **Acesso online:** [`/swagger-ui/index.html`](https://jornal-de-receitas-b6ti.onrender.com/swagger-ui/index.html)
-**Acesso local:** [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)
 
 Endpoints documentados:
 - **Autenticação** — cadastro, login, logout, edição de perfil
@@ -206,11 +203,8 @@ Vulnerabilidades neutralizadas:
 | Vulnerabilidade | Como foi neutralizada |
 |---|---|
 | **SQL Injection** | JPA/Hibernate com queries parametrizadas |
-| **XSS** | Escape automático do Thymeleaf |
 | **Senhas em texto puro** | BCrypt (`BCryptPasswordEncoder`) |
-| **Path Traversal** | Upload com UUID + extensão validada por regex |
 | **Autenticação / Autorização** | Spring Security com roles `ADMIN` e `USER` |
 | **Exposição de senha em JSON** | Campo anotado com `@JsonIgnore` |
-| **CSRF** | Desabilitado com justificativa (API baseada em fetch/JSON) |
 
 ---
