@@ -151,11 +151,15 @@ Tabelas principais:
 | `site_config` | Configurações dinâmicas (favicon, imagens de destaque) |
 
 **Relacionamentos:**
-- `usuario` 1:1 `estatisticas` (com cascade)
+- `usuario` 1:1 `estatisticas` 
 - `usuario` 1:n `receita`
 - `usuario` 1:n `favorito`
 - `usuario` 1:n `notificacao`
 - `receita` 1:n `favorito`
+
+**Tabelas sem relacionamento direto:**
+- `carrossel` — gerenciado exclusivamente pelo admin, sem vínculo com usuário
+- `site_config` — configurações globais do site, sem vínculo com usuário
 
 ---
 
