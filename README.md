@@ -183,16 +183,41 @@ Total de **21 diagramas**, organizados por domínio:
 
 ## 🔌 Documentação da API (Swagger)
 
-A API REST está documentada com **SpringDoc OpenAPI**.
+A API REST do projeto está documentada com **SpringDoc OpenAPI** e disponível via **Swagger UI**.
 
 **Acesso online:** [`/swagger-ui/index.html`](https://jornal-de-receitas-b6ti.onrender.com/swagger-ui/index.html)
 
-Endpoints documentados:
-- **Autenticação** — cadastro, login, logout, edição de perfil
-- **Receitas** — salvar, aprovar, rejeitar, excluir
-- **Carrossel** — adicionar, editar, alternar, excluir
-- **Favoritos** — adicionar, remover, listar
-- **Notificações** — listar, marcar como lida, excluir
+### O que é Swagger?
+
+**Swagger** é uma interface visual que mostra todos os endpoints REST de uma API. Permite visualizar:
+- As rotas disponíveis
+- Os parâmetros esperados
+- Os possíveis retornos (códigos HTTP e formato dos dados)
+
+Também permite **testar os endpoints direto no navegador**, sem precisar de ferramentas externas.
+
+### O que é SpringDoc OpenAPI?
+
+**SpringDoc** é a biblioteca que lê o código Spring Boot e **gera a documentação OpenAPI automaticamente**. Sem ela, seria necessário escrever a documentação manualmente em arquivo separado.
+
+Com o SpringDoc, basta anotar os controllers com `@Tag`, `@Operation` e `@ApiResponses` — e o Swagger exibe tudo.
+
+### O que é documentado
+
+**REST puro** (retorna JSON, consumido via `fetch` pelo frontend):
+
+| Grupo | Endpoints |
+|---|---|
+| **Usuários** | cadastro, login, logout, editar perfil, buscar usuário logado |
+| **Favoritos** | adicionar, remover, listar |
+| **Notificações** | listar todas, listar não lidas, contador, marcar como lida, marcar todas como lidas, excluir todas |
+| **Receitas** | excluir |
+
+### O que NÃO é documentado (e por quê)
+
+Endpoints **MVC** — que renderizam páginas HTML ou fazem `redirect` (aprovar receita, rejeitar, salvar, editar, gerenciar carrossel) — **não aparecem no Swagger** porque não são API REST.
+
+O Swagger segue o padrão OpenAPI, focado em documentar **APIs REST** (que retornam JSON), não rotas de navegação HTML.
 
 ---
 

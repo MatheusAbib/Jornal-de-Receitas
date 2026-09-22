@@ -32,7 +32,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/")
-@Tag(name = "Autenticação", description = "Endpoints de login, cadastro e logout")
+@Tag(name = "Usuários", description = "Autenticação e gerenciamento de usuários")
 public class UsuarioController {
 
     @Autowired

@@ -25,8 +25,8 @@ public class OpenAPIConfig {
                 .info(new Info()
                         .title("API - Jornal de Receitas")
                         .description("API REST do site Jornal de Receitas. " +
-                                "Documentação completa dos endpoints de autenticação, " +
-                                "favoritos e notificações.")
+                                "Documentação completa dos endpoints de usuários, " +
+                                "favoritos, notificações e receitas.")
                         .version("v1.0.0")
                         .contact(new Contact()
                                 .name("Equipe Jornal de Receitas")
@@ -40,8 +40,7 @@ public class OpenAPIConfig {
                                 .description("Servidor de desenvolvimento")
                 ))
                 .tags(List.of(
-                        new Tag().name("Autenticação").description("Endpoints de login, cadastro e logout"),
-                        new Tag().name("Usuários").description("Endpoints relacionados a usuários"),
+                        new Tag().name("Usuários").description("Autenticação e gerenciamento de usuários"),
                         new Tag().name("Favoritos").description("Endpoints de favoritos"),
                         new Tag().name("Notificações").description("Endpoints de notificações"),
                         new Tag().name("Receitas").description("Endpoints de receitas")

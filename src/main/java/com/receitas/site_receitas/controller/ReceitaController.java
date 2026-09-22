@@ -168,15 +168,6 @@ public class ReceitaController {
         return "principal/receita/form-receita";
     }
 
-    @Operation(
-        summary = "Salvar nova receita",
-        description = "Cria uma nova receita no sistema com status PENDENTE. Recebe os dados da receita via formulário, processa ingredientes e modo de preparo, faz upload da imagem e notifica administradores e o autor."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "302", description = "Receita salva e redirecionada para minhas-receitas"),
-        @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
-        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    })
     @PostMapping("/salvar")
     public String salvarReceita(
             @ModelAttribute Receita receita,
@@ -526,14 +517,6 @@ public class ReceitaController {
         return "redirect:/receitas-aprovadas?ok=excluida";
     }
 
-    @Operation(
-        summary = "Aprovar receita",
-        description = "Aprova uma receita com status PENDENTE. Executa o AprovarReceitaCommand que altera o status, notifica o autor e todos os usuários, e recalcula as estatísticas."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "302", description = "Receita aprovada e redirecionada para pendentes"),
-        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    })
     @PostMapping("/aprovar/{id}")
     public String aprovarReceita(@PathVariable Long id) {
         Command command = new AprovarReceitaCommand(
@@ -548,14 +531,6 @@ public class ReceitaController {
         return "redirect:/pendentes?ok=aprovada";
     }
 
-    @Operation(
-        summary = "Rejeitar receita",
-        description = "Rejeita uma receita com status PENDENTE, registrando o motivo. Executa o RejeitarReceitaCommand que altera o status para REJEITADA, notifica o autor e recalcula as estatísticas."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "302", description = "Receita rejeitada e redirecionada para pendentes"),
-        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    })
     @PostMapping("/rejeitar/{id}")
     public String rejeitarReceita(
             @PathVariable Long id,
