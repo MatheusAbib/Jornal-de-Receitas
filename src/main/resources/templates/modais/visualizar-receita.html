@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+
+<div th:fragment="conteudo" class="detalhes-modal-content">
+
+  <div class="detalhes-modal-header">
+    <h2 th:text="${receita.titulo}">Título da Receita</h2>
+    <span class="detalhes-modal-close" onclick="closeDetalhesModal()">&times;</span>
+  </div>
+
+  <div class="detalhes-modal-body">
+
+    <div class="detalhes-modal-imagem">
+      <img th:if="${receita.imagem != null}" th:src="${#strings.startsWith(receita.imagem, 'http') ? receita.imagem : '/uploads/' + receita.imagem}" alt="Imagem da receita">
+      <img th:if="${receita.imagem == null}" src="/default-image.jpg" alt="Sem imagem">
+    </div>
+
+    <div class="detalhes-modal-meta">
+      <div class="detalhes-modal-meta-item">
+        <i class="fas fa-user"></i>
+        <span><strong>Chefe:</strong> <span th:text="${receita.chefe}">Chef</span></span>
+      </div>
+      <div class="detalhes-modal-meta-item">
+        <i class="fas fa-clock"></i>
+        <span><strong>Tempo:</strong> <span th:text="${receita.tempoPreparo}">30 min</span></span>
+      </div>
+      <div class="detalhes-modal-meta-item">
+        <i class="fas fa-utensils"></i>
+        <span><strong>Porções:</strong> <span th:text="${receita.porcoes}">4</span></span>
+      </div>
+      <div class="detalhes-modal-meta-item">
+        <i class="fas fa-tag"></i>
+        <span><strong>Categoria:</strong> <span th:text="${receita.categoria}">SALGADO</span></span>
+      </div>
+      <div class="detalhes-modal-meta-item">
+        <i class="fas fa-heart"></i>
+        <span><strong>Favoritos:</strong> <span th:text="${totalFavoritos}">0</span></span>
+      </div>
+    </div>
+
+    <div class="detalhes-modal-grid">
+      <div class="detalhes-modal-section">
+        <h3><i class="fas fa-list"></i> Ingredientes</h3>
+        <ul class="detalhes-modal-list">
+          <li th:each="ing : ${ingredientesList}" th:text="${ing}">Ingrediente</li>
+        </ul>
+      </div>
+
+      <div class="detalhes-modal-section">
+        <h3><i class="fas fa-book-open"></i> Modo de Preparo</h3>
+        <ol class="detalhes-modal-list">
+          <li th:each="passo : ${modoPreparoList}" th:text="${passo}">Passo</li>
+        </ol>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

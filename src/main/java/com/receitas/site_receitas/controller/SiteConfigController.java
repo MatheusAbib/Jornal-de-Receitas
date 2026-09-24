@@ -10,11 +10,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -48,5 +50,22 @@ public class SiteConfigController {
         resposta.put("url", url);
 
         return ResponseEntity.ok(resposta);
+    }
+
+    @Operation(
+        summary = "Redirecionar para o favicon configurado",
+        description = "Redireciona o navegador para a URL do favicon salva no banco. Usado pela tag <link rel='icon' href='/favicon.ico'> do index.html."
+    )
+    @GetMapping("/favicon.ico")
+    public ResponseEntity<Void> faviconIco() {
+        String url = siteConfigService.getFaviconUrl();
+
+        if (url == null || url.isBlank()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(url))
+                .build();
     }
 }

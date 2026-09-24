@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+  <div th:fragment="classifieds" class="classifieds-section">
+    <div class="section-title">
+      <h2>Receitas Rápidas</h2>
+      <p>Pratos deliciosos indicados para você preparar em pouco tempo</p>
+    </div>
+    <div class="classifieds" id="classifieds">
+      <div class="classified-item">
+        <div class="classified-image">
+          <img th:src="${pestoUrl}" alt="Espaguete ao Pesto" th:if="${pestoUrl != null}">
+          <img src="/uploads/pesto.jpg" alt="Espaguete ao Pesto" th:unless="${pestoUrl != null}">
+          <div class="classified-image-overlay"></div>
+          <div class="classified-image-content">
+            <h3>Espaguete ao Pesto</h3>
+          </div>
+        </div>
+        <div class="classified-content">
+          <div class="classified-meta">
+            <span><i class="fas fa-clock"></i> 25 min</span>
+            <span><i class="fas fa-utensils"></i> 6 porções</span>
+          </div>
+          <p class="classified-description">Massa italiana com pesto de manjericão fresco e pinoli. Um clássico da culinária mediterrânea.</p>
+          <div class="classified-actions">
+            <a href="https://www.tudogostoso.com.br/receita/24230-espaguete-ao-pesto.html" target="_blank" class="classified-link">
+              Ver Receita <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="classified-item">
+        <div class="classified-image">
+          <img th:src="${sopaUrl}" alt="Sopa de Abóbora" th:if="${sopaUrl != null}">
+          <img src="/uploads/sopa.jpg" alt="Sopa de Abóbora" th:unless="${sopaUrl != null}">
+          <div class="classified-image-overlay"></div>
+          <div class="classified-image-content">
+            <h3>Sopa de Abóbora</h3>
+          </div>
+        </div>
+        <div class="classified-content">
+          <div class="classified-meta">
+            <span><i class="fas fa-clock"></i> 40 min</span>
+            <span><i class="fas fa-utensils"></i> 6 porções</span>
+          </div>
+          <p class="classified-description">Creme de abóbora com gengibre e toque de noz-moscada. Perfeita para dias frios.</p>
+          <div class="classified-actions">
+            <a href="https://www.tudogostoso.com.br/receita/131045-sopa-de-abobora.html" target="_blank" class="classified-link">
+              Ver Receita <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="classified-item">
+        <div class="classified-image">
+          <img th:src="${ganacheUrl}" alt="Ganache de Chocolate" th:if="${ganacheUrl != null}">
+          <img src="/uploads/ganache.jpg" alt="Ganache de Chocolate" th:unless="${ganacheUrl != null}">
+          <div class="classified-image-overlay"></div>
+          <div class="classified-image-content">
+            <h3>Ganache</h3>
+          </div>
+        </div>
+        <div class="classified-content">
+          <div class="classified-meta">
+            <span><i class="fas fa-clock"></i> 7 min</span>
+            <span><i class="fas fa-utensils"></i> 1 porção</span>
+          </div>
+          <p class="classified-description">Calda de chocolate deliciosa para adicionar em suas sobremesas.</p>
+          <div class="classified-actions">
+            <a href="https://www.tudogostoso.com.br/receita/21429-ganache.html" target="_blank" class="classified-link">
+              Ver Receita <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="classified-item">
+        <div class="classified-image">
+          <img th:src="${bolinhoUrl}" alt="Bolinhos de Chuva" th:if="${bolinhoUrl != null}">
+          <img src="/uploads/bolinho-chuva.jpg" alt="Bolinhos de Chuva" th:unless="${bolinhoUrl != null}">
+          <div class="classified-image-overlay"></div>
+          <div class="classified-image-content">
+            <h3>Bolinhos de Chuva</h3>
+          </div>
+        </div>
+        <div class="classified-content">
+          <div class="classified-meta">
+            <span><i class="fas fa-clock"></i> 30 min</span>
+            <span><i class="fas fa-utensils"></i> 8 porções</span>
+          </div>
+          <p class="classified-description">Clássica receita de bolinhos fofinhos com canela e açúcar. Ideal para o lanche da tarde.</p>
+          <div class="classified-actions">
+            <a href="https://www.tudogostoso.com.br/receita/76049-bolinho-de-chuva.html" target="_blank" class="classified-link">
+              Ver Receita <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

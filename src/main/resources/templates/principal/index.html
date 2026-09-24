@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Jornal de Receitas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/global/style.css">
+  <link rel="stylesheet" href="/css/global/loader.css">
+  <link th:href="${faviconUrl}" rel="icon" th:if="${faviconUrl != null}">
+</head>
+<body>
+
+  <div th:replace="~{global/loader :: loader('')}"></div>
+
+  <div th:replace="~{global/cabecalho}"></div>
+  <div th:replace="~{global/sidebar}"></div>
+  <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <div class="content-wrapper">
+    <div class="carousel-container">
+      <div class="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item" th:each="item : ${carrosselItens}" th:classappend="${itemStat.first} ? 'active'">
+                        <img th:src="${#strings.startsWith(item.imagemUrl, 'http') ? item.imagemUrl : '/uploads/' + item.imagemUrl}" th:alt="${item.titulo}">
+            <div class="carousel-caption">
+              <h3 th:text="${item.titulo}">Título do Slide</h3>
+              <p th:text="${item.descricao}">Descrição do slide</p>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-controls">
+          <button class="carousel-control prev" data-sem-spinner="true"><i class="fas fa-chevron-left"></i></button>
+          <button class="carousel-control next" data-sem-spinner="true"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="carousel-indicators">
+          <div class="carousel-indicator" 
+               th:each="item, itemStat : ${carrosselItens}"
+               th:classappend="${itemStat.first} ? 'active'"
+               data-sem-spinner="true"></div>
+        </div>
+      </div>
+    </div>
+
+    <main>
+<div class="tab-buttons">
+    <button class="tab-button active" data-tab="todas-receitas" id="todas">
+        Todas as Receitas
+    </button>
+
+    <button sec:authorize="isAuthenticated()"
+            class="tab-button"
+            data-tab="favoritas"
+            id="fav">
+        <i class="fas fa-heart"></i>
+        Favoritas
+        <span class="badge" id="favorite-count">0</span>
+    </button>
+</div>
+      <div class="content-tabs">
+        <div class="tab-content active" id="todas-receitas">
+          <div class="recipe-filters">
+            <h3><i class="fas fa-filter"></i> Filtrar Receitas</h3>
+            <form id="filterForm">
+              <div class="filter-group">
+                <i class="fas fa-search filter-icon"></i>
+                <input type="text" id="nome" name="nome" placeholder="Digite o nome da receita">
+              </div>
+              <div class="filter-group">
+                <i class="fas fa-search filter-icon"></i>
+                <select id="categoria" name="categoria" class="filter-select">
+                  <option value="">Todas as categorias</option>
+                  <option value="SALGADO">Salgado</option>
+                  <option value="DOCE">Doce</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <i class="fas fa-search filter-icon"></i>
+                <input type="number" id="porcoes" name="porcoes" min="1" placeholder="Quantidade de porções">
+              </div>
+              <div class="filter-buttons">
+                <button type="button" id="aplicarFiltros">
+                  <i class="fas fa-check"></i> Aplicar Filtros
+                </button>
+                <button type="button" id="limparFiltros">
+                  <i class="fas fa-times"></i> Limpar Filtros
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div th:replace="~{principal/receita/receitas}"></div>
+          <div th:replace="~{principal/receita/receitas-rapidas}"></div>
+        </div>
+
+        <div class="tab-content" id="favoritas">
+          <div class="empty-state" id="empty-favorites" style="display: none;">
+            <i class="fas fa-heart"></i>
+            <h2>Nenhuma receita favoritada</h2>
+            <p>Você ainda não favoritou nenhuma receita. Clique no coração nas receitas para adicioná-las aos favoritos.</p>
+          </div>
+          <div class="receitas" id="favorite-recipes"></div>
+        </div>
+      </div>
+    </main>
+
+    <div th:replace="~{global/rodape}"></div>
+  </div>
+
+  <div th:replace="~{modais/modal-login}"></div>
+  <div th:replace="~{modais/modal-cadastro}"></div>
+  <div th:replace="~{modais/modal-user}"></div>
+  <div th:replace="~{modais/modal-logout}"></div>
+
+<script src="/js/global/loader.js"></script>
+<script src="/js/global/cabecalho.js"></script>
+<script src="/js/global/image-loader.js"></script>
+<script src="/js/modais/modais.js"></script>
+<script src="/js/principal/index.js"></script>
+<script th:src="@{/js/global/polling.js}"></script>
+<script src="/js/global/global-loader-buttons.js"></script>
+
+
+</body>
+</html>

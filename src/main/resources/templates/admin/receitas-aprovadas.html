@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Jornal de Receitas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/global/style.css">
+  <link th:href="${faviconUrl}" rel="icon" th:if="${faviconUrl != null}">
+</head>
+<body>
+
+<div th:replace="~{global/cabecalho}"></div>
+
+<main class="admin-content-wrapper">
+  <div class="admin-topbar">
+    <h1>Receitas Aprovadas</h1>
+    <div class="admin-topbar-actions">
+      <span><i class="fas fa-utensils"></i> Total: <strong th:text="${totalItems}"></strong></span>
+      <form method="get" th:action="@{/receitas-aprovadas}" class="admin-search-box" id="aprovadasSearchForm">
+        <i class="fas fa-search"></i>
+        <input type="text" name="busca" id="aprovadasSearch" placeholder="Buscar receita..." th:value="${busca}" autocomplete="off">
+      </form>
+    </div>
+  </div>
+
+  <div class="admin-table-wrapper">
+    <div class="admin-table-container">
+
+      <div class="admin-table-header">
+        <div class="count">
+          <i class="fas fa-list"></i> <span th:text="${totalItems}"></span> receita(s) aprovada(s)
+        </div>
+      </div>
+
+      <div class="admin-table-scroll">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Imagem</th>
+              <th>Título</th>
+              <th>Chefe</th>
+              <th>Tempo</th>
+              <th>Porções</th>
+              <th>Categoria</th>
+              <th class="text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="r : ${receitas}">
+              <td data-label="ID" th:text="${r.id}"></td>
+              <td data-label="Imagem">
+                <img th:if="${r.imagem != null}" th:src="${#strings.startsWith(r.imagem, 'http') ? r.imagem : '/uploads/' + r.imagem}" alt="Miniatura" class="receitas-aprovadas-thumb">
+                <img th:if="${r.imagem == null}" src="/default-image.jpg" alt="Sem imagem" class="receitas-aprovadas-thumb">
+              </td>
+              <td data-label="Título" th:text="${r.titulo}" class="receitas-aprovadas-titulo"></td>
+              <td data-label="Chefe" th:text="${r.chefe}"></td>
+              <td data-label="Tempo" th:text="${r.tempoPreparo}"></td>
+              <td data-label="Porções" th:text="${r.porcoes}"></td>
+              <td data-label="Categoria">
+                <span th:class="'receitas-aprovadas-categoria ' + ${r.categoria}" th:text="${r.categoria}"></span>
+              </td>
+              <td data-label="Ações" class="text-center">
+                <div class="actions-group">
+                  <button type="button" class="action-btn btn-view"
+                          th:attr="data-id=${r.id}, data-contexto='receitas-aprovadas'"
+                          onclick="openDetalhesModal(this)">
+                    <i class="fas fa-eye"></i>
+                  </button>
+
+                  <button type="button" class="action-btn btn-edit"
+                          th:attr="data-id=${r.id},
+                                  data-contexto='receitas-aprovadas',
+                                  data-titulo=${r.titulo},
+                                  data-chefe=${r.chefe} ?: '',
+                                  data-tempo=${r.tempoPreparo} ?: '',
+                                  data-porcoes=${r.porcoes},
+                                  data-categoria=${r.categoria} ?: 'SALGADO',
+                                  data-ingredientes=${r.ingredientes} ?: '',
+                                  data-modoPreparo=${r.modoPreparo} ?: '',
+                                  data-imagem=${r.imagem} ?: ''"
+                          onclick="openEditModal(this)">
+                    <i class="fas fa-edit"></i>
+                  </button>
+
+                  <button type="button" class="action-btn btn-delete"
+                          th:attr="data-id=${r.id}, data-titulo=${r.titulo}"
+                          onclick="openDeleteModal(this)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="admin-empty" th:if="${#lists.isEmpty(receitas)}">
+        <i class="fas fa-book"></i>
+        <h3>Nenhuma receita aprovada</h3>
+        <p>Não há receitas aprovadas no momento.</p>
+      </div>
+
+      <div class="admin-table-footer">
+        <div class="info">
+          Mostrando <span th:text="${receitas.size()}"></span> de <span th:text="${totalItems}"></span> receitas
+        </div>
+        <div class="admin-pagination" th:if="${totalPages > 1}">
+          <a th:if="${currentPage > 0}" th:href="@{/receitas-aprovadas(page=${currentPage - 1}, size=${pageSize}, busca=${busca})}">
+            <i class="fas fa-chevron-left"></i>
+          </a>
+          <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+             th:href="@{/receitas-aprovadas(page=${i}, size=${pageSize}, busca=${busca})}"
+             th:text="${i + 1}"
+             th:class="${i == currentPage} ? 'active' : ''"></a>
+          <a th:if="${currentPage < totalPages - 1}" th:href="@{/receitas-aprovadas(page=${currentPage + 1}, size=${pageSize}, busca=${busca})}">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<div th:replace="~{admin/modais/editar-receita :: modais}"></div>
+
+<div id="deleteModal" class="modal delete-user-modal">
+  <div class="modal-content-delete">
+    <span class="close close-delete-user-modal" onclick="closeDeleteModal()">&times;</span>
+    <div class="modal-header-delete">
+      <h2><i class="fas fa-exclamation-triangle"></i> Excluir Receita</h2>
+    </div>
+    <div class="modal-icon-delete">
+      <i class="fas fa-utensils"></i>
+    </div>
+    <div class="modal-message">
+      Tem certeza que deseja excluir permanentemente?
+    </div>
+    <div class="user-info-card">
+      <div class="user-info-item">
+        <i class="fas fa-utensils"></i>
+        <span><strong>Título:</strong> <span id="deleteReceitaTitulo"></span></span>
+      </div>
+    </div>
+    <div class="modal-warning">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>Esta ação não pode ser desfeita.</span>
+    </div>
+    <div class="modal-actions-delete">
+      <button class="modal-button-delete cancel" onclick="closeDeleteModal()">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+      <button type="button" class="modal-button-delete confirm" data-spinner="true" onclick="confirmDelete()">
+        <i class="fas fa-trash"></i> Excluir
+      </button>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{modais/modal-logout}"></div>
+
+<script src="/js/admin/receitas-aprovadas.js"></script>
+<script src="/js/admin/modais/modais-receita.js"></script>
+<script src="/js/global/image-loader.js"></script>
+<script th:src="@{/js/global/polling.js}"></script>
+<script src="/js/global/global-loader-buttons.js"></script>
+<script src="/js/global/cabecalho.js"></script>
+<script src="/js/modais/modais.js"></script>
+</body>
+</html>
