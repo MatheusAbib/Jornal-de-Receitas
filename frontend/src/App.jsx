@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import DetalhesReceita from './pages/DetalhesReceita';
@@ -15,12 +15,14 @@ import RouteLoader from './components/RouteLoader';
 import { useAuth } from './context/AuthContext';
 import { useLoader } from './context/LoaderContext';
 import useGlobalButtonLoader from './hooks/useGlobalButtonLoader';
+import useFavicon from './hooks/useFavicon';
 
 function App() {
   const { carregando } = useAuth();
   const { show, hide } = useLoader();
 
   useGlobalButtonLoader();
+  useFavicon();
 
   useEffect(() => {
     window.__showLoader = show;
