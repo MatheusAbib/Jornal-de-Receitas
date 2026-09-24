@@ -1,0 +1,235 @@
+﻿.sobre-container {
+  padding: 120px 30px 60px;
+  max-width: 950px;
+  margin: 0 auto;
+}
+
+.sobre-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--header-color);
+}
+
+.sobre-header h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.2rem;
+  color: var(--header-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sobre-header h1 i {
+  color: var(--accent-color);
+}
+
+.sobre-subtitulo {
+  color: var(--light-text);
+  font-size: 1rem;
+  font-style: italic;
+}
+
+.sobre-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.sobre-section {
+  background: #fff;
+  border: 2px solid var(--header-color);
+  box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.15);
+  padding: 28px 32px;
+}
+
+.sobre-section h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  color: var(--header-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed rgba(139, 0, 0, 0.2);
+}
+
+.sobre-section h2 i {
+  color: var(--accent-color);
+}
+
+.sobre-section p {
+  color: var(--light-text);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+.sobre-section ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sobre-section ul li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--light-text);
+  font-size: 0.95rem;
+}
+
+.sobre-section ul li i {
+  color: #27ae60;
+}
+
+.journey-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  padding-left: 10px;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 20px;
+  position: relative;
+  padding-bottom: 24px;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: 52px;
+  top: 32px;
+  bottom: -8px;
+  width: 2px;
+  background: rgba(139, 0, 0, 0.15);
+}
+
+.timeline-item:last-child::before {
+  display: none;
+}
+
+.timeline-year {
+  flex-shrink: 0;
+  width: 105px;
+  height: 42px;
+  background: var(--header-color);
+  color: white;
+  font-family: 'DM Serif Display', serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--header-color);
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-content {
+  flex: 1;
+  padding-top: 4px;
+}
+
+.timeline-content h4 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.05rem;
+  color: var(--header-color);
+  margin-bottom: 6px;
+}
+
+.timeline-content p {
+  color: var(--light-text);
+  line-height: 1.6;
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+.faq-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.faq-item {
+  border: 2px solid rgba(139, 0, 0, 0.15);
+  background: #faf8f5;
+  transition: all 0.25s ease;
+}
+
+.faq-item.active {
+  border-color: var(--header-color);
+  background: #fff;
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--header-color);
+  font-size: 0.95rem;
+}
+
+.faq-question i {
+  color: var(--accent-color);
+  transition: transform 0.3s ease;
+  font-size: 0.85rem;
+}
+
+.faq-item.active .faq-question i {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.35s ease;
+  padding: 0 18px;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 400px;
+  padding: 0 18px 16px;
+}
+
+.faq-answer p {
+  color: var(--light-text);
+  line-height: 1.7;
+  font-size: 0.92rem;
+  margin: 0;
+  padding-top: 4px;
+  border-top: 1px dashed rgba(139, 0, 0, 0.15);
+}
+
+.sobre-contato {
+  margin-top: 10px;
+  font-weight: 700;
+  color: var(--header-color) !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sobre-contato i {
+  color: var(--accent-color);
+}
+

@@ -1,5 +1,6 @@
 package com.receitas.site_receitas.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,42 +9,64 @@ import lombok.Setter;
 @Table(name = "receita")
 @Getter
 @Setter
+@Schema(description = "Representa uma receita cadastrada no sistema")
 public class Receita {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "ID único da receita", example = "1")
     private Long id;
 
+    @Schema(description = "Título da receita", example = "Bolo de Chocolate")
     private String titulo;
 
     @Column(name = "tempo_preparo")
+    @Schema(description = "Tempo de preparo formatado", example = "1h 10min")
     private String tempoPreparo;
 
     @Column(columnDefinition = "TEXT")
+    @Schema(
+        description = "Lista de ingredientes separados por '||'",
+        example = "200g de farinha||200g de açúcar||3 ovos"
+    )
     private String ingredientes;
 
     @Column(name = "modo_preparo", columnDefinition = "TEXT")
+    @Schema(
+        description = "Passos do modo de preparo separados por '||'",
+        example = "Misture os secos||Adicione os ovos||Asse por 35 minutos"
+    )
     private String modoPreparo;
 
     @Column(columnDefinition = "TEXT")
+    @Schema(
+        description = "Nome do arquivo de imagem salvo em /uploads ou URL externa",
+        example = "1789489569365_bolo.jpg"
+    )
     private String imagem;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
+    @Schema(description = "Status atual da receita", example = "PENDENTE", allowableValues = {"PENDENTE", "APROVADA", "REJEITADA"})
     private StatusReceita status = StatusReceita.PENDENTE;
 
     @Column(name = "motivo_rejeicao", columnDefinition = "TEXT")
+    @Schema(description = "Motivo pelo qual a receita foi rejeitada (apenas quando status é REJEITADA)", example = "Ingredientes sem quantidade")
     private String motivoRejeicao;
 
+    @Schema(description = "Número de porções que a receita rende", example = "5")
     private int porcoes = 1;
 
+    @Schema(description = "Nome do chef autor da receita", example = "Chef Confeiteiro")
     private String chefe;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @Schema(description = "Usuário autor da receita")
     private Usuario usuario;
 
     @Enumerated(EnumType.STRING)
+    @Schema(description = "Categoria da receita", example = "DOCE", allowableValues = {"SALGADO", "DOCE"})
     private Categoria categoria = Categoria.SALGADO;
 
     public enum Categoria {

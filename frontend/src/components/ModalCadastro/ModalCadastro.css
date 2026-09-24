@@ -1,0 +1,52 @@
+﻿.cadastro-form-group {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.cadastro-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.cadastro-form-row .cadastro-form-group {
+  margin-bottom: 0;
+}
+
+.cadastro-password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #999;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.cadastro-password-toggle:hover {
+  color: var(--header-color);
+}
+
+.cadastro-login-link {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 0.85rem;
+  color: var(--light-text);
+}
+
+.cadastro-login-link a {
+  color: var(--header-color);
+  font-weight: 700;
+}
+
+.cadastro-login-link a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .cadastro-form-row {
+    grid-template-columns: 1fr;
+  }
+}

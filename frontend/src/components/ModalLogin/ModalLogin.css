@@ -1,0 +1,43 @@
+﻿.login-form-group {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--light-text);
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.remember-me input {
+  cursor: pointer;
+  accent-color: var(--header-color);
+}
+
+.login-register-link {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 0.85rem;
+  color: var(--light-text);
+}
+
+.login-register-link a {
+  color: var(--header-color);
+  font-weight: 700;
+}
+
+.login-register-link a:hover {
+  text-decoration: underline;
+}

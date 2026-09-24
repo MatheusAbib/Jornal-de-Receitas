@@ -5,7 +5,6 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
@@ -19,14 +18,14 @@ public class OpenAPIConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
-        final String securitySchemeName = "bearerAuth";
+        final String sessionAuth = "sessionAuth";
 
         return new OpenAPI()
                 .info(new Info()
                         .title("API - Jornal de Receitas")
                         .description("API REST do site Jornal de Receitas. " +
                                 "Documentação completa dos endpoints de usuários, " +
-                                "favoritos, notificações e receitas.")
+                                "receitas, favoritos, notificações e carrossel.")
                         .version("v1.0.0")
                         .contact(new Contact()
                                 .name("Equipe Jornal de Receitas")
@@ -41,18 +40,17 @@ public class OpenAPIConfig {
                 ))
                 .tags(List.of(
                         new Tag().name("Usuários").description("Autenticação e gerenciamento de usuários"),
-                        new Tag().name("Favoritos").description("Endpoints de favoritos"),
-                        new Tag().name("Notificações").description("Endpoints de notificações"),
-                        new Tag().name("Receitas").description("Endpoints de receitas")
+                        new Tag().name("Receitas").description("Endpoints REST de receitas"),
+                        new Tag().name("Favoritos").description("Endpoints para gerenciar receitas favoritas"),
+                        new Tag().name("Notificações").description("Endpoints para gerenciar notificações do usuário"),
+                        new Tag().name("Carrossel").description("Endpoints REST do carrossel")
                 ))
-                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()
-                        .addSecuritySchemes(securitySchemeName,
+                        .addSecuritySchemes(sessionAuth,
                                 new SecurityScheme()
-                                        .name(securitySchemeName)
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")
-                                        .description("Autenticação via token JWT")));
+                                        .name("JSESSIONID")
+                                        .type(SecurityScheme.Type.APIKEY)
+                                        .in(SecurityScheme.In.COOKIE)
+                                        .description("Sessão autenticada via cookie JSESSIONID")));
     }
 }

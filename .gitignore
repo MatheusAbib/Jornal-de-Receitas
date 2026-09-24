@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Build do React no backend
+src/main/resources/static/*
+!src/main/resources/static/.gitkeep

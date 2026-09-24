@@ -1,0 +1,83 @@
+﻿.input-with-icon {
+  position: relative;
+  margin-top: 8px;
+}
+
+.input-with-icon .form-control-edit {
+  width: 100%;
+  padding: 12px 15px 12px 42px;
+  border: 2px solid rgba(139, 0, 0, 0.2);
+  font-size: 0.95rem;
+  background: #faf8f5;
+  box-sizing: border-box;
+  transition: all 0.25s ease;
+  outline: none;
+  height: 48px;
+  font-family: inherit;
+}
+
+.input-with-icon .form-control-edit:focus {
+  border-color: var(--header-color);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+}
+
+.input-with-icon .form-control-edit::placeholder {
+  color: transparent;
+}
+
+.input-with-icon label {
+  position: absolute;
+  left: 42px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-weight: 500;
+  font-size: 0.9rem;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  background: transparent;
+  padding: 0 4px;
+}
+
+.input-with-icon .form-control-edit:focus ~ label,
+.input-with-icon .form-control-edit:not(:placeholder-shown) ~ label {
+  top: -10px;
+  font-size: 0.7rem;
+  color: var(--header-color);
+  background: #fff;
+  padding: 0 6px;
+  transform: translateY(0);
+}
+
+.input-with-icon i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent-color);
+  z-index: 1;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.input-with-icon .form-control-edit:focus ~ i,
+.input-with-icon .form-control-edit:not(:placeholder-shown) ~ i {
+  color: var(--header-color);
+}
+
+.input-toggle-senha {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #999;
+  z-index: 2;
+  font-size: 1rem;
+  transition: color 0.25s ease;
+}
+
+.input-toggle-senha:hover {
+  color: var(--header-color);
+}

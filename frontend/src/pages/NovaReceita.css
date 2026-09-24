@@ -1,0 +1,481 @@
+﻿.nova-main-layout {
+  padding: 90px 30px 60px;
+  max-width: 1300px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 805px;
+  gap: 30px;
+  align-items: start;
+}
+
+.nova-form-container {
+  min-width: 0;
+}
+
+.nova-recipe-form {
+  background: #fff;
+  border: 2px solid var(--header-color);
+  box-shadow: 5px 5px 0 rgba(139, 0, 0, 0.15);
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.nova-form-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 14px;
+  row-gap: 8px;
+  align-items: end;
+}
+
+.nova-titulo-width { grid-column: span 2; }
+.nova-tempo-width { grid-column: span 1; }
+.nova-porcoes-width { grid-column: span 1; }
+
+.nova-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.nova-form-group label {
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--header-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+}
+
+.nova-form-group input[type="text"],
+.nova-form-group input[type="number"],
+.nova-form-group select {
+  padding: 12px 15px;
+  border: 2px solid rgba(139, 0, 0, 0.2);
+  background: #faf8f5;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: #333;
+  outline: none;
+  transition: all 0.25s ease;
+  width: 100%;
+  box-sizing: border-box;
+  height: 46px;
+}
+
+.nova-form-group input:focus,
+.nova-form-group select:focus {
+  border-color: var(--header-color);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+}
+
+.nova-tempo-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+}
+
+.nova-tempo-toggle {
+  padding: 4px 10px;
+  background: var(--accent-color);
+  color: var(--header-color);
+  border: 2px solid var(--accent-color);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.nova-tempo-toggle:hover {
+  background: var(--header-color);
+  color: #fff;
+  border-color: var(--header-color);
+}
+
+.nova-tempo-horas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.nova-ingredientes-container,
+.nova-passos-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nova-ingrediente-item {
+  padding: 0;
+}
+
+.nova-ingrediente-row {
+  display: grid;
+  grid-template-columns: 90px 160px 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.nova-quantidade,
+.nova-unidade,
+.nova-ingrediente-nome,
+.nova-passo-input {
+  padding: 11px 14px;
+  border: 2px solid rgba(139, 0, 0, 0.2);
+  background: #faf8f5;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: #333;
+  outline: none;
+  transition: all 0.25s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.nova-quantidade:focus,
+.nova-unidade:focus,
+.nova-ingrediente-nome:focus,
+.nova-passo-input:focus {
+  border-color: var(--header-color);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+}
+
+.nova-ingrediente-nome-wrapper,
+.nova-passo-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.nova-ingrediente-nome,
+.nova-passo-input {
+  padding-right: 44px;
+}
+
+.nova-remove-btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  background: #fff;
+  border: 2px solid #e74c3c;
+  color: #e74c3c;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.nova-remove-btn:hover {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.nova-add-btn {
+  align-self: flex-start;
+  padding: 10px 18px;
+  background: #fff;
+  border: 2px solid var(--accent-color);
+  color: var(--accent-color);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+}
+
+.nova-add-btn:hover {
+  background: var(--accent-color);
+  color: white;
+}
+
+.nova-file-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #faf8f5;
+  border: 2px dashed rgba(139, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.nova-file-label:hover {
+  border-color: var(--header-color);
+  background: #fff;
+}
+
+.nova-file-text {
+  font-size: 0.88rem;
+  color: #666;
+  font-weight: 600;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nova-file-button {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  color: var(--header-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.nova-image-preview {
+  margin-top: 10px;
+  border: 2px solid var(--header-color);
+  background: #faf8f5;
+  padding: 8px;
+}
+
+.nova-image-preview img {
+  width: 100%;
+  max-height: 250px;
+  object-fit: cover;
+  display: block;
+}
+
+.nova-form-erro {
+  background: rgba(231, 76, 60, 0.1);
+  border-left: 4px solid #e74c3c;
+  color: #e74c3c;
+  padding: 12px 15px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nova-submit-button {
+  padding: 16px 24px;
+  background: var(--header-color);
+  color: #fff;
+  border: 2px solid var(--header-color);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.25s ease;
+}
+
+.nova-submit-button:hover:not(:disabled) {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+  box-shadow: 5px 5px 0 rgba(212, 175, 55, 0.4);
+}
+
+.nova-submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nova-info-card {
+  background: #fff;
+  border: 2px solid var(--header-color);
+  box-shadow: 5px 5px 0 rgba(139, 0, 0, 0.15);
+  position: sticky;
+  top: 100px;
+}
+
+.nova-info-header {
+  background: var(--header-color);
+  color: #fff;
+  padding: 18px 22px;
+  border-bottom: 2px solid var(--header-color);
+}
+
+.nova-info-header h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nova-info-body {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+}
+
+.nova-info-section {
+  padding-bottom: 18px;
+  border-bottom: 1px dashed rgba(139, 0, 0, 0.2);
+}
+
+.nova-info-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.nova-info-section h4 {
+  font-size: 0.82rem;
+  color: var(--header-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nova-info-section p {
+  font-size: 0.85rem;
+  color: var(--light-text);
+  line-height: 1.6;
+}
+
+.nova-info-section ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nova-info-section li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--light-text);
+  line-height: 1.5;
+}
+
+.nova-info-section li i {
+  margin-top: 3px;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+}
+
+.nova-info-section li i.pi-check { color: #27ae60; }
+.nova-info-section li i.pi-times { color: #e74c3c; }
+
+.nova-info-tip {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nova-info-tip p {
+  font-size: 0.82rem;
+  color: var(--light-text);
+  line-height: 1.5;
+  align-items: flex-start;
+}
+
+.nova-info-tip p i {
+  color: #27ae60;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1000px) {
+  .nova-main-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .nova-info-card {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .nova-main-layout { padding: 80px 15px 40px; gap: 20px; }
+  .nova-recipe-form { padding: 20px; }
+  .nova-form-row { grid-template-columns: 1fr; gap: 12px; }
+  .nova-titulo-width, .nova-tempo-width, .nova-porcoes-width { grid-column: span 1; }
+  .nova-ingrediente-row { grid-template-columns: 1fr 1fr; }
+  .nova-ingrediente-nome-wrapper { grid-column: 1 / -1; }
+}
+
+@media (max-width: 480px) {
+  .nova-main-layout { padding: 70px 8px 0; }
+  .nova-recipe-form { padding: 15px; }
+  .nova-ingrediente-row { grid-template-columns: 1fr; }
+  .nova-quantidade, .nova-unidade { grid-column: span 1; }
+}
+
+.nova-form-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.nova-form-group-header label {
+  margin: 0;
+}
+
+.nova-form-group-header .nova-add-btn {
+  align-self: auto;
+}
+
+.nova-metade-width { grid-column: span 2; }
+
+.nova-tempo-erro {
+  margin-top: 6px;
+  padding: 8px 12px;
+  background: rgba(231, 76, 60, 0.1);
+  border-left: 3px solid #e74c3c;
+  color: #e74c3c;
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nova-tempo-erro i {
+  font-size: 0.85rem;
+}

@@ -15,8 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 public class FavoritoService {
@@ -48,7 +49,7 @@ public class FavoritoService {
         List<Favorito> favoritos = favoritoDAO.listarPorUsuario(usuario);
         return favoritos.stream()
                 .map(f -> f.getReceita().getId())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional
@@ -58,21 +59,21 @@ public class FavoritoService {
 
         if (!favoritoDAO.existePorUsuarioEReceita(usuario, receita)) {
             Favorito favorito = new FavoritoBuilder()
-                .doUsuario(usuario)
-                .daReceita(receita)
-                .build();
+                    .doUsuario(usuario)
+                    .daReceita(receita)
+                    .build();
             favoritoDAO.salvar(favorito);
 
-Notificacao notificacao = NotificacaoFactory.favoritou(usuario, receita.getTitulo());
-notificacaoService.salvar(notificacao);
+            Notificacao notificacao = NotificacaoFactory.favoritou(usuario, receita.getTitulo());
+            notificacaoService.salvar(notificacao);
 
-Command cmdEstatisticas = new AtualizarEstatisticasCommand(
-        receitaService,
-        this,
-        estatisticasService,
-        notificacaoService,
-        usuario
-);
+            Command cmdEstatisticas = new AtualizarEstatisticasCommand(
+                    receitaService,
+                    this,
+                    estatisticasService,
+                    notificacaoService,
+                    usuario
+            );
             commandInvoker.executar(cmdEstatisticas);
         }
     }
@@ -108,7 +109,41 @@ Command cmdEstatisticas = new AtualizarEstatisticasCommand(
     }
 
     @Transactional(readOnly = true)
-        public long contarCurtidasPorUsuario(Integer usuarioId) {
-            return favoritoDAO.contarCurtidasPorUsuario(usuarioId);
-        }
+    public long contarCurtidasPorUsuario(Integer usuarioId) {
+        return favoritoDAO.contarCurtidasPorUsuario(usuarioId);
+    }
+
+    @Transactional(readOnly = true)
+    public Usuario carregarUsuarioComFavoritos(Usuario usuario) {
+        List<Favorito> favoritos = favoritoDAO.listarPorUsuario(usuario);
+        usuario.setFavoritos(favoritos);
+        return usuario;
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> calcularResumo(Usuario usuario) {
+        Usuario carregado = carregarUsuarioComFavoritos(usuario);
+
+        List<String> ingredientesDisponiveis = carregado.listarIngredientesDisponiveis();
+        List<String> ingredientesRepetidos = carregado.listarIngredientesRepetidos();
+
+        Map<String, Object> resumo = new LinkedHashMap<>();
+        resumo.put("totalFavoritos", carregado.getFavoritos().size());
+        resumo.put("ingredientesDisponiveis", ingredientesDisponiveis);
+        resumo.put("ingredientesRepetidos", ingredientesRepetidos);
+        return resumo;
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> calcularResumoPorIngrediente(Usuario usuario, String nome) {
+        Usuario carregado = carregarUsuarioComFavoritos(usuario);
+
+        List<String> receitas = carregado.listarReceitasComIngrediente(nome);
+
+        Map<String, Object> resumo = new LinkedHashMap<>();
+        resumo.put("ingrediente", nome);
+        resumo.put("quantidade", receitas.size());
+        resumo.put("receitas", receitas);
+        return resumo;
+    }
 }

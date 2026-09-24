@@ -1,0 +1,474 @@
+.minhas-wrapper {
+  padding: 90px 30px 60px;
+  width: 1300px;
+  margin: 0 auto;
+}
+
+.minhas-stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: #fff;
+  border: 2px solid var(--header-color);
+  box-shadow: 3px 3px 0 rgba(139, 0, 0, 0.15);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.25s ease;
+}
+
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.stat-icon.total { background: var(--header-color); }
+.stat-icon.aprovadas { background: #27ae60; }
+.stat-icon.pendentes { background: var(--accent-color); }
+.stat-icon.rejeitadas { background: #e74c3c; }
+.stat-icon.curtidas { background: #e91e63; }
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  min-width: 0;
+}
+
+.stat-value {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--header-color);
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--light-text);
+}
+
+.minhas-tabs {
+  display: flex;
+  gap: 0;
+  margin: 30px 0;
+  border-bottom: 2px solid var(--header-color);
+}
+
+.minhas-tab {
+  padding: 14px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 4px solid transparent;
+  color: var(--light-text);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.25s ease;
+  margin-bottom: -2px;
+}
+
+.minhas-tab:hover {
+  color: var(--header-color);
+}
+
+.minhas-tab.active {
+  color: var(--header-color);
+  border-bottom-color: var(--header-color);
+}
+
+.minhas-tab .tab-count {
+  background: rgba(139, 0, 0, 0.1);
+  color: var(--header-color);
+  padding: 2px 10px;
+  border-radius: 50px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.minhas-tab.active .tab-count {
+  background: var(--accent-color);
+}
+
+.minhas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.minha-card {
+  background: #fff;
+  border: 2px solid var(--header-color);
+  box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+}
+
+.minha-card:hover {
+  box-shadow: 7px 7px 0 rgba(139, 0, 0, 0.2);
+}
+
+.minha-imagem {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background: #f0ece6;
+  border-bottom: 2px solid var(--header-color);
+}
+
+.status-badge {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  padding: 5px 12px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+}
+
+.status-badge.pendente { background: var(--accent-color); }
+.status-badge.aprovada { background: #27ae60; }
+.status-badge.rejeitada { background: #e74c3c; }
+
+.minha-info {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.minha-info h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.15rem;
+  color: var(--header-color);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.minha-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed rgba(139, 0, 0, 0.2);
+}
+
+.minha-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  color: var(--light-text);
+  font-weight: 600;
+}
+
+.minha-meta span i {
+  color: var(--accent-color);
+  font-size: 0.8rem;
+}
+
+.minha-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+}
+
+.btn-ver,
+.btn-motivo,
+.btn-excluir {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 14px;
+  background: #fff;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 2px solid;
+  transition: all 0.25s ease;
+}
+
+.btn-ver {
+  border-color: var(--header-color);
+  color: var(--header-color);
+}
+
+.btn-ver:hover {
+  background: var(--header-color);
+  color: #fff;
+  box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.2);
+}
+
+.btn-motivo {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.btn-motivo:hover {
+  background: var(--accent-color);
+  color: white;
+  box-shadow: 4px 4px 0 rgba(212, 175, 55, 0.4);
+}
+
+.btn-excluir {
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+.btn-excluir:hover {
+  background: #e74c3c;
+  color: #fff;
+  box-shadow: 4px 4px 0 rgba(231, 76, 60, 0.3);
+}
+
+.motivo-texto {
+  font-size: 0.95rem;
+  color: var(--light-text);
+  line-height: 1.6;
+  background: rgba(231, 76, 60, 0.08);
+  border-left: 4px solid #e74c3c;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+}
+
+.minhas-empty {
+  text-align: center;
+  padding: 80px 20px;
+  background: #fff;
+  border: 2px dashed rgba(139, 0, 0, 0.3);
+}
+
+.minhas-empty i {
+  font-size: 3rem;
+  color: var(--header-color);
+  opacity: 0.3;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.minhas-empty h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: var(--header-color);
+  margin-bottom: 6px;
+}
+
+.minhas-empty p {
+  color: var(--light-text);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1024px) {
+  .minhas-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .minhas-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .minhas-wrapper {
+    padding: 80px 8px 40px;
+    margin: 0;
+  }
+
+  .minhas-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .stat-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 0.95rem;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+  }
+
+  .minhas-tabs {
+    margin: 20px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .minhas-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .minhas-tab {
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .minhas-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .minha-imagem {
+    height: 130px;
+  }
+
+  .minha-info {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .minha-info h3 {
+    font-size: 0.95rem;
+  }
+
+  .minha-meta {
+    gap: 8px;
+    padding-bottom: 10px;
+  }
+
+  .minha-meta span {
+    font-size: 0.72rem;
+  }
+
+  .minha-actions {
+    gap: 6px;
+  }
+
+  .btn-ver,
+  .btn-motivo,
+  .btn-excluir {
+    padding: 8px 10px;
+    font-size: 0.68rem;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+
+
+  .minhas-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .stat-card {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+  }
+
+  .minhas-tab {
+    padding: 10px 12px;
+    font-size: 0.68rem;
+    gap: 5px;
+  }
+
+  .minhas-tab .tab-count {
+    display: none;
+  }
+
+  .minhas-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .minha-imagem {
+    height: 110px;
+  }
+
+  .status-badge {
+    padding: 3px 8px;
+    font-size: 0.58rem;
+    gap: 3px;
+  }
+
+  .minha-info {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .minha-info h3 {
+    font-size: 0.82rem;
+  }
+
+  .minha-meta {
+    gap: 6px;
+    padding-bottom: 8px;
+  }
+
+  .minha-meta span {
+    font-size: 0.65rem;
+  }
+
+  .btn-ver,
+  .btn-motivo,
+  .btn-excluir {
+    padding: 7px 8px;
+    font-size: 0.62rem;
+    gap: 4px;
+  }
+}
