@@ -1,6 +1,5 @@
 ﻿.carousel-container {
   width: 100%;
-  max-width: 1200px;
   margin: 80px auto auto;
   height: 500px;
   border: 2px solid var(--header-color);
