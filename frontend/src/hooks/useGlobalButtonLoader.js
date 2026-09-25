@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 
 const IGNORAR_CLASSES = [
   'modal-close',
@@ -17,6 +17,10 @@ const IGNORAR_CLASSES = [
   'logout-modal-close',
   'header-nav-close',
   'admin-sidebar-close',
+  'menu-icon',
+  'admin-sidebar-toggle',
+  'header-nav-overlay',
+  'admin-sidebar-overlay',
   'carousel-control',
   'carousel-indicator',
   'tab-button',
@@ -29,7 +33,8 @@ const IGNORAR_CLASSES = [
   'switch',
   'slider',
   'card-favorite-btn',
-  'detalhe-favorite-btn'
+  'detalhe-favorite-btn',
+  'carrossel-action-btn'
 ];
 
 const IGNORAR_TIPOS = ['file', 'checkbox', 'radio'];
@@ -70,8 +75,6 @@ function aplicarSpinner(elemento) {
 
   elemento.style.pointerEvents = 'none';
   elemento.style.opacity = '0.7';
-
-  console.log('[loader] aplicado em:', elemento.tagName, elemento.className);
 }
 
 function restaurarSpinner(elemento) {
@@ -90,8 +93,6 @@ function restaurarSpinner(elemento) {
 
   delete elemento.dataset.spinnerAplicado;
   delete elemento.dataset.spinnerTime;
-
-  console.log('[loader] restaurado em:', elemento.tagName);
 }
 
 function restaurarTodos() {
@@ -100,8 +101,6 @@ function restaurarTodos() {
 
 function useGlobalButtonLoader() {
   useEffect(() => {
-    console.log('[loader] hook ativado');
-
     function handleClick(event) {
       const alvo = event.target.closest(
         'button, a[href], [role="button"], .header-user-profile, .admin-sidebar-btn, .header-logout-btn, .header-notification-btn'
@@ -109,10 +108,7 @@ function useGlobalButtonLoader() {
 
       if (!alvo) return;
 
-      if (deveIgnorar(alvo)) {
-        console.log('[loader] ignorado:', alvo.tagName, alvo.className);
-        return;
-      }
+      if (deveIgnorar(alvo)) return;
 
       if (alvo.dataset.spinnerAplicado === 'true') return;
 
@@ -144,7 +140,6 @@ function useGlobalButtonLoader() {
     window.addEventListener('pageshow', restaurarTodos);
 
     return () => {
-      console.log('[loader] hook desativado');
       clearInterval(interval);
       document.removeEventListener('click', handleClick, true);
       window.removeEventListener('pageshow', restaurarTodos);

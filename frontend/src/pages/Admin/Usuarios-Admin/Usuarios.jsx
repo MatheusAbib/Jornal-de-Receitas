@@ -1,12 +1,15 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from "../../../components/Admin/AdminLayout/AdminLayout";
 import Modal from "../../../components/Modal/Modal";
 import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../context/ToastContext";
 import usePolling from "../../../hooks/usePolling";
-import api from "../../../services/api";
+import api, { extrairMensagemErro } from "../../../services/api";
+import { getCache, setCache } from "../../../services/cache";
 import './Usuarios.css';
+
+const CACHE_KEY = 'admin-usuarios';
 
 function Usuarios() {
   const navigate = useNavigate();
@@ -27,7 +30,9 @@ function Usuarios() {
 
     try {
       const response = await api.get('/api/usuarios?size=100', { silent: silencioso });
-      setUsuarios(response.data.usuarios || []);
+      const lista = response.data.usuarios || [];
+      setUsuarios(lista);
+      setCache(CACHE_KEY, lista);
     } catch (e) {
       console.error(e);
     } finally {
@@ -41,7 +46,16 @@ function Usuarios() {
       navigate('/');
       return;
     }
-    carregar();
+
+    const cached = getCache(CACHE_KEY);
+
+    if (cached) {
+      setUsuarios(cached);
+      setCarregando(false);
+      carregar(true);
+    } else {
+      carregar();
+    }
   }, [usuario, carregandoAuth, navigate]);
 
   const modalAberto = !!editando || !!excluindo;
@@ -53,9 +67,11 @@ function Usuarios() {
       const response = await api.patch(`/api/usuarios/${id}/ativar`);
       const atualizado = response.data.usuario;
 
-      setUsuarios(prev =>
-        prev.map(u => u.id === id ? atualizado : u)
-      );
+      setUsuarios(prev => {
+        const nova = prev.map(u => u.id === id ? atualizado : u);
+        setCache(CACHE_KEY, nova);
+        return nova;
+      });
 
       mostrarToast(
         atualizado.ativo
@@ -63,9 +79,9 @@ function Usuarios() {
           : `Usuário ${atualizado.nome} desativado.`,
         'success'
       );
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao alterar status do usuário.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao alterar status do usuário.');
+      mostrarToast(msg, 'error');
     }
   }
 
@@ -83,15 +99,17 @@ function Usuarios() {
         senha: editando.senha || undefined
       });
 
-      setUsuarios(prev =>
-        prev.map(u => u.id === editando.id ? response.data.usuario : u)
-      );
+      setUsuarios(prev => {
+        const nova = prev.map(u => u.id === editando.id ? response.data.usuario : u);
+        setCache(CACHE_KEY, nova);
+        return nova;
+      });
       mostrarToast('Usuário atualizado com sucesso!', 'success');
       setEditando(null);
       setOriginalEdicao(null);
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao atualizar usuário.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao atualizar usuário.');
+      mostrarToast(msg, 'error');
     } finally {
       setSalvando(false);
     }
@@ -103,12 +121,16 @@ function Usuarios() {
     setExcluindoAgora(true);
     try {
       await api.delete(`/api/usuarios/${excluindo.id}`);
-      setUsuarios(prev => prev.filter(u => u.id !== excluindo.id));
+      setUsuarios(prev => {
+        const nova = prev.filter(u => u.id !== excluindo.id);
+        setCache(CACHE_KEY, nova);
+        return nova;
+      });
       mostrarToast('Usuário excluído com sucesso!', 'success');
       setExcluindo(null);
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao excluir usuário.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao excluir usuário.');
+      mostrarToast(msg, 'error');
     } finally {
       setExcluindoAgora(false);
     }

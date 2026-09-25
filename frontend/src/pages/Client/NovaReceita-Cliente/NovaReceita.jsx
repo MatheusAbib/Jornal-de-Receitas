@@ -1,9 +1,10 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageWrapper from "../../../components/Global/PageWrapper/PageWrapper";
 import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../context/ToastContext";
 import { criarReceita } from "../../../services/receitaService";
+import { extrairMensagemErro } from "../../../services/api";
 import './NovaReceita.css';
 
 const UNIDADES = [
@@ -234,9 +235,9 @@ function NovaReceita() {
       mostrarToast('Receita enviada para aprovação!', 'success');
       setTimeout(() => navigate('/minhas-receitas'), 1000);
     } catch (err) {
-      console.error(err);
-      setErro('Erro ao enviar receita. Tente novamente.');
-      mostrarToast('Erro ao enviar receita. Tente novamente.', 'error');
+      const msg = extrairMensagemErro(err, 'Erro ao enviar receita. Tente novamente.');
+      setErro(msg);
+      mostrarToast(msg, 'error');
     } finally {
       setEnviando(false);
     }

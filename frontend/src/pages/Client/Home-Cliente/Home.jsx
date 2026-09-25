@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PageWrapper from "../../../components/Global/PageWrapper/PageWrapper";
 import Carrossel from "../../../components/Global/Carrossel/Carrossel";
 import Filtros from "../../../components/Home/Filtros/Filtros";
@@ -10,7 +10,11 @@ import usePolling from "../../../hooks/usePolling";
 import { listarReceitas } from "../../../services/receitaService";
 import { listarCarrossel } from "../../../services/carrosselService";
 import { listarFavoritos, adicionarFavorito, removerFavorito, buscarResumoFavoritos } from "../../../services/favoritoService";
+import { extrairMensagemErro } from "../../../services/api";
+import { getCache, setCache } from "../../../services/cache";
 import './Home.css';
+
+const CACHE_KEY = 'home';
 
 function Home() {
   const { usuario } = useAuth();
@@ -37,13 +41,20 @@ function Home() {
         listarCarrossel(silencioso)
       ]);
 
+      let favs = favoritos;
+      if (usuario) {
+        favs = await listarFavoritos();
+      }
+
       setReceitas(receitasData);
       setCarrossel(carrosselData);
+      setFavoritos(favs);
 
-      if (usuario) {
-        const favs = await listarFavoritos();
-        setFavoritos(favs);
-      }
+      setCache(CACHE_KEY, {
+        receitas: receitasData,
+        carrossel: carrosselData,
+        favoritos: favs
+      });
     } catch (e) {
       console.error(e);
     } finally {
@@ -52,7 +63,17 @@ function Home() {
   }
 
   useEffect(() => {
-    carregar();
+    const cached = getCache(CACHE_KEY);
+
+    if (cached) {
+      setReceitas(cached.receitas);
+      setCarrossel(cached.carrossel);
+      setFavoritos(cached.favoritos);
+      setCarregando(false);
+      carregar(true);
+    } else {
+      carregar();
+    }
   }, [usuario]);
 
   usePolling(() => carregar(true), 10000, !carregando);
@@ -66,9 +87,9 @@ function Home() {
         await adicionarFavorito(receitaId);
         setFavoritos([...favoritos, receitaId]);
       }
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao atualizar favorito.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao atualizar favorito.');
+      mostrarToast(msg, 'error');
     }
   }
 
@@ -80,9 +101,9 @@ function Home() {
     try {
       const dados = await buscarResumoFavoritos();
       setResumo(dados);
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao carregar resumo dos favoritos.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao carregar resumo dos favoritos.');
+      mostrarToast(msg, 'error');
     } finally {
       setCarregandoResumo(false);
     }

@@ -1,8 +1,8 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from "../Modal";
 import LoaderInline from '../../Global/LoaderInline/LoaderInline';
 import { useToast } from "../../../context/ToastContext";
-import api from '../../../services/api';
+import api, { extrairMensagemErro } from '../../../services/api';
 import './ModalNotificacoes.css';
 
 function ModalNotificacoes({ aberto, onFechar, onAtualizarContador }) {
@@ -18,9 +18,9 @@ function ModalNotificacoes({ aberto, onFechar, onAtualizarContador }) {
       try {
         const response = await api.get('/api/notificacoes', { silent: true });
         setNotificacoes(response.data.notificacoes || []);
-      } catch (e) {
-        console.error(e);
-        mostrarToast('Erro ao carregar notificações.', 'error');
+      } catch (err) {
+        const msg = extrairMensagemErro(err, 'Erro ao carregar notificações.');
+        mostrarToast(msg, 'error');
       } finally {
         setCarregando(false);
       }
@@ -37,9 +37,9 @@ function ModalNotificacoes({ aberto, onFechar, onAtualizarContador }) {
       );
 
       if (onAtualizarContador) onAtualizarContador();
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao marcar notificação como lida.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao marcar notificação como lida.');
+      mostrarToast(msg, 'error');
     }
   }
 
@@ -52,9 +52,9 @@ function ModalNotificacoes({ aberto, onFechar, onAtualizarContador }) {
       mostrarToast('Todas as notificações foram marcadas como lidas.', 'success');
 
       if (onAtualizarContador) onAtualizarContador();
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao marcar notificações como lidas.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao marcar notificações como lidas.');
+      mostrarToast(msg, 'error');
     }
   }
 
@@ -67,9 +67,9 @@ function ModalNotificacoes({ aberto, onFechar, onAtualizarContador }) {
       mostrarToast('Todas as notificações foram excluídas.', 'success');
 
       if (onAtualizarContador) onAtualizarContador();
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao excluir notificações.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao excluir notificações.');
+      mostrarToast(msg, 'error');
     }
   }
 
@@ -163,5 +163,3 @@ function ModalNotificacoes({ aberto, onFechar, onAtualizarContador }) {
 }
 
 export default ModalNotificacoes;
-
-

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageWrapper from "../../../components/Global/PageWrapper/PageWrapper";
 import ImagemLoader from "../../../components/Global/ImagemLoader/ImagemLoader";
@@ -6,6 +6,8 @@ import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../context/ToastContext";
 import { buscarReceita } from "../../../services/receitaService";
 import { listarFavoritos, adicionarFavorito, removerFavorito } from "../../../services/favoritoService";
+import { extrairMensagemErro } from "../../../services/api";
+import { getCache, setCache } from "../../../services/cache";
 import './DetalhesReceita.css';
 
 function DetalhesReceita() {
@@ -14,9 +16,12 @@ function DetalhesReceita() {
   const { usuario } = useAuth();
   const { mostrarToast } = useToast();
 
+  const CACHE_KEY = `receita-${id}`;
+
   const [receita, setReceita] = useState(null);
   const [favoritos, setFavoritos] = useState([]);
   const [carregando, setCarregando] = useState(true);
+  const [carregandoFav, setCarregandoFav] = useState(false);
   const [ingredientesMarcados, setIngredientesMarcados] = useState(new Set());
 
   function toggleIngrediente(index) {
@@ -29,10 +34,13 @@ function DetalhesReceita() {
   }
 
   useEffect(() => {
+    const cached = getCache(CACHE_KEY);
+
     async function carregar() {
       try {
         const data = await buscarReceita(id);
         setReceita(data);
+        setCache(CACHE_KEY, data);
 
         if (usuario) {
           const favs = await listarFavoritos();
@@ -44,7 +52,13 @@ function DetalhesReceita() {
         setCarregando(false);
       }
     }
-    carregar();
+
+    if (cached) {
+      setReceita(cached);
+      setCarregando(false);
+    } else {
+      carregar();
+    }
   }, [id, usuario]);
 
   async function handleToggleFavorito() {
@@ -53,8 +67,11 @@ function DetalhesReceita() {
       return;
     }
 
+    if (carregandoFav) return;
+
     const estaFavorito = favoritos.includes(receita.id);
 
+    setCarregandoFav(true);
     try {
       if (estaFavorito) {
         await removerFavorito(receita.id);
@@ -65,9 +82,11 @@ function DetalhesReceita() {
         setFavoritos([...favoritos, receita.id]);
         mostrarToast('Receita adicionada aos favoritos!', 'success');
       }
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao atualizar favorito. Tente novamente.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao atualizar favorito. Tente novamente.');
+      mostrarToast(msg, 'error');
+    } finally {
+      setCarregandoFav(false);
     }
   }
 
@@ -133,13 +152,23 @@ function DetalhesReceita() {
                   <button
                     className={`detalhe-favorite-btn ${estaFavorito ? 'active' : ''}`}
                     onClick={handleToggleFavorito}
+                    disabled={carregandoFav}
                   >
-                    <i className={estaFavorito ? 'pi pi-heart-fill' : 'pi pi-heart'}></i>
-                    {estaFavorito ? 'Favoritado' : 'Favoritar'}
+                    {carregandoFav ? (
+                      <>
+                        <i className="pi pi-spin pi-spinner"></i>
+                        Aguarde...
+                      </>
+                    ) : (
+                      <>
+                        <i className={estaFavorito ? 'pi pi-heart-fill' : 'pi pi-heart'}></i>
+                        {estaFavorito ? 'Favoritado' : 'Favoritar'}
+                      </>
+                    )}
                   </button>
 
                   <button className="detalhe-print-btn" onClick={imprimir}>
-                    <i className="pi pi-print"></i> Imprimir
+                    <i className="pi pi-print"></i> Baixar
                   </button>
                 </div>
               </div>
@@ -211,8 +240,3 @@ function DetalhesReceita() {
 }
 
 export default DetalhesReceita;
-
-
-
-
-

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from "../../../components/Admin/AdminLayout/AdminLayout";
 import ImagemLoader from "../../../components/Global/ImagemLoader/ImagemLoader";
@@ -6,8 +6,11 @@ import Modal from "../../../components/Modal/Modal";
 import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../context/ToastContext";
 import usePolling from "../../../hooks/usePolling";
-import api from "../../../services/api";
+import api, { extrairMensagemErro } from "../../../services/api";
+import { getCache, setCache } from "../../../services/cache";
 import './Carrossel.css';
+
+const CACHE_KEY = 'admin-carrossel';
 
 function Carrossel() {
   const navigate = useNavigate();
@@ -28,7 +31,9 @@ function Carrossel() {
 
     try {
       const response = await api.get('/api/carrossel/admin', { silent: silencioso });
-      setItens(response.data.itens || []);
+      const lista = response.data.itens || [];
+      setItens(lista);
+      setCache(CACHE_KEY, lista);
     } catch (e) {
       console.error(e);
     } finally {
@@ -42,7 +47,16 @@ function Carrossel() {
       navigate('/');
       return;
     }
-    carregar();
+
+    const cached = getCache(CACHE_KEY);
+
+    if (cached) {
+      setItens(cached);
+      setCarregando(false);
+      carregar(true);
+    } else {
+      carregar();
+    }
   }, [usuario, carregandoAuth, navigate]);
 
   const modalAberto = !!criando || !!editando || !!excluindo;
@@ -107,9 +121,9 @@ function Carrossel() {
       mostrarToast('Item adicionado ao carrossel!', 'success');
       fecharCriando();
       carregar();
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao adicionar item ao carrossel.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao adicionar item ao carrossel.');
+      mostrarToast(msg, 'error');
     } finally {
       setSalvando(false);
     }
@@ -138,9 +152,9 @@ function Carrossel() {
       mostrarToast('Item atualizado com sucesso!', 'success');
       fecharEdicao();
       carregar();
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao atualizar item.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao atualizar item.');
+      mostrarToast(msg, 'error');
     } finally {
       setSalvando(false);
     }
@@ -151,9 +165,11 @@ function Carrossel() {
       const response = await api.post(`/api/carrossel/toggle/${id}`);
       const atualizado = response.data.item;
 
-      setItens(prev =>
-        prev.map(i => i.id === id ? atualizado : i)
-      );
+      setItens(prev => {
+        const nova = prev.map(i => i.id === id ? atualizado : i);
+        setCache(CACHE_KEY, nova);
+        return nova;
+      });
 
       mostrarToast(
         atualizado.ativo
@@ -161,9 +177,9 @@ function Carrossel() {
           : 'Item desativado no carrossel.',
         'success'
       );
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao alterar status do item.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao alterar status do item.');
+      mostrarToast(msg, 'error');
     }
   }
 
@@ -173,12 +189,16 @@ function Carrossel() {
 
     try {
       await api.post(`/api/carrossel/excluir/${excluindo.id}`);
+      setItens(prev => {
+        const nova = prev.filter(i => i.id !== excluindo.id);
+        setCache(CACHE_KEY, nova);
+        return nova;
+      });
       mostrarToast('Item excluído do carrossel!', 'success');
       setExcluindo(null);
-      carregar();
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao excluir item.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao excluir item.');
+      mostrarToast(msg, 'error');
     } finally {
       setExcluindoAgora(false);
     }
@@ -208,7 +228,7 @@ function Carrossel() {
   const formAtual = criando || editando;
   const fecharForm = () => { fecharCriando(); fecharEdicao(); };
 
-  if (carregandoAuth) {
+  if (carregandoAuth || carregando) {
     return (
       <AdminLayout>
         <div style={{ paddingTop: '100px', textAlign: 'center' }}>
@@ -229,12 +249,6 @@ function Carrossel() {
           </button>
         </div>
       </div>
-
-      {carregando && (
-        <div style={{ padding: '60px', textAlign: 'center' }}>
-          <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem', color: '#8b0000' }}></i>
-        </div>
-      )}
 
       {!carregando && itens.length > 0 && (
         <div className="carrossel-grid">

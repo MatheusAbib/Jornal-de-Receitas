@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from "../../../components/Admin/AdminLayout/AdminLayout";
 import ImagemLoader from "../../../components/Global/ImagemLoader/ImagemLoader";
@@ -7,8 +7,11 @@ import ModalVerReceita from "../../../components/Modal/ModalVerReceita/ModalVerR
 import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../context/ToastContext";
 import usePolling from "../../../hooks/usePolling";
-import api from "../../../services/api";
+import api, { extrairMensagemErro } from "../../../services/api";
+import { getCache, setCache } from "../../../services/cache";
 import './ReceitasPendentes.css';
+
+const CACHE_KEY = 'admin-receitas-pendentes';
 
 function ReceitasPendentes() {
   const navigate = useNavigate();
@@ -36,11 +39,15 @@ function ReceitasPendentes() {
 
       const response = await api.get(url, { params, silent: silencioso });
 
-      setReceitas(response.data.receitas || []);
-      setTotais({
+      const lista = response.data.receitas || [];
+      const novosTotais = {
         pendentes: response.data.totalPendentes || 0,
         rejeitadas: response.data.totalRejeitadas || 0
-      });
+      };
+
+      setReceitas(lista);
+      setTotais(novosTotais);
+      setCache(CACHE_KEY, { receitas: lista, totais: novosTotais, aba });
     } catch (e) {
       console.error(e);
     } finally {
@@ -54,7 +61,17 @@ function ReceitasPendentes() {
       navigate('/');
       return;
     }
-    carregar();
+
+    const cached = getCache(CACHE_KEY);
+
+    if (cached && cached.aba === aba) {
+      setReceitas(cached.receitas);
+      setTotais(cached.totais);
+      setCarregando(false);
+      carregar(true);
+    } else {
+      carregar();
+    }
   }, [usuario, carregandoAuth, aba, navigate]);
 
   const modalAberto = !!detalhes || !!aprovando || !!rejeitando;
@@ -75,9 +92,9 @@ function ReceitasPendentes() {
       mostrarToast('Receita aprovada com sucesso!', 'success');
       setAprovando(null);
       carregar();
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao aprovar receita.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao aprovar receita.');
+      mostrarToast(msg, 'error');
     } finally {
       setProcessando(false);
     }
@@ -95,15 +112,15 @@ function ReceitasPendentes() {
       setRejeitando(null);
       setMotivo('');
       carregar();
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao rejeitar receita.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao rejeitar receita.');
+      mostrarToast(msg, 'error');
     } finally {
       setProcessando(false);
     }
   }
 
-  if (carregandoAuth) {
+  if (carregandoAuth || carregando) {
     return (
       <AdminLayout>
         <div style={{ paddingTop: '100px', textAlign: 'center' }}>
@@ -153,12 +170,6 @@ function ReceitasPendentes() {
               </button>
             </div>
           </div>
-
-          {carregando && (
-            <div style={{ padding: '60px', textAlign: 'center' }}>
-              <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem', color: '#8b0000' }}></i>
-            </div>
-          )}
 
           {!carregando && receitas.length > 0 && (
             <div className="admin-cards-grid">

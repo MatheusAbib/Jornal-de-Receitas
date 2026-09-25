@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from "../../../components/Admin/AdminLayout/AdminLayout";
 import ImagemLoader from "../../../components/Global/ImagemLoader/ImagemLoader";
@@ -7,8 +7,11 @@ import ModalVerReceita from "../../../components/Modal/ModalVerReceita/ModalVerR
 import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../context/ToastContext";
 import usePolling from "../../../hooks/usePolling";
-import api from "../../../services/api";
+import api, { extrairMensagemErro } from "../../../services/api";
+import { getCache, setCache } from "../../../services/cache";
 import './ReceitasAprovadas.css';
+
+const CACHE_KEY = 'admin-receitas-aprovadas';
 
 function ReceitasAprovadas() {
   const navigate = useNavigate();
@@ -34,7 +37,9 @@ function ReceitasAprovadas() {
       if (busca) params.busca = busca;
 
       const response = await api.get('/api/receitas/aprovadas', { params, silent: silencioso });
-      setReceitas(response.data.receitas || []);
+      const lista = response.data.receitas || [];
+      setReceitas(lista);
+      setCache(CACHE_KEY, lista);
     } catch (e) {
       console.error(e);
     } finally {
@@ -48,7 +53,16 @@ function ReceitasAprovadas() {
       navigate('/');
       return;
     }
-    carregar();
+
+    const cached = getCache(CACHE_KEY);
+
+    if (cached) {
+      setReceitas(cached);
+      setCarregando(false);
+      carregar(true);
+    } else {
+      carregar();
+    }
   }, [usuario, carregandoAuth, navigate]);
 
   const modalAberto = !!detalhes || !!editando || !!excluindo;
@@ -66,12 +80,16 @@ function ReceitasAprovadas() {
 
     try {
       await api.delete(`/api/receitas/${excluindo.id}`);
+      setReceitas(prev => {
+        const nova = prev.filter(r => r.id !== excluindo.id);
+        setCache(CACHE_KEY, nova);
+        return nova;
+      });
       mostrarToast('Receita excluída com sucesso!', 'success');
       setExcluindo(null);
-      carregar();
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao excluir receita.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao excluir receita.');
+      mostrarToast(msg, 'error');
     } finally {
       setExcluindoAgora(false);
     }
@@ -134,9 +152,9 @@ function ReceitasAprovadas() {
       mostrarToast('Receita atualizada com sucesso!', 'success');
       fecharEdicao();
       carregar();
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao atualizar receita.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao atualizar receita.');
+      mostrarToast(msg, 'error');
     } finally {
       setSalvando(false);
     }
@@ -164,7 +182,7 @@ function ReceitasAprovadas() {
 
   const botaoSalvarHabilitado = editandoValido && editandoMudou && !salvando;
 
-  if (carregandoAuth) {
+  if (carregandoAuth || carregando) {
     return (
       <AdminLayout>
         <div style={{ paddingTop: '100px', textAlign: 'center' }}>
@@ -200,12 +218,6 @@ function ReceitasAprovadas() {
               <i className="pi pi-list"></i> {receitas.length} receitas aprovadas
             </div>
           </div>
-
-          {carregando && (
-            <div style={{ padding: '60px', textAlign: 'center' }}>
-              <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem', color: '#8b0000' }}></i>
-            </div>
-          )}
 
           {!carregando && receitas.length > 0 && (
             <div className="admin-table-scroll">

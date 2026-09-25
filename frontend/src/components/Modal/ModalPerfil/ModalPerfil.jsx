@@ -1,9 +1,9 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from "../Modal";
 import LoaderInline from '../../Global/LoaderInline/LoaderInline';
 import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../context/ToastContext";
-import api from '../../../services/api';
+import api, { extrairMensagemErro } from '../../../services/api';
 import './ModalPerfil.css';
 
 function ModalPerfil({ aberto, onFechar }) {
@@ -50,9 +50,10 @@ function ModalPerfil({ aberto, onFechar }) {
 
         setForm(dados);
         setOriginal(dados);
-      } catch {
-        setMensagem({ tipo: 'error', texto: 'Erro ao carregar dados do usuário.' });
-        mostrarToast('Erro ao carregar dados do usuário.', 'error');
+      } catch (err) {
+        const msg = extrairMensagemErro(err, 'Erro ao carregar dados do usuário.');
+        setMensagem({ tipo: 'error', texto: msg });
+        mostrarToast(msg, 'error');
       } finally {
         setCarregandoPerfil(false);
       }
@@ -158,7 +159,7 @@ function ModalPerfil({ aberto, onFechar }) {
         mostrarToast(msg, 'error');
       }
     } catch (err) {
-      const msg = err.response?.data?.message || 'Erro ao atualizar perfil';
+      const msg = extrairMensagemErro(err, 'Erro ao atualizar perfil');
       setMensagem({ tipo: 'error', texto: msg });
       mostrarToast(msg, 'error');
     } finally {

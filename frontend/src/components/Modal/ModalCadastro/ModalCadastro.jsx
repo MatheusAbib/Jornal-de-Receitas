@@ -1,8 +1,9 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import Modal from "../Modal";
 import Button from '../../Home/Button/Button';
 import Input from '../../Home/Input/Input';
 import { cadastrar } from "../../../services/authService";
+import { extrairMensagemErro } from "../../../services/api";
 import { useToast } from '../../../context/ToastContext';
 import './ModalCadastro.css';
 
@@ -92,9 +93,10 @@ function ModalCadastro({ aberto, onFechar, onIrParaLogin }) {
         setAlerta({ tipo: 'error', texto: msg });
         mostrarToast(msg, 'error');
       }
-    } catch {
-      setAlerta({ tipo: 'error', texto: 'Erro de conexão. Tente novamente.' });
-      mostrarToast('Erro de conexão. Tente novamente.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao cadastrar');
+      setAlerta({ tipo: 'error', texto: msg });
+      mostrarToast(msg, 'error');
     } finally {
       setCarregando(false);
     }

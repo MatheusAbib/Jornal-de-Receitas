@@ -50,4 +50,14 @@ api.interceptors.response.use(
   }
 );
 
+export function extrairMensagemErro(err, fallback = 'Erro de conexão. Tente novamente.') {
+  if (!err) return fallback;
+  return (
+    err?.response?.data?.message ||
+    err?.response?.data?.error ||
+    err?.message ||
+    fallback
+  );
+}
+
 export default api;

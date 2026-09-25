@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageWrapper from "../../../components/Global/PageWrapper/PageWrapper";
 import ImagemLoader from "../../../components/Global/ImagemLoader/ImagemLoader";
@@ -8,7 +8,11 @@ import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../context/ToastContext";
 import usePolling from "../../../hooks/usePolling";
 import { minhasReceitas, excluirReceita } from "../../../services/receitaService";
+import { extrairMensagemErro } from "../../../services/api";
+import { getCache, setCache } from "../../../services/cache";
 import './MinhasReceitas.css';
+
+const CACHE_KEY = 'minhas-receitas';
 
 function MinhasReceitas() {
   const navigate = useNavigate();
@@ -29,6 +33,7 @@ function MinhasReceitas() {
     try {
       const resultado = await minhasReceitas(silencioso);
       setDados(resultado);
+      setCache(CACHE_KEY, resultado);
     } catch (e) {
       console.error(e);
     } finally {
@@ -44,7 +49,15 @@ function MinhasReceitas() {
       return;
     }
 
-    carregar();
+    const cached = getCache(CACHE_KEY);
+
+    if (cached) {
+      setDados(cached);
+      setCarregando(false);
+      carregar(true);
+    } else {
+      carregar();
+    }
   }, [usuario, carregandoAuth, navigate]);
 
   const modalAberto = !!excluindo || !!motivoAberto || !!verReceita;
@@ -58,17 +71,21 @@ function MinhasReceitas() {
     try {
       await excluirReceita(excluindo.id);
 
-      setDados(prev => ({
-        pendentes: prev.pendentes.filter(r => r.id !== excluindo.id),
-        aprovadas: prev.aprovadas.filter(r => r.id !== excluindo.id),
-        rejeitadas: prev.rejeitadas.filter(r => r.id !== excluindo.id)
-      }));
+      setDados(prev => {
+        const novo = {
+          pendentes: prev.pendentes.filter(r => r.id !== excluindo.id),
+          aprovadas: prev.aprovadas.filter(r => r.id !== excluindo.id),
+          rejeitadas: prev.rejeitadas.filter(r => r.id !== excluindo.id)
+        };
+        setCache(CACHE_KEY, novo);
+        return novo;
+      });
 
       mostrarToast('Receita excluída com sucesso!', 'success');
       setExcluindo(null);
-    } catch (e) {
-      console.error(e);
-      mostrarToast('Erro ao excluir receita. Tente novamente.', 'error');
+    } catch (err) {
+      const msg = extrairMensagemErro(err, 'Erro ao excluir receita. Tente novamente.');
+      mostrarToast(msg, 'error');
     } finally {
       setExcluindoAgora(false);
     }

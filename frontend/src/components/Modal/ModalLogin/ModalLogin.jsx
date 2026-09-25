@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import Modal from "../Modal";
 import Button from '../../Home/Button/Button';
 import Input from '../../Home/Input/Input';
@@ -41,9 +41,11 @@ function ModalLogin({ aberto, onFechar, onIrParaCadastro }) {
         mostrarToast(msg, 'error');
         setSenha('');
       }
-    } catch {
-      setErro('Erro de conexão. Tente novamente.');
-      mostrarToast('Erro de conexão. Tente novamente.', 'error');
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Erro de conexão. Tente novamente.';
+      setErro(msg);
+      mostrarToast(msg, 'error');
+      setSenha('');
     } finally {
       setCarregando(false);
     }

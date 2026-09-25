@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Chart } from 'primereact/chart';
 import AdminLayout from "../../../components/Admin/AdminLayout/AdminLayout";
@@ -6,7 +6,10 @@ import { useAuth } from "../../../context/AuthContext";
 import usePolling from "../../../hooks/usePolling";
 import { listarReceitas, listarPendentes, listarRejeitadas } from "../../../services/receitaService";
 import api from "../../../services/api";
+import { getCache, setCache } from "../../../services/cache";
 import './Dashboard.css';
+
+const CACHE_KEY = 'admin-dashboard';
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -65,6 +68,10 @@ function Dashboard() {
           prev.totalFavoritos === novosDados.totalFavoritos &&
           JSON.stringify(prev.topReceitas) === JSON.stringify(novosDados.topReceitas);
 
+        if (!iguais) {
+          setCache(CACHE_KEY, novosDados);
+        }
+
         return iguais ? prev : novosDados;
       });
     } catch (e) {
@@ -80,7 +87,16 @@ function Dashboard() {
       navigate('/');
       return;
     }
-    carregar();
+
+    const cached = getCache(CACHE_KEY);
+
+    if (cached) {
+      setDados(cached);
+      setCarregando(false);
+      carregar(true);
+    } else {
+      carregar();
+    }
   }, [usuario, carregandoAuth, navigate]);
 
   usePolling(() => carregar(true), 10000, !carregando && !carregandoAuth);

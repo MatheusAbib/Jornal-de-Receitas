@@ -23,7 +23,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -80,6 +84,21 @@ public class UsuarioController {
         }
 
         return null;
+    }
+
+    private void atualizarSecurityContext(Usuario usuario, HttpSession session) {
+        UsernamePasswordAuthenticationToken novoAuth =
+                new UsernamePasswordAuthenticationToken(
+                        usuario.getEmail(),
+                        null,
+                        List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRole()))
+                );
+
+        SecurityContextHolder.getContext().setAuthentication(novoAuth);
+        session.setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                SecurityContextHolder.getContext()
+        );
     }
 
     @Operation(
@@ -240,6 +259,7 @@ public class UsuarioController {
             Usuario usuarioAtualizado = usuarioService.editarPerfil(email, dados);
 
             session.setAttribute("usuarioLogado", usuarioAtualizado);
+            atualizarSecurityContext(usuarioAtualizado, session);
 
             return ResponseEntity.ok().body(Map.of(
                     "message", "Perfil atualizado com sucesso",
@@ -280,6 +300,11 @@ public class UsuarioController {
             Optional<Usuario> usuarioOpt = usuarioService.findByEmail(email);
 
             if (usuarioOpt.isEmpty()) {
+                Usuario sessionUser = (Usuario) session.getAttribute("usuarioLogado");
+                if (sessionUser != null) {
+                    atualizarSecurityContext(sessionUser, session);
+                    return ResponseEntity.ok().body(respostaUsuario(sessionUser));
+                }
                 return ResponseEntity.ok().body(respostaUsuario(null));
             }
 
