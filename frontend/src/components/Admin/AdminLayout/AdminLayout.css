@@ -58,7 +58,7 @@
 
 .admin-table-container {
   background: #fff;
-  margin: 25px 35px;
+  margin: 25px;
   border: 2px solid var(--header-color);
   box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.15);
 }

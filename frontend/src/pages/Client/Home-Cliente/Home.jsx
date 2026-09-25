@@ -3,6 +3,7 @@ import PageWrapper from "../../../components/Global/PageWrapper/PageWrapper";
 import Carrossel from "../../../components/Global/Carrossel/Carrossel";
 import Filtros from "../../../components/Home/Filtros/Filtros";
 import CardReceita from "../../../components/Home/CardReceita/CardReceita";
+import ReceitasRapidas from "../../../components/Home/ReceitasRapidas/ReceitasRapidas";
 import ModalResumoFavoritos from "../../../components/Modal/ModalResumoFavoritos/ModalResumoFavoritos";
 import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../context/ToastContext";
@@ -212,6 +213,8 @@ function Home() {
                 </div>
               )}
             </div>
+
+            <ReceitasRapidas />
           </>
         )}
 

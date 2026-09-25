@@ -68,4 +68,29 @@ public class SiteConfigController {
                 .location(URI.create(url))
                 .build();
     }
+
+    @Operation(
+        summary = "Buscar URLs das receitas rápidas",
+        description = "Retorna as URLs das imagens das 4 receitas rápidas exibidas na home. Endpoint público."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "URLs retornadas com sucesso",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(example = "{\"pesto\": \"...\", \"sopa\": \"...\", \"ganache\": \"...\", \"bolinho\": \"...\"}")
+            )
+        )
+    })
+    @GetMapping("/receitas-rapidas")
+    public ResponseEntity<?> getReceitasRapidas() {
+        Map<String, Object> resposta = new LinkedHashMap<>();
+        resposta.put("pesto", siteConfigService.getPestoUrl());
+        resposta.put("sopa", siteConfigService.getSopaUrl());
+        resposta.put("ganache", siteConfigService.getGanacheUrl());
+        resposta.put("bolinho", siteConfigService.getBolinhoUrl());
+
+        return ResponseEntity.ok(resposta);
+    }
 }

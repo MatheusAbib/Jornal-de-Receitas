@@ -1,0 +1,33 @@
+.classifieds-section {
+  margin: 60px auto;
+  max-width: 1300px;
+}
+
+.classifieds-section .section-title {
+  text-align: center;
+  margin-bottom: 32px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid var(--header-color);
+}
+
+.classifieds-section .section-title h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem;
+  color: var(--header-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 8px 0;
+}
+
+.classifieds-section .section-title p {
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--light-text);
+  margin: 0;
+}
+
+.classifieds {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}

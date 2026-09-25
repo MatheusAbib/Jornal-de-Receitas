@@ -1,11 +1,12 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import PageLoader from './components/Global/PageLoader/PageLoader';
 import RouteLoader from './components/RouteLoader';
 import { useAuth } from './context/AuthContext';
 import { useLoader } from './context/LoaderContext';
 import useGlobalButtonLoader from './hooks/useGlobalButtonLoader';
 import useFavicon from './hooks/useFavicon';
+import { applyResponsiveStyles } from './styles/responsive';
 
 const Home = lazy(() => import('./pages/Client/Home-Cliente/Home'));
 const DetalhesReceita = lazy(() => import('./pages/Client/DetalhesReceita-Cliente/DetalhesReceita'));
@@ -17,6 +18,16 @@ const Usuarios = lazy(() => import('./pages/Admin/Usuarios-Admin/Usuarios'));
 const ReceitasPendentes = lazy(() => import('./pages/Admin/Receitas-Admin/ReceitasPendentes'));
 const ReceitasAprovadas = lazy(() => import('./pages/Admin/Receitas-Admin/ReceitasAprovadas'));
 const Carrossel = lazy(() => import('./pages/Admin/Carrossel-Admin/Carrossel'));
+
+function ResponsiveStylesManager() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    applyResponsiveStyles();
+  }, [pathname]);
+
+  return null;
+}
 
 function App() {
   const { carregando } = useAuth();
@@ -41,6 +52,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ResponsiveStylesManager />
       <PageLoader />
       <RouteLoader />
       <Suspense fallback={<PageLoader />}>

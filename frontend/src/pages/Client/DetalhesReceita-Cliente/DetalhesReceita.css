@@ -1,6 +1,7 @@
 ﻿.detalhe-container {
-  padding: 80px 30px 60px;
-  max-width: 1250px;
+  padding: 80px 10px 60px;
+  max-width: 100%;;
+  width: 1300px;
   margin: 0 auto;
 }
 

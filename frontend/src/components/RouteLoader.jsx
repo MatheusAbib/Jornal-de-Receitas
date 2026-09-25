@@ -12,10 +12,11 @@ function RouteLoader() {
 
     if (!jaVisitada) {
       show();
-      const timeout = setTimeout(() => hide(), 400);
       marcarRotaVisitada(pathname);
-      return () => clearTimeout(timeout);
     }
+
+    const timeout = setTimeout(() => hide(), 400);
+    return () => clearTimeout(timeout);
   }, [pathname]);
 
   return null;

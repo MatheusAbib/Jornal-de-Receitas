@@ -1,10 +1,10 @@
 ﻿.nova-main-layout {
-  padding: 90px 30px 60px;
+  padding: 90px 10px 60px;
   max-width: 1300px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 805px;
-  gap: 30px;
+  grid-template-columns: 1fr 795px;
+  gap: 15px;
   align-items: start;
 }
 
@@ -416,32 +416,6 @@
   color: #27ae60;
   margin-top: 3px;
   flex-shrink: 0;
-}
-
-@media (max-width: 1000px) {
-  .nova-main-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .nova-info-card {
-    position: static;
-  }
-}
-
-@media (max-width: 768px) {
-  .nova-main-layout { padding: 80px 15px 40px; gap: 20px; }
-  .nova-recipe-form { padding: 20px; }
-  .nova-form-row { grid-template-columns: 1fr; gap: 12px; }
-  .nova-titulo-width, .nova-tempo-width, .nova-porcoes-width { grid-column: span 1; }
-  .nova-ingrediente-row { grid-template-columns: 1fr 1fr; }
-  .nova-ingrediente-nome-wrapper { grid-column: 1 / -1; }
-}
-
-@media (max-width: 480px) {
-  .nova-main-layout { padding: 70px 8px 0; }
-  .nova-recipe-form { padding: 15px; }
-  .nova-ingrediente-row { grid-template-columns: 1fr; }
-  .nova-quantidade, .nova-unidade { grid-column: span 1; }
 }
 
 .nova-form-group-header {

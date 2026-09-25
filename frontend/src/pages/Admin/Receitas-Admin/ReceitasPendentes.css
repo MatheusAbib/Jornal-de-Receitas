@@ -52,7 +52,7 @@ display: inline-flex;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 22px;
-  padding: 25px 35px;
+  padding: 25px;
 }
 
 .admin-recipe-card {
