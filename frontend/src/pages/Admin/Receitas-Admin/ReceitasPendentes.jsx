@@ -88,7 +88,7 @@ function ReceitasPendentes() {
     setProcessando(true);
 
     try {
-      await api.post(`/api/receitas/${aprovando.id}/aprovar`);
+      await api.post(`/api/receitas/${aprovando.id}/aprovar`, null, { silent: true });
       mostrarToast('Receita aprovada com sucesso!', 'success');
       setAprovando(null);
       carregar();
@@ -106,7 +106,8 @@ function ReceitasPendentes() {
 
     try {
       await api.post(`/api/receitas/${rejeitando.id}/rejeitar`, null, {
-        params: { motivo }
+        params: { motivo },
+        silent: true
       });
       mostrarToast('Receita rejeitada.', 'info');
       setRejeitando(null);

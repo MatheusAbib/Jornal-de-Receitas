@@ -182,6 +182,11 @@ function NovaReceita() {
     setModoPreparo(novo);
   }
 
+  function handleRemoverImagem() {
+    setImagem(null);
+    setPreview('');
+  }
+
   function handleImagem(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -201,7 +206,8 @@ function NovaReceita() {
     Number(form.porcoes) >= 1 &&
     form.categoria &&
     ingredientesValidos.length > 0 &&
-    passosValidos.length > 0;
+    passosValidos.length > 0 &&
+    imagem;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -301,7 +307,7 @@ function NovaReceita() {
 
             <div className="nova-form-row">
               <div className="nova-form-group nova-titulo-width">
-                <label><i className="pi pi-tag"></i> Título da Receita</label>
+                <label><i className="pi pi-tag"></i> Título da Receita *</label>
                 <input
                   type="text"
                   name="titulo"
@@ -314,7 +320,7 @@ function NovaReceita() {
 
               <div className="nova-form-group nova-tempo-width">
                 <div className="nova-tempo-label-row">
-                  <label><i className="pi pi-clock"></i> Tempo</label>
+                  <label><i className="pi pi-clock"></i> Tempo *</label>
                   <button
                     type="button"
                     className="nova-tempo-toggle"
@@ -351,7 +357,7 @@ function NovaReceita() {
                       value={tempoMinutosHoras}
                       onChange={(e) => setTempoMinutosHoras(limparSufixo(e.target.value))}
                       onBlur={handleTempoMinutosHorasBlur}
-                      placeholder="Minutos"
+                      placeholder="Mins"
                     />
                   </div>
                 )}
@@ -364,7 +370,7 @@ function NovaReceita() {
               </div>
 
               <div className="nova-form-group nova-porcoes-width">
-                <label><i className="pi pi-users"></i> Porções</label>
+                <label><i className="pi pi-users"></i> Porções *</label>
                 <input
                   type="number"
                   name="porcoes"
@@ -379,7 +385,7 @@ function NovaReceita() {
 
             <div className="nova-form-row">
               <div className="nova-form-group nova-metade-width">
-                <label><i className="pi pi-user"></i> Chef</label>
+                <label><i className="pi pi-user"></i> Chef *</label>
                 <input
                   type="text"
                   name="chefe"
@@ -391,7 +397,7 @@ function NovaReceita() {
               </div>
 
               <div className="nova-form-group nova-metade-width">
-                <label><i className="pi pi-filter"></i> Categoria</label>
+                <label><i className="pi pi-filter"></i> Categoria *</label>
                 <select name="categoria" value={form.categoria} onChange={handleChange} required>
                   <option value="">Selecione uma categoria</option>
                   <option value="SALGADO">Salgado</option>
@@ -402,7 +408,7 @@ function NovaReceita() {
 
             <div className="nova-form-group">
               <div className="nova-form-group-header">
-                <label><i className="pi pi-list"></i> Ingredientes</label>
+                <label><i className="pi pi-list"></i> Ingredientes *</label>
                 <button type="button" className="nova-add-btn" onClick={addIngrediente}>
                   <i className="pi pi-plus"></i> Adicionar
                 </button>
@@ -457,7 +463,7 @@ function NovaReceita() {
 
             <div className="nova-form-group">
               <div className="nova-form-group-header">
-                <label><i className="pi pi-book"></i> Modo de Preparo</label>
+                <label><i className="pi pi-book"></i> Modo de Preparo *</label>
                 <button type="button" className="nova-add-btn" onClick={addPasso}>
                   <i className="pi pi-plus"></i> Adicionar
                 </button>
@@ -490,7 +496,7 @@ function NovaReceita() {
             </div>
 
             <div className="nova-form-group">
-              <label><i className="pi pi-image"></i> Imagem da Receita</label>
+              <label><i className="pi pi-image"></i> Imagem da Receita *</label>
 
               <label className="nova-file-label">
                 <span className="nova-file-text">
@@ -505,6 +511,14 @@ function NovaReceita() {
               {preview && (
                 <div className="nova-image-preview">
                   <img src={preview} alt="Preview" />
+                  <button
+                    type="button"
+                    className="nova-image-remove-btn"
+                    onClick={handleRemoverImagem}
+                    aria-label="Remover imagem"
+                  >
+                    <i className="pi pi-times"></i>
+                  </button>
                 </div>
               )}
             </div>

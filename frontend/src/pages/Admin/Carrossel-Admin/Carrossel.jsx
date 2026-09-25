@@ -6,8 +6,15 @@ import Modal from "../../../components/Modal/Modal";
 import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../context/ToastContext";
 import usePolling from "../../../hooks/usePolling";
-import api, { extrairMensagemErro } from "../../../services/api";
+import { extrairMensagemErro } from "../../../services/api";
 import { getCache, setCache } from "../../../services/cache";
+import {
+  listarCarrosselAdmin,
+  adicionarCarrossel,
+  editarCarrossel,
+  toggleCarrossel,
+  excluirCarrossel
+} from "../../../services/carrosselService";
 import './Carrossel.css';
 
 const CACHE_KEY = 'admin-carrossel';
@@ -30,8 +37,7 @@ function Carrossel() {
     if (!silencioso) setCarregando(true);
 
     try {
-      const response = await api.get('/api/carrossel/admin', { silent: silencioso });
-      const lista = response.data.itens || [];
+      const lista = await listarCarrosselAdmin(silencioso);
       setItens(lista);
       setCache(CACHE_KEY, lista);
     } catch (e) {
@@ -114,9 +120,7 @@ function Carrossel() {
         formData.append('imagemFile', criando.imagemFile);
       }
 
-      await api.post('/api/carrossel/adicionar', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await adicionarCarrossel(formData);
 
       mostrarToast('Item adicionado ao carrossel!', 'success');
       fecharCriando();
@@ -145,9 +149,7 @@ function Carrossel() {
         formData.append('imagemFile', editando.imagemFile);
       }
 
-      await api.post(`/api/carrossel/editar/${editando.id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await editarCarrossel(editando.id, formData);
 
       mostrarToast('Item atualizado com sucesso!', 'success');
       fecharEdicao();
@@ -162,8 +164,8 @@ function Carrossel() {
 
   async function toggleAtivo(id) {
     try {
-      const response = await api.post(`/api/carrossel/toggle/${id}`);
-      const atualizado = response.data.item;
+      const response = await toggleCarrossel(id);
+      const atualizado = response.item;
 
       setItens(prev => {
         const nova = prev.map(i => i.id === id ? atualizado : i);
@@ -188,7 +190,7 @@ function Carrossel() {
     setExcluindoAgora(true);
 
     try {
-      await api.post(`/api/carrossel/excluir/${excluindo.id}`);
+      await excluirCarrossel(excluindo.id);
       setItens(prev => {
         const nova = prev.filter(i => i.id !== excluindo.id);
         setCache(CACHE_KEY, nova);

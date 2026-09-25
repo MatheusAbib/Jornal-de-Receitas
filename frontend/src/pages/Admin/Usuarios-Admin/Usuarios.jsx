@@ -11,6 +11,14 @@ import './Usuarios.css';
 
 const CACHE_KEY = 'admin-usuarios';
 
+function formatarTelefone(valor) {
+  let v = String(valor || '').replace(/\D/g, '').substring(0, 11);
+  if (v.length > 0) v = '(' + v;
+  if (v.length > 3) v = v.slice(0, 3) + ') ' + v.slice(3);
+  if (v.length > 9) v = v.slice(0, 9) + '-' + v.slice(9, 14);
+  return v;
+}
+
 function Usuarios() {
   const navigate = useNavigate();
   const { usuario, carregando: carregandoAuth } = useAuth();
@@ -64,7 +72,7 @@ function Usuarios() {
 
   async function toggleAtivo(id) {
     try {
-      const response = await api.patch(`/api/usuarios/${id}/ativar`);
+      const response = await api.patch(`/api/usuarios/${id}/ativar`, null, { silent: true });
       const atualizado = response.data.usuario;
 
       setUsuarios(prev => {
@@ -93,11 +101,11 @@ function Usuarios() {
       const response = await api.put(`/api/usuarios/${editando.id}`, {
         nome: editando.nome,
         email: editando.email,
-        telefone: editando.telefone,
+        telefone: editando.telefone.replace(/\D/g, ''),
         genero: editando.genero,
         role: editando.role,
         senha: editando.senha || undefined
-      });
+      }, { silent: true });
 
       setUsuarios(prev => {
         const nova = prev.map(u => u.id === editando.id ? response.data.usuario : u);
@@ -120,7 +128,7 @@ function Usuarios() {
 
     setExcluindoAgora(true);
     try {
-      await api.delete(`/api/usuarios/${excluindo.id}`);
+      await api.delete(`/api/usuarios/${excluindo.id}`, { silent: true });
       setUsuarios(prev => {
         const nova = prev.filter(u => u.id !== excluindo.id);
         setCache(CACHE_KEY, nova);
@@ -137,7 +145,7 @@ function Usuarios() {
   }
 
   function abrirEdicao(u) {
-    const dados = { ...u, senha: '' };
+    const dados = { ...u, senha: '', telefone: formatarTelefone(u.telefone || '') };
     setEditando(dados);
     setOriginalEdicao({ ...dados });
   }
@@ -145,6 +153,10 @@ function Usuarios() {
   function fecharEdicao() {
     setEditando(null);
     setOriginalEdicao(null);
+  }
+
+  function handleTelefone(e) {
+    setEditando({ ...editando, telefone: formatarTelefone(e.target.value) });
   }
 
   const usuariosFiltrados = usuarios.filter(u => {
@@ -322,7 +334,9 @@ function Usuarios() {
                 <input
                   type="text"
                   value={editando?.telefone || ''}
-                  onChange={(e) => setEditando({ ...editando, telefone: e.target.value })}
+                  onChange={handleTelefone}
+                  placeholder="(11) 98765-4321"
+                  maxLength={15}
                 />
               </div>
 

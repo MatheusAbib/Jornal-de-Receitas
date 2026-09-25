@@ -87,7 +87,7 @@ display: inline-flex;
 .admin-recipe-badge {
   position: absolute;
   top: 10px;
-  right: 10px;
+  left: 10px;
   padding: 5px 12px;
   font-size: 0.7rem;
   font-weight: 800;
@@ -99,7 +99,7 @@ display: inline-flex;
   color: #fff;
   border: 2px solid #fff;
   background: var(--accent-color);
-  color: var(--header-color);
+  color: white;
 }
 
 .admin-recipe-badge.rejected {

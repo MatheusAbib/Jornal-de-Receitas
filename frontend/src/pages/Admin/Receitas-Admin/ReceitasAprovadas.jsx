@@ -79,7 +79,7 @@ function ReceitasAprovadas() {
     setExcluindoAgora(true);
 
     try {
-      await api.delete(`/api/receitas/${excluindo.id}`);
+      await api.delete(`/api/receitas/${excluindo.id}`, { silent: true });
       setReceitas(prev => {
         const nova = prev.filter(r => r.id !== excluindo.id);
         setCache(CACHE_KEY, nova);
@@ -146,7 +146,8 @@ function ReceitasAprovadas() {
       }
 
       await api.put(`/api/receitas/${editando.id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        silent: true
       });
 
       mostrarToast('Receita atualizada com sucesso!', 'success');

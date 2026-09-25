@@ -1,4 +1,4 @@
-﻿import api from './api';
+import api from './api';
 
 export async function listarReceitas(silent = false) {
   const response = await api.get('/api/receitas', { silent });
@@ -38,31 +38,34 @@ export async function listarAprovadasAdmin(page = 0, size = 12, busca = '', sile
 
 export async function criarReceita(formData) {
   const response = await api.post('/api/receitas', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    silent: true
   });
   return response.data;
 }
 
 export async function editarReceita(id, formData) {
   const response = await api.put(`/api/receitas/${id}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    silent: true
   });
   return response.data;
 }
 
 export async function aprovarReceita(id) {
-  const response = await api.post(`/api/receitas/${id}/aprovar`);
+  const response = await api.post(`/api/receitas/${id}/aprovar`, null, { silent: true });
   return response.data;
 }
 
 export async function rejeitarReceita(id, motivo) {
   const response = await api.post(`/api/receitas/${id}/rejeitar`, null, {
-    params: { motivo }
+    params: { motivo },
+    silent: true
   });
   return response.data;
 }
 
 export async function excluirReceita(id) {
-  const response = await api.delete(`/api/receitas/${id}`);
+  const response = await api.delete(`/api/receitas/${id}`, { silent: true });
   return response.data;
 }

@@ -34,7 +34,18 @@ const IGNORAR_CLASSES = [
   'slider',
   'card-favorite-btn',
   'detalhe-favorite-btn',
-  'carrossel-action-btn'
+  'carrossel-action-btn',
+  'carrossel-btn-novo',
+  'nova-add-btn',
+  'nova-remove-btn',
+  'nova-tempo-toggle',
+  'action-btn',
+  'admin-btn',
+  'modal-btn',
+  'btn',
+  'p-toast-icon-close',
+  'p-toast-icon',
+  'p-link'
 ];
 
 const IGNORAR_TIPOS = ['file', 'checkbox', 'radio'];
@@ -75,6 +86,8 @@ function aplicarSpinner(elemento) {
 
   elemento.style.pointerEvents = 'none';
   elemento.style.opacity = '0.7';
+
+  console.log('[loader] APLICADO em:', elemento.className);
 }
 
 function restaurarSpinner(elemento) {
@@ -93,6 +106,8 @@ function restaurarSpinner(elemento) {
 
   delete elemento.dataset.spinnerAplicado;
   delete elemento.dataset.spinnerTime;
+
+  console.log('[loader] RESTAURADO em:', elemento.className);
 }
 
 function restaurarTodos() {
@@ -108,7 +123,10 @@ function useGlobalButtonLoader() {
 
       if (!alvo) return;
 
-      if (deveIgnorar(alvo)) return;
+      if (deveIgnorar(alvo)) {
+        console.log('[loader] IGNORADO:', alvo.className);
+        return;
+      }
 
       if (alvo.dataset.spinnerAplicado === 'true') return;
 
