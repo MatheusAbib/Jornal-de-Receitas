@@ -16,14 +16,18 @@ export function AuthProvider({ children }) {
     carregar();
   }, []);
 
-  async function login(email, senha) {
-    const resultado = await loginService(email, senha);
-    if (resultado.success) {
+async function login(email, senha) {
+  const resultado = await loginService(email, senha);
+  if (resultado.success) {
+    if (resultado.usuario) {
+      setUsuario(resultado.usuario);
+    } else {
       const u = await buscarUsuarioLogado();
       setUsuario(u);
     }
-    return resultado;
   }
+  return resultado;
+}
 
   async function logout() {
     await logoutService();
