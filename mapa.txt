@@ -1,0 +1,10 @@
+﻿FLUXO APROVAR RECEITA (fala):
+1. ReceitaController     → recebe POST, cria Command, entrega pro Invoker
+2. CommandInvoker        → chama executar() do Command
+3. AprovarReceitaCommand → busca, aprova, salva, notifica, recalcula
+4. Receita.aprovar()     → regra de negócio na entidade
+5. ReceitaService        → repassa pro DAO
+6. NotificacaoFactory    → cria notificações prontas
+7. NotificacaoService    → salva notificações
+8. AtualizarEstatisticasCommand → recalcula
+9. Estatisticas.recalcular()    → sobrescreve campos

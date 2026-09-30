@@ -34,9 +34,12 @@ public void criarNotificacao(
     notificacaoDAO.salvar(notificacao);
 }
 
+
 @Transactional
 public void salvar(Notificacao notificacao) {
+    // Recebe um objeto Notificacao já pronto (criado pela Factory)
     if (notificacao == null) return;
+    // Repassa pro DAO → JpaRepository.save() → INSERT no banco
     notificacaoDAO.salvar(notificacao);
 }
 

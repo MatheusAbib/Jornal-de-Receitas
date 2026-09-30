@@ -30,6 +30,7 @@ public class AtualizarEstatisticasCommand extends BaseCommand {
         this.usuario = usuario;
     }
 
+    //Conta receitas por status, favoritos e notificações, atualiza a entidade Estatisticas e salva.
     @Override
     public void executar() {
         if (usuario == null) {
@@ -45,6 +46,7 @@ public class AtualizarEstatisticasCommand extends BaseCommand {
                     return nova;
                 });
 
+                //calcula os numeros
         long pendentes = receitaService.contarPorUsuarioEStatus(usuario.getId(), StatusReceita.PENDENTE);
         long aprovadas = receitaService.contarPorUsuarioEStatus(usuario.getId(), StatusReceita.APROVADA);
         long rejeitadas = receitaService.contarPorUsuarioEStatus(usuario.getId(), StatusReceita.REJEITADA);
@@ -52,6 +54,7 @@ public class AtualizarEstatisticasCommand extends BaseCommand {
         int favoritos = favoritoService.listarPorUsuario(usuario).size();
         long notificacoes = notificacaoService.contarPorUsuario(usuario);
 
+        //chama recalcular da entidade e envia.
         est.recalcular(
             (int) total,
             (int) aprovadas,

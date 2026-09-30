@@ -79,7 +79,9 @@ public class Receita {
         APROVADA,
         REJEITADA
     }
-
+// Método chamado pelo AprovarReceitaCommand.
+// Regra de negócio: só receitas PENDENTE podem ser aprovadas.
+// Muda o status da própria entidade para APROVADA.
     public void aprovar() {
         if (this.status != StatusReceita.PENDENTE) {
             throw new IllegalStateException("Só receitas pendentes podem ser aprovadas");

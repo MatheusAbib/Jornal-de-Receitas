@@ -588,13 +588,18 @@ public class ReceitaController {
     })
     @SecurityRequirement(name = "sessionAuth")
     @PostMapping("/{id}/aprovar")
+    // 1. Recebe POST /api/receitas/{id}/aprovar
+    // 2. @PathVariable extrai o id da URL
+    // 3. Cria o AprovarReceitaCommand passando todos os services + o id
     public ResponseEntity<?> aprovarReceita(
             @Parameter(description = "ID da receita a ser aprovada", required = true, example = "1")
             @PathVariable Long id) {
         Command command = new AprovarReceitaCommand(
                 receitaService, usuarioService, notificacaoService, favoritoService, estatisticasService, id
         );
+        // 4. CommandInvoker executa o command
         commandInvoker.executar(command);
+         // 5. Retorna 200 OK com mensagem
         return ResponseEntity.ok(Map.of("message", "Receita aprovada com sucesso"));
     }
 

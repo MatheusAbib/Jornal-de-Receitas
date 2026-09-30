@@ -39,7 +39,7 @@ public class EstatisticasService {
     public Optional<Estatisticas> buscarPorUsuarioId(Integer usuarioId) {
         return estatisticasDAO.buscarPorUsuarioId(usuarioId);
     }
-
+    // Repassa pro DAO. @Transactional abre transação — o UPDATE é feito aqui.
     @Transactional
     public Estatisticas atualizar(Estatisticas estatisticas) {
         return estatisticasDAO.salvar(estatisticas);

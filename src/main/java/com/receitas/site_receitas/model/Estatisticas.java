@@ -41,7 +41,7 @@ public class Estatisticas {
     @Column(name = "ultima_atividade", nullable = false)
     private LocalDateTime ultimaAtividade = LocalDateTime.now();
 
-
+//Sobrescreve os valores passados do command e marca a data de última atividade.
     public void recalcular(int total, int aprovadas, int rejeitadas, int pendentes, int favoritos, int notificacoes) {
         this.totalReceitas = total;
         this.receitasAprovadas = aprovadas;

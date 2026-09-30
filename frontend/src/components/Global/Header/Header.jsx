@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { prefetchRota } from '../../../services/prefetch';
 import './Header.css';
 
 function Header({ usuario, paginaAtual, onAbrirLogin, onAbrirLogout, onAbrirPerfil, onAbrirNotificacoes, notificacoesNaoLidas }) {
@@ -67,6 +68,7 @@ function Header({ usuario, paginaAtual, onAbrirLogin, onAbrirLogout, onAbrirPerf
               <h1
                 className={`newspaper-title ${scrolled ? 'clicavel' : ''}`}
                 onClick={irParaInicio}
+                onMouseEnter={() => prefetchRota('/')}
               >
                 Jornal de Receitas
               </h1>
@@ -122,11 +124,20 @@ function Header({ usuario, paginaAtual, onAbrirLogin, onAbrirLogout, onAbrirPerf
               <button type="button" className="header-nav-close" onClick={fecharSidebar}>&times;</button>
             </div>
 
-            <a href="/" onClick={(e) => irPara(e, '/')} className={paginaAtual === 'inicio' ? 'active' : ''}>
+            <a
+              href="/"
+              onMouseEnter={() => prefetchRota('/')}
+              onClick={(e) => irPara(e, '/')}
+              className={paginaAtual === 'inicio' ? 'active' : ''}
+            >
               <i className="pi pi-home"></i> Início
             </a>
 
-            <a href="/sobre" className={paginaAtual === 'sobre' ? 'active' : ''}>
+            <a
+              href="/sobre"
+              onMouseEnter={() => prefetchRota('/sobre')}
+              className={paginaAtual === 'sobre' ? 'active' : ''}
+            >
               <i className="pi pi-info-circle"></i> Sobre
             </a>
 
@@ -138,10 +149,20 @@ function Header({ usuario, paginaAtual, onAbrirLogin, onAbrirLogout, onAbrirPerf
 
             {estaLogado && (
               <>
-                <a href="/nova" onClick={(e) => irPara(e, '/nova')} className={paginaAtual === 'nova' ? 'active' : ''}>
+                <a
+                  href="/nova"
+                  onMouseEnter={() => prefetchRota('/nova')}
+                  onClick={(e) => irPara(e, '/nova')}
+                  className={paginaAtual === 'nova' ? 'active' : ''}
+                >
                   <i className="pi pi-shop"></i> Enviar Receita
                 </a>
-                <a href="/minhas-receitas" onClick={(e) => irPara(e, '/minhas-receitas')} className={paginaAtual === 'minhas-receitas' ? 'active' : ''}>
+                <a
+                  href="/minhas-receitas"
+                  onMouseEnter={() => prefetchRota('/minhas-receitas')}
+                  onClick={(e) => irPara(e, '/minhas-receitas')}
+                  className={paginaAtual === 'minhas-receitas' ? 'active' : ''}
+                >
                   <i className="pi pi-book"></i> Minhas Receitas
                 </a>
                 <a href="#" className="header-notification-nav" onClick={(e) => { e.preventDefault(); onAbrirNotificacoes(); }}>

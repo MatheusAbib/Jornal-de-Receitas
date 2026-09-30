@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import ImagemLoader from '../../Global/ImagemLoader/ImagemLoader';
 import { useToast } from '../../../context/ToastContext';
+import { prefetchRota } from '../../../services/prefetch';
 import './CardReceita.css';
 
 function CardReceita({ receita, favorito, onToggleFavorito, usuarioLogado, variante = 'default', linkExterno }) {
@@ -52,9 +53,13 @@ function CardReceita({ receita, favorito, onToggleFavorito, usuarioLogado, varia
     }
   }
 
+  function handlePrefetchDetalhe() {
+    if (!linkExterno) prefetchRota('/detalhe');
+  }
+
   if (ehReceitaRapida) {
     return (
-      <div className="card card-receita-rapida">
+      <div className="card card-receita-rapida" onMouseEnter={handlePrefetchDetalhe}>
         <div className="card-image">
           <ImagemLoader src={imagemUrl} alt={receita.titulo} />
           <div className="card-image-overlay"></div>
@@ -90,7 +95,7 @@ function CardReceita({ receita, favorito, onToggleFavorito, usuarioLogado, varia
   }
 
   return (
-    <div className="card">
+    <div className="card" onMouseEnter={handlePrefetchDetalhe}>
       <div className="card-image">
         <ImagemLoader src={imagemUrl} alt={receita.titulo} />
 

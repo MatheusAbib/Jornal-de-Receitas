@@ -8,7 +8,7 @@ public class NotificacaoFactory {
 
     private NotificacaoFactory() {
     }
-
+//Métodos estáticos que montam a Notificacao já pronta, usando o Builder por dentro
     public static Notificacao novaReceitaParaAdmin(Usuario admin, String tituloReceita) {
         return new NotificacaoBuilder()
                 .paraUsuario(admin)

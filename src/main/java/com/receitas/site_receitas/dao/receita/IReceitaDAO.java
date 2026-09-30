@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+//O DAO encapsula o JpaRepository
 public interface IReceitaDAO {
 
     Receita salvar(Receita receita);

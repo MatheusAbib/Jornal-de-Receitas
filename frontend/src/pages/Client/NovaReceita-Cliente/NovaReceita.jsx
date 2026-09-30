@@ -5,6 +5,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../context/ToastContext";
 import { criarReceita } from "../../../services/receitaService";
 import { extrairMensagemErro } from "../../../services/api";
+import { prefetchRota } from "../../../services/prefetch";
 import './NovaReceita.css';
 
 const UNIDADES = [
@@ -239,6 +240,7 @@ function NovaReceita() {
 
       await criarReceita(formData);
       mostrarToast('Receita enviada para aprovação!', 'success');
+      prefetchRota('/minhas-receitas');
       setTimeout(() => navigate('/minhas-receitas'), 1000);
     } catch (err) {
       const msg = extrairMensagemErro(err, 'Erro ao enviar receita. Tente novamente.');

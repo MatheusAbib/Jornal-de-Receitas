@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import PageLoader from './components/Global/PageLoader/PageLoader';
-import RouteLoader from './components/RouteLoader';
 import { useAuth } from './context/AuthContext';
 import { useLoader } from './context/LoaderContext';
 import useGlobalButtonLoader from './hooks/useGlobalButtonLoader';
@@ -54,7 +53,6 @@ function App() {
     <BrowserRouter>
       <ResponsiveStylesManager />
       <PageLoader />
-      <RouteLoader />
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<Home />} />

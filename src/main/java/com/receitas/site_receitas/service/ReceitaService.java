@@ -43,6 +43,7 @@ public class ReceitaService {
         return receitaDAO.contarPorStatus(status);
     }
 
+    // Repassa pro DAO. @Transactional(readOnly=true) só pra leitura.
     @Transactional(readOnly = true)
     public Optional<Receita> buscarPorId(Long id) {
         return receitaDAO.buscarPorId(id);
@@ -59,6 +60,7 @@ public class ReceitaService {
         return receitaDAO.existe(id);
     }
 
+   // Repassa pro DAO. @Transactional abre transação — se falhar, rollback.
     @Transactional
     public Receita salvar(Receita receita) {
         return receitaDAO.salvar(receita);

@@ -1,4 +1,5 @@
-﻿import './Rodape.css';
+﻿import { prefetchRota } from '../../../services/prefetch';
+import './Rodape.css';
 
 function Rodape() {
   return (
@@ -15,10 +16,10 @@ function Rodape() {
         <div className="footer-section">
           <h3 className="footer-title">Navegação</h3>
           <ul className="footer-links">
-            <li><a href="/"><i className="pi pi-home"></i> Início</a></li>
-            <li><a href="/sobre"><i className="pi pi-info-circle"></i> Sobre</a></li>
-            <li><a href="/nova"><i className="pi pi-shop"></i> Enviar Receita</a></li>
-            <li><a href="/minhas-receitas"><i className="pi pi-book"></i> Minhas Receitas</a></li>
+            <li><a href="/" onMouseEnter={() => prefetchRota('/')}><i className="pi pi-home"></i> Início</a></li>
+            <li><a href="/sobre" onMouseEnter={() => prefetchRota('/sobre')}><i className="pi pi-info-circle"></i> Sobre</a></li>
+            <li><a href="/nova" onMouseEnter={() => prefetchRota('/nova')}><i className="pi pi-shop"></i> Enviar Receita</a></li>
+            <li><a href="/minhas-receitas" onMouseEnter={() => prefetchRota('/minhas-receitas')}><i className="pi pi-book"></i> Minhas Receitas</a></li>
           </ul>
         </div>
 

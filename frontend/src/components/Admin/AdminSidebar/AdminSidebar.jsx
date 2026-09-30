@@ -1,4 +1,5 @@
 ﻿import { useNavigate, useLocation } from 'react-router-dom';
+import { prefetchRota } from '../../../services/prefetch';
 import './AdminSidebar.css';
 
 function AdminSidebar({ usuario, aberta, onFechar, onAbrirPerfil, onAbrirLogout }) {
@@ -38,6 +39,7 @@ function AdminSidebar({ usuario, aberta, onFechar, onAbrirPerfil, onAbrirLogout 
           <a
             key={item.path}
             href={item.path}
+            onMouseEnter={() => prefetchRota(item.path)}
             className={location.pathname === item.path ? 'active' : ''}
             onClick={(e) => { e.preventDefault(); irPara(item.path); }}
           >

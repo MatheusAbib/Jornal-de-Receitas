@@ -8,6 +8,7 @@ import { buscarReceita } from "../../../services/receitaService";
 import { listarFavoritos, adicionarFavorito, removerFavorito } from "../../../services/favoritoService";
 import { extrairMensagemErro } from "../../../services/api";
 import { getCache, setCache } from "../../../services/cache";
+import { prefetchRota } from "../../../services/prefetch";
 import './DetalhesReceita.css';
 
 function DetalhesReceita() {
@@ -109,7 +110,12 @@ function DetalhesReceita() {
       <PageWrapper paginaAtual="detalhe">
         <div style={{ paddingTop: '320px', textAlign: 'center' }}>
           <h2>Receita não encontrada</h2>
-          <button onClick={() => navigate('/')}>Voltar</button>
+          <button
+            onClick={() => navigate('/')}
+            onMouseEnter={() => prefetchRota('/')}
+          >
+            Voltar
+          </button>
         </div>
       </PageWrapper>
     );

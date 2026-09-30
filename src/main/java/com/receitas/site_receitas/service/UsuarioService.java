@@ -119,6 +119,7 @@ public String cadastrarUsuario(Usuario usuario) {
         usuarioDAO.salvar(usuario);
     }
 
+    // Lista todos os usuários pro Command fazer o loop de notificação
     @Transactional(readOnly = true)
     public List<Usuario> listarTodos() {
         return usuarioDAO.listarTodos();
