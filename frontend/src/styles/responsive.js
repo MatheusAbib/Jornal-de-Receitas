@@ -32,7 +32,6 @@ justify-content: normal !important;
   .header-user-profile, .header-logout-btn { padding: 4px 14px !important; }
   .carousel-container { height: 400px !important; min-height: 400px !important; }
   .receitas-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 26px !important; }
-  .footer-content { grid-template-columns: repeat(3, 1fr) !important; }
   .minhas-wrapper { max-width: 100% !important; width: 100% !important; padding: 80px 20px 50px !important; }
   .minhas-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 18px !important; }
   .detalhe-hero { grid-template-columns: 1fr !important; min-height: auto !important; }
@@ -79,7 +78,7 @@ justify-content: normal !important;
 @media (max-width: 768px) {
 
   body { max-width: 100% !important; overflow-x: hidden !important; padding: 0 !important; }
-  .home-wrapper { margin: 0 !important; padding: 35px 5px 5px !important; }
+  .home-wrapper { margin: 0 !important; padding: 35px 5px 0px !important; }
   .user-view-info { gap: 8px !important; }
 
   .header-container, .header-full-width.scrolled .header-container { padding: 12px 15px !important; }
@@ -254,12 +253,6 @@ justify-content: normal !important;
   .top-titulo { font-size: 0.82rem !important; }
   .top-count { font-size: 1rem !important; min-width: 46px !important; }
 
-  .footer-content { grid-template-columns: 1fr !important; gap: 30px !important; padding: 30px 8px 20px !important; width: auto !important; }
-  .footer-title { font-size: 1rem !important; }
-  .footer-description { font-size: 0.85rem !important; }
-  .footer-bottom { padding: 16px 20px !important; }
-  .footer-bottom p { font-size: 0.7rem !important; }
-  .social-links { flex-wrap: wrap !important; justify-content: left !important; }
 
   .p-toast { width: 100% !important; left: 0 !important; right: 0 !important; padding: 0 12px !important; }
   .p-toast-top-right, .p-toast-top-left, .p-toast-bottom-right, .p-toast-bottom-left { width: 100% !important; max-width: 100% !important; left: 0 !important; right: 0 !important; padding: 12px !important; }
@@ -439,7 +432,6 @@ justify-content: normal !important;
   .dashboard-cards { grid-template-columns: 1fr !important; }
   .panel-body-chart { height: 240px !important; }
 
-  .footer-content { grid-template-columns: 1fr !important; gap: 25px !important; text-align: left !important; }
   .social-links a { width: 38px !important; height: 38px !important; font-size: 1rem !important; }
 
   .carousel-caption h3 { font-size: 1.15rem !important; }
