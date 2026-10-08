@@ -146,36 +146,39 @@ function Home() {
     );
   }
 
-  if (carregando) {
-    return (
-      <PageWrapper paginaAtual="inicio">
-        <div className="home-wrapper">
-          <div className="skeleton-carrossel"></div>
+if (carregando) {
+  return (
+    <PageWrapper paginaAtual="inicio">
+      <div className="home-wrapper">
+        <div className="skeleton-carrossel"></div>
 
-          <div className="tab-buttons">
-            <button className="tab-button active" disabled>Todas as Receitas</button>
-          </div>
-
-          <div className="category-section">
-            <h2 className="category-title">
-              Salgados
-              <span className="recipe-count">carregando...</span>
-            </h2>
-            <SkeletonGrid quantidade={3} />
-          </div>
-
-          <div className="category-section">
-            <h2 className="category-title">
-              Doces
-              <span className="recipe-count">carregando...</span>
-            </h2>
-            <SkeletonGrid quantidade={3} />
-          </div>
+        <div className="tab-buttons">
+          <button className="tab-button active" disabled>Todas as Receitas</button>
         </div>
-      </PageWrapper>
-    );
-  }
 
+        <div className="skeleton-filtros"></div>
+
+        <div className="category-section">
+          <h2 className="category-title">
+            Salgados
+            <span className="recipe-count">carregando...</span>
+          </h2>
+          <SkeletonGrid quantidade={3} />
+        </div>
+
+        <div className="category-section">
+          <h2 className="category-title">
+            Doces
+            <span className="recipe-count">carregando...</span>
+          </h2>
+          <SkeletonGrid quantidade={3} />
+        </div>
+
+        <div className="skeleton-receitas-rapidas"></div>
+      </div>
+    </PageWrapper>
+  );
+}
   return (
     <PageWrapper paginaAtual="inicio">
       <div className="home-wrapper">
