@@ -30,6 +30,7 @@ const IGNORAR_CLASSES = [
   'user-password-toggle',
   'cadastro-password-toggle',
   'login-password-toggle',
+  'input-toggle-senha', 
   'switch',
   'slider',
   'card-favorite-btn',
