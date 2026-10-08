@@ -26,26 +26,24 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  if (config.silent === true) {
-    return config;
+
+  if (config.showLoader === true) {
+    mostrarLoader();
   }
-  mostrarLoader();
   return config;
 });
 
 api.interceptors.response.use(
   (response) => {
-    if (response.config.silent === true) {
-      return response;
+    if (response.config.showLoader === true) {
+      esconderLoader();
     }
-    esconderLoader();
     return response;
   },
   (error) => {
-    if (error.config?.silent === true) {
-      return Promise.reject(error);
+    if (error.config?.showLoader === true) {
+      esconderLoader();
     }
-    esconderLoader();
     return Promise.reject(error);
   }
 );

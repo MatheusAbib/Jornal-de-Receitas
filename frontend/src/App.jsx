@@ -52,8 +52,10 @@ function App() {
   return (
     <BrowserRouter>
       <ResponsiveStylesManager />
+
       <PageLoader />
-      <Suspense fallback={<PageLoader />}>
+
+      <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/detalhe/:id" element={<DetalhesReceita />} />

@@ -10,12 +10,12 @@ export async function buscarUsuarioLogado() {
 }
 
 export async function login(email, senha) {
-  const response = await api.post('/api/login', { email, senha }, { silent: true });
+  const response = await api.post('/api/login', { email, senha }, { showLoader: true });
   return response.data;
 }
 
 export async function logout() {
-  await api.post('/api/logout', null, { silent: true });
+  await api.post('/api/logout', null, { showLoader: true });
 }
 
 export async function cadastrar(dados) {

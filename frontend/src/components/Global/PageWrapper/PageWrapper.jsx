@@ -1,17 +1,18 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { useState, useEffect, lazy, Suspense } from 'react';
 import Header from '../Header/Header';
 import Rodape from '../Rodape/Rodape';
-import ModalLogin from "../../Modal/ModalLogin/ModalLogin";
-import ModalCadastro from "../../Modal/ModalCadastro/ModalCadastro";
-import ModalLogout from "../../Modal/ModalLogout/ModalLogout";
-import ModalPerfil from "../../Modal/ModalPerfil/ModalPerfil";
-import ModalNotificacoes from "../../Modal/ModalNotificacoes/ModalNotificacoes";
 import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../context/ToastContext";
 import useStickyHeader from "../../../hooks/useStickyHeader";
 import useNotificacoesAutomaticas from "../../../hooks/useNotificacoesAutomaticas";
 import api from "../../../services/api";
 import './PageWrapper.css';
+
+const ModalLogin = lazy(() => import("../../Modal/ModalLogin/ModalLogin"));
+const ModalCadastro = lazy(() => import("../../Modal/ModalCadastro/ModalCadastro"));
+const ModalLogout = lazy(() => import("../../Modal/ModalLogout/ModalLogout"));
+const ModalPerfil = lazy(() => import("../../Modal/ModalPerfil/ModalPerfil"));
+const ModalNotificacoes = lazy(() => import("../../Modal/ModalNotificacoes/ModalNotificacoes"));
 
 function PageWrapper({ paginaAtual, children, mostrarRodape = true }) {
   const { usuario, logout } = useAuth();
@@ -85,30 +86,32 @@ function PageWrapper({ paginaAtual, children, mostrarRodape = true }) {
 
       {mostrarRodape && <Rodape />}
 
-      <ModalLogin
-        aberto={loginAberto}
-        onFechar={() => setLoginAberto(false)}
-        onIrParaCadastro={() => { setLoginAberto(false); setCadastroAberto(true); }}
-      />
-      <ModalCadastro
-        aberto={cadastroAberto}
-        onFechar={() => setCadastroAberto(false)}
-        onIrParaLogin={() => { setCadastroAberto(false); setLoginAberto(true); }}
-      />
-      <ModalLogout
-        aberto={logoutAberto}
-        onFechar={() => setLogoutAberto(false)}
-        onConfirmar={confirmarLogout}
-      />
-      <ModalPerfil
-        aberto={perfilAberto}
-        onFechar={() => setPerfilAberto(false)}
-      />
-      <ModalNotificacoes
-        aberto={notificacoesAberto}
-        onFechar={() => setNotificacoesAberto(false)}
-        onAtualizarContador={atualizarContador}
-      />
+      <Suspense fallback={null}>
+        <ModalLogin
+          aberto={loginAberto}
+          onFechar={() => setLoginAberto(false)}
+          onIrParaCadastro={() => { setLoginAberto(false); setCadastroAberto(true); }}
+        />
+        <ModalCadastro
+          aberto={cadastroAberto}
+          onFechar={() => setCadastroAberto(false)}
+          onIrParaLogin={() => { setCadastroAberto(false); setLoginAberto(true); }}
+        />
+        <ModalLogout
+          aberto={logoutAberto}
+          onFechar={() => setLogoutAberto(false)}
+          onConfirmar={confirmarLogout}
+        />
+        <ModalPerfil
+          aberto={perfilAberto}
+          onFechar={() => setPerfilAberto(false)}
+        />
+        <ModalNotificacoes
+          aberto={notificacoesAberto}
+          onFechar={() => setNotificacoesAberto(false)}
+          onAtualizarContador={atualizarContador}
+        />
+      </Suspense>
     </>
   );
 }
