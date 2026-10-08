@@ -230,15 +230,39 @@ function Carrossel() {
   const formAtual = criando || editando;
   const fecharForm = () => { fecharCriando(); fecharEdicao(); };
 
-  if (carregandoAuth || carregando) {
-    return (
-      <AdminLayout>
-        <div style={{ paddingTop: '100px', textAlign: 'center' }}>
-          <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem', color: '#8b0000' }}></i>
+if (carregandoAuth || carregando) {
+  return (
+    <AdminLayout>
+      <div className="admin-topbar">
+        <h1><i className="pi pi-images"></i> Carrossel</h1>
+        <div className="admin-topbar-actions">
+          <span><i className="pi pi-list"></i> Total: <strong>...</strong></span>
+          <button type="button" className="carrossel-btn-novo" disabled>
+            <i className="pi pi-plus"></i> Novo Item
+          </button>
         </div>
-      </AdminLayout>
-    );
-  }
+      </div>
+
+      <div className="carrossel-grid">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="carrossel-card">
+            <div className="carrossel-card-img skeleton-block"></div>
+            <div className="carrossel-card-body">
+              <div className="skeleton-line skeleton-line-title"></div>
+              <div className="skeleton-line skeleton-line-desc"></div>
+              <div className="skeleton-line skeleton-line-desc-short"></div>
+            </div>
+            <div className="carrossel-card-actions">
+              <div className="skeleton-line skeleton-line-btn"></div>
+              <div className="skeleton-line skeleton-line-btn"></div>
+              <div className="skeleton-line skeleton-line-btn"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </AdminLayout>
+  );
+}
 
   return (
     <AdminLayout>

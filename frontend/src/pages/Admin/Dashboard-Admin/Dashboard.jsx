@@ -129,15 +129,58 @@ function Dashboard() {
     }
   }), []);
 
-  if (carregandoAuth || carregando) {
-    return (
-      <AdminLayout>
-        <div style={{ paddingTop: '100px', textAlign: 'center' }}>
-          <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem', color: '#8b0000' }}></i>
+if (carregandoAuth || carregando) {
+  return (
+    <AdminLayout>
+      <div className="admin-topbar">
+        <h1><i className="pi pi-chart-line"></i> Dashboard</h1>
+        <div className="admin-topbar-actions">
+          <span><i className="pi pi-calendar"></i> Visão geral do site</span>
         </div>
-      </AdminLayout>
-    );
-  }
+      </div>
+
+      <div className="dashboard-cards">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="dashboard-card">
+            <div className="card-icon skeleton-icon"></div>
+            <div className="card-info">
+              <div className="skeleton-line skeleton-line-label"></div>
+              <div className="skeleton-line skeleton-line-value"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="dashboard-grid">
+        <div className="dashboard-panel">
+          <div className="panel-header">
+            <h2><i className="pi pi-chart-pie"></i> Receitas por Status</h2>
+          </div>
+          <div className="panel-body-chart">
+            <div className="skeleton-chart"></div>
+          </div>
+        </div>
+
+        <div className="dashboard-panel">
+          <div className="panel-header">
+            <h2><i className="pi pi-star-fill"></i> Top 5 Receitas Mais Favoritadas</h2>
+          </div>
+          <div className="panel-body-chart">
+            <div className="top-list" style={{ width: '100%' }}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="top-item">
+                  <div className="skeleton-line skeleton-line-rank"></div>
+                  <div className="skeleton-line skeleton-line-bar"></div>
+                  <div className="skeleton-line skeleton-line-count"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </AdminLayout>
+  );
+}
 
   return (
     <AdminLayout>

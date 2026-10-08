@@ -67,9 +67,9 @@ function Home() {
     const cached = getCache(CACHE_KEY);
 
     if (cached) {
-      setReceitas(cached.receitas);
-      setCarrossel(cached.carrossel);
-      setFavoritos(cached.favoritos);
+      setReceitas(cached.receitas || []);
+      setCarrossel(cached.carrossel || []);
+      setFavoritos(cached.favoritos || []);
       setCarregando(false);
       carregar(true);
     } else {
@@ -124,11 +124,53 @@ function Home() {
   const doces = receitasFiltradas.filter(r => r.categoria === 'DOCE');
   const receitasFavoritas = receitas.filter(r => favoritos.includes(r.id));
 
+  function SkeletonCard() {
+    return (
+      <div className="skeleton-card">
+        <div className="skeleton-image"></div>
+        <div className="skeleton-body">
+          <div className="skeleton-line skeleton-line-title"></div>
+          <div className="skeleton-line skeleton-line-short"></div>
+        </div>
+      </div>
+    );
+  }
+
+  function SkeletonGrid({ quantidade = 6 }) {
+    return (
+      <div className="receitas-grid">
+        {Array.from({ length: quantidade }).map((_, i) => (
+          <SkeletonCard key={i} />
+        ))}
+      </div>
+    );
+  }
+
   if (carregando) {
     return (
       <PageWrapper paginaAtual="inicio">
-        <div style={{ paddingTop: '320px', textAlign: 'center' }}>
-          <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem', color: '#8b0000' }}></i>
+        <div className="home-wrapper">
+          <div className="skeleton-carrossel"></div>
+
+          <div className="tab-buttons">
+            <button className="tab-button active" disabled>Todas as Receitas</button>
+          </div>
+
+          <div className="category-section">
+            <h2 className="category-title">
+              Salgados
+              <span className="recipe-count">carregando...</span>
+            </h2>
+            <SkeletonGrid quantidade={3} />
+          </div>
+
+          <div className="category-section">
+            <h2 className="category-title">
+              Doces
+              <span className="recipe-count">carregando...</span>
+            </h2>
+            <SkeletonGrid quantidade={3} />
+          </div>
         </div>
       </PageWrapper>
     );
@@ -164,7 +206,7 @@ function Home() {
 
             <div className="category-section">
               <h2 className="category-title">
-                 Salgados
+                Salgados
                 <span className="recipe-count">{salgados.length} receitas</span>
               </h2>
 

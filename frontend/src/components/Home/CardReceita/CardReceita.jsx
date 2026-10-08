@@ -22,7 +22,7 @@ function CardReceita({ receita, favorito, onToggleFavorito, usuarioLogado, varia
     e.stopPropagation();
 
     if (!usuarioLogado) {
-      mostrarToast('FaÃ§a login para favoritar receitas!', 'info');
+      mostrarToast('Faça login para favoritar receitas!', 'info');
       return;
     }
 

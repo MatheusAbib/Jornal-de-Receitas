@@ -95,15 +95,48 @@ function DetalhesReceita() {
     window.print();
   }
 
-  if (carregando) {
-    return (
-      <PageWrapper paginaAtual="detalhe">
-        <div style={{ paddingTop: '320px', textAlign: 'center' }}>
-          <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem', color: '#8b0000' }}></i>
+if (carregando) {
+  return (
+    <PageWrapper paginaAtual="detalhe">
+      <div className="detalhe-container">
+        <div className="detalhe-card">
+          <div className="detalhe-hero">
+            <div className="detalhe-image skeleton-block"></div>
+
+            <div className="detalhe-info">
+              <div className="skeleton-line skeleton-badge"></div>
+              <div className="skeleton-line skeleton-titulo"></div>
+              <div className="skeleton-line skeleton-meta"></div>
+
+              <div className="detalhe-meta">
+                <div className="skeleton-line skeleton-meta-item"></div>
+                <div className="skeleton-line skeleton-meta-item"></div>
+                <div className="skeleton-line skeleton-meta-item"></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="detalhe-body">
+            <div className="detalhe-section">
+              <div className="skeleton-line skeleton-section-title"></div>
+              <div className="skeleton-line skeleton-item"></div>
+              <div className="skeleton-line skeleton-item"></div>
+              <div className="skeleton-line skeleton-item"></div>
+              <div className="skeleton-line skeleton-item"></div>
+            </div>
+
+            <div className="detalhe-section">
+              <div className="skeleton-line skeleton-section-title"></div>
+              <div className="skeleton-line skeleton-item"></div>
+              <div className="skeleton-line skeleton-item"></div>
+              <div className="skeleton-line skeleton-item"></div>
+            </div>
+          </div>
         </div>
-      </PageWrapper>
-    );
-  }
+      </div>
+    </PageWrapper>
+  );
+}
 
   if (!receita) {
     return (

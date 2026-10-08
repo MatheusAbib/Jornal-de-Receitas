@@ -121,15 +121,50 @@ function ReceitasPendentes() {
     }
   }
 
-  if (carregandoAuth || carregando) {
-    return (
-      <AdminLayout>
-        <div style={{ paddingTop: '100px', textAlign: 'center' }}>
-          <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem', color: '#8b0000' }}></i>
+if (carregandoAuth || carregando) {
+  return (
+    <AdminLayout>
+      <div className="admin-topbar">
+        <h1><i className="pi pi-clock"></i> Receitas Pendentes</h1>
+        <div className="admin-topbar-actions">
+          <span><i className="pi pi-list"></i> Total: <strong>...</strong></span>
+          <form className="admin-search-box" onSubmit={(e) => e.preventDefault()}>
+            <i className="pi pi-search"></i>
+            <input type="text" placeholder="Buscar receita..." disabled />
+          </form>
         </div>
-      </AdminLayout>
-    );
-  }
+      </div>
+
+      <div className="admin-table-wrapper">
+        <div className="admin-table-container">
+          <div className="admin-table-header">
+            <div className="admin-recipe-tabs">
+              <button className="admin-recipe-tab active" disabled>
+                <i className="pi pi-clock"></i> Pendentes <span>...</span>
+              </button>
+              <button className="admin-recipe-tab" disabled>
+                <i className="pi pi-times-circle"></i> Rejeitadas <span>...</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="admin-cards-grid">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="admin-recipe-card">
+                <div className="admin-recipe-image skeleton-block"></div>
+                <div className="admin-recipe-content">
+                  <div className="skeleton-line skeleton-line-title"></div>
+                  <div className="skeleton-line skeleton-line-meta"></div>
+                  <div className="skeleton-line skeleton-line-btn"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </AdminLayout>
+  );
+}
 
   const tituloPagina = aba === 'rejeitadas' ? 'Receitas Rejeitadas' : 'Receitas Pendentes';
   const iconePagina = aba === 'rejeitadas' ? 'pi pi-times-circle' : 'pi pi-clock';

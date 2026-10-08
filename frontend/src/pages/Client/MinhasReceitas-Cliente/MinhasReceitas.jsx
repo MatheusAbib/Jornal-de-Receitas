@@ -91,11 +91,46 @@ function MinhasReceitas() {
     }
   }
 
+  function SkeletonCard() {
+    return (
+      <div className="minha-card skeleton">
+        <div className="skeleton-imagem"></div>
+        <div className="minha-info">
+          <div className="skeleton-line skeleton-line-title"></div>
+          <div className="skeleton-line skeleton-line-meta"></div>
+          <div className="skeleton-line skeleton-line-btn"></div>
+        </div>
+      </div>
+    );
+  }
+
   if (carregandoAuth || carregando) {
     return (
       <PageWrapper paginaAtual="minhas-receitas">
-        <div style={{ paddingTop: '320px', textAlign: 'center' }}>
-          <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem', color: '#8b0000' }}></i>
+        <div className="minhas-wrapper">
+          <div className="minhas-stats">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="stat-card">
+                <div className="stat-icon skeleton-icon"></div>
+                <div className="stat-info">
+                  <div className="skeleton-line skeleton-line-value"></div>
+                  <div className="skeleton-line skeleton-line-label"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="minhas-tabs">
+            <button className="minhas-tab active" disabled>Pendentes</button>
+            <button className="minhas-tab active" disabled>Aprovadas</button>
+            <button className="minhas-tab active" disabled>Rejeitadas</button>
+          </div>
+
+          <div className="minhas-grid">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
         </div>
       </PageWrapper>
     );

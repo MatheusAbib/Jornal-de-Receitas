@@ -183,15 +183,63 @@ function ReceitasAprovadas() {
 
   const botaoSalvarHabilitado = editandoValido && editandoMudou && !salvando;
 
-  if (carregandoAuth || carregando) {
-    return (
-      <AdminLayout>
-        <div style={{ paddingTop: '100px', textAlign: 'center' }}>
-          <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem', color: '#8b0000' }}></i>
+if (carregandoAuth || carregando) {
+  return (
+    <AdminLayout>
+      <div className="admin-topbar">
+        <h1><i className="pi pi-book"></i> Receitas Aprovadas</h1>
+        <div className="admin-topbar-actions">
+          <span><i className="pi pi-list"></i> Total: <strong>...</strong></span>
+          <form className="admin-search-box" onSubmit={(e) => e.preventDefault()}>
+            <i className="pi pi-search"></i>
+            <input type="text" placeholder="Buscar receita..." disabled />
+          </form>
         </div>
-      </AdminLayout>
-    );
-  }
+      </div>
+
+      <div className="admin-table-wrapper">
+        <div className="admin-table-container">
+          <div className="admin-table-header">
+            <div className="count">
+              <i className="pi pi-list"></i> Carregando...
+            </div>
+          </div>
+
+          <div className="admin-table-scroll">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Imagem</th>
+                  <th>Título</th>
+                  <th>Chefe</th>
+                  <th>Tempo</th>
+                  <th>Porções</th>
+                  <th>Categoria</th>
+                  <th className="text-center">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <tr key={i}>
+                    <td><div className="skeleton-line skeleton-line-xs"></div></td>
+                    <td><div className="skeleton-thumb"></div></td>
+                    <td><div className="skeleton-line skeleton-line-md"></div></td>
+                    <td><div className="skeleton-line skeleton-line-md"></div></td>
+                    <td><div className="skeleton-line skeleton-line-sm"></div></td>
+                    <td><div className="skeleton-line skeleton-line-xs"></div></td>
+                    <td><div className="skeleton-line skeleton-line-sm"></div></td>
+                    <td><div className="skeleton-line skeleton-line-sm"></div></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </AdminLayout>
+  );
+}
 
   return (
     <AdminLayout>
