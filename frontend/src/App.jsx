@@ -31,6 +31,21 @@ function ResponsiveStylesManager() {
   return null;
 }
 
+function PrefetchRotas() {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      import('./pages/Client/Sobre-Cliente/Sobre');
+      import('./pages/Client/DetalhesReceita-Cliente/DetalhesReceita');
+      import('./pages/Client/MinhasReceitas-Cliente/MinhasReceitas');
+      import('./pages/Client/NovaReceita-Cliente/NovaReceita');
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return null;
+}
+
 function App() {
   const { show, hide } = useLoader();
 
@@ -49,6 +64,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <PrefetchRotas />
       <ResponsiveStylesManager />
 
       <PageLoader />

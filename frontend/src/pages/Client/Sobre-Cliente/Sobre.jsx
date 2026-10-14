@@ -1,9 +1,15 @@
-﻿import { useState } from 'react';
+﻿import { useState, useEffect } from 'react';
 import PageWrapper from "../../../components/Global/PageWrapper/PageWrapper";
 import './Sobre.css';
 
 function Sobre() {
   const [faqAberto, setFaqAberto] = useState(null);
+  const [skeleton, setSkeleton] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setSkeleton(false), 50);
+    return () => clearTimeout(timer);
+  }, []);
 
   const timeline = [
     {
@@ -40,6 +46,44 @@ function Sobre() {
 
   function toggleFaq(index) {
     setFaqAberto(faqAberto === index ? null : index);
+  }
+
+  function SkeletonSection({ linhas = 3 }) {
+    return (
+      <div className="sobre-section">
+        <div className="skeleton-line skeleton-line-titulo"></div>
+        <div className="skeleton-linhas">
+          {Array.from({ length: linhas }).map((_, i) => (
+            <div
+              key={i}
+              className="skeleton-line skeleton-line-paragrafo"
+              style={{ width: i === linhas - 1 ? '60%' : '100%' }}
+            ></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (skeleton) {
+    return (
+      <PageWrapper paginaAtual="sobre">
+        <div className="sobre-container">
+          <div className="sobre-header">
+            <div className="skeleton-line skeleton-line-header"></div>
+            <div className="skeleton-line skeleton-line-subtitulo"></div>
+          </div>
+
+          <div className="sobre-content">
+            <SkeletonSection linhas={3} />
+            <SkeletonSection linhas={2} />
+            <SkeletonSection linhas={5} />
+            <SkeletonSection linhas={4} />
+            <SkeletonSection linhas={2} />
+          </div>
+        </div>
+      </PageWrapper>
+    );
   }
 
   return (

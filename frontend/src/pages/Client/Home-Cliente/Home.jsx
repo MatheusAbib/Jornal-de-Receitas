@@ -124,13 +124,67 @@ function Home() {
   const doces = receitasFiltradas.filter(r => r.categoria === 'DOCE');
   const receitasFavoritas = receitas.filter(r => favoritos.includes(r.id));
 
+  function SkeletonCarrossel() {
+    return (
+      <div className="carousel-container skeleton-shimmer">
+        <div className="skeleton-carrossel-caption">
+          <div className="skeleton-line skeleton-line-caption-title"></div>
+          <div className="skeleton-line skeleton-line-caption-text"></div>
+        </div>
+      </div>
+    );
+  }
+
   function SkeletonCard() {
     return (
-      <div className="skeleton-card">
-        <div className="skeleton-image"></div>
-        <div className="skeleton-body">
+      <div className="card skeleton-card-shimmer">
+        <div className="card-image skeleton-shimmer-block">
+          <span className="skeleton-badge"></span>
+          <span className="skeleton-fav-btn"></span>
+        </div>
+
+        <div className="card-content">
           <div className="skeleton-line skeleton-line-title"></div>
-          <div className="skeleton-line skeleton-line-short"></div>
+          <div className="skeleton-line skeleton-line-title-short"></div>
+
+          <div className="card-meta">
+            <div className="card-meta-row">
+              <div className="skeleton-line skeleton-line-meta"></div>
+              <div className="skeleton-line skeleton-line-meta"></div>
+            </div>
+            <div className="skeleton-line skeleton-line-chefe"></div>
+          </div>
+
+          <div className="card-actions">
+            <div className="skeleton-line skeleton-line-btn"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function SkeletonCardRapida() {
+    return (
+      <div className="card card-receita-rapida skeleton-card-shimmer">
+        <div className="card-image skeleton-shimmer-block">
+          <div className="skeleton-rapida-titulo"></div>
+        </div>
+
+        <div className="card-content">
+          <div className="card-meta">
+            <div className="card-meta-row">
+              <div className="skeleton-line skeleton-line-meta"></div>
+              <div className="skeleton-line skeleton-line-meta"></div>
+            </div>
+          </div>
+
+          <div className="skeleton-line skeleton-line-desc"></div>
+          <div className="skeleton-line skeleton-line-desc"></div>
+          <div className="skeleton-line skeleton-line-desc-short"></div>
+
+          <div className="card-actions">
+            <div className="skeleton-line skeleton-line-btn"></div>
+          </div>
         </div>
       </div>
     );
@@ -146,39 +200,67 @@ function Home() {
     );
   }
 
-if (carregando) {
-  return (
-    <PageWrapper paginaAtual="inicio">
-      <div className="home-wrapper">
-        <div className="skeleton-carrossel"></div>
-
-        <div className="tab-buttons">
-          <button className="tab-button active" disabled>Todas as Receitas</button>
+  function SkeletonReceitasRapidas() {
+    return (
+      <section className="classifieds-section">
+        <div className="section-title">
+          <h2>Receitas Rápidas</h2>
+          <p>Pratos deliciosos indicados para você preparar em pouco tempo</p>
         </div>
 
-        <div className="skeleton-filtros"></div>
-
-        <div className="category-section">
-          <h2 className="category-title">
-            Salgados
-            <span className="recipe-count">carregando...</span>
-          </h2>
-          <SkeletonGrid quantidade={3} />
+        <div className="classifieds">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <SkeletonCardRapida key={i} />
+          ))}
         </div>
+      </section>
+    );
+  }
 
-        <div className="category-section">
-          <h2 className="category-title">
-            Doces
-            <span className="recipe-count">carregando...</span>
-          </h2>
-          <SkeletonGrid quantidade={3} />
-        </div>
-
-        <div className="skeleton-receitas-rapidas"></div>
+  function SkeletonFiltros() {
+    return (
+      <div className="filtros-skeleton">
+        <div className="skeleton-line skeleton-line-filtro"></div>
+        <div className="skeleton-line skeleton-line-filtro"></div>
+        <div className="skeleton-line skeleton-line-filtro"></div>
       </div>
-    </PageWrapper>
-  );
-}
+    );
+  }
+
+  if (carregando) {
+    return (
+      <PageWrapper paginaAtual="inicio">
+        <div className="home-wrapper">
+          <SkeletonCarrossel />
+
+          <div className="tab-buttons">
+            <button className="tab-button active" disabled>Todas as Receitas</button>
+          </div>
+
+          <SkeletonFiltros />
+
+          <div className="category-section">
+            <h2 className="category-title">
+              Salgados
+              <span className="recipe-count">carregando...</span>
+            </h2>
+            <SkeletonGrid quantidade={4} />
+          </div>
+
+          <div className="category-section">
+            <h2 className="category-title">
+              Doces
+              <span className="recipe-count">carregando...</span>
+            </h2>
+            <SkeletonGrid quantidade={4} />
+          </div>
+
+          <SkeletonReceitasRapidas />
+        </div>
+      </PageWrapper>
+    );
+  }
+
   return (
     <PageWrapper paginaAtual="inicio">
       <div className="home-wrapper">
