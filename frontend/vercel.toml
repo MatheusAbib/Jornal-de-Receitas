@@ -9,5 +9,13 @@ source = "/uploads/:path*"
 destination = "http://64.227.6.51:8082/uploads/:path*"
 
 [[rewrites]]
+source = "/swagger-ui/:path*"
+destination = "http://64.227.6.51:8082/swagger-ui/:path*"
+
+[[rewrites]]
+source = "/v3/api-docs/:path*"
+destination = "http://64.227.6.51:8082/v3/api-docs/:path*"
+
+[[rewrites]]
 source = "/(.*)"
 destination = "/index.html"
