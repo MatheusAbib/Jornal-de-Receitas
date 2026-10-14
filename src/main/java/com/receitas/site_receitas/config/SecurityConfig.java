@@ -45,6 +45,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/receitas", "/api/receitas/*").permitAll()
                 .requestMatchers("/api/receitas/**").authenticated()
 
+                .requestMatchers("/api/site-config/**").permitAll()
+
                 .requestMatchers("/api/carrossel/admin", "/api/carrossel/adicionar",
                                  "/api/carrossel/editar/**", "/api/carrossel/toggle/**",
                                  "/api/carrossel/excluir/**").hasRole("ADMIN")
