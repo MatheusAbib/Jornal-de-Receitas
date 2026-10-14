@@ -55,7 +55,7 @@ function App() {
 
       <PageLoader />
 
-      <Suspense fallback={null}>
+      <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/detalhe/:id" element={<DetalhesReceita />} />
