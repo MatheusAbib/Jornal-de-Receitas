@@ -33,19 +33,24 @@ function Carrossel() {
   const [salvando, setSalvando] = useState(false);
   const [excluindoAgora, setExcluindoAgora] = useState(false);
 
-  async function carregar(silencioso = false) {
-    if (!silencioso) setCarregando(true);
+async function carregar(silencioso = false) {
+  if (!silencioso) setCarregando(true);
 
-    try {
-      const lista = await listarCarrosselAdmin(silencioso);
-      setItens(lista);
-      setCache(CACHE_KEY, lista);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      if (!silencioso) setCarregando(false);
-    }
+  try {
+    const lista = await listarCarrosselAdmin(silencioso);
+
+    const listaOrdenada = [...lista].sort(
+      (a, b) => (a.ordemExibicao || 0) - (b.ordemExibicao || 0)
+    );
+
+    setItens(listaOrdenada);
+    setCache(CACHE_KEY, listaOrdenada);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    if (!silencioso) setCarregando(false);
   }
+}
 
   useEffect(() => {
     if (carregandoAuth) return;
