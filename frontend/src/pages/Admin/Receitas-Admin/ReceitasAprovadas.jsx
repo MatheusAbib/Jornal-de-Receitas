@@ -105,8 +105,9 @@ function ReceitasAprovadas() {
       categoria: r.categoria,
       ingredientes: (r.ingredientes || '').split('||').filter(i => i.trim()).join('\n'),
       modoPreparo: (r.modoPreparo || '').split('||').filter(p => p.trim()).join('\n'),
-      imagem: r.imagem || '',
-      imagemFile: null
+      imagemAtual: r.imagem || null,
+      imagemFile: null,
+      imagemPreview: null
     };
     setEditando(dados);
     setOriginalEdicao({ ...dados });
@@ -115,6 +116,33 @@ function ReceitasAprovadas() {
   function fecharEdicao() {
     setEditando(null);
     setOriginalEdicao(null);
+  }
+
+  function selecionarArquivo(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const preview = URL.createObjectURL(file);
+    setEditando({ ...editando, imagemFile: file, imagemPreview: preview });
+  }
+
+  function removerImagemAtual() {
+    if (!editando) return;
+    setEditando({
+      ...editando,
+      imagemAtual: null,
+      imagemFile: null,
+      imagemPreview: null
+    });
+  }
+
+  function baixarImagem(url, nomeArquivo) {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = nomeArquivo || 'imagem.jpg';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   async function salvarEdicao(e) {
@@ -168,7 +196,8 @@ function ReceitasAprovadas() {
     editando.porcoes &&
     editando.categoria &&
     editando.ingredientes?.trim() &&
-    editando.modoPreparo?.trim();
+    editando.modoPreparo?.trim() &&
+    (editando.imagemFile || editando.imagemAtual);
 
   const editandoMudou = editando && originalEdicao && (
     editando.titulo !== originalEdicao.titulo ||
@@ -178,68 +207,87 @@ function ReceitasAprovadas() {
     editando.categoria !== originalEdicao.categoria ||
     editando.ingredientes !== originalEdicao.ingredientes ||
     editando.modoPreparo !== originalEdicao.modoPreparo ||
-    editando.imagemFile
+    editando.imagemFile ||
+    editando.imagemAtual !== originalEdicao.imagemAtual
   );
 
   const botaoSalvarHabilitado = editandoValido && editandoMudou && !salvando;
 
-if (carregandoAuth || carregando) {
-  return (
-    <AdminLayout>
-      <div className="admin-topbar">
-        <h1><i className="pi pi-book"></i> Receitas Aprovadas</h1>
-        <div className="admin-topbar-actions">
-          <span><i className="pi pi-list"></i> Total: <strong>...</strong></span>
-          <form className="admin-search-box" onSubmit={(e) => e.preventDefault()}>
-            <i className="pi pi-search"></i>
-            <input type="text" placeholder="Buscar receita..." disabled />
-          </form>
-        </div>
-      </div>
+  function obterPreviewAtual() {
+    if (!editando) return null;
 
-      <div className="admin-table-wrapper">
-        <div className="admin-table-container">
-          <div className="admin-table-header">
-            <div className="count">
-              <i className="pi pi-list"></i> Carregando...
+    if (editando.imagemPreview) {
+      return editando.imagemPreview;
+    }
+
+    if (editando.imagemAtual) {
+      return editando.imagemAtual.startsWith('http')
+        ? editando.imagemAtual
+        : `/uploads/${editando.imagemAtual}`;
+    }
+
+    return null;
+  }
+
+  const previewUrl = obterPreviewAtual();
+
+  if (carregandoAuth || carregando) {
+    return (
+      <AdminLayout>
+        <div className="admin-topbar">
+          <h1><i className="pi pi-book"></i> Receitas Aprovadas</h1>
+          <div className="admin-topbar-actions">
+            <span><i className="pi pi-list"></i> Total: <strong>...</strong></span>
+            <form className="admin-search-box" onSubmit={(e) => e.preventDefault()}>
+              <i className="pi pi-search"></i>
+              <input type="text" placeholder="Buscar receita..." disabled />
+            </form>
+          </div>
+        </div>
+
+        <div className="admin-table-wrapper">
+          <div className="admin-table-container">
+            <div className="admin-table-header">
+              <div className="count">
+                <i className="pi pi-list"></i> Carregando...
+              </div>
+            </div>
+
+            <div className="admin-table-scroll">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Imagem</th>
+                    <th>Título</th>
+                    <th>Chefe</th>
+                    <th>Tempo</th>
+                    <th>Porções</th>
+                    <th>Categoria</th>
+                    <th className="text-center">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <tr key={i}>
+                      <td><div className="skeleton-line skeleton-line-xs"></div></td>
+                      <td><div className="skeleton-thumb"></div></td>
+                      <td><div className="skeleton-line skeleton-line-md"></div></td>
+                      <td><div className="skeleton-line skeleton-line-md"></div></td>
+                      <td><div className="skeleton-line skeleton-line-sm"></div></td>
+                      <td><div className="skeleton-line skeleton-line-xs"></div></td>
+                      <td><div className="skeleton-line skeleton-line-sm"></div></td>
+                      <td><div className="skeleton-line skeleton-line-sm"></div></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-
-          <div className="admin-table-scroll">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Imagem</th>
-                  <th>Título</th>
-                  <th>Chefe</th>
-                  <th>Tempo</th>
-                  <th>Porções</th>
-                  <th>Categoria</th>
-                  <th className="text-center">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <tr key={i}>
-                    <td><div className="skeleton-line skeleton-line-xs"></div></td>
-                    <td><div className="skeleton-thumb"></div></td>
-                    <td><div className="skeleton-line skeleton-line-md"></div></td>
-                    <td><div className="skeleton-line skeleton-line-md"></div></td>
-                    <td><div className="skeleton-line skeleton-line-sm"></div></td>
-                    <td><div className="skeleton-line skeleton-line-xs"></div></td>
-                    <td><div className="skeleton-line skeleton-line-sm"></div></td>
-                    <td><div className="skeleton-line skeleton-line-sm"></div></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
-      </div>
-    </AdminLayout>
-  );
-}
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -422,15 +470,38 @@ if (carregandoAuth || carregando) {
                   <option value="DOCE">Doce</option>
                 </select>
               </div>
+            </div>
 
-              <div className="form-group">
-                <label>Nova Imagem</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setEditando({ ...editando, imagemFile: e.target.files[0] })}
-                />
-              </div>
+            <div className="form-group">
+              <label>Imagem</label>
+
+              {previewUrl && (
+                <div className="carrossel-preview">
+                  <img src={previewUrl} alt="Preview" />
+                  <div className="carrossel-preview-actions">
+                    <button
+                      type="button"
+                      className="preview-btn baixar"
+                      onClick={() => baixarImagem(previewUrl, editando?.titulo || 'imagem')}
+                    >
+                      <i className="pi pi-download"></i> Baixar
+                    </button>
+                    <button
+                      type="button"
+                      className="preview-btn excluir"
+                      onClick={removerImagemAtual}
+                    >
+                      <i className="pi pi-trash"></i> Excluir
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={selecionarArquivo}
+              />
             </div>
 
             <div className="form-group">

@@ -74,21 +74,25 @@ function Carrossel() {
       titulo: '',
       descricao: '',
       ordemExibicao: '',
-      linkDestino: '',
-      imagemFile: null
+      imagemFile: null,
+      imagemPreview: null
     };
     setCriando(novo);
   }
 
   function abrirEdicao(item) {
+    const imagemAtual = item.imagemUrl && item.imagemUrl !== 'default-image.jpg'
+      ? item.imagemUrl
+      : null;
+
     const dados = {
       id: item.id,
       titulo: item.titulo || '',
       descricao: item.descricao || '',
       ordemExibicao: item.ordemExibicao || '',
-      linkDestino: item.linkDestino || '',
-      imagemAtual: item.imagemUrl || null,
-      imagemFile: null
+      imagemAtual,
+      imagemFile: null,
+      imagemPreview: null
     };
     setEditando(dados);
     setOriginalEdicao({ ...dados });
@@ -103,6 +107,38 @@ function Carrossel() {
     setOriginalEdicao(null);
   }
 
+  function selecionarArquivo(e, tipo) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const preview = URL.createObjectURL(file);
+
+    if (tipo === 'criar') {
+      setCriando({ ...criando, imagemFile: file, imagemPreview: preview });
+    } else {
+      setEditando({ ...editando, imagemFile: file, imagemPreview: preview });
+    }
+  }
+
+  function removerImagemAtual() {
+    if (!editando) return;
+    setEditando({
+      ...editando,
+      imagemAtual: null,
+      imagemFile: null,
+      imagemPreview: null
+    });
+  }
+
+  function baixarImagem(url, nomeArquivo) {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = nomeArquivo || 'imagem.jpg';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   async function salvarNovo(e) {
     e.preventDefault();
     setSalvando(true);
@@ -112,7 +148,6 @@ function Carrossel() {
       formData.append('titulo', criando.titulo);
       formData.append('descricao', criando.descricao);
       formData.append('ordemExibicao', criando.ordemExibicao || '');
-      formData.append('linkDestino', criando.linkDestino || '');
 
       if (criando.imagemFile) {
         formData.append('imagemFile', criando.imagemFile);
@@ -140,7 +175,6 @@ function Carrossel() {
       formData.append('titulo', editando.titulo);
       formData.append('descricao', editando.descricao);
       formData.append('ordemExibicao', editando.ordemExibicao || '');
-      formData.append('linkDestino', editando.linkDestino || '');
 
       if (editando.imagemFile) {
         formData.append('imagemFile', editando.imagemFile);
@@ -215,8 +249,8 @@ function Carrossel() {
     editando.titulo !== originalEdicao.titulo ||
     editando.descricao !== originalEdicao.descricao ||
     editando.ordemExibicao !== originalEdicao.ordemExibicao ||
-    editando.linkDestino !== originalEdicao.linkDestino ||
-    editando.imagemFile
+    editando.imagemFile ||
+    editando.imagemAtual !== originalEdicao.imagemAtual
   );
 
   const botaoSalvarNovoHabilitado = criandoValido && !salvando;
@@ -225,6 +259,24 @@ function Carrossel() {
   const formAberto = criando || editando;
   const formAtual = criando || editando;
   const fecharForm = () => { fecharCriando(); fecharEdicao(); };
+
+  function obterPreviewAtual() {
+    if (!formAtual) return null;
+
+    if (formAtual.imagemPreview) {
+      return formAtual.imagemPreview;
+    }
+
+    if (formAtual.imagemAtual) {
+      return formAtual.imagemAtual.startsWith('http')
+        ? formAtual.imagemAtual
+        : `/uploads/${formAtual.imagemAtual}`;
+    }
+
+    return null;
+  }
+
+  const previewUrl = obterPreviewAtual();
 
   if (carregandoAuth || carregando) {
     return (
@@ -298,12 +350,6 @@ function Carrossel() {
                 <div className="carrossel-card-body">
                   <h3>{item.titulo}</h3>
                   <p>{item.descricao}</p>
-
-                  {item.linkDestino && (
-                    <span className="carrossel-card-link">
-                      <i className="pi pi-link"></i> {item.linkDestino}
-                    </span>
-                  )}
                 </div>
 
                 <div className="carrossel-card-actions">
@@ -404,34 +450,34 @@ function Carrossel() {
 
             <div className="form-group">
               <label>Imagem {criando ? '*' : ''}</label>
+
+              {previewUrl && (
+                <div className="carrossel-preview">
+                  <img src={previewUrl} alt="Preview" />
+                  <div className="carrossel-preview-actions">
+                    <button
+                      type="button"
+                      className="preview-btn baixar"
+                      onClick={() => baixarImagem(previewUrl, formAtual?.titulo || 'imagem')}
+                    >
+                      <i className="pi pi-download"></i> Baixar
+                    </button>
+                    <button
+                      type="button"
+                      className="preview-btn excluir"
+                      onClick={removerImagemAtual}
+                    >
+                      <i className="pi pi-trash"></i> Excluir
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) =>
-                  criando
-                    ? setCriando({ ...criando, imagemFile: e.target.files[0] })
-                    : setEditando({ ...editando, imagemFile: e.target.files[0] })
-                }
+                onChange={(e) => selecionarArquivo(e, criando ? 'criar' : 'editar')}
                 required={!!criando}
-              />
-              {editando && editando.imagemAtual && !editando.imagemFile && (
-                <small className="form-hint">
-                  <i className="pi pi-info-circle"></i> Imagem atual será mantida se você não escolher uma nova.
-                </small>
-              )}
-            </div>
-
-            <div className="form-group">
-              <label>Link de Destino</label>
-              <input
-                type="text"
-                placeholder="/detalhe/123"
-                value={formAtual?.linkDestino || ''}
-                onChange={(e) =>
-                  criando
-                    ? setCriando({ ...criando, linkDestino: e.target.value })
-                    : setEditando({ ...editando, linkDestino: e.target.value })
-                }
               />
             </div>
 

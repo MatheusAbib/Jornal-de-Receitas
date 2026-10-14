@@ -29,6 +29,9 @@ function ModalVerReceita({ aberto, onFechar, receita }) {
         <div className="ver-receita-grid">
 
           <div className="ver-receita-col ver-receita-col-imagem">
+            <div className="ver-receita-section">
+              <h3><i className="pi pi-image"></i> Imagem da Receita</h3>
+            </div>
             <div className="ver-receita-imagem">
               <ImagemLoader src={imagemUrl} alt={receita.titulo} />
             </div>

@@ -82,6 +82,10 @@
   line-height: 1.5;
 }
 
+.ver-receita-col-imagem .ver-receita-section {
+  margin-bottom: 0;
+}
+
 @media (max-width: 900px) {
   .ver-receita-grid {
     grid-template-columns: 1fr 1fr;
