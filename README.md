@@ -2,7 +2,7 @@
 
 Sistema web completo para gerenciamento e compartilhamento de receitas culinárias, com design inspirado em jornais clássicos.
 
-> 🔗 **Acesse online:** [jornal-de-receitas-b6ti.onrender.com](https://jornal-de-receitas-b6ti.onrender.com)
+> 🔗 **Acesse online:** (https://jornal-de-receitas.vercel.app/)
 
 ---
 
@@ -150,7 +150,7 @@ Constrói objetos passo a passo (`ReceitaBuilder`, `UsuarioBuilder`, `Notificaca
 |---|---|
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" width="24"> | Docker |
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="24"> | GitHub |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/digitalocean/digitalocean-original.svg" width="24"> | DigitalOcean / Render |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/digitalocean/digitalocean-original.svg" width="24"> | DigitalOcean / Vercel |
 
 ---
 
@@ -206,7 +206,7 @@ Total de **30 diagramas**, organizados por domínio, todos fiéis ao código atu
 
 A API REST do projeto está totalmente documentada com **SpringDoc OpenAPI** e disponível via **Swagger UI**.
 
-**Acesso online:** [`/swagger-ui/index.html`](https://jornal-de-receitas-b6ti.onrender.com/swagger-ui/index.html)
+**Acesso online:** [`/swagger-ui/index.html`](https://jornal-de-receitas.vercel.app/swagger-ui/index.html)
 
 ### O que é Swagger?
 
