@@ -33,19 +33,19 @@ public class CarrosselService {
 
     @Transactional
     public CarrosselItem salvar(CarrosselItem item) {
-if (item.getOrdemExibicao() == null) {
-    long total = carrosselDAO.contarAtivos();
-    item.definirOrdem((int) total + 1);
-}
+        if (item.getOrdemExibicao() == null) {
+            long total = carrosselDAO.contarAtivos();
+            item.definirOrdem((int) total + 1);
+        }
 
-CarrosselItem novo = new CarrosselBuilder()
-        .comTitulo(item.getTitulo())
-        .comDescricao(item.getDescricao())
-        .comImagemUrl(item.getImagemUrl())
-        .comLinkDestino(item.getLinkDestino())
-        .comOrdem(item.getOrdemExibicao())
-        .ativo(true)
-        .build();
+        CarrosselItem novo = new CarrosselBuilder()
+                .comTitulo(item.getTitulo())
+                .comDescricao(item.getDescricao())
+                .comImagemUrl(item.getImagemUrl())
+                .comLinkDestino(item.getLinkDestino())
+                .comOrdem(item.getOrdemExibicao())
+                .ativo(true)
+                .build();
 
         return carrosselDAO.salvar(novo);
     }
@@ -54,6 +54,24 @@ CarrosselItem novo = new CarrosselBuilder()
     public CarrosselItem atualizar(Long id, CarrosselItem dados) {
         CarrosselItem item = carrosselDAO.buscarPorId(id)
                 .orElseThrow(() -> new RuntimeException("Item do carrossel não encontrado"));
+
+        Integer ordemAntiga = item.getOrdemExibicao();
+        Integer ordemNova = dados.getOrdemExibicao();
+
+        if (ordemNova != null && !ordemNova.equals(ordemAntiga)) {
+            List<CarrosselItem> todos = carrosselDAO.listarTodos();
+
+            CarrosselItem itemConflitante = todos.stream()
+                    .filter(i -> !i.getId().equals(id))
+                    .filter(i -> ordemNova.equals(i.getOrdemExibicao()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (itemConflitante != null) {
+                itemConflitante.setOrdemExibicao(ordemAntiga);
+                carrosselDAO.salvar(itemConflitante);
+            }
+        }
 
         item.atualizarDados(
             dados.getTitulo(),
