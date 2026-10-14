@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import PageLoader from './components/Global/PageLoader/PageLoader';
-import { useAuth } from './context/AuthContext';
 import { useLoader } from './context/LoaderContext';
 import useGlobalButtonLoader from './hooks/useGlobalButtonLoader';
 import useFavicon from './hooks/useFavicon';
@@ -29,7 +28,6 @@ function ResponsiveStylesManager() {
 }
 
 function App() {
-  const { carregando } = useAuth();
   const { show, hide } = useLoader();
 
   useGlobalButtonLoader();
@@ -44,10 +42,6 @@ function App() {
       delete window.__hideLoader;
     };
   }, [show, hide]);
-
-  if (carregando) {
-    return <PageLoader />;
-  }
 
   return (
     <BrowserRouter>
