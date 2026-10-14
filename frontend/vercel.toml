@@ -7,3 +7,7 @@ destination = "http://64.227.6.51:8082/api/:path*"
 [[rewrites]]
 source = "/uploads/:path*"
 destination = "http://64.227.6.51:8082/uploads/:path*"
+
+[[rewrites]]
+source = "/(.*)"
+destination = "/index.html"

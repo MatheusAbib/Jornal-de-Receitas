@@ -127,8 +127,7 @@
 }
 
 .card-meta-item i {
-  color: var(--accent-color);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 .card-actions {
