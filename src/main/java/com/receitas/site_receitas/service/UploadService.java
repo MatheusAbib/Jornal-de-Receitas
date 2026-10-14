@@ -1,5 +1,6 @@
 package com.receitas.site_receitas.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,18 +13,22 @@ import java.util.UUID;
 @Service
 public class UploadService {
 
-    private static final String UPLOAD_DIR = "uploads/";
+    private final Path uploadDir;
+
+    public UploadService(@Value("${app.upload.dir:uploads}") String uploadDir) {
+        this.uploadDir = Paths.get(uploadDir).toAbsolutePath().normalize();
+    }
 
     public String salvarImagem(MultipartFile arquivo) throws IOException {
         if (arquivo == null || arquivo.isEmpty()) {
             return null;
         }
 
-        Files.createDirectories(Paths.get(UPLOAD_DIR));
+        Files.createDirectories(uploadDir);
 
         String nomeArquivo = UUID.randomUUID() + obterExtensaoSegura(arquivo.getOriginalFilename());
 
-        Path destino = Paths.get(UPLOAD_DIR, nomeArquivo);
+        Path destino = uploadDir.resolve(nomeArquivo);
         Files.write(destino, arquivo.getBytes());
 
         return nomeArquivo;
@@ -34,7 +39,7 @@ public class UploadService {
             return;
         }
         try {
-            Files.deleteIfExists(Paths.get(UPLOAD_DIR, nomeArquivo));
+            Files.deleteIfExists(uploadDir.resolve(nomeArquivo));
         } catch (IOException e) {
         }
     }
