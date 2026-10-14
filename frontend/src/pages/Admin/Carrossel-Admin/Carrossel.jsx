@@ -73,7 +73,6 @@ function Carrossel() {
     const novo = {
       titulo: '',
       descricao: '',
-      imagemUrl: '',
       ordemExibicao: '',
       linkDestino: '',
       imagemFile: null
@@ -86,9 +85,9 @@ function Carrossel() {
       id: item.id,
       titulo: item.titulo || '',
       descricao: item.descricao || '',
-      imagemUrl: item.imagemUrl || '',
       ordemExibicao: item.ordemExibicao || '',
       linkDestino: item.linkDestino || '',
+      imagemAtual: item.imagemUrl || null,
       imagemFile: null
     };
     setEditando(dados);
@@ -112,7 +111,6 @@ function Carrossel() {
       const formData = new FormData();
       formData.append('titulo', criando.titulo);
       formData.append('descricao', criando.descricao);
-      formData.append('imagemUrl', criando.imagemUrl || '');
       formData.append('ordemExibicao', criando.ordemExibicao || '');
       formData.append('linkDestino', criando.linkDestino || '');
 
@@ -141,7 +139,6 @@ function Carrossel() {
       const formData = new FormData();
       formData.append('titulo', editando.titulo);
       formData.append('descricao', editando.descricao);
-      formData.append('imagemUrl', editando.imagemUrl || '');
       formData.append('ordemExibicao', editando.ordemExibicao || '');
       formData.append('linkDestino', editando.linkDestino || '');
 
@@ -208,16 +205,15 @@ function Carrossel() {
 
   const criandoValido = criando &&
     criando.titulo?.trim() &&
-    (criando.imagemUrl?.trim() || criando.imagemFile);
+    criando.imagemFile;
 
   const editandoValido = editando &&
     editando.titulo?.trim() &&
-    (editando.imagemUrl?.trim() || editando.imagemFile);
+    (editando.imagemFile || editando.imagemAtual);
 
   const editandoMudou = editando && originalEdicao && (
     editando.titulo !== originalEdicao.titulo ||
     editando.descricao !== originalEdicao.descricao ||
-    editando.imagemUrl !== originalEdicao.imagemUrl ||
     editando.ordemExibicao !== originalEdicao.ordemExibicao ||
     editando.linkDestino !== originalEdicao.linkDestino ||
     editando.imagemFile
@@ -230,39 +226,39 @@ function Carrossel() {
   const formAtual = criando || editando;
   const fecharForm = () => { fecharCriando(); fecharEdicao(); };
 
-if (carregandoAuth || carregando) {
-  return (
-    <AdminLayout>
-      <div className="admin-topbar">
-        <h1><i className="pi pi-images"></i> Carrossel</h1>
-        <div className="admin-topbar-actions">
-          <span><i className="pi pi-list"></i> Total: <strong>...</strong></span>
-          <button type="button" className="carrossel-btn-novo" disabled>
-            <i className="pi pi-plus"></i> Novo Item
-          </button>
-        </div>
-      </div>
-
-      <div className="carrossel-grid">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="carrossel-card">
-            <div className="carrossel-card-img skeleton-block"></div>
-            <div className="carrossel-card-body">
-              <div className="skeleton-line skeleton-line-title"></div>
-              <div className="skeleton-line skeleton-line-desc"></div>
-              <div className="skeleton-line skeleton-line-desc-short"></div>
-            </div>
-            <div className="carrossel-card-actions">
-              <div className="skeleton-line skeleton-line-btn"></div>
-              <div className="skeleton-line skeleton-line-btn"></div>
-              <div className="skeleton-line skeleton-line-btn"></div>
-            </div>
+  if (carregandoAuth || carregando) {
+    return (
+      <AdminLayout>
+        <div className="admin-topbar">
+          <h1><i className="pi pi-images"></i> Carrossel</h1>
+          <div className="admin-topbar-actions">
+            <span><i className="pi pi-list"></i> Total: <strong>...</strong></span>
+            <button type="button" className="carrossel-btn-novo" disabled>
+              <i className="pi pi-plus"></i> Novo Item
+            </button>
           </div>
-        ))}
-      </div>
-    </AdminLayout>
-  );
-}
+        </div>
+
+        <div className="carrossel-grid">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="carrossel-card">
+              <div className="carrossel-card-img skeleton-block"></div>
+              <div className="carrossel-card-body">
+                <div className="skeleton-line skeleton-line-title"></div>
+                <div className="skeleton-line skeleton-line-desc"></div>
+                <div className="skeleton-line skeleton-line-desc-short"></div>
+              </div>
+              <div className="carrossel-card-actions">
+                <div className="skeleton-line skeleton-line-btn"></div>
+                <div className="skeleton-line skeleton-line-btn"></div>
+                <div className="skeleton-line skeleton-line-btn"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -407,21 +403,7 @@ if (carregandoAuth || carregando) {
             </div>
 
             <div className="form-group">
-              <label>URL da Imagem</label>
-              <input
-                type="text"
-                placeholder="https://exemplo.com/imagem.jpg"
-                value={formAtual?.imagemUrl || ''}
-                onChange={(e) =>
-                  criando
-                    ? setCriando({ ...criando, imagemUrl: e.target.value })
-                    : setEditando({ ...editando, imagemUrl: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Ou envie um arquivo</label>
+              <label>Imagem {criando ? '*' : ''}</label>
               <input
                 type="file"
                 accept="image/*"
@@ -430,7 +412,13 @@ if (carregandoAuth || carregando) {
                     ? setCriando({ ...criando, imagemFile: e.target.files[0] })
                     : setEditando({ ...editando, imagemFile: e.target.files[0] })
                 }
+                required={!!criando}
               />
+              {editando && editando.imagemAtual && !editando.imagemFile && (
+                <small className="form-hint">
+                  <i className="pi pi-info-circle"></i> Imagem atual será mantida se você não escolher uma nova.
+                </small>
+              )}
             </div>
 
             <div className="form-group">

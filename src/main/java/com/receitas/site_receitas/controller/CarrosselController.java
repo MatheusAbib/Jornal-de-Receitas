@@ -44,7 +44,7 @@ public class CarrosselController {
             description = "Itens retornados com sucesso",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(example = "{\"itens\": [{\"id\": 1, \"titulo\": \"Bolo de Chocolate\", \"imagemUrl\": \"https://exemplo.com/img.png\", \"ativo\": true, \"ordemExibicao\": 1}]}")
+                schema = @Schema(example = "{\"itens\": [{\"id\": 1, \"titulo\": \"Bolo de Chocolate\", \"imagemUrl\": \"bolo.png\", \"ativo\": true, \"ordemExibicao\": 1}]}")
             )
         ),
         @ApiResponse(
@@ -103,7 +103,7 @@ public class CarrosselController {
 
     @Operation(
         summary = "Adicionar item ao carrossel",
-        description = "Adiciona um novo item ao carrossel. Aceita upload de imagem via multipart/form-data. Requer perfil ADMIN."
+        description = "Adiciona um novo item ao carrossel. Requer upload de imagem via multipart/form-data. Requer perfil ADMIN."
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -129,7 +129,7 @@ public class CarrosselController {
             @Parameter(description = "Dados do item do carrossel")
             @ModelAttribute CarrosselItem carrosselItem,
 
-            @Parameter(description = "Arquivo de imagem do item (opcional)")
+            @Parameter(description = "Arquivo de imagem do item")
             @RequestParam(value = "imagemFile", required = false)
             MultipartFile imagemFile) throws Exception {
 
@@ -137,6 +137,8 @@ public class CarrosselController {
 
         if (nomeArquivo != null) {
             carrosselItem.setImagemUrl(nomeArquivo);
+        } else if (carrosselItem.getImagemUrl() == null || carrosselItem.getImagemUrl().isBlank()) {
+            carrosselItem.setImagemUrl("default-image.jpg");
         }
 
         CarrosselItem salvo = carrosselService.salvar(carrosselItem);
