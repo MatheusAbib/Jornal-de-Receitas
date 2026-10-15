@@ -11,6 +11,7 @@ target/
 uploads/
 mvnw
 mvnw.cmd
+.mvn/
 
 ### Sistema ###
 .DS_Store
