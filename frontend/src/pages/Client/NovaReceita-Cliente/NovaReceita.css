@@ -321,7 +321,6 @@
 .nova-info-card {
   background: #fff;
   border: 2px solid var(--header-color);
-  box-shadow: 5px 5px 0 rgba(139, 0, 0, 0.15);
   position: sticky;
   top: 100px;
 }
