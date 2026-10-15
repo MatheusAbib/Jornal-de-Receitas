@@ -81,3 +81,18 @@
 .input-toggle-senha:hover {
   color: var(--header-color);
 }
+
+.input-with-icon .form-control-edit::-ms-reveal,
+.input-with-icon .form-control-edit::-ms-clear {
+  display: none;
+}
+
+.input-with-icon .form-control-edit::-webkit-credentials-auto-fill-button,
+.input-with-icon .form-control-edit::-webkit-strong-password-auto-fill-button,
+.input-with-icon .form-control-edit::-webkit-caps-lock-indicator {
+  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}

@@ -98,6 +98,19 @@ input:checked + .slider:before {
 .skeleton-line-md { width: 120px; }
 .skeleton-line-lg { width: 180px; }
 
+.form-group input[type="password"]::-ms-reveal,
+.form-group input[type="password"]::-ms-clear {
+  display: none;
+}
+
+.form-group input[type="password"]::-webkit-credentials-auto-fill-button,
+.form-group input[type="password"]::-webkit-strong-password-auto-fill-button,
+.form-group input[type="password"]::-webkit-caps-lock-indicator {
+  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 @keyframes skeleton-loading {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }

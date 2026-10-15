@@ -133,6 +133,21 @@
   color: var(--header-color);
 }
 
+.user-form-control-float::-ms-reveal,
+.user-form-control-float::-ms-clear {
+  display: none;
+}
+
+.user-form-control-float::-webkit-credentials-auto-fill-button,
+.user-form-control-float::-webkit-strong-password-auto-fill-button,
+.user-form-control-float::-webkit-caps-lock-indicator {
+  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}
+
 @media (max-width: 600px) {
   .user-form-row {
     grid-template-columns: 1fr;
