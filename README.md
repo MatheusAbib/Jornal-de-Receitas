@@ -2,7 +2,7 @@
 
 Sistema web completo para gerenciamento e compartilhamento de receitas culinárias, com design inspirado em jornais clássicos.
 
-> 🔗 **Acesse online:** (https://jornal-de-receitas.vercel.app/)
+> 🔗 **Acesse online:** (https://jornaldereceitas.vercel.app/)
 
 ---
 
