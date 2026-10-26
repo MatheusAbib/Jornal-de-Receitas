@@ -77,13 +77,9 @@ function Header({ usuario, paginaAtual, onAbrirLogin, onAbrirLogout, onAbrirPerf
                   <p className="newspaper-subtitle">
                     Bem vindo(a), <span style={{ fontWeight: 700, color: '#d4af37' }}>{nomeUsuario}</span>!
                   </p>
-                  <p className="newspaper-date header-greeting-date">
-                    {dataAtual}
-                  </p>
                 </div>
               ) : (
                 <div className="header-greeting">
-                  <p className="newspaper-subtitle">Delícias do dia a dia para todos os gostos</p>
                   <p className="newspaper-subtitle">Faça Login ou Cadastre-se</p>
                 </div>
               )}
@@ -99,7 +95,6 @@ function Header({ usuario, paginaAtual, onAbrirLogin, onAbrirLogout, onAbrirPerf
                 <>
                   <div className="header-user-profile header-user-desktop" onClick={onAbrirPerfil}>
                     <i className="pi pi-user"></i>
-                    <span>{primeiroNome}</span>
                   </div>
                   <button type="button" className="header-notification-btn header-notification-desktop" onClick={onAbrirNotificacoes} aria-label="Notificações">
                     <i className="pi pi-bell"></i>
@@ -109,7 +104,6 @@ function Header({ usuario, paginaAtual, onAbrirLogin, onAbrirLogout, onAbrirPerf
                   </button>
                   <button type="button" className="header-logout-btn" onClick={onAbrirLogout}>
                     <i className="pi pi-sign-out"></i>
-                    <span>Sair</span>
                   </button>
                 </>
               )}
@@ -165,13 +159,7 @@ function Header({ usuario, paginaAtual, onAbrirLogin, onAbrirLogout, onAbrirPerf
                 >
                   <i className="pi pi-book"></i> Minhas Receitas
                 </a>
-                <a href="#" className="header-notification-nav" onClick={(e) => { e.preventDefault(); onAbrirNotificacoes(); }}>
-                  <i className="pi pi-bell"></i>
-                  <span>Notificações</span>
-                  {notificacoesNaoLidas > 0 && (
-                    <span className="notification-sidebar-badge">{notificacoesNaoLidas > 99 ? '99+' : notificacoesNaoLidas}</span>
-                  )}
-                </a>
+
                 <a href="#" className="header-notification-sidebar" onClick={(e) => { e.preventDefault(); onAbrirNotificacoes(); }}>
                   <i className="pi pi-bell"></i>
                   <span>Notificações</span>

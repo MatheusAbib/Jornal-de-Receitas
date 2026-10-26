@@ -20,7 +20,7 @@
 
 .newspaper-header {
     position: relative;
-    padding: 10px 20px;
+    padding: 20px;
     text-align: center;
 }
 
@@ -68,9 +68,9 @@
     position: relative;
     display: inline-block;
     margin: 0;
-    padding: 0 20px;
+    padding: 0 15px;
     font-family: 'DM Serif Display', serif;
-    font-size: 3.5rem;
+    font-size: 3.4rem;
     font-weight: 800;
     line-height: 1.1;
     color: white;
@@ -86,7 +86,7 @@
     top: 50%;
     transform: translateY(-50%);
     color: var(--accent-color);
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     text-shadow: none;
     transition: all 0.4s ease;
 }
@@ -101,7 +101,7 @@
 
 .newspaper-subtitle {
     margin: 5px 0;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-style: italic;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.9);
@@ -139,7 +139,7 @@
     gap: 10px;
     flex-wrap: wrap;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 10px;
     padding-top: 18px;
     border-top: 1px solid rgba(255, 255, 255, 0.15);
     transition: all 0.4s ease;
@@ -267,9 +267,6 @@
     }
 }
 
-.header-notification-desktop {
-    display: none;
-}
 
 .header-notification-nav {
     display: inline-flex;

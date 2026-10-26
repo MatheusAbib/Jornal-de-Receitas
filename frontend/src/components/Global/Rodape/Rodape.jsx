@@ -1,7 +1,10 @@
 ﻿import { prefetchRota } from '../../../services/prefetch';
+import { useAuth } from '../../../context/AuthContext';
 import './Rodape.css';
 
 function Rodape() {
+  const { usuario } = useAuth();
+
   return (
     <footer className="newspaper-footer">
       <div className="footer-content">
@@ -13,15 +16,17 @@ function Rodape() {
           </p>
         </div>
 
-        <div className="footer-section">
-          <h3 className="footer-title">Navegação</h3>
-          <ul className="footer-links">
-            <li><a href="/" onMouseEnter={() => prefetchRota('/')}><i className="pi pi-home"></i> Início</a></li>
-            <li><a href="/sobre" onMouseEnter={() => prefetchRota('/sobre')}><i className="pi pi-info-circle"></i> Sobre</a></li>
-            <li><a href="/nova" onMouseEnter={() => prefetchRota('/nova')}><i className="pi pi-shop"></i> Enviar Receita</a></li>
-            <li><a href="/minhas-receitas" onMouseEnter={() => prefetchRota('/minhas-receitas')}><i className="pi pi-book"></i> Minhas Receitas</a></li>
-          </ul>
-        </div>
+        {usuario && (
+          <div className="footer-section">
+            <h3 className="footer-title">Navegação</h3>
+            <ul className="footer-links">
+              <li><a href="/" onMouseEnter={() => prefetchRota('/')}><i className="pi pi-home"></i> Início</a></li>
+              <li><a href="/sobre" onMouseEnter={() => prefetchRota('/sobre')}><i className="pi pi-info-circle"></i> Sobre</a></li>
+              <li><a href="/nova" onMouseEnter={() => prefetchRota('/nova')}><i className="pi pi-shop"></i> Enviar Receita</a></li>
+              <li><a href="/minhas-receitas" onMouseEnter={() => prefetchRota('/minhas-receitas')}><i className="pi pi-book"></i> Minhas Receitas</a></li>
+            </ul>
+          </div>
+        )}
 
         <div className="footer-section">
           <h3 className="footer-title">Redes Sociais</h3>

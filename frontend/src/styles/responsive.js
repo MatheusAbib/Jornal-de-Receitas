@@ -51,8 +51,8 @@ justify-content: normal !important;
 }
 
 @media (max-width: 996px) {
-  .newspaper-header { padding: 20px !important; }
-  .header-nav { margin-top: 10px !important; }
+  .newspaper-header { padding: 30px 20px !important; }
+  .header-nav { margin-top: 5px !important; }
   .newspaper-subtitle { font-size: 0.85rem !important; }
   .header-nav a { padding: 10px 14px !important; font-size: 0.75rem !important; }
   .newspaper-title { font-size: 2.8rem !important; }
