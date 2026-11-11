@@ -1,25 +1,43 @@
-﻿import { useState } from 'react';
+﻿
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ImagemLoader from '../../Global/ImagemLoader/ImagemLoader';
 import { useToast } from '../../../context/ToastContext';
 import { prefetchRota } from '../../../services/prefetch';
 import './CardReceita.css';
 
-function CardReceita({ receita, favorito, onToggleFavorito, usuarioLogado, variante = 'default', linkExterno }) {
+function CardReceita({
+  receita,
+  favorito,
+  onToggleFavorito,
+  usuarioLogado,
+  variante = 'default',
+  linkExterno
+}) {
   const navigate = useNavigate();
   const { mostrarToast } = useToast();
   const [carregandoFav, setCarregandoFav] = useState(false);
 
   const imagemUrl = receita.imagem
-    ? (receita.imagem.startsWith('http') ? receita.imagem : `/uploads/${receita.imagem}`)
+    ? (
+        receita.imagem.startsWith('http://') ||
+        receita.imagem.startsWith('https://') ||
+        receita.imagem.startsWith('data:') ||
+        receita.imagem.startsWith('blob:') ||
+        receita.imagem.startsWith('/uploads/')
+          ? receita.imagem
+          : `/uploads/${receita.imagem.replace(/^\/+/, '')}`
+      )
     : null;
 
   const ehSalgado = receita.categoria === 'SALGADO';
   const ehReceitaRapida = variante === 'receita-rapida';
+  const tempo = receita.tempoPreparo || receita.tempo;
+  const categoria = ehSalgado ? 'Salgados' : 'Doces';
 
-  async function handleFavorito(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  async function handleFavorito(event) {
+    event.preventDefault();
+    event.stopPropagation();
 
     if (!usuarioLogado) {
       mostrarToast('Faça login para favoritar receitas!', 'info');
@@ -29,16 +47,20 @@ function CardReceita({ receita, favorito, onToggleFavorito, usuarioLogado, varia
     if (carregandoFav) return;
 
     setCarregandoFav(true);
+
     try {
       if (onToggleFavorito) {
         await onToggleFavorito(receita.id, favorito);
+
         mostrarToast(
-          favorito ? 'Receita removida dos favoritos.' : 'Receita adicionada aos favoritos!',
+          favorito
+            ? 'Receita removida dos favoritos.'
+            : 'Receita adicionada aos favoritos!',
           favorito ? 'info' : 'success'
         );
       }
-    } catch (e) {
-      console.error(e);
+    } catch (erro) {
+      console.error(erro);
       mostrarToast('Erro ao atualizar favorito.', 'error');
     } finally {
       setCarregandoFav(false);
@@ -54,99 +76,156 @@ function CardReceita({ receita, favorito, onToggleFavorito, usuarioLogado, varia
   }
 
   function handlePrefetchDetalhe() {
-    if (!linkExterno) prefetchRota('/detalhe');
+    if (!linkExterno) {
+      prefetchRota('/detalhe');
+    }
   }
+
+  const imagem = (
+    <ImagemLoader src={imagemUrl} alt={receita.titulo} />
+  );
 
   if (ehReceitaRapida) {
     return (
-      <div className="card card-receita-rapida" onMouseEnter={handlePrefetchDetalhe}>
-        <div className="card-image">
-          <ImagemLoader src={imagemUrl} alt={receita.titulo} />
-          <div className="card-image-overlay"></div>
-          <div className="card-image-titulo">
-            <h3>{receita.titulo}</h3>
-          </div>
-        </div>
+      <article
+        className="card card-receita-rapida"
+        onMouseEnter={handlePrefetchDetalhe}
+      >
+        <button
+          type="button"
+          className="card-image card-image--clicavel"
+          onClick={handleVerReceita}
+          aria-label={`Abrir receita de ${receita.titulo}`}
+        >
+          {imagem}
+        </button>
 
         <div className="card-content">
-          <div className="card-meta">
-            <div className="card-meta-row">
-              <span className="card-meta-item">
-                <i className="pi pi-clock"></i>
-                <span>{receita.tempo}</span>
-              </span>
-              <span className="card-meta-item">
-                <i className="pi pi-users"></i>
-                <span>{receita.porcoes}</span>
-              </span>
-            </div>
+          <div className="card-editoria">
+            <span>{categoria}</span>
+            <span className="card-editoria-linha" />
           </div>
 
-          <p className="card-descricao-rapida">{receita.descricao}</p>
+          <h3 className="card-titulo">{receita.titulo}</h3>
+
+          {receita.descricao && (
+            <p className="card-descricao-rapida">
+              {receita.descricao}
+            </p>
+          )}
+
+          <div className="card-meta">
+            {tempo && (
+              <div className="card-meta-item">
+                <i className="pi pi-clock" aria-hidden="true" />
+                <span>{tempo}</span>
+              </div>
+            )}
+
+            {receita.porcoes && (
+              <div className="card-meta-item">
+                <i className="pi pi-users" aria-hidden="true" />
+                <span>{receita.porcoes}</span>
+              </div>
+            )}
+          </div>
 
           <div className="card-actions">
-            <button type="button" className="card-link" onClick={handleVerReceita}>
-              Ver Receita <i className="fas fa-arrow-right"></i>
+            <button
+              type="button"
+              className="card-link"
+              onClick={handleVerReceita}
+            >
+              <span>Ler receita</span>
+              <i className="pi pi-arrow-right" aria-hidden="true" />
             </button>
           </div>
         </div>
-      </div>
+      </article>
     );
   }
 
   return (
-    <div className="card" onMouseEnter={handlePrefetchDetalhe}>
+    <article
+      className={`card card-receita ${ehSalgado ? 'card-receita--salgado' : 'card-receita--doce'}`}
+      onMouseEnter={handlePrefetchDetalhe}
+    >
       <div className="card-image">
-        <ImagemLoader src={imagemUrl} alt={receita.titulo} />
-
-        <span className={`card-badge-categoria ${ehSalgado ? 'salgado' : 'doce'}`}>
-          {ehSalgado ? 'Salgado' : 'Doce'}
-        </span>
+        <button
+          type="button"
+          className="card-image-abrir"
+          onClick={handleVerReceita}
+          aria-label={`Abrir receita de ${receita.titulo}`}
+        >
+          {imagem}
+        </button>
 
         <button
+          type="button"
           className={`card-favorite-btn ${favorito ? 'active' : ''}`}
           onClick={handleFavorito}
-          aria-label="Favoritar"
+          aria-label={
+            favorito
+              ? `Remover ${receita.titulo} dos favoritos`
+              : `Adicionar ${receita.titulo} aos favoritos`
+          }
+          aria-pressed={Boolean(favorito)}
           disabled={carregandoFav}
         >
           {carregandoFav ? (
-            <i className="pi pi-spin pi-spinner"></i>
+            <i className="pi pi-spin pi-spinner" aria-hidden="true" />
           ) : (
-            <i className={favorito ? 'pi pi-heart-fill' : 'pi pi-heart'}></i>
+            <i
+              className={favorito ? 'pi pi-heart-fill' : 'pi pi-heart'}
+              aria-hidden="true"
+            />
           )}
         </button>
       </div>
 
       <div className="card-content">
+        <div className="card-editoria">
+          <span>{categoria}</span>
+          <span className="card-editoria-linha" />
+        </div>
+
         <h3 className="card-titulo">{receita.titulo}</h3>
 
         <div className="card-meta">
-          <div className="card-meta-row">
-            <span className="card-meta-item">
-              <i className="pi pi-clock"></i>
-              <span>{receita.tempoPreparo}</span>
-            </span>
-            <span className="card-meta-item">
-              <i className="pi pi-users"></i>
+          {tempo && (
+            <div className="card-meta-item">
+              <i className="pi pi-clock" aria-hidden="true" />
+              <span>{tempo}</span>
+            </div>
+          )}
+
+          {receita.porcoes && (
+            <div className="card-meta-item">
+              <i className="pi pi-users" aria-hidden="true" />
               <span>{receita.porcoes}</span>
-            </span>
-          </div>
+            </div>
+          )}
 
           {receita.chefe && (
-            <span className="card-meta-item card-meta-chefe">
-              <i className="pi pi-user"></i>
+            <div className="card-meta-item card-meta-chefe">
+              <i className="pi pi-user" aria-hidden="true" />
               <span>{receita.chefe}</span>
-            </span>
+            </div>
           )}
         </div>
 
         <div className="card-actions">
-          <button type="button" className="card-link" onClick={handleVerReceita}>
-            Ver receita <i className="pi pi-arrow-right"></i>
+          <button
+            type="button"
+            className="card-link"
+            onClick={handleVerReceita}
+          >
+            <span>Ler receita completa</span>
+            <i className="pi pi-arrow-right" aria-hidden="true" />
           </button>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 

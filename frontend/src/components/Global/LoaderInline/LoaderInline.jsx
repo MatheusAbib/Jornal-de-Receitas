@@ -2,13 +2,23 @@
 
 function LoaderInline({ texto = 'Carregando...' }) {
   return (
-    <div className="loader-inline">
-      <div className="loader-inline-spinner">
+    <div
+      className="loader-inline"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
+      <div className="loader-inline-spinner" aria-hidden="true">
         <div className="loader-inline-ring"></div>
-        <div className="loader-inline-ring"></div>
-        <div className="loader-inline-ring"></div>
+        <div className="loader-inline-center"></div>
       </div>
-      {texto && <p className="loader-inline-text">{texto}</p>}
+
+      {texto && (
+        <div className="loader-inline-content">
+          <p className="loader-inline-text">{texto}</p>
+          <span className="loader-inline-line" aria-hidden="true"></span>
+        </div>
+      )}
     </div>
   );
 }

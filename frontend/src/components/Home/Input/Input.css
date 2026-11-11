@@ -1,25 +1,54 @@
 ﻿.input-with-icon {
   position: relative;
-  margin-top: 8px;
+  width: 100%;
+  min-width: 0;
+  margin-top: 10px;
 }
 
 .input-with-icon .form-control-edit {
+  display: block;
   width: 100%;
-  padding: 12px 15px 12px 42px;
-  border: 2px solid rgba(139, 0, 0, 0.2);
-  font-size: 0.95rem;
-  background: #faf8f5;
+  height: 50px;
+  min-height: 50px;
+  padding: 16px 15px 8px;
+  background: var(--paper-white, #fff);
+  border: 1px solid var(--border-soft, #ded8ca);
+  border-radius: 0;
+  box-shadow: none;
   box-sizing: border-box;
-  transition: all 0.25s ease;
+  color: var(--ink-color, #292721);
+  font-family: var(--font-body, inherit);
+  font-size: 0.88rem;
+  font-weight: 400;
+  line-height: 1.4;
   outline: none;
-  height: 48px;
-  font-family: inherit;
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.input-with-icon.input-has-icon .form-control-edit {
+  padding-left: 44px;
+}
+
+.input-with-icon.input-has-toggle .form-control-edit,
+.input-with-icon.input-is-select .form-control-edit {
+  padding-right: 45px;
+}
+
+.input-with-icon .form-control-edit:hover:not(:disabled) {
+  border-color: var(--vintage-green, #47624b);
 }
 
 .input-with-icon .form-control-edit:focus {
-  border-color: var(--header-color);
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+  background: var(--paper-white, #fff);
+  border-color: var(--vintage-green, #47624b);
+  box-shadow: none;
+}
+
+.input-with-icon .form-control-edit:focus-visible {
+  outline: 2px solid var(--vintage-green, #47624b);
+  outline-offset: 2px;
 }
 
 .input-with-icon .form-control-edit::placeholder {
@@ -28,58 +57,149 @@
 
 .input-with-icon label {
   position: absolute;
-  left: 42px;
   top: 50%;
+  left: 15px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  max-width: calc(100% - 65px);
+  padding: 0;
   transform: translateY(-50%);
-  color: #999;
-  font-weight: 500;
-  font-size: 0.9rem;
-  pointer-events: none;
-  transition: all 0.3s ease;
   background: transparent;
-  padding: 0 4px;
+  color: var(--ink-muted, #77756f);
+  font-family: var(--font-body, inherit);
+  font-size: 0.85rem;
+  font-weight: 400;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  transition:
+    top 0.18s ease,
+    transform 0.18s ease,
+    font-size 0.18s ease,
+    color 0.18s ease;
+}
+
+.input-with-icon.input-has-icon label {
+  left: 44px;
 }
 
 .input-with-icon .form-control-edit:focus ~ label,
-.input-with-icon .form-control-edit:not(:placeholder-shown) ~ label {
-  top: -10px;
-  font-size: 0.7rem;
-  color: var(--header-color);
-  background: #fff;
-  padding: 0 6px;
-  transform: translateY(0);
+.input-with-icon .form-control-edit:not(:placeholder-shown) ~ label,
+.input-with-icon.input-has-value label {
+  top: 10px;
+  transform: none;
+  color: var(--ink-muted, #77756f);
+  font-size: 0.65rem;
+  font-weight: 600;
 }
 
-.input-with-icon i {
+.input-with-icon .form-control-edit:focus ~ label {
+  color: var(--vintage-green-dark, #354b38);
+}
+
+.input-with-icon .input-required {
+  color: var(--tomato-red-dark, #a13f35);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.input-with-icon .input-field-icon {
   position: absolute;
-  left: 14px;
   top: 50%;
-  transform: translateY(-50%);
-  color: var(--accent-color);
+  left: 16px;
   z-index: 1;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
-}
-
-.input-with-icon .form-control-edit:focus ~ i,
-.input-with-icon .form-control-edit:not(:placeholder-shown) ~ i {
-  color: var(--header-color);
-}
-
-.input-toggle-senha {
-  position: absolute;
-  right: 14px;
-  top: 50%;
   transform: translateY(-50%);
-  cursor: pointer;
-  color: #999;
-  z-index: 2;
-  font-size: 1rem;
-  transition: color 0.25s ease;
+  color: var(--ink-muted, #77756f);
+  font-size: 0.9rem;
+  line-height: 1;
+  pointer-events: none;
+  transition: color 0.18s ease;
 }
 
-.input-toggle-senha:hover {
-  color: var(--header-color);
+.input-with-icon .form-control-edit:focus ~ .input-field-icon {
+  color: var(--vintage-green, #47624b);
+}
+
+.input-with-icon.input-is-select .form-control-edit {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.input-with-icon.input-is-select .form-control-edit option {
+  color: var(--ink-color, #292721);
+  background: var(--paper-white, #fff);
+}
+
+.input-with-icon .input-select-arrow {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  z-index: 1;
+  transform: translateY(-50%);
+  color: var(--ink-muted, #77756f);
+  font-size: 0.7rem;
+  pointer-events: none;
+}
+
+.input-with-icon .input-toggle-senha {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--ink-muted, #77756f);
+  cursor: pointer;
+  transition: color 0.18s ease;
+}
+
+.input-with-icon .input-toggle-senha i {
+  position: static;
+  display: inline-block;
+  transform: none;
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.input-with-icon .input-toggle-senha:hover:not(:disabled) {
+  color: var(--vintage-green-dark, #354b38);
+  background: transparent;
+  box-shadow: none;
+}
+
+.input-with-icon .input-toggle-senha:focus-visible {
+  outline: 2px solid var(--vintage-green, #47624b);
+  outline-offset: 1px;
+}
+
+.input-with-icon .input-toggle-senha:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.input-with-icon.input-is-disabled {
+  opacity: 0.6;
+}
+
+.input-with-icon .form-control-edit:disabled {
+  background: var(--paper-muted, #f3f0e9);
+  color: var(--ink-muted, #77756f);
+  cursor: not-allowed;
 }
 
 .input-with-icon .form-control-edit::-ms-reveal,
@@ -95,4 +215,31 @@
   pointer-events: none;
   position: absolute;
   right: 0;
+}
+
+@media (max-width: 600px) {
+  .input-with-icon .form-control-edit {
+    height: 48px;
+    min-height: 48px;
+    font-size: 0.85rem;
+  }
+
+  .input-with-icon label {
+    font-size: 0.82rem;
+  }
+
+  .input-with-icon .form-control-edit:focus ~ label,
+  .input-with-icon .form-control-edit:not(:placeholder-shown) ~ label,
+  .input-with-icon.input-has-value label {
+    font-size: 0.63rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .input-with-icon .form-control-edit,
+  .input-with-icon label,
+  .input-with-icon .input-field-icon,
+  .input-with-icon .input-toggle-senha {
+    transition: none;
+  }
 }

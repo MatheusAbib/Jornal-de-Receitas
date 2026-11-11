@@ -1,33 +1,361 @@
+
 .classifieds-section {
-  margin: 60px auto;
-  max-width: 1300px;
-}
+  --classificados-verde: #38513c;
+  --classificados-vermelho: #a44636;
+  --classificados-tinta: #3c342b;
+  --classificados-suave: #756b5d;
+  --classificados-papel: #f7f0e2;
+  --classificados-fio: rgba(79, 67, 48, 0.22);
 
-.classifieds-section .section-title {
-  text-align: center;
-  margin-bottom: 32px;
-  padding-bottom: 18px;
-  border-bottom: 2px solid var(--header-color);
-}
-
-.classifieds-section .section-title h2 {
-  font-family: 'DM Serif Display', serif;
-  font-size: 2rem;
-  color: var(--header-color);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin: 0 0 8px 0;
-}
-
-.classifieds-section .section-title p {
-  font-size: 0.95rem;
-  font-style: italic;
-  color: var(--light-text);
+  width: 100%;
   margin: 0;
+  padding: 0;
+  color: var(--classificados-tinta);
+}
+
+.classifieds-edicao {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 26px;
+  padding: 12px 0;
+  border-top: 1px solid var(--classificados-fio);
+  border-bottom: 1px solid var(--classificados-fio);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.055em;
+  color: var(--classificados-suave);
+}
+
+.classifieds-edicao > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--classificados-verde);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+}
+
+.classifieds-edicao .pi-star-fill {
+  color: var(--classificados-vermelho);
+  font-size: 0.6rem;
 }
 
 .classifieds {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 0;
+}
+
+.classifieds-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0 clamp(14px, 2vw, 30px);
+}
+
+.classifieds-item:first-child {
+  padding-left: 0;
+}
+
+.classifieds-item:last-child {
+  padding-right: 0;
+}
+
+.classifieds-item + .classifieds-item {
+  border-left: 1px solid var(--classificados-fio);
+}
+
+.classifieds-item-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 34px;
+  margin-bottom: 17px;
+}
+
+.classifieds-numero {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--classificados-vermelho);
+  letter-spacing: 0.06em;
+}
+
+.classifieds-categoria {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.68rem;
+  font-style: italic;
+  color: var(--classificados-suave);
+  text-align: right;
+}
+
+.classifieds-card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.classifieds-card > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.classifieds-card .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
+
+.classifieds-card .card:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.classifieds-card .card-image,
+.classifieds-card .card-image-container,
+.classifieds-card .card-img,
+.classifieds-card .recipe-image {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 220px;
+  min-height: 220px;
+  max-height: 220px;
+  aspect-ratio: auto;
+  overflow: hidden;
+  border: 0;
+  border-radius: 2px;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.classifieds-card .card-image img,
+.classifieds-card .card-image-container img,
+.classifieds-card .card-img img,
+.classifieds-card .recipe-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  object-position: center;
+  cursor: pointer;
+}
+
+.classifieds-card .card-image:has(img),
+.classifieds-card .card-image-container:has(img),
+.classifieds-card .card-img:has(img),
+.classifieds-card .recipe-image:has(img) {
+  cursor: pointer;
+}
+
+.classifieds-card .card-content,
+.classifieds-card .card-body,
+.classifieds-card .card-info {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.classifieds-card h2,
+.classifieds-card h3,
+.classifieds-card .card-title,
+.classifieds-card .recipe-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(1.25rem, 1.65vw, 1.65rem);
+  line-height: 1.18;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--classificados-verde);
+  text-transform: none;
+}
+
+.classifieds-card p,
+.classifieds-card .card-description,
+.classifieds-card .recipe-description {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--classificados-suave);
+}
+
+.classifieds-card a {
+  color: var(--classificados-verde);
+}
+
+.classifieds-card a:hover {
+  color: var(--classificados-vermelho);
+}
+
+.classifieds-card button {
+  box-shadow: none;
+}
+
+.classifieds-item-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: auto;
+  padding: 19px 0 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.67rem;
+  font-style: italic;
+  color: var(--classificados-suave);
+  text-align: center;
+}
+
+.classifieds-item-rodape .pi-star-fill {
+  font-size: 0.4rem;
+  color: var(--classificados-vermelho);
+}
+
+.classifieds-fechamento {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  margin-top: 38px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--classificados-verde);
+  white-space: nowrap;
+}
+
+.classifieds-fechamento .pi-star-fill {
+  font-size: 0.5rem;
+  color: var(--classificados-vermelho);
+}
+
+.classifieds-fechamento-linha {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: var(--classificados-fio);
+}
+
+@media (max-width: 1100px) {
+  .classifieds {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 40px;
+  }
+
+  .classifieds-item {
+    padding: 0 24px;
+  }
+
+  .classifieds-item:nth-child(odd) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .classifieds-item:nth-child(even) {
+    padding-right: 0;
+    border-left: 1px solid var(--classificados-fio);
+  }
+
+  .classifieds-item:nth-child(n + 3) {
+    padding-top: 30px;
+    border-top: 1px solid var(--classificados-fio);
+  }
+
+  .classifieds-card .card-image,
+  .classifieds-card .card-image-container,
+  .classifieds-card .card-img,
+  .classifieds-card .recipe-image {
+    height: 250px;
+    min-height: 250px;
+    max-height: 250px;
+  }
+
+  .classifieds-card h2,
+  .classifieds-card h3,
+  .classifieds-card .card-title,
+  .classifieds-card .recipe-title {
+    font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+  }
+}
+
+@media (max-width: 600px) {
+  .classifieds-edicao {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 25px;
+  }
+
+  .classifieds {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .classifieds-item,
+  .classifieds-item:first-child,
+  .classifieds-item:last-child,
+  .classifieds-item:nth-child(odd),
+  .classifieds-item:nth-child(even) {
+    padding: 0 0 28px;
+    border-left: 0;
+  }
+
+  .classifieds-item + .classifieds-item,
+  .classifieds-item:nth-child(n + 3) {
+    padding-top: 28px;
+    border-top: 1px solid var(--classificados-fio);
+  }
+
+  .classifieds-item-topo {
+    margin-bottom: 14px;
+  }
+
+  .classifieds-card .card-image,
+  .classifieds-card .card-image-container,
+  .classifieds-card .card-img,
+  .classifieds-card .recipe-image {
+    height: 260px;
+    min-height: 260px;
+    max-height: 260px;
+  }
+
+  .classifieds-card h2,
+  .classifieds-card h3,
+  .classifieds-card .card-title,
+  .classifieds-card .recipe-title {
+    font-size: 1.65rem;
+  }
+
+  .classifieds-item-rodape {
+    padding-top: 16px;
+  }
+
+  .classifieds-fechamento {
+    margin-top: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .classifieds-card *,
+  .classifieds-card *::before,
+  .classifieds-card *::after {
+    transition: none;
+    animation: none;
+  }
 }

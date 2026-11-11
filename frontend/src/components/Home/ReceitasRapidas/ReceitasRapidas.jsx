@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import CardReceita from '../CardReceita/CardReceita';
 import { buscarReceitasRapidas } from '../../../services/siteConfigService';
@@ -46,44 +47,90 @@ function ReceitasRapidas() {
   const [urls, setUrls] = useState(null);
 
   useEffect(() => {
+    let ativo = true;
+
     async function carregar() {
       try {
         const dados = await buscarReceitasRapidas(true);
-        setUrls(dados || {});
-      } catch (e) {
-        console.error(e);
-        setUrls({});
+
+        if (ativo) {
+          setUrls(dados || {});
+        }
+      } catch (erro) {
+        console.error(erro);
+
+        if (ativo) {
+          setUrls({});
+        }
       }
     }
+
     carregar();
+
+    return () => {
+      ativo = false;
+    };
   }, []);
 
   if (urls === null) return null;
 
   return (
-    <section className="classifieds-section">
-      <div className="section-title">
-        <h2>Receitas Rápidas</h2>
-        <p>Pratos deliciosos indicados para você preparar em pouco tempo</p>
+    <section className="classifieds-section" aria-label="Receitas rápidas">
+      <div className="classifieds-edicao">
+        <span>
+          <i className="pi pi-star-fill" aria-hidden="true" />
+          Pequeno receituário
+        </span>
+        <span>Quatro sugestões para o dia a dia</span>
       </div>
 
       <div className="classifieds">
-        {RECEITAS.map(r => (
-          <CardReceita
-            key={r.chave}
-            variante="receita-rapida"
-            linkExterno={r.link}
-            receita={{
-              id: r.id,
-              titulo: r.titulo,
-              imagem: urls[r.chave],
-              tempo: r.tempo,
-              porcoes: r.porcoes,
-              descricao: r.descricao,
-              categoria: 'SALGADO'
-            }}
-          />
+        {RECEITAS.map((receita, indice) => (
+          <article
+            className={`classifieds-item classifieds-item--${indice + 1}`}
+            key={receita.chave}
+          >
+            <div className="classifieds-item-topo">
+              <span className="classifieds-numero">
+                Nº {String(indice + 1).padStart(2, '0')}
+              </span>
+
+              <span className="classifieds-categoria">
+                {indice >= 2 ? 'Doces & quitutes' : 'Cozinha prática'}
+              </span>
+            </div>
+
+            <div className="classifieds-card">
+              <CardReceita
+                variante="receita-rapida"
+                linkExterno={receita.link}
+                receita={{
+                  id: receita.id,
+                  titulo: receita.titulo,
+                  imagem: urls[receita.chave],
+                  tempo: receita.tempo,
+                  porcoes: receita.porcoes,
+                  descricao: receita.descricao,
+                  categoria: indice >= 2 ? 'DOCE' : 'SALGADO'
+                }}
+              />
+            </div>
+
+            <div className="classifieds-item-rodape">
+              <i className="pi pi-star-fill" aria-hidden="true" />
+              <span>Do caderno de receitas</span>
+              <i className="pi pi-star-fill" aria-hidden="true" />
+            </div>
+          </article>
         ))}
+      </div>
+
+      <div className="classifieds-fechamento">
+        <span className="classifieds-fechamento-linha" />
+        <i className="pi pi-star-fill" aria-hidden="true" />
+        <span>Bom apetite!</span>
+        <i className="pi pi-star-fill" aria-hidden="true" />
+        <span className="classifieds-fechamento-linha" />
       </div>
     </section>
   );

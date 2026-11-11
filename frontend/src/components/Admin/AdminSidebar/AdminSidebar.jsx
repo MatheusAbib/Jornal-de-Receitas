@@ -1,8 +1,15 @@
-﻿import { useNavigate, useLocation } from 'react-router-dom';
+﻿
+import { useNavigate, useLocation } from 'react-router-dom';
 import { prefetchRota } from '../../../services/prefetch';
 import './AdminSidebar.css';
 
-function AdminSidebar({ usuario, aberta, onFechar, onAbrirPerfil, onAbrirLogout }) {
+function AdminSidebar({
+  usuario,
+  aberta,
+  onFechar,
+  onAbrirPerfil,
+  onAbrirLogout
+}) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -22,39 +29,68 @@ function AdminSidebar({ usuario, aberta, onFechar, onAbrirPerfil, onAbrirLogout 
   return (
     <aside className={`admin-sidebar ${aberta ? 'open' : ''}`}>
       <div className="admin-sidebar-header">
-        <h2>Administrador</h2>
+        <div className="admin-sidebar-header-info">
+          <span className="admin-sidebar-label">Painel administrativo</span>
+          <h2>Administrador</h2>
+          {usuario?.nome && (
+            <span className="admin-user">{usuario.nome}</span>
+          )}
+        </div>
+
         <button
           type="button"
           className="admin-sidebar-close"
           onClick={onFechar}
           aria-label="Fechar menu"
         >
-          &times;
+          <i className="pi pi-times" aria-hidden="true"></i>
         </button>
-        <span className="admin-user">{usuario?.nome || ''}</span>
       </div>
 
-      <nav className="admin-sidebar-nav">
-        {menu.map(item => (
-          <a
-            key={item.path}
-            href={item.path}
-            onMouseEnter={() => prefetchRota(item.path)}
-            className={location.pathname === item.path ? 'active' : ''}
-            onClick={(e) => { e.preventDefault(); irPara(item.path); }}
-          >
-            <i className={`pi ${item.icone}`}></i>
-            {item.label}
-          </a>
-        ))}
+      <nav className="admin-sidebar-nav" aria-label="Navegação administrativa">
+        <span className="admin-sidebar-section-title">Navegação</span>
+
+        {menu.map(item => {
+          const ativo = location.pathname === item.path;
+
+          return (
+            <a
+              key={item.path}
+              href={item.path}
+              onMouseEnter={() => prefetchRota(item.path)}
+              className={ativo ? 'active' : ''}
+              aria-current={ativo ? 'page' : undefined}
+              onClick={e => {
+                e.preventDefault();
+                irPara(item.path);
+              }}
+            >
+              <i className={`pi ${item.icone}`} aria-hidden="true"></i>
+              <span>{item.label}</span>
+            </a>
+          );
+        })}
       </nav>
 
       <div className="admin-sidebar-footer">
-        <button type="button" className="admin-sidebar-btn" onClick={onAbrirPerfil}>
-          <i className="pi pi-user-edit"></i> Editar Perfil
+        <span className="admin-sidebar-section-title">Conta</span>
+
+        <button
+          type="button"
+          className="admin-sidebar-btn"
+          onClick={onAbrirPerfil}
+        >
+          <i className="pi pi-user-edit" aria-hidden="true"></i>
+          <span>Editar Perfil</span>
         </button>
-        <button type="button" className="admin-sidebar-btn admin-sidebar-btn-sair" onClick={onAbrirLogout}>
-          <i className="pi pi-sign-out"></i> Sair
+
+        <button
+          type="button"
+          className="admin-sidebar-btn admin-sidebar-btn-sair"
+          onClick={onAbrirLogout}
+        >
+          <i className="pi pi-sign-out" aria-hidden="true"></i>
+          <span>Sair</span>
         </button>
       </div>
     </aside>

@@ -1,4 +1,5 @@
-﻿import { useState } from 'react';
+﻿
+import { useState } from 'react';
 import './Filtros.css';
 
 function Filtros({ onFiltrar }) {
@@ -6,62 +7,113 @@ function Filtros({ onFiltrar }) {
   const [categoria, setCategoria] = useState('');
   const [porcoes, setPorcoes] = useState('');
 
-  function aplicar() {
-    onFiltrar({ nome: nome.toLowerCase().trim(), categoria, porcoes });
+  const possuiFiltros = Boolean(nome.trim() || categoria || porcoes);
+
+  function aplicar(event) {
+    event.preventDefault();
+
+    onFiltrar({
+      nome: nome.toLowerCase().trim(),
+      categoria,
+      porcoes
+    });
   }
 
   function limpar() {
     setNome('');
     setCategoria('');
     setPorcoes('');
-    onFiltrar({ nome: '', categoria: '', porcoes: '' });
+
+    onFiltrar({
+      nome: '',
+      categoria: '',
+      porcoes: ''
+    });
   }
 
   return (
-    <div className="recipe-filters">
-      <h3><i className="pi pi-filter"></i> Filtrar Receitas</h3>
+    <section className="recipe-filters" aria-label="Filtros do receituário">
+      <form className="filtros-grid" onSubmit={aplicar}>
+        <div className="filter-group filter-group-search">
+          <label htmlFor="filtro-nome">
+            <span className="filter-number">01</span>
+            Nome da receita
+          </label>
 
-      <div className="filtros-grid">
-        <div className="filter-group">
-          <i className="pi pi-search filter-icon"></i>
-          <input
-            type="text"
-            placeholder="Digite o nome da receita"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-          />
+          <div className="filter-field">
+            <input
+              id="filtro-nome"
+              type="search"
+              placeholder="Ex.: Bolo de cenoura"
+              value={nome}
+              onChange={event => setNome(event.target.value)}
+            />
+            <i className="pi pi-search filter-icon" aria-hidden="true" />
+          </div>
         </div>
 
         <div className="filter-group">
-          <i className="pi pi-tag filter-icon"></i>
-          <select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
-            <option value="">Todas as categorias</option>
-            <option value="SALGADO">Salgado</option>
-            <option value="DOCE">Doce</option>
-          </select>
+          <label htmlFor="filtro-categoria">
+            <span className="filter-number">02</span>
+            Categoria
+          </label>
+
+          <div className="filter-field filter-field-select">
+            <select
+              id="filtro-categoria"
+              value={categoria}
+              onChange={event => setCategoria(event.target.value)}
+            >
+              <option value="">Todas as categorias</option>
+              <option value="SALGADO">Pratos salgados</option>
+              <option value="DOCE">Doces e sobremesas</option>
+            </select>
+
+            <i
+              className="pi pi-chevron-down filter-select-arrow"
+              aria-hidden="true"
+            />
+          </div>
         </div>
 
         <div className="filter-group">
-          <i className="pi pi-users filter-icon"></i>
-          <input
-            type="number"
-            min="1"
-            placeholder="Quantidade de porções"
-            value={porcoes}
-            onChange={(e) => setPorcoes(e.target.value)}
-          />
+          <label htmlFor="filtro-porcoes">
+            <span className="filter-number">03</span>
+            Rendimento
+          </label>
+
+          <div className="filter-field">
+            <input
+              id="filtro-porcoes"
+              type="number"
+              min="1"
+              step="1"
+              placeholder="Nº de porções"
+              value={porcoes}
+              onChange={event => setPorcoes(event.target.value)}
+            />
+            <i className="pi pi-users filter-icon" aria-hidden="true" />
+          </div>
         </div>
 
         <div className="filter-buttons">
-          <button type="button" onClick={aplicar}>
-            <i className="pi pi-check"></i> Aplicar Filtros
+          <button
+            type="button"
+            className="filter-clear"
+            onClick={limpar}
+            disabled={!possuiFiltros}
+          >
+            <i className="pi pi-times" aria-hidden="true" />
+            <span>Limpar</span>
           </button>
-          <button type="button" onClick={limpar}>
-            <i className="pi pi-times"></i> Limpar Filtros
+
+          <button type="submit" className="filter-submit">
+            <span>Procurar receita</span>
+            <i className="pi pi-arrow-right" aria-hidden="true" />
           </button>
         </div>
-      </div>
-    </div>
+      </form>
+    </section>
   );
 }
 

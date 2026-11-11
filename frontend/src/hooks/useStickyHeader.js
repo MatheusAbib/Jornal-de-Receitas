@@ -1,77 +1,95 @@
 ﻿import { useEffect } from 'react';
 
-function useStickyHeader(headerSelector = '.header-full-width', wrapperSelector = '.page-wrapper', sempreAtivo = false) {
+function useStickyHeader(
+  headerSelector = '.header-full-width',
+  wrapperSelector = '.page-wrapper',
+  sempreAtivo = false
+) {
   useEffect(() => {
     const header = document.querySelector(headerSelector);
     const wrapper = document.querySelector(wrapperSelector);
+    const container = header?.closest('.header-sticky-container');
 
-    if (!header || !wrapper) return;
+    if (!header || !container) return;
 
-    const OFFSET = 65;
-    let ultimaAltura = 0;
+    const paddingOriginal = wrapper?.style.paddingTop ?? '';
+    let frameId = null;
+    let observer = null;
+    let alturaOriginal = 0;
+    let scrollado = sempreAtivo;
 
-    function updateHeaderPadding() {
-      const alturaAtual = header.offsetHeight;
-      if (alturaAtual === ultimaAltura) return;
-      ultimaAltura = alturaAtual;
-      wrapper.style.paddingTop = (alturaAtual - OFFSET) + 'px';
+    if (wrapper) {
+      wrapper.style.paddingTop = '';
     }
 
-    function handleScroll() {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    function atualizarAltura() {
+      if (header.classList.contains('scrolled')) return;
 
-      if (sempreAtivo || scrollTop > 150) {
-        header.classList.add('scrolled');
-      } else {
-        header.classList.remove('scrolled');
-      }
-
-      requestAnimationFrame(updateHeaderPadding);
+      alturaOriginal = Math.ceil(header.getBoundingClientRect().height);
+      container.style.height = `${alturaOriginal}px`;
     }
 
-    updateHeaderPadding();
+    function atualizarHeader() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
 
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(updateHeaderPadding);
+      if (sempreAtivo) {
+        scrollado = true;
+      } else if (!scrollado && scrollTop > 150) {
+        scrollado = true;
+      } else if (scrollado && scrollTop < 30) {
+        scrollado = false;
+      }
+
+      header.classList.toggle('scrolled', scrollado);
+
+      if (!scrollado) {
+        atualizarAltura();
+      }
     }
 
-    window.addEventListener('load', updateHeaderPadding);
+    function agendarAtualizacao() {
+      if (frameId !== null) return;
 
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(updateHeaderPadding, 200);
-    });
+      frameId = requestAnimationFrame(() => {
+        frameId = null;
+        atualizarHeader();
+      });
+    }
 
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          handleScroll();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    });
+    header.classList.remove('scrolled');
+    atualizarAltura();
+    atualizarHeader();
 
-    header.addEventListener('transitionend', (e) => {
-      if (e.propertyName === 'padding-top' || e.propertyName === 'padding' || e.propertyName === 'padding-bottom') {
-        requestAnimationFrame(updateHeaderPadding);
-      }
-    });
-
-    let observer;
     if ('ResizeObserver' in window) {
-      observer = new ResizeObserver(updateHeaderPadding);
+      observer = new ResizeObserver(() => {
+        if (!header.classList.contains('scrolled')) {
+          atualizarAltura();
+        }
+      });
+
       observer.observe(header);
     }
 
-    setTimeout(updateHeaderPadding, 100);
-    handleScroll();
+    window.addEventListener('scroll', agendarAtualizacao, { passive: true });
+    window.addEventListener('resize', agendarAtualizacao);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (observer) observer.disconnect();
+      window.removeEventListener('scroll', agendarAtualizacao);
+      window.removeEventListener('resize', agendarAtualizacao);
+
+      if (frameId !== null) {
+        cancelAnimationFrame(frameId);
+      }
+
+      observer?.disconnect();
+
+      container.style.height = '';
+
+      if (wrapper) {
+        wrapper.style.paddingTop = paddingOriginal;
+      }
+
+      header.classList.remove('scrolled');
     };
   }, [headerSelector, wrapperSelector, sempreAtivo]);
 }

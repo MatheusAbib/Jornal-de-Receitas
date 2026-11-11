@@ -1,51 +1,40 @@
-﻿import { useState, useEffect } from 'react';
+﻿
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { prefetchRota } from '../../../services/prefetch';
+import { listarCarrossel } from '../../../services/carrosselService';
 import './Header.css';
 
-function Header({ usuario, paginaAtual, onAbrirLogin, onAbrirLogout, onAbrirPerfil, onAbrirNotificacoes, notificacoesNaoLidas }) {
+function Header({
+  usuario,
+  paginaAtual,
+  onAbrirLogin,
+  onAbrirLogout,
+  onAbrirPerfil,
+  onAbrirNotificacoes,
+  notificacoesNaoLidas = 0
+}) {
   const [scrollado, setScrollado] = useState(false);
   const [sidebarAberta, setSidebarAberta] = useState(false);
+  const [alturaOriginal, setAlturaOriginal] = useState(0);
+  const [imagemHeader, setImagemHeader] = useState('/images/propaganda-elefante.jpg');
+
+  const headerRef = useRef(null);
+  const botaoMenuRef = useRef(null);
+  const botaoFecharRef = useRef(null);
+  const alturaOriginalRef = useRef(0);
+  const scrolladoRef = useRef(false);
+
   const navigate = useNavigate();
 
-  const estaLogado = !!usuario;
-  const sempreScrollado = paginaAtual === 'nova' || paginaAtual === 'detalhe' || paginaAtual === 'minhas-receitas';
-  const scrolled = sempreScrollado || scrollado;
-
-  useEffect(() => {
-    if (sempreScrollado) return;
-
-    function handleScroll() {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      setScrollado(scrollTop > 150);
-    }
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [sempreScrollado]);
-
-  function toggleSidebar() {
-    setSidebarAberta(!sidebarAberta);
-    document.body.style.overflow = !sidebarAberta ? 'hidden' : 'auto';
-  }
-
-  function fecharSidebar() {
-    setSidebarAberta(false);
-    document.body.style.overflow = 'auto';
-  }
-
-  function irPara(e, caminho) {
-    e.preventDefault();
-    fecharSidebar();
-    navigate(caminho);
-  }
-
-  function irParaInicio() {
-    if (scrolled) navigate('/');
-  }
+  const estaLogado = Boolean(usuario);
+  const sempreScrollado = ['nova', 'detalhe', 'minhas-receitas'].includes(paginaAtual);
+  const compacto = sempreScrollado || scrollado;
 
   const nomeUsuario = usuario?.nome || '';
-  const primeiroNome = nomeUsuario.split(' ')[0];
+  const primeiroNome = nomeUsuario.trim().split(' ')[0];
+  const quantidadeNotificacoes = Math.max(0, Number(notificacoesNaoLidas) || 0);
+  const contadorNotificacoes = quantidadeNotificacoes > 99 ? '99+' : quantidadeNotificacoes;
 
   const dataAtual = new Date().toLocaleDateString('pt-BR', {
     day: 'numeric',
@@ -53,131 +42,467 @@ function Header({ usuario, paginaAtual, onAbrirLogin, onAbrirLogout, onAbrirPerf
     year: 'numeric'
   });
 
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarImagemHeader() {
+      try {
+        const dados = await listarCarrossel(true);
+
+        const imagens = Array.isArray(dados)
+          ? dados.filter(item => item.imagemUrl)
+          : [];
+
+        const sextaImagem = imagens[5];
+
+        if (!ativo || !sextaImagem) return;
+
+        const caminho = sextaImagem.imagemUrl;
+
+        const url = (
+          caminho.startsWith('http://') ||
+          caminho.startsWith('https://') ||
+          caminho.startsWith('data:') ||
+          caminho.startsWith('blob:') ||
+          caminho.startsWith('/uploads/')
+        )
+          ? caminho
+          : `/uploads/${caminho.replace(/^\/+/, '')}`;
+
+        setImagemHeader(url);
+      } catch (erro) {
+        console.error(erro);
+      }
+    }
+
+    carregarImagemHeader();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    if (sempreScrollado) return;
+
+    const header = headerRef.current;
+    if (!header) return;
+
+    const atualizarAltura = () => {
+      if (scrolladoRef.current) return;
+
+      const altura = header.getBoundingClientRect().height;
+
+      if (altura > 0) {
+        alturaOriginalRef.current = altura;
+        setAlturaOriginal(altura);
+      }
+    };
+
+    atualizarAltura();
+
+    const observer = new ResizeObserver(atualizarAltura);
+    observer.observe(header);
+
+    return () => observer.disconnect();
+  }, [sempreScrollado]);
+
+  useEffect(() => {
+    if (sempreScrollado) {
+      scrolladoRef.current = false;
+      setScrollado(false);
+      return;
+    }
+
+    const handleScroll = () => {
+      const altura = alturaOriginalRef.current;
+      const limiteAtivacao = Math.max(350, altura + 80);
+      const limiteDesativacao = 60;
+
+      if (!scrolladoRef.current && window.scrollY >= limiteAtivacao) {
+        scrolladoRef.current = true;
+        setScrollado(true);
+      } else if (scrolladoRef.current && window.scrollY <= limiteDesativacao) {
+        scrolladoRef.current = false;
+        setScrollado(false);
+      }
+    };
+
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [sempreScrollado]);
+
+  useEffect(() => {
+    setSidebarAberta(false);
+  }, [paginaAtual]);
+
+  useEffect(() => {
+    if (!sidebarAberta) return;
+
+    const overflowAnterior = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = event => {
+      if (event.key === 'Escape') {
+        setSidebarAberta(false);
+        botaoMenuRef.current?.focus();
+      }
+
+      if (event.key === 'Tab') {
+        const elementos = document.querySelectorAll(
+          '.header-nav.open a, .header-nav.open button:not([disabled])'
+        );
+
+        const focaveis = Array.from(elementos).filter(
+          elemento => elemento.getClientRects().length > 0
+        );
+
+        if (!focaveis.length) return;
+
+        const primeiro = focaveis[0];
+        const ultimo = focaveis[focaveis.length - 1];
+
+        if (event.shiftKey && document.activeElement === primeiro) {
+          event.preventDefault();
+          ultimo.focus();
+        } else if (!event.shiftKey && document.activeElement === ultimo) {
+          event.preventDefault();
+          primeiro.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    botaoFecharRef.current?.focus();
+
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [sidebarAberta]);
+
+  function fecharSidebar() {
+    setSidebarAberta(false);
+  }
+
+  function abrirSidebar() {
+    setSidebarAberta(true);
+  }
+
+  function irPara(event, caminho) {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    fecharSidebar();
+    navigate(caminho);
+  }
+
+  function executarAcao(acao) {
+    fecharSidebar();
+    acao?.();
+  }
+
+  const links = [
+    {
+      caminho: '/',
+      texto: 'Início',
+      icone: 'pi-home',
+      ativo: paginaAtual === 'inicio'
+    },
+    {
+      caminho: '/sobre',
+      texto: 'Sobre o Jornal',
+      icone: 'pi-info-circle',
+      ativo: paginaAtual === 'sobre'
+    },
+    ...(estaLogado
+      ? [
+          {
+            caminho: '/nova',
+            texto: 'Enviar Receita',
+            icone: 'pi-pencil',
+            ativo: paginaAtual === 'nova'
+          },
+          {
+            caminho: '/minhas-receitas',
+            texto: 'Minhas Receitas',
+            icone: 'pi-book',
+            ativo: paginaAtual === 'minhas-receitas'
+          }
+        ]
+      : [])
+  ];
+
   return (
-    <div className={`header-full-width ${scrolled ? 'scrolled' : ''}`}>
+    <div
+      ref={headerRef}
+      className={`header-full-width ${compacto ? 'scrolled' : ''}`}
+      style={
+        scrollado && !sempreScrollado && alturaOriginal > 0
+          ? { minHeight: `${alturaOriginal}px` }
+          : undefined
+      }
+    >
       <div className="header-container">
         <header className="newspaper-header">
+          <div className="header-edition-bar">
+            <div className="header-edition-left">
+              <span className="header-edition-mark">JR</span>
+              <span className="header-edition-number">Edição nº 04</span>
+            </div>
+
+            <span className="header-edition-description">
+              Receitas, histórias e sabores da nossa cozinha
+            </span>
+
+            <time className="newspaper-date">
+              {dataAtual}
+            </time>
+          </div>
+
           <div className="header-top">
             <div className="header-left">
-              <button type="button" className="menu-icon" onClick={toggleSidebar} aria-label="Abrir menu">
-                <i className="pi pi-bars"></i>
-              </button>
-              <div className="newspaper-price">Edição #03</div>
-            </div>
-            <div className="header-center">
-              <h1
-                className={`newspaper-title ${scrolled ? 'clicavel' : ''}`}
-                onClick={irParaInicio}
-                onMouseEnter={() => prefetchRota('/')}
+              <button
+                ref={botaoMenuRef}
+                type="button"
+                className="menu-icon"
+                onClick={abrirSidebar}
+                aria-label="Abrir menu de navegação"
+                aria-expanded={sidebarAberta}
+                aria-controls="header-navigation"
               >
-                Jornal de Receitas
-              </h1>
+                <i className="pi pi-bars" aria-hidden="true" />
+                <span>Menu</span>
+              </button>
+
+              <div className="header-vintage-ad">
+                <img
+                  src={imagemHeader}
+                  alt="Ilustração do Jornal de Receitas"
+                  className="header-vintage-ad-image"
+                />
+              </div>
+            </div>
+
+            <div className="header-center">
+              <a
+                href="/"
+                className="newspaper-title-link"
+                onMouseEnter={() => prefetchRota('/')}
+                onClick={event => irPara(event, '/')}
+                aria-label="Jornal de Receitas — Página inicial"
+              >
+                <span className="header-title-kicker">
+                  <span className="footer-eyebrow-line" />
+                  O seu jornal de cozinha
+                  <span className="footer-eyebrow-line" />
+                </span>
+
+                <span className="newspaper-title">
+                  <span>Jornal</span>
+                  <span className="newspaper-title-middle">
+                    <span className="newspaper-title-de">de</span>
+                    <span>Receitas</span>
+                  </span>
+                </span>
+
+                <span className="header-title-bottom">
+                  <span className="header-title-rule" />
+                  <span>Bom de ler. Melhor de fazer.</span>
+                  <span className="header-title-rule" />
+                </span>
+              </a>
+            </div>
+
+            <div className="header-right">
               {estaLogado ? (
-                <div className="header-greeting">
-                  <p className="newspaper-subtitle">
-                    Bem vindo(a), <span style={{ fontWeight: 700, color: '#d4af37' }}>{nomeUsuario}</span>!
-                  </p>
+                <div className="header-account">
+                  <div className="header-account-greeting">
+                    <span>Olá,</span>
+                    <strong>{primeiroNome}</strong>
+                  </div>
+
+                  <div className="header-account-actions">
+                    <button
+                      type="button"
+                      className="header-user-profile header-user-desktop"
+                      onClick={() => executarAcao(onAbrirPerfil)}
+                      aria-label="Abrir meu perfil"
+                      title="Meu perfil"
+                    >
+                      <i className="pi pi-user" aria-hidden="true" />
+                    </button>
+
+                    <button
+                      type="button"
+                      className="header-notification-btn header-notification-desktop"
+                      onClick={() => executarAcao(onAbrirNotificacoes)}
+                      aria-label={`Notificações: ${quantidadeNotificacoes} não lidas`}
+                      title="Notificações"
+                    >
+                      <i className="pi pi-bell" aria-hidden="true" />
+                      {quantidadeNotificacoes > 0 && (
+                        <span className="notification-badge">
+                          {contadorNotificacoes}
+                        </span>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="header-logout-btn"
+                      onClick={() => executarAcao(onAbrirLogout)}
+                      aria-label="Sair da conta"
+                      title="Sair"
+                    >
+                      <i className="pi pi-sign-out" aria-hidden="true" />
+                    </button>
+                  </div>
                 </div>
               ) : (
-                <div className="header-greeting">
-                  <p className="newspaper-subtitle">Faça Login ou Cadastre-se</p>
-                </div>
-              )}
-            </div>
-            <div className="header-right">
-              {!estaLogado && (
-                <div className="newspaper-date header-date-deslogado">
-                  {dataAtual}
-                </div>
-              )}
-
-              {estaLogado && (
-                <>
-                  <div className="header-user-profile header-user-desktop" onClick={onAbrirPerfil}>
-                    <i className="pi pi-user"></i>
-                  </div>
-                  <button type="button" className="header-notification-btn header-notification-desktop" onClick={onAbrirNotificacoes} aria-label="Notificações">
-                    <i className="pi pi-bell"></i>
-                    {notificacoesNaoLidas > 0 && (
-                      <span className="notification-badge">{notificacoesNaoLidas > 99 ? '99+' : notificacoesNaoLidas}</span>
-                    )}
-                  </button>
-                  <button type="button" className="header-logout-btn" onClick={onAbrirLogout}>
-                    <i className="pi pi-sign-out"></i>
-                  </button>
-                </>
+                <button
+                  type="button"
+                  className="header-login-button"
+                  onClick={() => executarAcao(onAbrirLogin)}
+                  aria-label="Entrar no Jornal"
+                >
+                  <i className="pi pi-user" aria-hidden="true" />
+                  <span>Entrar no Jornal</span>
+                </button>
               )}
             </div>
           </div>
 
-          <div className={`header-nav-overlay ${sidebarAberta ? 'open' : ''}`} onClick={fecharSidebar}></div>
-
-          <nav className={`header-nav ${sidebarAberta ? 'open' : ''}`}>
-            <div className="header-nav-top">
-              <span className="header-nav-title">Jornal de Receitas</span>
-              <button type="button" className="header-nav-close" onClick={fecharSidebar}>&times;</button>
+          <div className="header-nav-frame">
+            <div className="header-nav-decoration" aria-hidden="true">
+              <span>Desde a primeira receita</span>
+              <span>Feito para compartilhar</span>
             </div>
 
-            <a
-              href="/"
-              onMouseEnter={() => prefetchRota('/')}
-              onClick={(e) => irPara(e, '/')}
-              className={paginaAtual === 'inicio' ? 'active' : ''}
+            <nav
+              id="header-navigation"
+              className={`header-nav ${sidebarAberta ? 'open' : ''}`}
+              aria-label="Navegação principal"
+              aria-hidden={compacto && !sidebarAberta ? true : undefined}
             >
-              <i className="pi pi-home"></i> Início
-            </a>
-
-            <a
-              href="/sobre"
-              onMouseEnter={() => prefetchRota('/sobre')}
-              className={paginaAtual === 'sobre' ? 'active' : ''}
-            >
-              <i className="pi pi-info-circle"></i> Sobre
-            </a>
-
-            {!estaLogado && (
-              <a href="#" onClick={(e) => { e.preventDefault(); onAbrirLogin(); }}>
-                <i className="pi pi-sign-in"></i> Acessar Conta
-              </a>
-            )}
-
-            {estaLogado && (
-              <>
-                <a
-                  href="/nova"
-                  onMouseEnter={() => prefetchRota('/nova')}
-                  onClick={(e) => irPara(e, '/nova')}
-                  className={paginaAtual === 'nova' ? 'active' : ''}
-                >
-                  <i className="pi pi-shop"></i> Enviar Receita
-                </a>
-                <a
-                  href="/minhas-receitas"
-                  onMouseEnter={() => prefetchRota('/minhas-receitas')}
-                  onClick={(e) => irPara(e, '/minhas-receitas')}
-                  className={paginaAtual === 'minhas-receitas' ? 'active' : ''}
-                >
-                  <i className="pi pi-book"></i> Minhas Receitas
-                </a>
-
-                <a href="#" className="header-notification-sidebar" onClick={(e) => { e.preventDefault(); onAbrirNotificacoes(); }}>
-                  <i className="pi pi-bell"></i>
-                  <span>Notificações</span>
-                  {notificacoesNaoLidas > 0 && (
-                    <span className="notification-sidebar-badge">{notificacoesNaoLidas > 99 ? '99+' : notificacoesNaoLidas}</span>
-                  )}
-                </a>
-                <div className="header-user-profile header-user-mobile" onClick={onAbrirPerfil}>
-                  <i className="pi pi-user"></i> Meu Perfil
+              <div className="header-nav-top">
+                <div>
+                  <span className="header-nav-eyebrow">
+                    Índice do jornal
+                  </span>
+                  <span className="header-nav-title">
+                    Jornal de Receitas
+                  </span>
                 </div>
-                <a href="#" className="header-logout-sidebar" onClick={(e) => { e.preventDefault(); onAbrirLogout(); }}>
-                  <i className="pi pi-sign-out"></i> Sair
-                </a>
-              </>
-            )}
-          </nav>
+
+                <button
+                  ref={botaoFecharRef}
+                  type="button"
+                  className="header-nav-close"
+                  onClick={fecharSidebar}
+                  aria-label="Fechar menu"
+                >
+                  <i className="pi pi-times" aria-hidden="true" />
+                </button>
+              </div>
+
+              <div className="header-nav-links">
+                {links.map(link => (
+                  <a
+                    key={link.caminho}
+                    href={link.caminho}
+                    onMouseEnter={() => prefetchRota(link.caminho)}
+                    onClick={event => irPara(event, link.caminho)}
+                    className={link.ativo ? 'active' : ''}
+                    aria-current={link.ativo ? 'page' : undefined}
+                  >
+                    <i className={`pi ${link.icone}`} aria-hidden="true" />
+                    <span>{link.texto}</span>
+                  </a>
+                ))}
+
+                {!estaLogado && (
+                  <button
+                    type="button"
+                    className="header-nav-login"
+                    onClick={() => executarAcao(onAbrirLogin)}
+                  >
+                    <i className="pi pi-sign-in" aria-hidden="true" />
+                    <span>Acessar Conta</span>
+                  </button>
+                )}
+              </div>
+
+              {estaLogado && (
+                <div className="header-nav-account">
+                  <span className="header-nav-account-title">
+                    Minha conta
+                  </span>
+
+                  <button
+                    type="button"
+                    className="header-user-mobile"
+                    onClick={() => executarAcao(onAbrirPerfil)}
+                  >
+                    <i className="pi pi-user" aria-hidden="true" />
+                    <span>Meu Perfil</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="header-notification-sidebar"
+                    onClick={() => executarAcao(onAbrirNotificacoes)}
+                  >
+                    <i className="pi pi-bell" aria-hidden="true" />
+                    <span>Notificações</span>
+                    {quantidadeNotificacoes > 0 && (
+                      <span className="notification-sidebar-badge">
+                        {contadorNotificacoes}
+                      </span>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="header-logout-sidebar"
+                    onClick={() => executarAcao(onAbrirLogout)}
+                  >
+                    <i className="pi pi-sign-out" aria-hidden="true" />
+                    <span>Sair da Conta</span>
+                  </button>
+                </div>
+              )}
+
+              <div className="header-nav-footer">
+                <span>Receitas para guardar e compartilhar.</span>
+                <span>Edição nº 03</span>
+              </div>
+            </nav>
+          </div>
         </header>
       </div>
+
+      {sidebarAberta && (
+        <button
+          type="button"
+          className="header-nav-overlay open"
+          onClick={fecharSidebar}
+          aria-label="Fechar menu de navegação"
+          tabIndex={-1}
+        />
+      )}
     </div>
   );
 }

@@ -1,208 +1,414 @@
+
 .card {
-  background: #fff;
-  border: 2px solid var(--header-color);
-  box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.15);
+  --card-papel: var(--paper-light, #faf3e3);
+  --card-tinta: var(--ink-color, #302a25);
+  --card-tinta-suave: var(--ink-soft, #65574b);
+  --card-borda: var(--border-soft, #c8b596);
+  --card-verde: var(--vintage-green, #38513c);
+  --card-vermelho: var(--tomato-red, #a44636);
+
+  position: relative;
   display: flex;
   flex-direction: column;
-  transition: all 0.25s ease;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--card-tinta);
 }
 
 .card:hover {
-  box-shadow: 7px 7px 0 rgba(139, 0, 0, 0.2);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  transform: none;
 }
 
 .card-image {
   position: relative;
+  display: block;
   width: 100%;
-  height: 200px;
+  height: auto;
+  aspect-ratio: 1.45 / 1;
+  flex-shrink: 0;
   overflow: hidden;
-  background: #f0ece6;
-  border-bottom: 2px solid var(--header-color);
+  padding: 0;
+  background: var(--paper-dark, #e6c994);
+  border: 0;
+  border-radius: 2px;
+  box-shadow: none;
 }
 
-.card-image img {
+.card-image--clicavel,
+.card-image-abrir {
+  cursor: pointer;
+}
+
+.card-image--clicavel {
+  appearance: none;
+  text-align: left;
+}
+
+.card-image-abrir {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.card-image img,
+.card-image picture,
+.card-image picture img,
+.card-image .imagem-loader,
+.card-image .imagem-loader img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+  object-position: center;
 }
 
-.card-badge-categoria {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  padding: 4px 10px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: #fff;
-  border: none;
+.card-image img {
+  filter: saturate(0.94) contrast(1.02);
 }
 
-.card-badge-categoria.salgado { background: var(--header-color); }
-.card-badge-categoria.doce { background: var(--accent-color); }
-
-.card-favorite-btn {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  width: 36px;
-  height: 36px;
-  border: 2px solid #fff;
-  background: white;
-  color: var(--header-color);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-}
-
-.card-favorite-btn:hover {
-  background: var(--favorite-color);
-  color: white;
-  border: none;
-}
-
-.card-favorite-btn.active:hover {
-  color: white;
-}
-
-.card-favorite-btn.active {
-  color: #e74c3c;
-}
-
-.card-favorite-btn.animando {
-  animation: pulse 0.3s ease;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.3); }
+.card-image--clicavel:hover img,
+.card-image-abrir:hover img {
+  filter: saturate(1) contrast(1.02);
 }
 
 .card-content {
-  padding: 16px 18px;
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
+  gap: 0;
+  min-width: 0;
+  padding: 17px 0 0;
+  background: transparent;
+}
+
+.card-editoria {
+  display: flex;
+  align-items: center;
   gap: 12px;
+  margin-bottom: 11px;
+}
+
+.card-editoria > span:first-child {
+  flex-shrink: 0;
+  color: var(--card-vermelho);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.card-receita--salgado .card-editoria > span:first-child,
+.card-receita-rapida .card-editoria > span:first-child {
+  color: var(--card-verde);
+}
+
+.card-editoria-linha {
+  display: block;
+  flex: 1;
+  height: 1px;
+  background: var(--card-borda);
 }
 
 .card-titulo {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.15rem;
-  color: var(--header-color);
-  line-height: 1.3;
-  font-weight: 700;
   margin: 0;
+  padding: 0;
+  color: var(--card-tinta);
+  font-family: var(--font-editorial, 'DM Serif Display', Georgia, serif);
+  font-size: clamp(24px, 2vw, 32px);
+  font-weight: 400;
+  line-height: 1.13;
+  letter-spacing: -0.025em;
+  text-transform: none;
+  overflow-wrap: anywhere;
 }
 
 .card-meta {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-bottom: 12px;
-  border-bottom: 1px dashed rgba(139, 0, 0, 0.15);
-}
-
-.card-meta-row {
-  display: flex;
-  gap: 12px;
+  align-items: center;
   flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: auto;
+  padding: 17px 0 14px;
+  border-bottom: 1px solid var(--card-borda);
 }
 
 .card-meta-item {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 0.8rem;
-  color: var(--light-text);
-  font-weight: 600;
+  gap: 7px;
+  min-width: 0;
+  color: var(--card-tinta-suave);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.79rem;
+  line-height: 1.5;
 }
 
 .card-meta-item i {
-  font-size: 0.8rem;
+  flex-shrink: 0;
+  color: var(--card-vermelho);
+  font-size: 0.78rem;
+}
+
+.card-receita--salgado .card-meta-item i,
+.card-receita-rapida .card-meta-item i {
+  color: var(--card-verde);
+}
+
+.card-meta-chefe {
+  flex-basis: 100%;
+  font-style: italic;
 }
 
 .card-actions {
-  margin-top: auto;
+  display: flex;
+  margin-top: 0;
 }
 
 .card-link {
-  width: 100%;
-  padding: 10px 14px;
-  background: #fff;
-  color: var(--header-color);
-  border: 2px solid var(--header-color);
-  justify-content: space-between;
-  font-family: inherit;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 49px;
+  padding: 13px 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--card-verde);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--card-verde);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.79rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.025em;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease;
 }
 
 .card-link:hover {
-  background: var(--accent-color);
-  color: #fff;
-  border: 2px solid var(--accent-color);
-  box-shadow: 4px 4px 0 rgba(139, 0, 0, 0.2);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--card-vermelho);
+  box-shadow: none;
+  color: var(--card-vermelho);
+  transform: none;
 }
 
 .card-link i {
+  flex-shrink: 0;
   font-size: 0.85rem;
 }
 
-.card-receita-rapida .card-content {
-  gap: 10px;
+.card-favorite-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  background: var(--paper-white, #fffaf0);
+  border: 1px solid var(--card-borda);
+  border-radius: 50%;
+  box-shadow: none;
+  color: var(--card-tinta);
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.card-favorite-btn:hover {
+  background: var(--card-vermelho);
+  border-color: var(--card-vermelho);
+  box-shadow: none;
+  color: var(--paper-white, #fffaf0);
+  transform: none;
+}
+
+.card-favorite-btn.active {
+  background: var(--card-vermelho);
+  border-color: var(--card-vermelho);
+  color: var(--paper-white, #fffaf0);
+}
+
+.card-favorite-btn.active:hover {
+  background: var(--tomato-red-dark, #9e3024);
+  border-color: var(--tomato-red-dark, #9e3024);
+  color: var(--paper-white, #fffaf0);
+}
+
+.card-favorite-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.card-favorite-btn:focus-visible,
+.card-link:focus-visible,
+.card-image--clicavel:focus-visible,
+.card-image-abrir:focus-visible {
+  outline: 3px solid var(--mustard-yellow, #d4a43d);
+  outline-offset: 3px;
 }
 
 .card-receita-rapida .card-image {
-  height: 180px;
+  width: 100%;
+  height: 220px;
+  min-height: 220px;
+  max-height: 220px;
+  aspect-ratio: auto;
 }
 
-.card-image-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 60%);
-  pointer-events: none;
-  z-index: 1;
+.card-receita-rapida .card-content {
+  padding-top: 15px;
 }
 
-.card-image-titulo {
-  position: absolute;
-  bottom: 12px;
-  left: 14px;
-  right: 14px;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.card-image-titulo h3 {
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.15rem;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin: 0;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+.card-receita-rapida .card-titulo {
+  font-size: clamp(23px, 1.8vw, 29px);
+  color: var(--card-verde);
 }
 
 .card-descricao-rapida {
-  font-size: 0.8rem;
-  color: var(--light-text);
-  line-height: 1.5;
-  margin: 0;
-  flex: 1;
+  display: -webkit-box;
+  margin: 12px 0 0;
+  overflow: hidden;
+  color: var(--card-tinta-suave);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.84rem;
+  font-weight: 400;
+  line-height: 1.65;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.card-receita-rapida .card-meta {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+@media (max-width: 1200px) {
+  .card-titulo {
+    font-size: clamp(23px, 2.4vw, 30px);
+  }
+
+  .card-receita-rapida .card-titulo {
+    font-size: clamp(22px, 2.2vw, 28px);
+  }
+}
+
+@media (max-width: 1100px) {
+  .card-receita-rapida .card-image {
+    height: 250px;
+    min-height: 250px;
+    max-height: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-image {
+    aspect-ratio: 1.5 / 1;
+  }
+
+  .card-content {
+    padding-top: 15px;
+  }
+
+  .card-titulo {
+    font-size: clamp(24px, 4vw, 31px);
+  }
+
+  .card-meta {
+    gap: 8px 15px;
+  }
+
+  .card-receita-rapida .card-titulo {
+    font-size: clamp(23px, 3.8vw, 29px);
+  }
+}
+
+@media (max-width: 600px) {
+  .card-receita-rapida .card-image {
+    height: 260px;
+    min-height: 260px;
+    max-height: 260px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-image {
+    aspect-ratio: 1.4 / 1;
+  }
+
+  .card-favorite-btn {
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .card-content {
+    padding-top: 14px;
+  }
+
+  .card-editoria {
+    margin-bottom: 9px;
+  }
+
+  .card-editoria > span:first-child {
+    font-size: 0.66rem;
+  }
+
+  .card-titulo {
+    font-size: 27px;
+  }
+
+  .card-meta {
+    padding: 14px 0 12px;
+  }
+
+  .card-meta-item {
+    font-size: 0.75rem;
+  }
+
+  .card-link {
+    min-height: 46px;
+    font-size: 0.76rem;
+  }
+
+  .card-receita-rapida .card-titulo {
+    font-size: 26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card-favorite-btn,
+  .card-link,
+  .card-image img {
+    transition: none;
+    animation: none;
+  }
 }

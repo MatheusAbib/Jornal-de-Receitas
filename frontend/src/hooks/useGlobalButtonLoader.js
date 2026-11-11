@@ -30,7 +30,7 @@ const IGNORAR_CLASSES = [
   'user-password-toggle',
   'cadastro-password-toggle',
   'login-password-toggle',
-  'input-toggle-senha', 
+  'input-toggle-senha',
   'switch',
   'slider',
   'card-favorite-btn',
@@ -46,7 +46,10 @@ const IGNORAR_CLASSES = [
   'btn',
   'p-toast-icon-close',
   'p-toast-icon',
-  'p-link'
+  'p-link',
+  'notificacao-marcar-lida',
+  'notificacoes-marcar-todas',
+  'notificacoes-excluir-todas'
 ];
 
 const IGNORAR_TIPOS = ['file', 'checkbox', 'radio'];
@@ -63,6 +66,7 @@ function deveIgnorar(elemento) {
 
   if (elemento.tagName === 'INPUT') {
     const tipo = (elemento.getAttribute('type') || '').toLowerCase();
+
     if (IGNORAR_TIPOS.includes(tipo)) return true;
   }
 
@@ -73,7 +77,7 @@ function aplicarSpinner(elemento) {
   if (elemento.dataset.spinnerAplicado === 'true') return;
 
   elemento.dataset.spinnerAplicado = 'true';
-  elemento.dataset.spinnerTime = Date.now();
+  elemento.dataset.spinnerTime = String(Date.now());
 
   const icon = elemento.querySelector('i');
 
@@ -81,8 +85,18 @@ function aplicarSpinner(elemento) {
     icon.dataset.originalClass = icon.className;
     icon.className = 'pi pi-spin pi-spinner';
   } else {
-    elemento.dataset.originalContent = elemento.innerHTML;
-    elemento.innerHTML = '<i class="pi pi-spin pi-spinner"></i>';
+    elemento.dataset.spinnerOriginalPosition = elemento.style.position;
+    elemento.dataset.spinnerOriginalColor = elemento.style.color;
+
+    const estilo = window.getComputedStyle(elemento);
+
+    if (estilo.position === 'static') {
+      elemento.style.position = 'relative';
+    }
+
+    elemento.style.color = 'transparent';
+
+    elemento.dataset.spinnerSemIcone = 'true';
   }
 
   elemento.style.pointerEvents = 'none';
@@ -98,8 +112,19 @@ function restaurarSpinner(elemento) {
 
   if (icon && icon.dataset.originalClass) {
     icon.className = icon.dataset.originalClass;
-  } else if (elemento.dataset.originalContent) {
-    elemento.innerHTML = elemento.dataset.originalContent;
+    delete icon.dataset.originalClass;
+  }
+
+  if (elemento.dataset.spinnerSemIcone === 'true') {
+    elemento.style.position =
+      elemento.dataset.spinnerOriginalPosition || '';
+
+    elemento.style.color =
+      elemento.dataset.spinnerOriginalColor || '';
+
+    delete elemento.dataset.spinnerOriginalPosition;
+    delete elemento.dataset.spinnerOriginalColor;
+    delete elemento.dataset.spinnerSemIcone;
   }
 
   elemento.style.pointerEvents = '';
@@ -112,12 +137,16 @@ function restaurarSpinner(elemento) {
 }
 
 function restaurarTodos() {
-  document.querySelectorAll('[data-spinner-aplicado="true"]').forEach(restaurarSpinner);
+  document
+    .querySelectorAll('[data-spinner-aplicado="true"]')
+    .forEach(restaurarSpinner);
 }
 
 function useGlobalButtonLoader() {
   useEffect(() => {
     function handleClick(event) {
+      if (!(event.target instanceof Element)) return;
+
       const alvo = event.target.closest(
         'button, a[href], [role="button"], .header-user-profile, .admin-sidebar-btn, .header-logout-btn, .header-notification-btn'
       );
@@ -133,7 +162,13 @@ function useGlobalButtonLoader() {
 
       if (alvo.tagName === 'A') {
         const href = alvo.getAttribute('href');
-        if (!href || href === '#' || href.startsWith('javascript:') || href.startsWith('#')) {
+
+        if (
+          !href ||
+          href === '#' ||
+          href.startsWith('javascript:') ||
+          href.startsWith('#')
+        ) {
           return;
         }
       }
@@ -142,13 +177,19 @@ function useGlobalButtonLoader() {
     }
 
     const interval = setInterval(() => {
-      const botoes = document.querySelectorAll('[data-spinner-aplicado="true"]');
+      const botoes = document.querySelectorAll(
+        '[data-spinner-aplicado="true"]'
+      );
+
       if (botoes.length === 0) return;
 
       const agora = Date.now();
 
       botoes.forEach(botao => {
-        const tempoAplicado = Number(botao.dataset.spinnerTime || 0);
+        const tempoAplicado = Number(
+          botao.dataset.spinnerTime || 0
+        );
+
         if (tempoAplicado && agora - tempoAplicado > 3000) {
           restaurarSpinner(botao);
         }
@@ -160,8 +201,11 @@ function useGlobalButtonLoader() {
 
     return () => {
       clearInterval(interval);
+
       document.removeEventListener('click', handleClick, true);
       window.removeEventListener('pageshow', restaurarTodos);
+
+      restaurarTodos();
     };
   }, []);
 }
