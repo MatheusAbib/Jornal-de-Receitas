@@ -1,6 +1,6 @@
 # 🍅 Jornal de Receitas
 
-Sistema web completo para gerenciamento e compartilhamento de receitas culinárias, com design inspirado em jornais clássicos.
+Sistema web completo para gerenciamento e compartilhamento de receitas culinárias, com design inspirado em jornais brasileiros dos anos 50 e 60.
 
 > 🔗 **Acesse online:** (https://jornaldereceitas.vercel.app/)
 
