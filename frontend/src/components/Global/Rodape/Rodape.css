@@ -89,7 +89,7 @@
   gap: 14px;
   margin-bottom: 18px;
   color: var(--tomato-red);
-  font-size: 0.66rem;
+  font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.22em;
   line-height: 1.5;
@@ -110,7 +110,7 @@
   margin: 0;
   color: var(--vintage-green-dark);
   font-family: var(--font-editorial);
-  font-size: clamp(3.4rem, 6vw, 6.5rem);
+  font-size: clamp(3.4rem, 4.9vw, 6rem);
   font-weight: 400;
   letter-spacing: -0.055em;
   line-height: 0.9;
@@ -142,7 +142,7 @@
   width: min(100%, 390px);
   margin-top: 19px;
   color: var(--ink-soft);
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.13em;
   text-transform: uppercase;
