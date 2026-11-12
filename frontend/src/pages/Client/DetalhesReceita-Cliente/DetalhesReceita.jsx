@@ -148,9 +148,13 @@ function DetalhesReceita() {
     window.print();
   }
 
-  function voltarInicio() {
-    navigate('/');
+function voltarInicio() {
+  if (sessionStorage.getItem('estadoReceitas')) {
+    sessionStorage.setItem('restaurarReceitas', 'true');
   }
+
+  navigate('/');
+}
 
   if (carregando) {
     return (

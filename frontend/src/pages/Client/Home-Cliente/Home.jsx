@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PageWrapper from '../../../components/Global/PageWrapper/PageWrapper';
 import Filtros from '../../../components/Home/Filtros/Filtros';
@@ -11,6 +11,7 @@ import { useToast } from '../../../context/ToastContext';
 import usePolling from '../../../hooks/usePolling';
 import { listarReceitas } from '../../../services/receitaService';
 import { listarCarrossel } from '../../../services/carrosselService';
+
 import {
   listarFavoritos,
   adicionarFavorito,
@@ -171,6 +172,56 @@ function Home() {
 
   const usuarioRef = useRef(usuario);
 
+  const [restauracao] = useState(() => {
+  if (sessionStorage.getItem('restaurarReceitas') !== 'true') {
+    return null;
+  }
+
+  try {
+    return JSON.parse(sessionStorage.getItem('estadoReceitas'));
+  } catch {
+    return null;
+  }
+});
+
+useLayoutEffect(() => {
+  if (!restauracao || carregando) return;
+
+  setAba(restauracao.aba || 'todas');
+  setFiltros(restauracao.filtros || {
+    nome: '',
+    categoria: '',
+    porcoes: ''
+  });
+}, [restauracao, carregando]);
+
+useLayoutEffect(() => {
+  if (!restauracao || carregando) return;
+
+  let tentativas = 0;
+  let frame;
+
+  function restaurarPosicao() {
+    const alturaDisponivel = document.documentElement.scrollHeight - window.innerHeight;
+
+    if (alturaDisponivel >= restauracao.scrollY || tentativas >= 60) {
+      window.scrollTo(0, restauracao.scrollY);
+      sessionStorage.removeItem('restaurarReceitas');
+      sessionStorage.removeItem('estadoReceitas');
+      return;
+    }
+
+    tentativas++;
+    frame = requestAnimationFrame(restaurarPosicao);
+  }
+
+  frame = requestAnimationFrame(restaurarPosicao);
+
+  return () => cancelAnimationFrame(frame);
+}, [restauracao, carregando, aba, filtros]);
+
+
+
   useEffect(() => {
     usuarioRef.current = usuario;
   }, [usuario]);
@@ -190,6 +241,14 @@ function Home() {
       document.removeEventListener('visibilitychange', atualizarVisibilidade);
     };
   }, []);
+
+function salvarPosicaoReceitas() {
+  sessionStorage.setItem('estadoReceitas', JSON.stringify({
+    scrollY: window.scrollY,
+    aba,
+    filtros
+  }));
+}
 
   const carregar = useCallback(async (silencioso = false) => {
     if (!silencioso) setCarregando(true);
@@ -361,7 +420,10 @@ const semResultados = filtrosAtivos && receitasFiltradas.length === 0;
 
   return (
     <PageWrapper paginaAtual="inicio">
-      <main className="home-wrapper">
+      <main
+            className="home-wrapper"
+            onClickCapture={salvarPosicaoReceitas}
+          >
         <div className="jornal-edicao-barra">
           <span>Jornal de Receitas · Caderno culinário</span>
           <span className="jornal-edicao-data">{dataEdicao}</span>

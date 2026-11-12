@@ -20,6 +20,10 @@ function ScrollToTop() {
   const { pathname, search } = useLocation();
 
   useLayoutEffect(() => {
+    if (pathname === '/' && sessionStorage.getItem('restaurarReceitas') === 'true') {
+      return;
+    }
+
     window.scrollTo(0, 0);
   }, [pathname, search]);
 
