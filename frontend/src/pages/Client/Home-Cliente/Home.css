@@ -1909,13 +1909,16 @@ display: none;}
 .home-wrapper .receitas-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  align-items: start;
+  align-items: stretch;
   gap: 34px 25px;
   margin: 0;
 }
 
 .jornal-receita-item {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
+  height: 100%;
   padding: 0;
   border: 0;
   background: transparent;
@@ -1938,8 +1941,12 @@ display: none;}
 }
 
 .jornal-receita-item .card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   width: 100%;
   max-width: none;
+  min-height: 0;
   overflow: hidden;
   border: 0;
   border-radius: 0;
