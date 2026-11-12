@@ -64,7 +64,7 @@ function Rodape() {
           </span>
 
           <span className="footer-edition-number">
-            Edição nº 03
+            Edição nº 04
           </span>
         </div>
       </div>
@@ -107,11 +107,6 @@ function Rodape() {
                 <h3 className="footer-title">Nosso jornal</h3>
               </div>
 
-              <p className="footer-description">
-                Receitas para experimentar, compartilhar e
-                preparar quantas vezes quiser.
-              </p>
-
               <div className="footer-about-seal">
                 <span className="footer-about-seal-star">
                   <i className="pi pi-star-fill" aria-hidden="true"></i>
@@ -119,7 +114,7 @@ function Rodape() {
 
                 <div>
                   <strong>Feito para compartilhar</strong>
-                  <span>Da nossa cozinha para a sua</span>
+                  <span>Da sua cozinha para o mundo</span>
                 </div>
               </div>
             </div>
@@ -155,10 +150,6 @@ function Rodape() {
                 <span className="footer-section-number">03</span>
                 <h3 className="footer-title">Acompanhe o jornal</h3>
               </div>
-
-              <p className="footer-social-description">
-                Encontre o Jornal de Receitas nas redes.
-              </p>
 
               <div className="footer-socials">
                 <a href="#" aria-label="Facebook" title="Facebook">
@@ -200,7 +191,7 @@ function Rodape() {
             © {currentYear} — Todos os direitos reservados
           </span>
 
-          <span>Edição nº 03</span>
+          <span>Edição nº 04</span>
         </div>
       </div>
     </footer>

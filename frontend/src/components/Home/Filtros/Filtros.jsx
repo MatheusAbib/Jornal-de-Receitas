@@ -9,6 +9,34 @@ function Filtros({ onFiltrar }) {
 
   const possuiFiltros = Boolean(nome.trim() || categoria || porcoes);
 
+  function atualizarFiltros(novoNome, novaCategoria, novasPorcoes) {
+    if (!novoNome.trim() && !novaCategoria && !novasPorcoes) {
+      onFiltrar({
+        nome: '',
+        categoria: '',
+        porcoes: ''
+      });
+    }
+  }
+
+  function alterarNome(event) {
+    const valor = event.target.value;
+    setNome(valor);
+    atualizarFiltros(valor, categoria, porcoes);
+  }
+
+  function alterarCategoria(event) {
+    const valor = event.target.value;
+    setCategoria(valor);
+    atualizarFiltros(nome, valor, porcoes);
+  }
+
+  function alterarPorcoes(event) {
+    const valor = event.target.value;
+    setPorcoes(valor);
+    atualizarFiltros(nome, categoria, valor);
+  }
+
   function aplicar(event) {
     event.preventDefault();
 
@@ -46,7 +74,7 @@ function Filtros({ onFiltrar }) {
               type="search"
               placeholder="Ex.: Bolo de cenoura"
               value={nome}
-              onChange={event => setNome(event.target.value)}
+              onChange={alterarNome}
             />
             <i className="pi pi-search filter-icon" aria-hidden="true" />
           </div>
@@ -62,7 +90,7 @@ function Filtros({ onFiltrar }) {
             <select
               id="filtro-categoria"
               value={categoria}
-              onChange={event => setCategoria(event.target.value)}
+              onChange={alterarCategoria}
             >
               <option value="">Todas as categorias</option>
               <option value="SALGADO">Pratos salgados</option>
@@ -90,7 +118,7 @@ function Filtros({ onFiltrar }) {
               step="1"
               placeholder="Nº de porções"
               value={porcoes}
-              onChange={event => setPorcoes(event.target.value)}
+              onChange={alterarPorcoes}
             />
             <i className="pi pi-users filter-icon" aria-hidden="true" />
           </div>

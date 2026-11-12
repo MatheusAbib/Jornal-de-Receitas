@@ -18,42 +18,6 @@ body:has(.detalhe-container) .header-full-width.scrolled {
   width: 100%;
 }
 
-
-.detalhe-publicacao {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  min-height: 40px;
-  padding: 0 0 12px;
-  border-bottom: 3px double var(--vintage-green-dark);
-  color: var(--vintage-green-dark);
-  font-size: 0.66rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.detalhe-publicacao-esquerda {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.detalhe-publicacao-marca {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: var(--tomato-red);
-  color: var(--paper-white);
-  font-family: var(--font-editorial);
-  font-size: 1.15rem;
-  font-weight: 400;
-  letter-spacing: -0.08em;
-}
-
 .detalhe-card {
   width: 100%;
   margin-top: 17px;
@@ -134,36 +98,6 @@ body:has(.detalhe-container) .header-full-width.scrolled {
   margin-bottom: 32px;
 }
 
-.detalhe-badge-categoria {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  padding: 9px 13px;
-  color: var(--paper-white);
-  background: var(--vintage-green);
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.detalhe-badge-categoria i {
-  font-size: 0.85rem;
-}
-
-.detalhe-badge-categoria.doce {
-  background: var(--mustard-yellow);
-}
-
-.detalhe-info-edicao {
-  color: var(--ink-muted);
-  font-size: 0.6rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
 .detalhe-info-header {
   display: flex;
   flex-direction: column;
@@ -187,7 +121,7 @@ body:has(.detalhe-container) .header-full-width.scrolled {
   margin: 0;
   color: var(--vintage-green-dark);
   font-family: var(--font-editorial);
-  font-size: clamp(2.5rem, 4vw, 4.7rem);
+  font-size: clamp(2.5rem, 4vw, 4rem);
   font-weight: 400;
   letter-spacing: -0.045em;
   line-height: 1.03;
@@ -307,13 +241,15 @@ body:has(.detalhe-container) .header-full-width.scrolled {
 }
 
 .detalhe-favorite-btn {
-  background: var(--vintage-green);
-  color: var(--paper-white);
+  border: 1px dashed var(--vintage-green-dark);
+  background: transparent;
+  color: var(--vintage-green-dark);
 }
 
 .detalhe-favorite-btn:hover:not(:disabled) {
   background: var(--vintage-green-dark);
   border-color: var(--vintage-green-dark);
+  color: white;
 }
 
 .detalhe-favorite-btn.active {
@@ -634,17 +570,19 @@ body:has(.detalhe-container) .header-full-width.scrolled {
   line-height: 1.6;
 }
 
+
 .detalhe-rodape {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 20px;
-  min-height: 110px;
-  padding: 23px clamp(25px, 3.4vw, 46px);
-  border-top: 3px double var(--vintage-green-dark);
+  min-height: 90px;
+  padding: 18px clamp(25px, 3.4vw, 46px);
+  border-bottom: 3px double var(--vintage-green-dark);
   background: var(--paper-color);
 }
+
 
 .detalhe-rodape-identidade {
   display: flex;
@@ -668,7 +606,6 @@ body:has(.detalhe-container) .header-full-width.scrolled {
 .detalhe-rodape-identidade > div {
   display: flex;
   flex-direction: column;
-  gap: 5px;
 }
 
 .detalhe-rodape-identidade strong {
@@ -931,20 +868,11 @@ body:has(.detalhe-container) .header-full-width.scrolled {
 
 @media (max-width: 600px) {
   .detalhe-container {
-    width: min(100% - 24px, 1320px);
-    padding-top: 85px;
+    width: min(100% - 10px, 1320px);
+    padding-top: 75px;
     padding-bottom: 60px;
   }
 
-  .detalhe-publicacao {
-    gap: 10px;
-    font-size: 0.57rem;
-    letter-spacing: 0.06em;
-  }
-
-  .detalhe-publicacao-direita {
-    display: none;
-  }
 
   .detalhe-card {
     margin-top: 12px;
@@ -965,10 +893,6 @@ body:has(.detalhe-container) .header-full-width.scrolled {
 
   .detalhe-info-superior {
     margin-bottom: 25px;
-  }
-
-  .detalhe-info-edicao {
-    display: none;
   }
 
   .detalhe-chamada {
@@ -1070,9 +994,7 @@ body:has(.detalhe-container) .header-full-width.scrolled {
 }
 
 @media (max-width: 380px) {
-  .detalhe-container {
-    width: min(100% - 16px, 1320px);
-  }
+
 
   .detalhe-image {
     height: 250px;
@@ -1148,18 +1070,6 @@ body:has(.detalhe-container) .header-full-width.scrolled {
     overflow: visible;
   }
 
-  .detalhe-publicacao {
-    margin-bottom: 12px;
-    color: #000;
-    border-color: #000;
-  }
-
-  .detalhe-publicacao-marca {
-    color: #000;
-    background: transparent;
-    border: 1px solid #000;
-  }
-
   .detalhe-hero {
     display: grid;
     grid-template-columns: 34% 1fr;
@@ -1179,7 +1089,6 @@ body:has(.detalhe-container) .header-full-width.scrolled {
   }
 
   .detalhe-image-legenda,
-  .detalhe-info-edicao,
   .detalhe-info-actions,
   .detalhe-info-rodape,
   .detalhe-ingredientes-progresso,
@@ -1194,13 +1103,6 @@ body:has(.detalhe-container) .header-full-width.scrolled {
 
   .detalhe-info-superior {
     margin-bottom: 10px;
-  }
-
-  .detalhe-badge-categoria {
-    padding: 4px 8px;
-    color: #000;
-    background: transparent;
-    border: 1px solid #000;
   }
 
   .detalhe-chamada {

@@ -422,11 +422,7 @@
   }
 
   .admin-topbar-actions > span {
-    justify-content: flex-start;
-    padding: 0;
-    background: transparent;
-    border: 0;
-    font-size: 0.8rem;
+display: none;
   }
 
   .admin-search-box {
@@ -442,7 +438,7 @@
   }
 
   .admin-table-container {
-    margin: 16px;
+    margin: 10px;
     border-radius: 5px;
   }
 
@@ -538,19 +534,11 @@
   }
 
   .admin-topbar h1 i {
-    font-size: 1rem;
-  }
-
-  .admin-topbar-actions > span {
-    font-size: 0.76rem;
+    display: none;
   }
 
   .admin-search-box input {
     font-size: 0.82rem;
-  }
-
-  .admin-table-container {
-    margin: 12px;
   }
 
   .admin-table-scroll {

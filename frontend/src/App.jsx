@@ -4,7 +4,7 @@ import PageLoader from './components/Global/PageLoader/PageLoader';
 import { useLoader } from './context/LoaderContext';
 import useGlobalButtonLoader from './hooks/useGlobalButtonLoader';
 import useFavicon from './hooks/useFavicon';
-import { applyResponsiveStyles } from './styles/responsive';
+// import { applyResponsiveStyles } from './styles/responsive';
 
 const Home = lazy(() => import('./pages/Client/Home-Cliente/Home'));
 const DetalhesReceita = lazy(() => import('./pages/Client/DetalhesReceita-Cliente/DetalhesReceita'));
@@ -17,19 +17,19 @@ const ReceitasPendentes = lazy(() => import('./pages/Admin/Receitas-Admin/Receit
 const ReceitasAprovadas = lazy(() => import('./pages/Admin/Receitas-Admin/ReceitasAprovadas'));
 const Carrossel = lazy(() => import('./pages/Admin/Carrossel-Admin/Carrossel'));
 
-function ResponsiveStylesManager() {
-  const { pathname } = useLocation();
+// function ResponsiveStylesManager() {
+//   const { pathname } = useLocation();
 
-  useEffect(() => {
-    applyResponsiveStyles();
-  }, [pathname]);
+//   useEffect(() => {
+//     applyResponsiveStyles();
+//   }, [pathname]);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+//   useEffect(() => {
+//     window.scrollTo(0, 0);
+//   }, [pathname]);
 
-  return null;
-}
+//   return null;
+// }
 
 function PrefetchRotas() {
   useEffect(() => {
@@ -65,7 +65,7 @@ function App() {
   return (
     <BrowserRouter>
       <PrefetchRotas />
-      <ResponsiveStylesManager />
+      {/* <ResponsiveStylesManager /> */}
 
       <PageLoader />
 

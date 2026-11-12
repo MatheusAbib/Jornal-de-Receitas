@@ -220,10 +220,16 @@ function MinhasReceitas() {
     <PageWrapper paginaAtual="minhas-receitas">
       <main className="minhas-wrapper">
         <header className="minhas-page-header">
-          <div className="minhas-page-header-top">
+
+        <div className="minhas-page-header-top">
+          <div className="minhas-header-identidade">
+            <span className="minhas-header-marca">JR</span>
             <span>Jornal de Receitas</span>
-            <span>Área do colaborador</span>
           </div>
+
+          <span>Área do colaborador</span>
+        </div>
+
 
           <div className="minhas-page-header-content">
             <div>
@@ -254,11 +260,6 @@ function MinhasReceitas() {
               <span className="minhas-section-index">01 / Resumo</span>
               <h2>Visão geral</h2>
             </div>
-
-            <span className="minhas-section-note">
-              <i className="pi pi-chart-bar" aria-hidden="true"></i>
-              Suas receitas em números
-            </span>
           </div>
 
           <div className="minhas-stats">

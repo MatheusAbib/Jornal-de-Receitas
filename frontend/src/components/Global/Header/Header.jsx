@@ -16,14 +16,12 @@ function Header({
 }) {
   const [scrollado, setScrollado] = useState(false);
   const [sidebarAberta, setSidebarAberta] = useState(false);
-  const [alturaOriginal, setAlturaOriginal] = useState(0);
   const [imagemHeader, setImagemHeader] = useState('/images/propaganda-elefante.jpg');
 
   const headerRef = useRef(null);
   const botaoMenuRef = useRef(null);
   const botaoFecharRef = useRef(null);
   const alturaOriginalRef = useRef(0);
-  const scrolladoRef = useRef(false);
 
   const navigate = useNavigate();
 
@@ -82,58 +80,66 @@ function Header({
     };
   }, []);
 
-  useLayoutEffect(() => {
-    if (sempreScrollado) return;
 
-    const header = headerRef.current;
-    if (!header) return;
+useLayoutEffect(() => {
+  if (sempreScrollado) {
+    setScrollado(false);
+    return;
+  }
 
-    const atualizarAltura = () => {
-      if (scrolladoRef.current) return;
+  const header = headerRef.current;
+  if (!header) return;
 
-      const altura = header.getBoundingClientRect().height;
+  let frame = null;
+  let alturaOriginal = 0;
 
-      if (altura > 0) {
-        alturaOriginalRef.current = altura;
-        setAlturaOriginal(altura);
-      }
-    };
+  const medirAltura = () => {
+    if (header.classList.contains('scrolled')) return;
 
-    atualizarAltura();
+    const altura = header.offsetHeight;
 
-    const observer = new ResizeObserver(atualizarAltura);
-    observer.observe(header);
-
-    return () => observer.disconnect();
-  }, [sempreScrollado]);
-
-  useEffect(() => {
-    if (sempreScrollado) {
-      scrolladoRef.current = false;
-      setScrollado(false);
-      return;
+    if (altura > 0) {
+      alturaOriginal = altura;
+      alturaOriginalRef.current = altura;
     }
+  };
 
-    const handleScroll = () => {
-      const altura = alturaOriginalRef.current;
-      const limiteAtivacao = Math.max(350, altura + 80);
-      const limiteDesativacao = 60;
+  const atualizarScroll = () => {
+    if (frame !== null) return;
 
-      if (!scrolladoRef.current && window.scrollY >= limiteAtivacao) {
-        scrolladoRef.current = true;
-        setScrollado(true);
-      } else if (scrolladoRef.current && window.scrollY <= limiteDesativacao) {
-        scrolladoRef.current = false;
-        setScrollado(false);
+    frame = requestAnimationFrame(() => {
+      const limite = alturaOriginal || alturaOriginalRef.current;
+
+      if (limite > 0) {
+        setScrollado(window.scrollY >= limite);
       }
-    };
 
-    handleScroll();
+      frame = null;
+    });
+  };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+  medirAltura();
+  atualizarScroll();
 
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [sempreScrollado]);
+  const observer = new ResizeObserver(() => {
+    medirAltura();
+    atualizarScroll();
+  });
+
+  observer.observe(header);
+
+  window.addEventListener('scroll', atualizarScroll, { passive: true });
+
+  return () => {
+    observer.disconnect();
+    window.removeEventListener('scroll', atualizarScroll);
+
+    if (frame !== null) {
+      cancelAnimationFrame(frame);
+    }
+  };
+}, [sempreScrollado]);
+
 
   useEffect(() => {
     setSidebarAberta(false);
@@ -249,11 +255,6 @@ function Header({
     <div
       ref={headerRef}
       className={`header-full-width ${compacto ? 'scrolled' : ''}`}
-      style={
-        scrollado && !sempreScrollado && alturaOriginal > 0
-          ? { minHeight: `${alturaOriginal}px` }
-          : undefined
-      }
     >
       <div className="header-container">
         <header className="newspaper-header">
@@ -264,7 +265,7 @@ function Header({
             </div>
 
             <span className="header-edition-description">
-              Receitas, histórias e sabores da nossa cozinha
+              Da sua cozinha para o mundo
             </span>
 
             <time className="newspaper-date">
@@ -387,7 +388,7 @@ function Header({
 
           <div className="header-nav-frame">
             <div className="header-nav-decoration" aria-hidden="true">
-              <span>Desde a primeira receita</span>
+              <span>Poste as suas receitas</span>
               <span>Feito para compartilhar</span>
             </div>
 
@@ -399,9 +400,6 @@ function Header({
             >
               <div className="header-nav-top">
                 <div>
-                  <span className="header-nav-eyebrow">
-                    Índice do jornal
-                  </span>
                   <span className="header-nav-title">
                     Jornal de Receitas
                   </span>
@@ -486,8 +484,8 @@ function Header({
               )}
 
               <div className="header-nav-footer">
-                <span>Receitas para guardar e compartilhar.</span>
-                <span>Edição nº 03</span>
+                <span>Da sua cozinha para o mundo</span>
+                <span>Edição nº 04</span>
               </div>
             </nav>
           </div>

@@ -156,14 +156,6 @@ function DetalhesReceita() {
     return (
       <PageWrapper paginaAtual="detalhe">
         <main className="detalhe-container">
-          <div className="detalhe-publicacao">
-            <div className="detalhe-publicacao-esquerda">
-              <span className="detalhe-publicacao-marca">JR</span>
-              <span>Jornal de receitas</span>
-            </div>
-
-            <span>Da nossa cozinha para a sua</span>
-          </div>
 
           <article className="detalhe-card detalhe-carregando" aria-busy="true">
             <div className="detalhe-hero">
@@ -282,19 +274,30 @@ function DetalhesReceita() {
   return (
     <PageWrapper paginaAtual="detalhe">
       <main className="detalhe-container">
-        <div className="detalhe-publicacao">
-          <div className="detalhe-publicacao-esquerda">
-            <span className="detalhe-publicacao-marca">JR</span>
-            <span>Jornal de receitas</span>
-          </div>
 
-          <span className="detalhe-publicacao-direita">
-            Da nossa cozinha para a sua
-          </span>
-        </div>
+            <article className="detalhe-card">
+              <div className="detalhe-rodape">
+                <div className="detalhe-rodape-identidade">
+                  <span className="detalhe-rodape-marca">JR</span>
 
-        <article className="detalhe-card">
-          <div className="detalhe-hero">
+                  <div>
+                    <strong>Jornal de Receitas</strong>
+                    <span>Caderno culinário</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="detalhe-voltar-link"
+                  onClick={voltarInicio}
+                  onMouseEnter={() => prefetchRota('/')}
+                >
+                  <i className="pi pi-arrow-left" aria-hidden="true"></i>
+                  Voltar às receitas
+                </button>
+              </div>
+
+              <div className="detalhe-hero">
             <div className="detalhe-image">
               <ImagemLoader
                 src={imagemUrl}
@@ -308,25 +311,6 @@ function DetalhesReceita() {
             </div>
 
             <div className="detalhe-info">
-              <div className="detalhe-info-superior">
-                <span
-                  className={`detalhe-badge-categoria ${
-                    ehSalgado ? 'salgado' : 'doce'
-                  }`}
-                >
-                  <i
-                    className={ehSalgado ? 'pi pi-book' : 'pi pi-star'}
-                    aria-hidden="true"
-                  ></i>
-
-                  Receita {ehSalgado ? 'salgada' : 'doce'}
-                </span>
-
-                <span className="detalhe-info-edicao">
-                  Caderno culinário
-                </span>
-              </div>
-
               <div className="detalhe-info-header">
                 <span className="detalhe-chamada">
                   Uma receita para preparar e compartilhar
@@ -372,6 +356,23 @@ function DetalhesReceita() {
                     </div>
                   </div>
                 )}
+
+                <div className="detalhe-meta-item">
+                  <i className="pi pi-book" aria-hidden="true"></i>
+
+                  <div>
+                    <span>Categoria</span>
+                    
+                    <strong
+                      className={`detalhe-badge-categoria ${
+                        ehSalgado ? 'salgado' : 'doce'
+                      }`}
+                    >
+
+                      Receita {ehSalgado ? 'salgada' : 'doce'}
+                    </strong>
+                  </div>
+                </div>
               </div>
 
               <div className="detalhe-info-rodape">
@@ -567,27 +568,6 @@ function DetalhesReceita() {
               )}
             </section>
           </div>
-
-          <footer className="detalhe-rodape">
-            <div className="detalhe-rodape-identidade">
-              <span className="detalhe-rodape-marca">JR</span>
-
-              <div>
-                <strong>Jornal de Receitas</strong>
-                <span>Caderno culinário</span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              className="detalhe-voltar-link"
-              onClick={voltarInicio}
-              onMouseEnter={() => prefetchRota('/')}
-            >
-              <i className="pi pi-arrow-left" aria-hidden="true"></i>
-              Voltar às receitas
-            </button>
-          </footer>
         </article>
       </main>
     </PageWrapper>

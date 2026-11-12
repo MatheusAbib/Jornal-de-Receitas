@@ -157,13 +157,12 @@
   min-width: 0;
   color: var(--card-tinta-suave);
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 0.79rem;
+  font-size: 0.9rem;
   line-height: 1.5;
 }
 
 .card-meta-item i {
   flex-shrink: 0;
-  color: var(--card-vermelho);
   font-size: 0.78rem;
 }
 
@@ -341,7 +340,7 @@
   }
 
   .card-meta {
-    gap: 8px 15px;
+    display: none;
   }
 
   .card-receita-rapida .card-titulo {
@@ -385,17 +384,8 @@
     font-size: 27px;
   }
 
-  .card-meta {
-    padding: 14px 0 12px;
-  }
-
-  .card-meta-item {
-    font-size: 0.75rem;
-  }
-
   .card-link {
-    min-height: 46px;
-    font-size: 0.76rem;
+display: none;
   }
 
   .card-receita-rapida .card-titulo {

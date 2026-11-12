@@ -74,10 +74,16 @@ function Sobre() {
     <PageWrapper paginaAtual="sobre">
       <main className="sobre-container">
         <header className="sobre-header">
+
           <div className="sobre-header-topo">
-            <span>Jornal de Receitas</span>
+            <div className="sobre-header-identidade">
+              <span className="sobre-header-marca">JR</span>
+              <span>Jornal de Receitas</span>
+            </div>
+
             <span>Desde 2025</span>
           </div>
+
 
           <div className="sobre-header-conteudo">
             <span className="sobre-editoria">Conheça o projeto</span>
@@ -104,37 +110,12 @@ function Sobre() {
         </header>
 
         <div className="sobre-content">
-          <section className="sobre-introducao" aria-labelledby="sobre-introducao-titulo">
-            <div className="sobre-introducao-marcador">
-              <span>01 / Apresentação</span>
-            </div>
 
-            <div className="sobre-introducao-conteudo">
-              <h2 id="sobre-introducao-titulo">
-                Uma coleção de receitas que ganhou seu próprio espaço.
-              </h2>
-
-              <div className="sobre-introducao-textos">
-                <p>
-                  O Jornal de Receitas começou em 2025 como um projeto
-                  pessoal de Matheus Abib, criado para reunir e compartilhar
-                  receitas de que gostava.
-                </p>
-
-                <p>
-                  Com o tempo, o que começou com seis receitas publicadas
-                  manualmente ganhou novas funcionalidades, permitindo
-                  que outras pessoas também participassem, salvassem
-                  favoritos e compartilhassem suas preparações.
-                </p>
-              </div>
-            </div>
-          </section>
 
           <section className="sobre-section sobre-jornada" aria-labelledby="sobre-jornada-titulo">
             <div className="sobre-section-header">
               <div>
-                <span className="sobre-section-kicker">02 / História</span>
+                <span className="sobre-section-kicker">01 / História</span>
                 <h2 id="sobre-jornada-titulo">Nossa jornada</h2>
               </div>
 
@@ -165,7 +146,7 @@ function Sobre() {
 
           <section className="sobre-missao" aria-labelledby="sobre-missao-titulo">
             <div className="sobre-missao-identificacao">
-              <span>03 / Propósito</span>
+              <span>02 / Propósito</span>
 
               <i className="pi pi-heart" aria-hidden="true"></i>
             </div>
@@ -185,7 +166,7 @@ function Sobre() {
           <section className="sobre-section sobre-recursos" aria-labelledby="sobre-recursos-titulo">
             <div className="sobre-section-header">
               <div>
-                <span className="sobre-section-kicker">04 / Funcionalidades</span>
+                <span className="sobre-section-kicker">03 / Funcionalidades</span>
                 <h2 id="sobre-recursos-titulo">O que oferecemos</h2>
               </div>
 
@@ -212,7 +193,7 @@ function Sobre() {
           <section className="sobre-section sobre-faq" aria-labelledby="sobre-faq-titulo">
             <div className="sobre-section-header">
               <div>
-                <span className="sobre-section-kicker">05 / Informações</span>
+                <span className="sobre-section-kicker">04 / Informações</span>
                 <h2 id="sobre-faq-titulo">Perguntas frequentes</h2>
               </div>
 
@@ -271,7 +252,7 @@ function Sobre() {
 
           <section className="sobre-contato-section" aria-labelledby="sobre-contato-titulo">
             <div className="sobre-contato-conteudo">
-              <span className="sobre-section-kicker">06 / Contato</span>
+              <span className="sobre-section-kicker">05 / Contato</span>
 
               <h2 id="sobre-contato-titulo">Entre em contato</h2>
 

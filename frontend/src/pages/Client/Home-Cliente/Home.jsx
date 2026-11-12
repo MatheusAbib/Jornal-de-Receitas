@@ -25,8 +25,7 @@ const CACHE_KEY = 'home';
 
 const DICAS = [
   {
-    titulo: 'Antes de começar',
-    texto: 'Leia a receita até o fim e separe todos os ingredientes. Assim, você evita interromper o preparo para procurar alguma coisa.'
+    titulo: 'Cozinhe e aprenda',
   },
   {
     titulo: 'O ponto da frigideira',
@@ -288,6 +287,15 @@ function Home() {
   const salgados = receitasFiltradas.filter(receita => receita.categoria === 'SALGADO');
   const doces = receitasFiltradas.filter(receita => receita.categoria === 'DOCE');
   const receitasFavoritas = receitas.filter(receita => favoritos.includes(receita.id));
+  const filtrosAtivos = Boolean(
+  filtros.nome?.trim() ||
+  filtros.categoria ||
+  filtros.porcoes
+);
+
+const exibirSalgados = !filtrosAtivos || salgados.length > 0;
+const exibirDoces = !filtrosAtivos || doces.length > 0;
+const semResultados = filtrosAtivos && receitasFiltradas.length === 0;
 
   const { principal, secundarias } = useMemo(
     () => selecionarEdicao(receitas, chaveDia),
@@ -357,43 +365,116 @@ function Home() {
         <div className="jornal-edicao-barra">
           <span>Jornal de Receitas · Caderno culinário</span>
           <span className="jornal-edicao-data">{dataEdicao}</span>
-          <span>Uma nova edição a cada dia</span>
+          <span>Uma nova edição periodicamente</span>
         </div>
 
-        <header className="jornal-chamada-superior">
-          <div className="jornal-chamada-lateral">
-            <Estrela />
-            <span>Receitas de todo o Brasil</span>
-            <span className="jornal-chamada-lateral-fio" />
+
+
+<header className="jornal-chamada-superior">
+  <div className="jornal-chamada-composicao">
+
+<div className="jornal-chamada-esquerda">
+  <div className="jornal-chamada-nota">
+    <div className="jornal-chamada-nota-topo">
+      <span>AVISO AOS COZINHEIROS</span>
+    </div>
+
+    <p>Uma receita não precisa ficar guardada!</p>
+
+  </div>
+
+  <div className="jornal-chamada-publicar">
+
+    <strong>Procura-se receitas!</strong>
+
+    <p>
+      Tem uma receita para compartilhar?
+      Publique no jornal.
+    </p>
+
+
+{usuario && (
+  <Link to="/nova" className="jornal-chamada-publicar-botao">
+    Enviar receita
+    <i className="pi pi-arrow-up-right" aria-hidden="true" />
+  </Link>
+)}
+
+{!usuario && (
+  <span className="jornal-chamada-publicar-rodape">
+    FAÇA LOGIN
+  </span>
+)}
+  </div>
+</div>
+
+
+    <div className="jornal-recorte">
+      <div className="jornal-recorte-etiqueta">
+        <span>De caderno em caderno</span>
+        <span>De cozinha em cozinha</span>
+      </div>
+
+      <div className="jornal-recorte-conteudo">
+        <div className="jornal-recorte-topo">
+          <span>RECEITUÁRIO POPULAR</span>
+          <span>Em caso de dúvidas, entre em contato.</span>
+        </div>
+
+        <div className="jornal-recorte-corpo">
+          <div className="jornal-recorte-numero">
+            <span>SEÇÃO</span>
+            <strong>01</strong>
           </div>
 
-          <div className="jornal-chamada-centro">
-            <span className="jornal-sobretitulo">O caderno da boa cozinha</span>
-            <h1>
-              <span>O que vai</span>
-              <em>à mesa?</em>
-            </h1>
-            <div className="jornal-chamada-subtitulo">
-              <Estrela />
-              <p>
-                Pratos de todo dia, doces de domingo e receitas
-                que merecem um lugar no seu caderno.
-              </p>
-              <Estrela />
-            </div>
-            <a className="jornal-chamada-atalho" href="#receitas-do-dia">
-              Consulte nosso receituário
-              <i className="pi pi-arrow-down" aria-hidden="true" />
-            </a>
+          <div className="jornal-recorte-texto">
+            <span className="jornal-recorte-chapeu">
+              RECEITAS PUBLICADAS POR QUEM COZINHA
+            </span>
+            <p>
+              Bolos, almoços, massas e outras receitas
+              compartilhadas por gente de todo lugar.
+            </p>
           </div>
+        </div>
 
-          <div className="jornal-chamada-selo">
-            <span>Nosso acervo</span>
-            <strong>{receitas.length}</strong>
-            <span>receitas</span>
-            <Estrela />
-          </div>
-        </header>
+        <div className="jornal-recorte-rodape">
+          <span>LEIA • PREPARE • COMPARTILHE</span>
+          <a href="#receitas-do-dia">
+            Abrir o receituário
+            <i className="pi pi-arrow-down-right" aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+
+      <span className="jornal-recorte-marca" aria-hidden="true">
+        JR
+      </span>
+
+      <div className="jornal-recorte-carimbo" aria-hidden="true">
+        <span>ACERVO</span>
+        <strong>ABERTO</strong>
+        <span>AO PÚBLICO</span>
+      </div>
+    </div>
+
+    <div className="jornal-chamada-direita">
+      <div className="jornal-chamada-selo">
+        <strong>{receitas.length}</strong>
+        <span>receitas</span>
+        <Estrela />
+      </div>
+
+      <div className="jornal-chamada-etiqueta">
+        <span>ARQUIVO CULINÁRIO</span>
+        <strong>EM CONSTANTE ATUALIZAÇÃO</strong>
+        <span className="jornal-chamada-etiqueta-fio" />
+        <span>CONSULTE À VONTADE</span>
+      </div>
+    </div>
+  </div>
+</header>
+
 
         <div className="jornal-faixa-noticias">
           <span className="jornal-faixa-marcador">Nesta edição</span>
@@ -405,159 +486,261 @@ function Home() {
           <span className="jornal-faixa-final">Feito para cozinhar</span>
         </div>
 
-        <section className="jornal-primeira-pagina" aria-label="Destaques da edição">
-          <aside className="jornal-coluna-esquerda">
-            <div className="jornal-editoria">
+     
+<section className="jornal-primeira-pagina" aria-label="Destaques da edição">
+  <aside className="jornal-coluna-esquerda">
+    <div className="jornal-editoria">
+      <Estrela />
+      <span>Segredinhos da cozinha</span>
+    </div>
+
+    <span className="jornal-coluna-sobretitulo">Conselho do dia</span>
+    <h2 className="jornal-coluna-titulo">{dicaDoDia.titulo}</h2>
+    <p className="jornal-coluna-texto">{dicaDoDia.texto}</p>
+
+    <div className="jornal-linha-ornamental">
+      <Estrela />
+    </div>
+
+    {anuncioColunaEsquerda && (
+      <Anuncio
+        imagem={obterImagemUrl(anuncioColunaEsquerda.imagemUrl)}
+        legenda={anuncioColunaEsquerda.titulo || ''}
+        classe="jornal-anuncio--cacula"
+      />
+    )}
+
+
+    <div className="jornal-dicionario">
+      <div className="jornal-dicionario-cabecalho">
+        <span>CONSULTA RÁPIDA</span>
+        <Estrela />
+      </div>
+
+      <h3>Glossário</h3>
+
+      <div className="jornal-dicionario-lista">
+        <div className="jornal-dicionario-item">
+          <strong>Refogar</strong>
+          <p>
+            Cozinhar ingredientes em pouca gordura,
+            geralmente mexendo.
+          </p>
+        </div>
+
+        <div className="jornal-dicionario-item">
+          <strong>Reduzir</strong>
+          <p>
+            Deixar um líquido evaporar parcialmente
+            para concentrar o sabor.
+          </p>
+        </div>
+
+        <div className="jornal-dicionario-item">
+          <strong>Banho-maria</strong>
+          <p>
+            Aquecer uma preparação indiretamente
+            utilizando água quente.
+          </p>
+        </div>
+      </div>
+
+      <span className="jornal-dicionario-rodape">
+        TERMOS DO RECEITUÁRIO
+      </span>
+    </div>
+  </aside>
+
+  <article className="jornal-materia-principal">
+    <div className="jornal-materia-topo">
+      <span>Na capa desta edição</span>
+      <Estrela />
+      <span>{dataEdicao}</span>
+    </div>
+
+    <div className="jornal-materia-cabecalho">
+      <span className="jornal-materia-chapeu">A escolha da cozinha</span>
+
+      <h2>{principal?.titulo || 'Uma boa receita merece destaque'}</h2>
+
+      <div className="jornal-materia-fio">
+        <Estrela />
+        <span>
+          {principal
+            ? `${principal.categoria === 'DOCE' ? 'Confeitaria' : 'Cozinha salgada'} · ${principal.porcoes || 'Confira as porções'}`
+            : 'Receituário do dia'}
+        </span>
+        <Estrela />
+      </div>
+    </div>
+
+    {carregando ? (
+      <SkeletonCard />
+    ) : principal ? (
+      <>
+        <div className="jornal-destaque-card">
+          <CardReceita {...cardProps(principal)} />
+        </div>
+
+        <div className="jornal-ficha-culinaria">
+          <div className="jornal-ficha-topo">
+            <span>FICHA CULINÁRIA</span>
+            <span>DESTAQUE DA EDIÇÃO</span>
+          </div>
+
+          <div className="jornal-ficha-cabecalho">
+            <div>
+              <span>REGISTRO DO RECEITUÁRIO</span>
+              <h3>{principal.titulo}</h3>
+            </div>
+
+            <span className="jornal-ficha-numero">
+              Nº {String(principal.id).padStart(3, '0')}
+            </span>
+          </div>
+
+          <div className="jornal-ficha-informacoes">
+            <div className="jornal-ficha-item">
+              <i className="pi pi-tag" aria-hidden="true" />
+              <span>Categoria</span>
+              <strong>
+                {principal.categoria === 'DOCE'
+                  ? 'Confeitaria'
+                  : 'Cozinha salgada'}
+              </strong>
+            </div>
+
+            <div className="jornal-ficha-item">
+              <i className="pi pi-clock" aria-hidden="true" />
+              <span>Tempo de preparo</span>
+              <strong>{principal.tempoPreparo || 'Não informado'}</strong>
+            </div>
+
+            <div className="jornal-ficha-item">
+              <i className="pi pi-users" aria-hidden="true" />
+              <span>Rendimento</span>
+              <strong>{principal.porcoes || 'Não informado'}</strong>
+            </div>
+          </div>
+
+          <div className="jornal-ficha-rodape">
+            <span>
               <Estrela />
-              <span>Segredinhos da cozinha</span>
-            </div>
+              RECEITA EM DESTAQUE
+            </span>
 
-            <span className="jornal-coluna-sobretitulo">Conselho do dia</span>
-            <h2 className="jornal-coluna-titulo">{dicaDoDia.titulo}</h2>
-            <p className="jornal-coluna-texto">{dicaDoDia.texto}</p>
+            <Link
+              to={`/detalhe/${principal.id}`}
+              className="jornal-ficha-botao"
+            >
+              Ler receita completa
+              <i className="pi pi-arrow-up-right" aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+      </>
+    ) : (
+      <div className="empty-category">
+        <i className="pi pi-book" aria-hidden="true" />
+        <h3>Aguardando a primeira receita</h3>
+        <p>As receitas aprovadas aparecerão aqui.</p>
+      </div>
+    )}
 
-            <div className="jornal-linha-ornamental">
-              <Estrela />
-            </div>
+    <div className="jornal-materia-rodape">
+      <span>Uma nova escolha todos os dias</span>
+      <span>Jornal de Receitas</span>
+    </div>
+  </article>
 
-            {anuncioColunaEsquerda && (
-              <Anuncio
-                imagem={obterImagemUrl(anuncioColunaEsquerda.imagemUrl)}
-                legenda={anuncioColunaEsquerda.titulo || ''}
-                classe="jornal-anuncio--cacula"
-              />
-            )}
+  <aside className="jornal-coluna-direita">
+    <div className="jornal-editoria jornal-editoria--vermelha">
+      <Estrela />
+      <span>Dos arquivos do jornal</span>
+    </div>
 
-            <div className="jornal-nota">
-              <span className="jornal-nota-etiqueta">Para aproveitar o jornal</span>
-              <p>
-                Escolha uma receita, consulte o preparo e guarde
-                as suas favoritas no caderno pessoal.
-              </p>
-            </div>
+    <div className="jornal-publicidade-titulo">
+      <span>Publicidade cotidiana</span>
+      <h2>Anúncios</h2>
+    </div>
 
-            <div className="jornal-nota jornal-nota--medidas">
-              <span className="jornal-nota-etiqueta">A boa medida</span>
-              <p>
-                Uma xícara de chá equivale a 240 ml; uma colher de
-                sopa, a 15 ml. O peso dos ingredientes secos pode variar.
-              </p>
-            </div>
-          </aside>
+    {anuncioColunaDireita && (
+      <Anuncio
+        imagem={obterImagemUrl(anuncioColunaDireita.imagemUrl)}
+        legenda={anuncioColunaDireita.titulo || ''}
+        classe="jornal-anuncio--elefante"
+      />
+    )}
 
-          <article className="jornal-materia-principal">
-            <div className="jornal-materia-topo">
-              <span>Na capa desta edição</span>
-              <Estrela />
-              <span>{dataEdicao}</span>
-            </div>
+    <div className="jornal-mini-editoria">
+      <Estrela />
+      <span>Também nesta edição</span>
+    </div>
 
-            <div className="jornal-materia-cabecalho">
-              <span className="jornal-materia-chapeu">A escolha da cozinha</span>
-              <h2>{principal?.titulo || 'Uma boa receita merece destaque'}</h2>
-              <div className="jornal-materia-fio">
-                <Estrela />
-                <span>
-                  {principal
-                    ? `${principal.categoria === 'DOCE' ? 'Confeitaria' : 'Cozinha salgada'} · ${principal.porcoes || 'Confira as porções'}`
-                    : 'Receituário do dia'}
-                </span>
-                <Estrela />
+    {carregando ? (
+      <>
+        <SkeletonCard />
+        <SkeletonCard />
+      </>
+    ) : secundarias.length ? (
+      <div className="jornal-lista-manchetes">
+        {secundarias.map((receita, indice) => (
+          <article
+            className="jornal-manchete-secundaria"
+            key={receita.id}
+          >
+            <span className="jornal-manchete-indice">
+              {String(indice + 1).padStart(2, '0')}
+            </span>
+
+            <div className="jornal-manchete-conteudo">
+              <span>
+                {receita.categoria === 'DOCE'
+                  ? 'Confeitaria'
+                  : 'Cozinha salgada'}
+              </span>
+
+              <h3>
+                <Link to={`/detalhe/${receita.id}`}>
+                  {receita.titulo}
+                </Link>
+              </h3>
+
+              <div className="jornal-manchete-dados">
+                {receita.tempoPreparo && (
+                  <span>
+                    <i className="pi pi-clock" aria-hidden="true" />
+                    {receita.tempoPreparo}
+                  </span>
+                )}
+
+                {receita.porcoes && (
+                  <span>
+                    <i className="pi pi-users" aria-hidden="true" />
+                    {receita.porcoes}
+                  </span>
+                )}
               </div>
-            </div>
 
-            {carregando ? (
-              <SkeletonCard />
-            ) : principal ? (
-              <div className="jornal-destaque-card">
-                <CardReceita {...cardProps(principal)} />
-              </div>
-            ) : (
-              <div className="empty-category">
-                <i className="pi pi-book" aria-hidden="true" />
-                <h3>Aguardando a primeira receita</h3>
-                <p>As receitas aprovadas aparecerão aqui.</p>
-              </div>
-            )}
-
-            <div className="jornal-materia-rodape">
-              <span>Uma nova escolha todos os dias</span>
-              <span>Jornal de Receitas</span>
+              <Link
+                className="jornal-manchete-link"
+                to={`/detalhe/${receita.id}`}
+              >
+                Ler receita
+                <i className="pi pi-arrow-right" aria-hidden="true" />
+              </Link>
             </div>
           </article>
+        ))}
+      </div>
+    ) : (
+      <p className="jornal-coluna-texto">
+        Outras receitas publicadas aparecerão nesta coluna.
+      </p>
+    )}
+  </aside>
+</section>
 
-          <aside className="jornal-coluna-direita">
-            <div className="jornal-editoria jornal-editoria--vermelha">
-              <Estrela />
-              <span>Dos nossos arquivos</span>
-            </div>
-
-            <div className="jornal-publicidade-titulo">
-              <span>Publicidade cotidiana</span>
-              <h2>Anúncios</h2>
-            </div>
-
-            {anuncioColunaDireita && (
-              <Anuncio
-                imagem={obterImagemUrl(anuncioColunaDireita.imagemUrl)}
-                legenda={anuncioColunaDireita.titulo || ''}
-                classe="jornal-anuncio--elefante"
-              />
-            )}
-
-            <div className="jornal-mini-editoria">
-              <Estrela />
-              <span>Também nesta edição</span>
-            </div>
-
-            {carregando ? (
-              <>
-                <SkeletonCard />
-                <SkeletonCard />
-              </>
-            ) : secundarias.length ? (
-              <div className="jornal-lista-manchetes">
-                {secundarias.map((receita, indice) => (
-                  <article className="jornal-manchete-secundaria" key={receita.id}>
-                    <span className="jornal-manchete-indice">
-                      {String(indice + 1).padStart(2, '0')}
-                    </span>
-                    <div className="jornal-manchete-conteudo">
-                      <span>
-                        {receita.categoria === 'DOCE' ? 'Confeitaria' : 'Cozinha salgada'}
-                      </span>
-                      <h3>
-                        <Link to={`/detalhe/${receita.id}`}>{receita.titulo}</Link>
-                      </h3>
-                      <div className="jornal-manchete-dados">
-                        {receita.tempoPreparo && (
-                          <span>
-                            <i className="pi pi-clock" aria-hidden="true" />
-                            {receita.tempoPreparo}
-                          </span>
-                        )}
-                        {receita.porcoes && (
-                          <span>
-                            <i className="pi pi-users" aria-hidden="true" />
-                            {receita.porcoes}
-                          </span>
-                        )}
-                      </div>
-                      <Link className="jornal-manchete-link" to={`/detalhe/${receita.id}`}>
-                        Ler receita
-                        <i className="pi pi-arrow-right" aria-hidden="true" />
-                      </Link>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <p className="jornal-coluna-texto">
-                Outras receitas publicadas aparecerão nesta coluna.
-              </p>
-            )}
-          </aside>
-        </section>
 
         {anunciosDinamicos.length > 0 && (
           <>
@@ -656,7 +839,7 @@ Todas as receitas
                   <Filtros onFiltrar={setFiltros} />
                 </div>
               </div>
-
+          {exibirSalgados && (
               <section className="category-section category-section--salgados">
                 <div className="jornal-secao-cabecalho">
                   <div className="jornal-secao-numeracao">
@@ -682,7 +865,9 @@ Todas as receitas
                   renderizarReceitas(salgados, 'salgados')
                 )}
               </section>
+              )}
 
+            {!filtrosAtivos && (
               <section className="jornal-interludio">
                 <div className="jornal-interludio-texto">
                   <span className="jornal-interludio-sobretitulo">
@@ -724,7 +909,9 @@ Todas as receitas
                   </div>
                 </div>
               </section>
+              )}
 
+            {exibirDoces && (
               <section className="category-section category-section--doces">
                 <div className="jornal-secao-cabecalho">
                   <div className="jornal-secao-numeracao">
@@ -750,7 +937,16 @@ Todas as receitas
                   renderizarReceitas(doces, 'doces')
                 )}
               </section>
-
+              
+              )}
+              {!carregando && semResultados && (
+              <div className="empty-category">
+                <i className="pi pi-search" aria-hidden="true" />
+                <h3>Nenhuma receita encontrada</h3>
+                <p>Experimente alterar os filtros para encontrar outras receitas.</p>
+              </div>
+            )}
+            {!filtrosAtivos && (
               <div className="jornal-rapidas-wrapper">
                 <div className="jornal-rapidas-cabecalho">
                   <span>
@@ -761,6 +957,7 @@ Todas as receitas
                 </div>
                 <ReceitasRapidas />
               </div>
+            )}
             </>
           )}
 
@@ -803,7 +1000,7 @@ Todas as receitas
           <div>
             <span>Fim desta edição</span>
             <h2>Até a próxima receita!</h2>
-            <p>Jornal de Receitas · Da nossa cozinha para a sua</p>
+            <p>Jornal de Receitas · Da sua cozinha para o mundo</p>
           </div>
           <Estrela />
         </footer>

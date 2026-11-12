@@ -356,7 +356,7 @@
 @media (max-width: 768px) {
   .dashboard-cards {
     gap: 12px;
-    padding: 16px 0;
+    padding: 14px 10px;
   }
 
   .dashboard-card {
@@ -375,7 +375,7 @@
   }
 
   .dashboard-grid {
-    padding-bottom: 20px;
+    padding: 10px;
   }
 
   .panel-header {
@@ -421,8 +421,7 @@
 
 @media (max-width: 480px) {
   .dashboard-cards {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
+    gap: 8px;
   }
 
   .dashboard-card {

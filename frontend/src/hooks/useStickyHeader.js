@@ -1,4 +1,5 @@
-﻿import { useEffect } from 'react';
+﻿
+import { useEffect } from 'react';
 
 function useStickyHeader(
   headerSelector = '.header-full-width',
@@ -13,83 +14,47 @@ function useStickyHeader(
     if (!header || !container) return;
 
     const paddingOriginal = wrapper?.style.paddingTop ?? '';
-    let frameId = null;
+    const alturaOriginalContainer = container.style.height;
+
+    let alturaHeader = 0;
     let observer = null;
-    let alturaOriginal = 0;
-    let scrollado = sempreAtivo;
+
+    const atualizarAltura = () => {
+      if (header.classList.contains('scrolled')) return;
+
+      const altura = Math.ceil(header.getBoundingClientRect().height);
+
+      if (altura > 0) {
+        alturaHeader = altura;
+        container.style.minHeight = `${alturaHeader}px`;
+      }
+    };
 
     if (wrapper) {
       wrapper.style.paddingTop = '';
     }
 
-    function atualizarAltura() {
-      if (header.classList.contains('scrolled')) return;
+    const minHeightOriginal = container.style.minHeight;
 
-      alturaOriginal = Math.ceil(header.getBoundingClientRect().height);
-      container.style.height = `${alturaOriginal}px`;
-    }
-
-    function atualizarHeader() {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-
-      if (sempreAtivo) {
-        scrollado = true;
-      } else if (!scrollado && scrollTop > 150) {
-        scrollado = true;
-      } else if (scrollado && scrollTop < 30) {
-        scrollado = false;
-      }
-
-      header.classList.toggle('scrolled', scrollado);
-
-      if (!scrollado) {
-        atualizarAltura();
-      }
-    }
-
-    function agendarAtualizacao() {
-      if (frameId !== null) return;
-
-      frameId = requestAnimationFrame(() => {
-        frameId = null;
-        atualizarHeader();
-      });
-    }
-
-    header.classList.remove('scrolled');
     atualizarAltura();
-    atualizarHeader();
 
     if ('ResizeObserver' in window) {
-      observer = new ResizeObserver(() => {
-        if (!header.classList.contains('scrolled')) {
-          atualizarAltura();
-        }
-      });
-
+      observer = new ResizeObserver(atualizarAltura);
       observer.observe(header);
     }
 
-    window.addEventListener('scroll', agendarAtualizacao, { passive: true });
-    window.addEventListener('resize', agendarAtualizacao);
+    window.addEventListener('resize', atualizarAltura);
 
     return () => {
-      window.removeEventListener('scroll', agendarAtualizacao);
-      window.removeEventListener('resize', agendarAtualizacao);
-
-      if (frameId !== null) {
-        cancelAnimationFrame(frameId);
-      }
-
       observer?.disconnect();
+      window.removeEventListener('resize', atualizarAltura);
 
-      container.style.height = '';
+      container.style.height = alturaOriginalContainer;
+      container.style.minHeight = minHeightOriginal;
 
       if (wrapper) {
         wrapper.style.paddingTop = paddingOriginal;
       }
-
-      header.classList.remove('scrolled');
     };
   }, [headerSelector, wrapperSelector, sempreAtivo]);
 }

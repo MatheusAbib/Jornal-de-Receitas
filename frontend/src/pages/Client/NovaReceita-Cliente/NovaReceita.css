@@ -22,6 +22,29 @@
 }
 
 
+.nova-header-identidade {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.nova-header-marca {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background: var(--tomato-red);
+  color: var(--paper-white);
+  font-family: var(--font-editorial);
+  font-size: 1.15rem;
+  font-weight: 400;
+  letter-spacing: -0.08em;
+}
+
+
 
 .nova-page-header-top {
   border-bottom: 1px solid var(--border-soft, #ded8ca);
@@ -786,14 +809,29 @@
   top: 90px;
   align-self: start;
   min-width: 0;
+  min-height: 0;
+  max-height: calc(100dvh - 110px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: #fff;
   border: 1px solid var(--border-soft, #ded8ca);
 }
 
 .nova-info-header {
+  flex-shrink: 0;
   padding: 21px 22px;
   background: var(--vintage-green-dark, #354b38);
   color: #fff;
+}
+
+.nova-info-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--vintage-green) transparent;
 }
 
 .nova-info-header > span {
@@ -947,7 +985,6 @@ body:has(.nova-page) .header-full-width.scrolled {
 
 @media (max-width: 1100px) {
   .nova-main-layout {
-    grid-template-columns: minmax(0, 1fr) 280px;
     gap: 18px;
   }
 
@@ -981,17 +1018,48 @@ body:has(.nova-page) .header-full-width.scrolled {
 @media (max-width: 850px) {
   .nova-main-layout {
     grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
   }
 
   .nova-info-card {
+    grid-column: 1;
+    grid-row: 1;
     position: static;
+    width: 100%;
+    max-height: none;
+    overflow: visible;
   }
-
   .nova-info-body {
     max-height: none;
     overflow: visible;
   }
 
+    .nova-form-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .nova-titulo-width,
+  .nova-tempo-width,
+  .nova-porcoes-width,
+  .nova-metade-width {
+    grid-column: 1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .nova-form-group {
+    width: 100%;
+    min-width: 0;
+  }
+
+
+    .nova-form-container {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    min-width: 0;
+  }
   .nova-info-section {
     padding-bottom: 18px;
   }
@@ -1007,8 +1075,8 @@ body:has(.nova-page) .header-full-width.scrolled {
 
 @media (max-width: 600px) {
   .nova-page {
-    width: min(100% - 28px, 1280px);
-    padding: 96px 0 50px;
+    width: min(100% - 10px, 1280px);
+    padding: 75px 0 50px;
   }
 
   .nova-page-header {
@@ -1077,22 +1145,6 @@ body:has(.nova-page) .header-full-width.scrolled {
   .nova-form-fields {
     gap: 18px;
   }
-
-  .nova-form-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px 10px;
-  }
-
-  .nova-titulo-width,
-  .nova-metade-width {
-    grid-column: span 2;
-  }
-
-  .nova-tempo-width,
-  .nova-porcoes-width {
-    grid-column: span 1;
-  }
-
   .nova-form-group input,
   .nova-form-group select,
   .nova-quantidade,
@@ -1113,7 +1165,7 @@ body:has(.nova-page) .header-full-width.scrolled {
   }
 
   .nova-ingrediente-row {
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    grid-template-columns: minmax(0, 0.6fr) minmax(0, 1.2fr);
     gap: 12px 9px;
   }
 
@@ -1188,10 +1240,6 @@ body:has(.nova-page) .header-full-width.scrolled {
 }
 
 @media (max-width: 380px) {
-  .nova-page {
-    width: min(100% - 20px, 1280px);
-  }
-
   .nova-page-header-content {
     padding: 26px 16px;
   }

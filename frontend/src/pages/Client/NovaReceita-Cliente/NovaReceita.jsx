@@ -348,8 +348,13 @@ function NovaReceita() {
     <PageWrapper paginaAtual="nova">
       <main className="nova-page">
         <header className="nova-page-header">
+
           <div className="nova-page-header-top">
-            <span>Jornal de Receitas</span>
+            <div className="nova-header-identidade">
+              <span className="nova-header-marca">JR</span>
+              <span>Jornal de Receitas</span>
+            </div>
+
             <span>Colabore com o jornal</span>
           </div>
 

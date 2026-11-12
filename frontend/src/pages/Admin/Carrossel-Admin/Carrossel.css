@@ -333,7 +333,7 @@
   .carrossel-grid {
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
     gap: 14px;
-    padding: 16px 0;
+    padding: 14px 10px;
   }
 
   .carrossel-card-img {
@@ -355,10 +355,6 @@
 }
 
 @media (max-width: 480px) {
-  .carrossel-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
-  }
 
   .carrossel-btn-novo {
     padding: 10px 13px;
