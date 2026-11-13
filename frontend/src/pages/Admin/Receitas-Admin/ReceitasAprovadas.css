@@ -202,6 +202,59 @@
   outline-offset: 2px;
 }
 
+.admin-filtro-categoria {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0 0.9rem;
+  min-height: 42px;
+  border: 1px solid #dedede;
+  border-radius: 8px;
+  background: #fff;
+  position: relative;
+}
+
+.admin-filtro-categoria > .pi-filter {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.admin-filtro-categoria select {
+  appearance: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #333;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding-right: 1.25rem;
+  min-width: 95px;
+}
+
+.admin-filtro-categoria > .pi-chevron-down {
+  position: absolute;
+  right: 0.85rem;
+  font-size: 0.65rem;
+  color: #777;
+  pointer-events: none;
+}
+
+.admin-filtro-categoria:focus-within {
+  border-color: #777;
+}
+
+@media (max-width: 768px) {
+  .admin-filtro-categoria {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .admin-filtro-categoria select {
+    width: 100%;
+  }
+}
+
 .btn-save:disabled,
 .modal-btn-save:disabled {
   opacity: 0.5;

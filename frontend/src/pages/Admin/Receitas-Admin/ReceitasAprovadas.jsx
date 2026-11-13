@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from "../../../components/Admin/AdminLayout/AdminLayout";
@@ -21,6 +22,7 @@ function ReceitasAprovadas() {
   const [receitas, setReceitas] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [busca, setBusca] = useState('');
+  const [categoria, setCategoria] = useState('TODAS');
 
   const [detalhes, setDetalhes] = useState(null);
   const [editando, setEditando] = useState(null);
@@ -34,10 +36,16 @@ function ReceitasAprovadas() {
 
     try {
       const params = { size: 100 };
+
       if (busca) params.busca = busca;
 
-      const response = await api.get('/api/receitas/aprovadas', { params, silent: silencioso });
+      const response = await api.get('/api/receitas/aprovadas', {
+        params,
+        silent: silencioso
+      });
+
       const lista = response.data.receitas || [];
+
       setReceitas(lista);
       setCache(CACHE_KEY, lista);
     } catch (e) {
@@ -49,6 +57,7 @@ function ReceitasAprovadas() {
 
   useEffect(() => {
     if (carregandoAuth) return;
+
     if (!usuario || usuario.role !== 'ADMIN') {
       navigate('/');
       return;
@@ -67,24 +76,39 @@ function ReceitasAprovadas() {
 
   const modalAberto = !!detalhes || !!editando || !!excluindo;
 
-  usePolling(() => carregar(true), 10000, !carregando && !carregandoAuth && !modalAberto);
+  usePolling(
+    () => carregar(true),
+    10000,
+    !carregando && !carregandoAuth && !modalAberto
+  );
 
   function handleBusca(e) {
     e.preventDefault();
     carregar();
   }
 
+  const receitasFiltradas = receitas.filter((receita) => {
+    if (categoria === 'TODAS') return true;
+
+    return receita.categoria?.toUpperCase() === categoria;
+  });
+
   async function confirmarExclusao() {
     if (!excluindo) return;
+
     setExcluindoAgora(true);
 
     try {
-      await api.delete(`/api/receitas/${excluindo.id}`, { silent: true });
-      setReceitas(prev => {
-        const nova = prev.filter(r => r.id !== excluindo.id);
+      await api.delete(`/api/receitas/${excluindo.id}`, {
+        silent: true
+      });
+
+      setReceitas((prev) => {
+        const nova = prev.filter((r) => r.id !== excluindo.id);
         setCache(CACHE_KEY, nova);
         return nova;
       });
+
       mostrarToast('Receita excluída com sucesso!', 'success');
       setExcluindo(null);
     } catch (err) {
@@ -103,12 +127,19 @@ function ReceitasAprovadas() {
       tempoPreparo: r.tempoPreparo,
       porcoes: r.porcoes,
       categoria: r.categoria,
-      ingredientes: (r.ingredientes || '').split('||').filter(i => i.trim()).join('\n'),
-      modoPreparo: (r.modoPreparo || '').split('||').filter(p => p.trim()).join('\n'),
+      ingredientes: (r.ingredientes || '')
+        .split('||')
+        .filter((i) => i.trim())
+        .join('\n'),
+      modoPreparo: (r.modoPreparo || '')
+        .split('||')
+        .filter((p) => p.trim())
+        .join('\n'),
       imagemAtual: r.imagem || null,
       imagemFile: null,
       imagemPreview: null
     };
+
     setEditando(dados);
     setOriginalEdicao({ ...dados });
   }
@@ -123,11 +154,17 @@ function ReceitasAprovadas() {
     if (!file) return;
 
     const preview = URL.createObjectURL(file);
-    setEditando({ ...editando, imagemFile: file, imagemPreview: preview });
+
+    setEditando({
+      ...editando,
+      imagemFile: file,
+      imagemPreview: preview
+    });
   }
 
   function removerImagemAtual() {
     if (!editando) return;
+
     setEditando({
       ...editando,
       imagemAtual: null,
@@ -151,6 +188,7 @@ function ReceitasAprovadas() {
 
     try {
       const formData = new FormData();
+
       formData.append('titulo', editando.titulo);
       formData.append('chefe', editando.chefe);
       formData.append('tempoPreparo', editando.tempoPreparo);
@@ -159,22 +197,24 @@ function ReceitasAprovadas() {
 
       editando.ingredientes
         .split('\n')
-        .map(i => i.trim())
-        .filter(i => i)
-        .forEach(i => formData.append('ingredientes', i));
+        .map((i) => i.trim())
+        .filter((i) => i)
+        .forEach((i) => formData.append('ingredientes', i));
 
       editando.modoPreparo
         .split('\n')
-        .map(p => p.trim())
-        .filter(p => p)
-        .forEach(p => formData.append('modoPreparo', p));
+        .map((p) => p.trim())
+        .filter((p) => p)
+        .forEach((p) => formData.append('modoPreparo', p));
 
       if (editando.imagemFile) {
         formData.append('imagemFile', editando.imagemFile);
       }
 
       await api.put(`/api/receitas/${editando.id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
         silent: true
       });
 
@@ -211,7 +251,8 @@ function ReceitasAprovadas() {
     editando.imagemAtual !== originalEdicao.imagemAtual
   );
 
-  const botaoSalvarHabilitado = editandoValido && editandoMudou && !salvando;
+  const botaoSalvarHabilitado =
+    editandoValido && editandoMudou && !salvando;
 
   function obterPreviewAtual() {
     if (!editando) return null;
@@ -235,12 +276,33 @@ function ReceitasAprovadas() {
     return (
       <AdminLayout>
         <div className="admin-topbar">
-          <h1><i className="pi pi-book"></i> Receitas Aprovadas</h1>
+          <h1>
+            <i className="pi pi-book"></i> Receitas Aprovadas
+          </h1>
+
           <div className="admin-topbar-actions">
-            <span><i className="pi pi-list"></i> Total: <strong>...</strong></span>
-            <form className="admin-search-box" onSubmit={(e) => e.preventDefault()}>
+            <span>
+              <i className="pi pi-list"></i> Total: <strong>...</strong>
+            </span>
+
+            <div className="admin-filtro-categoria">
+              <i className="pi pi-filter" aria-hidden="true"></i>
+              <select disabled aria-label="Filtrar receitas por categoria">
+                <option>Todas</option>
+              </select>
+              <i className="pi pi-chevron-down" aria-hidden="true"></i>
+            </div>
+
+            <form
+              className="admin-search-box"
+              onSubmit={(e) => e.preventDefault()}
+            >
               <i className="pi pi-search"></i>
-              <input type="text" placeholder="Buscar receita..." disabled />
+              <input
+                type="text"
+                placeholder="Buscar receita..."
+                disabled
+              />
             </form>
           </div>
         </div>
@@ -267,6 +329,7 @@ function ReceitasAprovadas() {
                     <th className="text-center">Ações</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {Array.from({ length: 8 }).map((_, i) => (
                     <tr key={i}>
@@ -292,11 +355,41 @@ function ReceitasAprovadas() {
   return (
     <AdminLayout>
       <div className="admin-topbar">
-        <h1><i className="pi pi-book"></i> Receitas Aprovadas</h1>
+        <h1>
+          <i className="pi pi-book"></i> Receitas Aprovadas
+        </h1>
+
         <div className="admin-topbar-actions">
-          <span><i className="pi pi-list"></i> Total: <strong>{receitas.length}</strong></span>
-          <form className="admin-search-box" onSubmit={handleBusca}>
+          <span>
+            <i className="pi pi-list"></i> Total:{' '}
+            <strong>{receitasFiltradas.length}</strong>
+          </span>
+
+          <div className="admin-filtro-categoria">
+            <i className="pi pi-filter" aria-hidden="true"></i>
+
+            <select
+              value={categoria}
+              onChange={(e) => setCategoria(e.target.value)}
+              aria-label="Filtrar receitas por categoria"
+            >
+              <option value="TODAS">Todas</option>
+              <option value="SALGADO">Salgados</option>
+              <option value="DOCE">Doces</option>
+            </select>
+
+            <i
+              className="pi pi-chevron-down"
+              aria-hidden="true"
+            ></i>
+          </div>
+
+          <form
+            className="admin-search-box"
+            onSubmit={handleBusca}
+          >
             <i className="pi pi-search"></i>
+
             <input
               type="text"
               placeholder="Buscar receita..."
@@ -309,14 +402,17 @@ function ReceitasAprovadas() {
 
       <div className="admin-table-wrapper">
         <div className="admin-table-container">
-
           <div className="admin-table-header">
             <div className="count">
-              <i className="pi pi-list"></i> {receitas.length} receitas aprovadas
+              <i className="pi pi-list"></i>{' '}
+              {receitasFiltradas.length}{' '}
+              {receitasFiltradas.length === 1
+                ? 'receita aprovada'
+                : 'receitas aprovadas'}
             </div>
           </div>
 
-          {!carregando && receitas.length > 0 && (
+          {receitasFiltradas.length > 0 && (
             <div className="admin-table-scroll">
               <table className="admin-table">
                 <thead>
@@ -331,33 +427,53 @@ function ReceitasAprovadas() {
                     <th className="text-center">Ações</th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  {receitas.map(r => {
+                  {receitasFiltradas.map((r) => {
                     const imagemUrl = r.imagem
-                      ? (r.imagem.startsWith('http') ? r.imagem : `/uploads/${r.imagem}`)
+                      ? (
+                          r.imagem.startsWith('http')
+                            ? r.imagem
+                            : `/uploads/${r.imagem}`
+                        )
                       : '/default-image.jpg';
 
                     return (
                       <tr key={r.id}>
                         <td data-label="ID">{r.id}</td>
+
                         <td data-label="Imagem">
-                          <ImagemLoader src={imagemUrl} alt={r.titulo} wrapperClassName="admin-thumb-wrapper" className="admin-thumb" />
+                          <ImagemLoader
+                            src={imagemUrl}
+                            alt={r.titulo}
+                            wrapperClassName="admin-thumb-wrapper"
+                            className="admin-thumb"
+                          />
                         </td>
+
                         <td data-label="Título">{r.titulo}</td>
                         <td data-label="Chefe">{r.chefe}</td>
                         <td data-label="Tempo">{r.tempoPreparo}</td>
                         <td data-label="Porções">{r.porcoes}</td>
+
                         <td data-label="Categoria">
-                          <span className={`receita-categoria ${r.categoria?.toLowerCase()}`}>
+                          <span
+                            className={`receita-categoria ${r.categoria?.toLowerCase()}`}
+                          >
                             {r.categoria}
                           </span>
                         </td>
-                        <td data-label="Ações" className="text-center">
+
+                        <td
+                          data-label="Ações"
+                          className="text-center"
+                        >
                           <div className="actions-group">
                             <button
                               type="button"
                               className="action-btn btn-view"
                               onClick={() => setDetalhes(r)}
+                              aria-label={`Visualizar ${r.titulo}`}
                             >
                               <i className="pi pi-eye"></i>
                             </button>
@@ -366,6 +482,7 @@ function ReceitasAprovadas() {
                               type="button"
                               className="action-btn btn-edit"
                               onClick={() => abrirEdicao(r)}
+                              aria-label={`Editar ${r.titulo}`}
                             >
                               <i className="pi pi-pencil"></i>
                             </button>
@@ -374,6 +491,7 @@ function ReceitasAprovadas() {
                               type="button"
                               className="action-btn btn-delete"
                               onClick={() => setExcluindo(r)}
+                              aria-label={`Excluir ${r.titulo}`}
                             >
                               <i className="pi pi-trash"></i>
                             </button>
@@ -387,14 +505,21 @@ function ReceitasAprovadas() {
             </div>
           )}
 
-          {!carregando && receitas.length === 0 && (
+          {receitasFiltradas.length === 0 && (
             <div className="admin-empty">
               <i className="pi pi-book"></i>
-              <h3>Nenhuma receita aprovada</h3>
-              <p>Não há receitas aprovadas no momento.</p>
+
+              <h3>Nenhuma receita encontrada</h3>
+
+              <p>
+                {categoria === 'TODAS'
+                  ? 'Não há receitas aprovadas para esta busca.'
+                  : `Não há receitas ${
+                      categoria === 'SALGADO' ? 'salgadas' : 'doces'
+                    } para esta busca.`}
+              </p>
             </div>
           )}
-
         </div>
       </div>
 
@@ -404,7 +529,11 @@ function ReceitasAprovadas() {
         receita={detalhes}
       />
 
-      <Modal aberto={!!editando} onFechar={fecharEdicao} maxWidth="700px">
+      <Modal
+        aberto={!!editando}
+        onFechar={fecharEdicao}
+        maxWidth="700px"
+      >
         <Modal.Header
           titulo="Editar Receita"
           icone="pi pi-pencil"
@@ -416,44 +545,68 @@ function ReceitasAprovadas() {
             <div className="form-grid">
               <div className="form-group">
                 <label>Título</label>
+
                 <input
                   type="text"
                   placeholder="Título da receita"
                   value={editando?.titulo || ''}
-                  onChange={(e) => setEditando({ ...editando, titulo: e.target.value })}
+                  onChange={(e) =>
+                    setEditando({
+                      ...editando,
+                      titulo: e.target.value
+                    })
+                  }
                   required
                 />
               </div>
 
               <div className="form-group">
                 <label>Chefe</label>
+
                 <input
                   type="text"
                   placeholder="Nome do chefe"
                   value={editando?.chefe || ''}
-                  onChange={(e) => setEditando({ ...editando, chefe: e.target.value })}
+                  onChange={(e) =>
+                    setEditando({
+                      ...editando,
+                      chefe: e.target.value
+                    })
+                  }
                   required
                 />
               </div>
 
               <div className="form-group">
                 <label>Tempo de Preparo</label>
+
                 <input
                   type="text"
                   placeholder="Ex: 30 min"
                   value={editando?.tempoPreparo || ''}
-                  onChange={(e) => setEditando({ ...editando, tempoPreparo: e.target.value })}
+                  onChange={(e) =>
+                    setEditando({
+                      ...editando,
+                      tempoPreparo: e.target.value
+                    })
+                  }
                   required
                 />
               </div>
 
               <div className="form-group">
                 <label>Porções</label>
+
                 <input
                   type="number"
                   placeholder="Ex: 4"
                   value={editando?.porcoes || ''}
-                  onChange={(e) => setEditando({ ...editando, porcoes: e.target.value })}
+                  onChange={(e) =>
+                    setEditando({
+                      ...editando,
+                      porcoes: e.target.value
+                    })
+                  }
                   min="1"
                   required
                 />
@@ -461,9 +614,15 @@ function ReceitasAprovadas() {
 
               <div className="form-group">
                 <label>Categoria</label>
+
                 <select
                   value={editando?.categoria || 'SALGADO'}
-                  onChange={(e) => setEditando({ ...editando, categoria: e.target.value })}
+                  onChange={(e) =>
+                    setEditando({
+                      ...editando,
+                      categoria: e.target.value
+                    })
+                  }
                   required
                 >
                   <option value="SALGADO">Salgado</option>
@@ -477,15 +636,25 @@ function ReceitasAprovadas() {
 
               {previewUrl && (
                 <div className="carrossel-preview">
-                  <img src={previewUrl} alt="Preview" />
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
+                  />
+
                   <div className="carrossel-preview-actions">
                     <button
                       type="button"
                       className="preview-btn baixar"
-                      onClick={() => baixarImagem(previewUrl, editando?.titulo || 'imagem')}
+                      onClick={() =>
+                        baixarImagem(
+                          previewUrl,
+                          editando?.titulo || 'imagem'
+                        )
+                      }
                     >
                       <i className="pi pi-download"></i> Baixar
                     </button>
+
                     <button
                       type="button"
                       className="preview-btn excluir"
@@ -506,10 +675,16 @@ function ReceitasAprovadas() {
 
             <div className="form-group">
               <label>Ingredientes (um por linha)</label>
+
               <textarea
-                placeholder="Ex: 200g de farinha&#10;3 ovos&#10;100ml de leite"
+                placeholder={'Ex: 200g de farinha\n3 ovos\n100ml de leite'}
                 value={editando?.ingredientes || ''}
-                onChange={(e) => setEditando({ ...editando, ingredientes: e.target.value })}
+                onChange={(e) =>
+                  setEditando({
+                    ...editando,
+                    ingredientes: e.target.value
+                  })
+                }
                 rows="6"
                 required
               />
@@ -517,24 +692,44 @@ function ReceitasAprovadas() {
 
             <div className="form-group">
               <label>Modo de Preparo (um passo por linha)</label>
+
               <textarea
-                placeholder="Ex: Misture os ingredientes secos&#10;Adicione os ovos&#10;Asse por 30 minutos"
+                placeholder={'Ex: Misture os ingredientes secos\nAdicione os ovos\nAsse por 30 minutos'}
                 value={editando?.modoPreparo || ''}
-                onChange={(e) => setEditando({ ...editando, modoPreparo: e.target.value })}
+                onChange={(e) =>
+                  setEditando({
+                    ...editando,
+                    modoPreparo: e.target.value
+                  })
+                }
                 rows="6"
                 required
               />
             </div>
 
             <div className="modal-actions">
-              <button type="button" className="modal-btn modal-btn-cancel" onClick={fecharEdicao} disabled={salvando}>
+              <button
+                type="button"
+                className="modal-btn modal-btn-cancel"
+                onClick={fecharEdicao}
+                disabled={salvando}
+              >
                 <i className="pi pi-times"></i> Cancelar
               </button>
-              <button type="submit" className="modal-btn modal-btn-save" disabled={!botaoSalvarHabilitado}>
+
+              <button
+                type="submit"
+                className="modal-btn modal-btn-save"
+                disabled={!botaoSalvarHabilitado}
+              >
                 {salvando ? (
-                  <><i className="pi pi-spin pi-spinner"></i> Salvando...</>
+                  <>
+                    <i className="pi pi-spin pi-spinner"></i> Salvando...
+                  </>
                 ) : (
-                  <><i className="pi pi-save"></i> Salvar</>
+                  <>
+                    <i className="pi pi-save"></i> Salvar
+                  </>
                 )}
               </button>
             </div>
@@ -542,18 +737,26 @@ function ReceitasAprovadas() {
         </Modal.Body>
       </Modal>
 
-      <Modal aberto={!!excluindo} onFechar={() => setExcluindo(null)} maxWidth="480px">
+      <Modal
+        aberto={!!excluindo}
+        onFechar={() => setExcluindo(null)}
+        maxWidth="480px"
+      >
         <Modal.Header
           titulo="Excluir Receita"
           icone="pi pi-exclamation-triangle"
           onFechar={() => setExcluindo(null)}
         />
+
         <Modal.Body>
           <p className="admin-modal-delete-text">
-            Tem certeza que deseja excluir <strong>{excluindo?.titulo}</strong>?
+            Tem certeza que deseja excluir{' '}
+            <strong>{excluindo?.titulo}</strong>?
           </p>
+
           <p className="modal-warning">
-            <i className="pi pi-exclamation-circle"></i> Esta ação não pode ser desfeita.
+            <i className="pi pi-exclamation-circle"></i>{' '}
+            Esta ação não pode ser desfeita.
           </p>
 
           <div className="modal-actions">
@@ -565,6 +768,7 @@ function ReceitasAprovadas() {
             >
               <i className="pi pi-times"></i> Cancelar
             </button>
+
             <button
               type="button"
               className="modal-btn modal-btn-danger"
@@ -572,9 +776,13 @@ function ReceitasAprovadas() {
               disabled={excluindoAgora}
             >
               {excluindoAgora ? (
-                <><i className="pi pi-spin pi-spinner"></i> Excluindo...</>
+                <>
+                  <i className="pi pi-spin pi-spinner"></i> Excluindo...
+                </>
               ) : (
-                <><i className="pi pi-trash"></i> Excluir</>
+                <>
+                  <i className="pi pi-trash"></i> Excluir
+                </>
               )}
             </button>
           </div>
