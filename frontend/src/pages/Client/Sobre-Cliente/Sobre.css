@@ -618,7 +618,7 @@
   }
 
   .sobre-rodape {
-    margin-top: 65px;
+    display: none;
   }
 }
 

@@ -10,6 +10,7 @@ function CardReceita({
   receita,
   favorito,
   onToggleFavorito,
+  onAbrirReceita,
   usuarioLogado,
   variante = 'default',
   linkExterno
@@ -67,13 +68,14 @@ function CardReceita({
     }
   }
 
-  function handleVerReceita() {
-    if (linkExterno) {
-      window.open(linkExterno, '_blank', 'noopener,noreferrer');
-    } else {
-      navigate(`/detalhe/${receita.id}`);
-    }
+function handleVerReceita() {
+  if (linkExterno) {
+    window.open(linkExterno, '_blank', 'noopener,noreferrer');
+  } else {
+    onAbrirReceita?.();
+    navigate(`/detalhe/${receita.id}`);
   }
+}
 
   function handlePrefetchDetalhe() {
     if (!linkExterno) {

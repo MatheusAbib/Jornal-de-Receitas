@@ -195,19 +195,26 @@ useLayoutEffect(() => {
   });
 }, [restauracao, carregando]);
 
+
 useLayoutEffect(() => {
   if (!restauracao || carregando) return;
 
-  let tentativas = 0;
   let frame;
+  let tentativas = 0;
+  let cancelado = false;
 
   function restaurarPosicao() {
-    const alturaDisponivel = document.documentElement.scrollHeight - window.innerHeight;
+    if (cancelado) return;
+
+    const alturaDisponivel =
+      document.documentElement.scrollHeight - window.innerHeight;
 
     if (alturaDisponivel >= restauracao.scrollY || tentativas >= 60) {
       window.scrollTo(0, restauracao.scrollY);
+
       sessionStorage.removeItem('restaurarReceitas');
       sessionStorage.removeItem('estadoReceitas');
+
       return;
     }
 
@@ -217,9 +224,11 @@ useLayoutEffect(() => {
 
   frame = requestAnimationFrame(restaurarPosicao);
 
-  return () => cancelAnimationFrame(frame);
-}, [restauracao, carregando, aba, filtros]);
-
+  return () => {
+    cancelado = true;
+    cancelAnimationFrame(frame);
+  };
+}, [restauracao, carregando]);
 
 
   useEffect(() => {
@@ -382,12 +391,13 @@ const semResultados = filtrosAtivos && receitasFiltradas.length === 0;
     }).format(new Date(ano, mes - 1, dia));
   }, [chaveDia]);
 
-  const cardProps = receita => ({
-    receita,
-    favorito: favoritos.includes(receita.id),
-    onToggleFavorito: handleToggleFavorito,
-    usuarioLogado: !!usuario
-  });
+const cardProps = receita => ({
+  receita,
+  favorito: favoritos.includes(receita.id),
+  onToggleFavorito: handleToggleFavorito,
+  usuarioLogado: !!usuario,
+  onAbrirReceita: salvarPosicaoReceitas
+});
 
   function renderizarReceitas(lista, tipo) {
     if (!lista.length) {
@@ -420,10 +430,7 @@ const semResultados = filtrosAtivos && receitasFiltradas.length === 0;
 
   return (
     <PageWrapper paginaAtual="inicio">
-      <main
-            className="home-wrapper"
-            onClickCapture={salvarPosicaoReceitas}
-          >
+<main className="home-wrapper">
         <div className="jornal-edicao-barra">
           <span>Jornal de Receitas · Caderno culinário</span>
           <span className="jornal-edicao-data">{dataEdicao}</span>

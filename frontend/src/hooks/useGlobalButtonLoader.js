@@ -79,7 +79,7 @@ function aplicarSpinner(elemento) {
   elemento.dataset.spinnerAplicado = 'true';
   elemento.dataset.spinnerTime = String(Date.now());
 
-  const icon = elemento.querySelector('i');
+  // const icon = elemento.querySelector('i');
 
   if (icon) {
     icon.dataset.originalClass = icon.className;

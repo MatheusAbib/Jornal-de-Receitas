@@ -36,6 +36,11 @@ const funcionalidades = [
     titulo: 'Favoritos personalizados',
     descricao: 'Salve suas receitas preferidas para consultar depois.'
   },
+    {
+    icone: 'pi pi-list-check',
+    titulo: 'Receitas passo a passo',
+    descricao: 'Acompanhe o modo de preparo e marque os ingredientes já separados.'
+  },
   {
     icone: 'pi pi-filter',
     titulo: 'Filtros de receitas',
@@ -45,7 +50,8 @@ const funcionalidades = [
     icone: 'pi pi-bell',
     titulo: 'Notificações',
     descricao: 'Receba atualizações sobre receitas e publicações.'
-  }
+  },
+
 ];
 
 const faq = [
@@ -147,12 +153,10 @@ function Sobre() {
           <section className="sobre-missao" aria-labelledby="sobre-missao-titulo">
             <div className="sobre-missao-identificacao">
               <span>02 / Propósito</span>
-
-              <i className="pi pi-heart" aria-hidden="true"></i>
             </div>
 
             <div className="sobre-missao-conteudo">
-              <h2 id="sobre-missao-titulo">Nossa missão</h2>
+              <h2 id="sobre-missao-titulo">Objetivo</h2>
 
               <p>
                 Conectar pessoas através da culinária, oferecendo um
@@ -167,7 +171,7 @@ function Sobre() {
             <div className="sobre-section-header">
               <div>
                 <span className="sobre-section-kicker">03 / Funcionalidades</span>
-                <h2 id="sobre-recursos-titulo">O que oferecemos</h2>
+                <h2 id="sobre-recursos-titulo">Oferecimentos</h2>
               </div>
 
               <p>
@@ -194,7 +198,7 @@ function Sobre() {
             <div className="sobre-section-header">
               <div>
                 <span className="sobre-section-kicker">04 / Informações</span>
-                <h2 id="sobre-faq-titulo">Perguntas frequentes</h2>
+                <h2 id="sobre-faq-titulo">Possíveis perguntas</h2>
               </div>
 
               <p>
