@@ -7,7 +7,6 @@ import { useToast } from "../../../context/ToastContext";
 import { buscarReceita } from "../../../services/receitaService";
 import { listarFavoritos, adicionarFavorito, removerFavorito } from "../../../services/favoritoService";
 import { extrairMensagemErro } from "../../../services/api";
-import { getCache, setCache } from "../../../services/cache";
 import { prefetchRota } from "../../../services/prefetch";
 import './DetalhesReceita.css';
 
@@ -23,41 +22,55 @@ function DetalhesReceita() {
   const [carregandoFav, setCarregandoFav] = useState(false);
   const [ingredientesMarcados, setIngredientesMarcados] = useState(new Set());
 
-  useEffect(() => {
-    let ativo = true;
-    const cacheKey = `receita-${id}`;
-    const cached = getCache(cacheKey);
 
-    setReceita(cached || null);
-    setCarregando(!cached);
-    setIngredientesMarcados(new Set());
+useEffect(() => {
+  let ativo = true;
+  let requisicaoEmAndamento = false;
 
-    if (cached) return;
+  setReceita(null);
+  setCarregando(true);
+  setIngredientesMarcados(new Set());
 
-    async function carregar() {
-      try {
-        const data = await buscarReceita(id);
+  async function carregar() {
+    if (requisicaoEmAndamento) return;
 
-        if (!ativo) return;
+    requisicaoEmAndamento = true;
 
-        setReceita(data);
-        setCache(cacheKey, data);
-      } catch (erro) {
-        if (ativo) {
-          console.error(erro);
-          setReceita(null);
+    try {
+      const data = await buscarReceita(id);
+
+      if (!ativo) return;
+
+      setReceita((anterior) => {
+        if (JSON.stringify(anterior) === JSON.stringify(data)) {
+          return anterior;
         }
-      } finally {
-        if (ativo) setCarregando(false);
+
+        return data;
+      });
+    } catch (erro) {
+      if (ativo) {
+        console.error(erro);
+      }
+    } finally {
+      requisicaoEmAndamento = false;
+
+      if (ativo) {
+        setCarregando(false);
       }
     }
+  }
 
-    carregar();
+  carregar();
 
-    return () => {
-      ativo = false;
-    };
-  }, [id]);
+  const intervalo = setInterval(carregar, 10000);
+
+  return () => {
+    ativo = false;
+    clearInterval(intervalo);
+  };
+}, [id]);
+
 
   useEffect(() => {
     let ativo = true;
