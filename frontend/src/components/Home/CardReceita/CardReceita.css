@@ -170,12 +170,6 @@
 .card-receita-rapida .card-meta-item i {
   color: var(--card-verde);
 }
-
-.card-meta-chefe {
-  flex-basis: 100%;
-  font-style: italic;
-}
-
 .card-actions {
   display: flex;
   margin-top: 0;
@@ -339,8 +333,12 @@
     font-size: clamp(24px, 4vw, 31px);
   }
 
-  .card-meta {
+  .card-meta-item {
     display: none;
+  }
+
+  .card-meta{
+        padding: 10px 0 4px;
   }
 
   .card-receita-rapida .card-titulo {

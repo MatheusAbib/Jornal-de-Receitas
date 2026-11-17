@@ -105,6 +105,23 @@ function ModalVerReceita({ aberto, onFechar, receita }) {
                   </div>
                 </div>
 
+                {receita.complexidade && (
+                  <div className="ver-receita-meta-item">
+                    <div className="ver-receita-meta-icon">
+                      <i className="pi pi-chart-bar" aria-hidden="true"></i>
+                    </div>
+
+                    <div className="ver-receita-meta-conteudo">
+                      <span>Complexidade</span>
+                      <strong
+                        className={`ver-receita-complexidade ver-receita-complexidade--${receita.complexidade.descricao.toLowerCase()}`}
+                      >
+                        {receita.complexidade.descricao}
+                      </strong>
+                    </div>
+                  </div>
+                )}
+
                 <div className="ver-receita-meta-item">
                   <div className="ver-receita-meta-icon">
                     <i className="pi pi-heart" aria-hidden="true"></i>

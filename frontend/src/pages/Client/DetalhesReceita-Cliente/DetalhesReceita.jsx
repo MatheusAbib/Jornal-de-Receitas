@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageWrapper from "../../../components/Global/PageWrapper/PageWrapper";
 import ImagemLoader from "../../../components/Global/ImagemLoader/ImagemLoader";
+import ComplexidadeBadge from "../../../components/Home/ComplexidadeBadge/ComplexidadeBadge";
 import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../context/ToastContext";
 import { buscarReceita } from "../../../services/receitaService";
@@ -22,55 +23,53 @@ function DetalhesReceita() {
   const [carregandoFav, setCarregandoFav] = useState(false);
   const [ingredientesMarcados, setIngredientesMarcados] = useState(new Set());
 
+  useEffect(() => {
+    let ativo = true;
+    let requisicaoEmAndamento = false;
 
-useEffect(() => {
-  let ativo = true;
-  let requisicaoEmAndamento = false;
+    setReceita(null);
+    setCarregando(true);
+    setIngredientesMarcados(new Set());
 
-  setReceita(null);
-  setCarregando(true);
-  setIngredientesMarcados(new Set());
+    async function carregar() {
+      if (requisicaoEmAndamento) return;
 
-  async function carregar() {
-    if (requisicaoEmAndamento) return;
+      requisicaoEmAndamento = true;
 
-    requisicaoEmAndamento = true;
+      try {
+        const data = await buscarReceita(id);
 
-    try {
-      const data = await buscarReceita(id);
+        if (!ativo) return;
 
-      if (!ativo) return;
+        setReceita((anterior) => {
+          if (JSON.stringify(anterior) === JSON.stringify(data)) {
+            return anterior;
+          }
 
-      setReceita((anterior) => {
-        if (JSON.stringify(anterior) === JSON.stringify(data)) {
-          return anterior;
+          return data;
+        });
+      } catch (erro) {
+        if (ativo) {
+          console.error(erro);
         }
+      } finally {
+        requisicaoEmAndamento = false;
 
-        return data;
-      });
-    } catch (erro) {
-      if (ativo) {
-        console.error(erro);
-      }
-    } finally {
-      requisicaoEmAndamento = false;
-
-      if (ativo) {
-        setCarregando(false);
+        if (ativo) {
+          setCarregando(false);
+        }
       }
     }
-  }
 
-  carregar();
+    carregar();
 
-  const intervalo = setInterval(carregar, 10000);
+    const intervalo = setInterval(carregar, 10000);
 
-  return () => {
-    ativo = false;
-    clearInterval(intervalo);
-  };
-}, [id]);
-
+    return () => {
+      ativo = false;
+      clearInterval(intervalo);
+    };
+  }, [id]);
 
   useEffect(() => {
     let ativo = true;
@@ -161,13 +160,13 @@ useEffect(() => {
     window.print();
   }
 
-function voltarInicio() {
-  if (sessionStorage.getItem('estadoReceitas')) {
-    sessionStorage.setItem('restaurarReceitas', 'true');
-  }
+  function voltarInicio() {
+    if (sessionStorage.getItem('estadoReceitas')) {
+      sessionStorage.setItem('restaurarReceitas', 'true');
+    }
 
-  navigate('/');
-}
+    navigate('/');
+  }
 
   if (carregando) {
     return (
@@ -288,33 +287,36 @@ function voltarInicio() {
     ? `${receita.porcoes} ${quantidadePorcoes === 1 ? 'porção' : 'porções'}`
     : 'Não informado';
 
+  const todosIngredientesMarcados =
+    ingredientes.length > 0 && totalIngredientesMarcados === ingredientes.length;
+
   return (
     <PageWrapper paginaAtual="detalhe">
       <main className="detalhe-container">
 
-            <article className="detalhe-card">
-              <div className="detalhe-rodape">
-                <div className="detalhe-rodape-identidade">
-                  <span className="detalhe-rodape-marca">JR</span>
+        <article className="detalhe-card">
+          <div className="detalhe-rodape">
+            <div className="detalhe-rodape-identidade">
+              <span className="detalhe-rodape-marca">JR</span>
 
-                  <div>
-                    <strong>Jornal de Receitas</strong>
-                    <span>Caderno culinário</span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  className="detalhe-voltar-link"
-                  onClick={voltarInicio}
-                  onMouseEnter={() => prefetchRota('/')}
-                >
-                  <i className="pi pi-arrow-left" aria-hidden="true"></i>
-                  Voltar às receitas
-                </button>
+              <div>
+                <strong>Jornal de Receitas</strong>
+                <span>Caderno culinário</span>
               </div>
+            </div>
 
-              <div className="detalhe-hero">
+            <button
+              type="button"
+              className="detalhe-voltar-link"
+              onClick={voltarInicio}
+              onMouseEnter={() => prefetchRota('/')}
+            >
+              <i className="pi pi-arrow-left" aria-hidden="true"></i>
+              Voltar às receitas
+            </button>
+          </div>
+
+          <div className="detalhe-hero">
             <div className="detalhe-image">
               <ImagemLoader
                 src={imagemUrl}
@@ -328,6 +330,13 @@ function voltarInicio() {
             </div>
 
             <div className="detalhe-info">
+              <div className="detalhe-info-selo">
+                <ComplexidadeBadge
+                  complexidade={receita.complexidade}
+                  variante="selo"
+                />
+              </div>
+
               <div className="detalhe-info-header">
                 <span className="detalhe-chamada">
                   Uma receita para preparar e compartilhar
@@ -379,13 +388,12 @@ function voltarInicio() {
 
                   <div>
                     <span>Categoria</span>
-                    
+
                     <strong
                       className={`detalhe-badge-categoria ${
                         ehSalgado ? 'salgado' : 'doce'
                       }`}
                     >
-
                       Receita {ehSalgado ? 'salgada' : 'doce'}
                     </strong>
                   </div>
@@ -503,6 +511,21 @@ function voltarInicio() {
                   }}
                 ></span>
               </div>
+
+              {todosIngredientesMarcados && (
+                <div
+                  className="detalhe-ingredientes-concluido"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <i className="pi pi-face-smile" aria-hidden="true"></i>
+
+                  <div className="detalhe-ingredientes-concluido-texto">
+                    <strong>Aproveite sua receita!</strong>
+                    <span>Você separou todos os ingredientes.</span>
+                  </div>
+                </div>
+              )}
 
               {ingredientes.length > 0 ? (
                 <ul className="detalhe-ingredientes">

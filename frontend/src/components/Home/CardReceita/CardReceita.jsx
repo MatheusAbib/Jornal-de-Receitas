@@ -1,7 +1,7 @@
-﻿
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ImagemLoader from '../../Global/ImagemLoader/ImagemLoader';
+import ComplexidadeBadge from '../ComplexidadeBadge/ComplexidadeBadge';
 import { useToast } from '../../../context/ToastContext';
 import { prefetchRota } from '../../../services/prefetch';
 import './CardReceita.css';
@@ -68,14 +68,14 @@ function CardReceita({
     }
   }
 
-function handleVerReceita() {
-  if (linkExterno) {
-    window.open(linkExterno, '_blank', 'noopener,noreferrer');
-  } else {
-    onAbrirReceita?.();
-    navigate(`/detalhe/${receita.id}`);
+  function handleVerReceita() {
+    if (linkExterno) {
+      window.open(linkExterno, '_blank', 'noopener,noreferrer');
+    } else {
+      onAbrirReceita?.();
+      navigate(`/detalhe/${receita.id}`);
+    }
   }
-}
 
   function handlePrefetchDetalhe() {
     if (!linkExterno) {
@@ -100,6 +100,11 @@ function handleVerReceita() {
           aria-label={`Abrir receita de ${receita.titulo}`}
         >
           {imagem}
+
+          <ComplexidadeBadge
+            complexidade={receita.complexidade}
+            variante="selo"
+          />
         </button>
 
         <div className="card-content">
@@ -161,6 +166,11 @@ function handleVerReceita() {
         >
           {imagem}
         </button>
+
+        <ComplexidadeBadge
+          complexidade={receita.complexidade}
+          variante="selo"
+        />
 
         <button
           type="button"

@@ -30,11 +30,8 @@ function AdminSidebar({
     <aside className={`admin-sidebar ${aberta ? 'open' : ''}`}>
       <div className="admin-sidebar-header">
         <div className="admin-sidebar-header-info">
+          <h2>Jornal de Receitas</h2>
           <span className="admin-sidebar-label">Painel administrativo</span>
-          <h2>Administrador</h2>
-          {usuario?.nome && (
-            <span className="admin-user">{usuario.nome}</span>
-          )}
         </div>
 
         <button

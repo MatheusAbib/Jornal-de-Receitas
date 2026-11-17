@@ -79,25 +79,18 @@ function aplicarSpinner(elemento) {
   elemento.dataset.spinnerAplicado = 'true';
   elemento.dataset.spinnerTime = String(Date.now());
 
-  // const icon = elemento.querySelector('i');
+  elemento.dataset.spinnerOriginalPosition = elemento.style.position;
+  elemento.dataset.spinnerOriginalColor = elemento.style.color;
 
-  if (icon) {
-    icon.dataset.originalClass = icon.className;
-    icon.className = 'pi pi-spin pi-spinner';
-  } else {
-    elemento.dataset.spinnerOriginalPosition = elemento.style.position;
-    elemento.dataset.spinnerOriginalColor = elemento.style.color;
+  const estilo = window.getComputedStyle(elemento);
 
-    const estilo = window.getComputedStyle(elemento);
-
-    if (estilo.position === 'static') {
-      elemento.style.position = 'relative';
-    }
-
-    elemento.style.color = 'transparent';
-
-    elemento.dataset.spinnerSemIcone = 'true';
+  if (estilo.position === 'static') {
+    elemento.style.position = 'relative';
   }
+
+  elemento.style.color = 'transparent';
+
+  elemento.dataset.spinnerSemIcone = 'true';
 
   elemento.style.pointerEvents = 'none';
   elemento.style.opacity = '0.7';

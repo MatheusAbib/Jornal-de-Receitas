@@ -86,7 +86,7 @@ body:has(.detalhe-container) .header-full-width.scrolled {
   flex-direction: column;
   gap: 0;
   min-width: 0;
-  padding: clamp(25px, 3.3vw, 48px);
+  padding: clamp(25px, 3.3vw, 44px);
 }
 
 .detalhe-info-superior {
@@ -104,6 +104,69 @@ body:has(.detalhe-container) .header-full-width.scrolled {
   align-items: flex-start;
   gap: 0;
   min-width: 0;
+}
+
+.detalhe-ingredientes-concluido {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+  padding: 14px 18px;
+  border: 2px solid var(--vintage-green);
+  border-radius: 2px;
+  animation: detalhe-concluido-entrada 0.3s ease;
+}
+
+.detalhe-ingredientes-concluido > i {
+  flex-shrink: 0;
+  color: var(--vintage-green);
+  font-size: 1.6rem;
+}
+
+.detalhe-ingredientes-concluido-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.detalhe-ingredientes-concluido-texto strong {
+  color: var(--vintage-green-dark);
+  font-family: var(--font-editorial);
+  font-size: 1.15rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.detalhe-ingredientes-concluido-texto span {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+@keyframes detalhe-concluido-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.detalhe-info-selo {
+  display: flex;
+  justify-content: flex-end
+}
+
+.detalhe-info-selo .complexidade-badge--selo {
+  position: static;
+  transform: rotate(-2deg);
+  font-size: 0.66rem;
+  padding: 6px 12px;
+  letter-spacing: 0.12em;
 }
 
 .detalhe-chamada {
@@ -316,7 +379,7 @@ body:has(.detalhe-container) .header-full-width.scrolled {
 
 .detalhe-section {
   min-width: 0;
-  padding: clamp(25px, 3.4vw, 46px);
+  padding: clamp(25px, 3.4vw, 44px);
 }
 
 .detalhe-section-ingredientes {
@@ -578,7 +641,7 @@ body:has(.detalhe-container) .header-full-width.scrolled {
   flex-wrap: wrap;
   gap: 20px;
   min-height: 90px;
-  padding: 18px clamp(25px, 3.4vw, 46px);
+  padding: 18px clamp(25px, 3.4vw, 44px);
   border-bottom: 3px double var(--vintage-green-dark);
   background: var(--paper-color);
 }
@@ -816,6 +879,9 @@ body:has(.detalhe-container) .header-full-width.scrolled {
   .detalhe-section {
     padding: 30px;
   }
+    .detalhe-info-selo{
+    margin-bottom: 16px;
+  }
 }
 
 @media (max-width: 900px) {
@@ -896,8 +962,11 @@ body:has(.detalhe-container) .header-full-width.scrolled {
   }
 
   .detalhe-chamada {
-    font-size: 0.61rem;
-    line-height: 1.5;
+ display: none;
+  }
+
+  .detalhe-info-selo{
+    margin-bottom: 16px;
   }
 
   .detalhe-titulo {

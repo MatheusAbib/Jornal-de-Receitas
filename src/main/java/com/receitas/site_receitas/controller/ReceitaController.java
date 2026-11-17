@@ -5,11 +5,13 @@ import com.receitas.site_receitas.command.Command;
 import com.receitas.site_receitas.command.CommandInvoker;
 import com.receitas.site_receitas.command.ExcluirReceitaCommand;
 import com.receitas.site_receitas.command.RejeitarReceitaCommand;
+import com.receitas.site_receitas.model.Complexidade;
 import com.receitas.site_receitas.model.Receita;
 import com.receitas.site_receitas.model.Receita.StatusReceita;
 import com.receitas.site_receitas.model.Usuario;
 import com.receitas.site_receitas.factory.NotificacaoFactory;
 import com.receitas.site_receitas.factory.ReceitaFactory;
+import com.receitas.site_receitas.service.ComplexidadeService;
 import com.receitas.site_receitas.service.EstatisticasService;
 import com.receitas.site_receitas.service.FavoritoService;
 import com.receitas.site_receitas.service.NotificacaoService;
@@ -67,6 +69,9 @@ public class ReceitaController {
     @Autowired
     private CommandInvoker commandInvoker;
 
+    @Autowired
+    private ComplexidadeService complexidadeService;
+
     public ReceitaController(
             ReceitaService receitaService,
             UsuarioService usuarioService) {
@@ -96,6 +101,13 @@ public class ReceitaController {
             mapa.put("totalFavoritos", favoritoService.contarCurtidas(r));
         }
 
+        Complexidade complexidade = complexidadeService.calcular(r);
+        Map<String, Object> complexidadeMap = new LinkedHashMap<>();
+        complexidadeMap.put("nivel", complexidade.getNivel());
+        complexidadeMap.put("descricao", complexidade.getDescricao());
+        complexidadeMap.put("pontuacao", complexidade.getPontuacao());
+        mapa.put("complexidade", complexidadeMap);
+
         return mapa;
     }
 
@@ -121,7 +133,7 @@ public class ReceitaController {
             description = "Lista retornada com sucesso",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(example = "{\"receitas\": [{\"id\": 1, \"titulo\": \"Bolo de Chocolate\", \"categoria\": \"DOCE\", \"status\": \"APROVADA\", \"totalFavoritos\": 12}]}")
+                schema = @Schema(example = "{\"receitas\": [{\"id\": 1, \"titulo\": \"Bolo de Chocolate\", \"categoria\": \"DOCE\", \"status\": \"APROVADA\", \"totalFavoritos\": 12, \"complexidade\": {\"nivel\": 3, \"descricao\": \"Difícil\", \"pontuacao\": 7}}]}")
             )
         ),
         @ApiResponse(
@@ -367,7 +379,7 @@ public class ReceitaController {
             description = "Receita encontrada",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(example = "{\"id\": 1, \"titulo\": \"Bolo de Chocolate\", \"ingredientes\": \"200g de farinha||3 ovos\", \"modoPreparo\": \"Misture tudo||Asse por 35 minutos\", \"categoria\": \"DOCE\", \"status\": \"APROVADA\", \"totalFavoritos\": 12}")
+                schema = @Schema(example = "{\"id\": 1, \"titulo\": \"Bolo de Chocolate\", \"ingredientes\": \"200g de farinha||3 ovos\", \"modoPreparo\": \"Misture tudo||Asse por 35 minutos\", \"categoria\": \"DOCE\", \"status\": \"APROVADA\", \"totalFavoritos\": 12, \"complexidade\": {\"nivel\": 3, \"descricao\": \"Difícil\", \"pontuacao\": 7}}")
             )
         ),
         @ApiResponse(
@@ -588,18 +600,13 @@ public class ReceitaController {
     })
     @SecurityRequirement(name = "sessionAuth")
     @PostMapping("/{id}/aprovar")
-    // 1. Recebe POST /api/receitas/{id}/aprovar
-    // 2. @PathVariable extrai o id da URL
-    // 3. Cria o AprovarReceitaCommand passando todos os services + o id
     public ResponseEntity<?> aprovarReceita(
             @Parameter(description = "ID da receita a ser aprovada", required = true, example = "1")
             @PathVariable Long id) {
         Command command = new AprovarReceitaCommand(
                 receitaService, usuarioService, notificacaoService, favoritoService, estatisticasService, id
         );
-        // 4. CommandInvoker executa o command
         commandInvoker.executar(command);
-         // 5. Retorna 200 OK com mensagem
         return ResponseEntity.ok(Map.of("message", "Receita aprovada com sucesso"));
     }
 

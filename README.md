@@ -206,7 +206,7 @@ Total de **30 diagramas**, organizados por domínio, todos fiéis ao código atu
 
 A API REST do projeto está totalmente documentada com **SpringDoc OpenAPI** e disponível via **Swagger UI**.
 
-**Acesso online:** [`/swagger-ui/index.html`](https://jornal-de-receitas.vercel.app/swagger-ui/index.html)
+**Acesso online:** [`/swagger-ui/index.html`](https://jornaldereceitas.vercel.app/swagger-ui/index.html)
 
 ### O que é Swagger?
 

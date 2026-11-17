@@ -1,0 +1,92 @@
+.complexidade-badge {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.complexidade-badge--default {
+  padding: 3px 8px;
+  border: 1px solid currentColor;
+  font-size: 0.62rem;
+}
+
+.complexidade-badge--detalhe {
+  padding: 3px 10px;
+  border: 1px solid currentColor;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.complexidade-badge--selo {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  padding: 5px 11px;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  background: var(--paper-white, #fffaf0);
+  border: 3px double currentColor;
+  border-radius: 2px;
+  box-shadow:
+    0 0 0 2px var(--paper-white, #fffaf0),
+    0 0 0 3px currentColor,
+    2px 2px 0 rgba(0, 0, 0, 0.12);
+  transform: rotate(-3deg);
+  transform-origin: center;
+}
+
+.complexidade-badge--selo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(0, 0, 0, 0.08) 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 60%, rgba(0, 0, 0, 0.06) 0 1px, transparent 2px),
+    radial-gradient(circle at 40% 80%, rgba(0, 0, 0, 0.07) 0 1px, transparent 2px),
+    radial-gradient(circle at 85% 20%, rgba(0, 0, 0, 0.05) 0 1px, transparent 2px);
+  background-size: 100% 100%;
+  border-radius: 2px;
+}
+
+.complexidade-badge--fácil {
+  color: #4c7a52;
+}
+
+.complexidade-badge--média {
+  color: #b8771c;
+}
+
+.complexidade-badge--difícil {
+  color: #a44636;
+}
+
+@media (max-width: 480px) {
+  .complexidade-badge--default {
+    padding: 2px 6px;
+    font-size: 0.58rem;
+  }
+
+  .complexidade-badge--detalhe {
+    padding: 3px 8px;
+    font-size: 0.72rem;
+  }
+
+  .complexidade-badge--selo {
+    top: 8px;
+    left: 8px;
+    padding: 4px 9px;
+    font-size: 0.56rem;
+    letter-spacing: 0.11em;
+    border-width: 2px;
+    transform: rotate(-2deg);
+  }
+}
