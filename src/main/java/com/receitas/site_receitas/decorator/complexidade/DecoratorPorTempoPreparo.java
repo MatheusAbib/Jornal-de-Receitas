@@ -18,10 +18,8 @@ public class DecoratorPorTempoPreparo extends CalculadoraDecorator {
     @Override
     public Complexidade calcular(Receita receita) {
         Complexidade complexidade = super.calcular(receita);
-
         int minutos = parsearMinutos(receita.getTempoPreparo());
         int pontos = pontuarPorTempo(minutos);
-
         int novaPontuacao = complexidade.getPontuacao() + pontos;
         return new Complexidade(
                 calcularNivel(novaPontuacao),
@@ -34,7 +32,6 @@ public class DecoratorPorTempoPreparo extends CalculadoraDecorator {
         if (tempoPreparo == null || tempoPreparo.isBlank()) {
             return 0;
         }
-
         int total = 0;
         boolean encontrouAlgo = false;
 
@@ -54,20 +51,20 @@ public class DecoratorPorTempoPreparo extends CalculadoraDecorator {
     }
 
     private int pontuarPorTempo(int minutos) {
-        if (minutos >= 60) return 2;
-        if (minutos >= 30) return 1;
+        if (minutos >= 140) return 2;
+        if (minutos >= 40) return 1; 
         return 0;
     }
 
     private int calcularNivel(int pontuacao) {
-        if (pontuacao >= 5) return 3;
-        if (pontuacao >= 2) return 2;
+        if (pontuacao >= 6) return 3;
+        if (pontuacao >= 3) return 2;
         return 1;
     }
 
     private String calcularDescricao(int pontuacao) {
-        if (pontuacao >= 5) return "Difícil";
-        if (pontuacao >= 2) return "Média";
+        if (pontuacao >= 6) return "Difícil";
+        if (pontuacao >= 3) return "Média";
         return "Fácil";
     }
 }

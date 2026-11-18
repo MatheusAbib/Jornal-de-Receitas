@@ -12,10 +12,8 @@ public class DecoratorPorModoPreparo extends CalculadoraDecorator {
     @Override
     public Complexidade calcular(Receita receita) {
         Complexidade complexidade = super.calcular(receita);
-
         int quantidade = contarPassos(receita);
         int pontos = pontuarPorPassos(quantidade);
-
         int novaPontuacao = complexidade.getPontuacao() + pontos;
         return new Complexidade(
                 calcularNivel(novaPontuacao),
@@ -35,20 +33,20 @@ public class DecoratorPorModoPreparo extends CalculadoraDecorator {
     }
 
     private int pontuarPorPassos(int quantidade) {
-        if (quantidade >= 7) return 2;
-        if (quantidade >= 4) return 1;
+        if (quantidade >= 16) return 2;
+        if (quantidade >= 9) return 1; // <-- MUDOU AQUI (era 11)
         return 0;
     }
 
     private int calcularNivel(int pontuacao) {
-        if (pontuacao >= 5) return 3;
-        if (pontuacao >= 2) return 2;
+        if (pontuacao >= 6) return 3;
+        if (pontuacao >= 3) return 2;
         return 1;
     }
 
     private String calcularDescricao(int pontuacao) {
-        if (pontuacao >= 5) return "Difícil";
-        if (pontuacao >= 2) return "Média";
+        if (pontuacao >= 6) return "Difícil";
+        if (pontuacao >= 3) return "Média";
         return "Fácil";
     }
 }
