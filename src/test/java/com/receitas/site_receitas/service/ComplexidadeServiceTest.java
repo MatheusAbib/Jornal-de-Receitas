@@ -13,9 +13,9 @@ class ComplexidadeServiceTest {
     @DisplayName("Deve calcular complexidade de receita completa")
     void deveCalcularComplexidadeDeReceitaCompleta() {
         Receita receita = new Receita();
-        receita.setIngredientes("1||2||3||4||5||6||7||8||9||10");
-        receita.setModoPreparo("1||2||3||4||5||6||7");
-        receita.setTempoPreparo("2h");
+        receita.setIngredientes("1||2||3||4||5||6||7||8||9||10||11||12||13||14||15");
+        receita.setModoPreparo("1||2||3||4||5||6||7||8||9||10||11||12||13||14||15||16");
+        receita.setTempoPreparo("2h 30min");
         receita.setCategoria(Receita.Categoria.DOCE);
 
         ComplexidadeService service = new ComplexidadeService();
@@ -47,8 +47,8 @@ class ComplexidadeServiceTest {
     @DisplayName("Deve calcular complexidade media")
     void deveCalcularComplexidadeMedia() {
         Receita receita = new Receita();
-        receita.setIngredientes("1||2||3||4||5||6||7");
-        receita.setModoPreparo("1||2||3||4||5");
+        receita.setIngredientes("1||2||3||4||5||6||7||8||9");
+        receita.setModoPreparo("1||2||3||4||5||6||7||8||9");
         receita.setTempoPreparo("40min");
         receita.setCategoria(Receita.Categoria.DOCE);
 

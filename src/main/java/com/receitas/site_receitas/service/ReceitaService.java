@@ -3,6 +3,8 @@ package com.receitas.site_receitas.service;
 import com.receitas.site_receitas.dao.receita.IReceitaDAO;
 import com.receitas.site_receitas.model.Receita;
 import com.receitas.site_receitas.model.Receita.StatusReceita;
+import com.receitas.site_receitas.model.Usuario;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -78,4 +80,25 @@ public class ReceitaService {
     public long contarPorUsuarioEStatus(Integer usuarioId, StatusReceita status) {
         return receitaDAO.contarPorUsuarioEStatus(usuarioId, status);
     }
+
+    public void validarPermissaoEdicao(Receita receita, Usuario logado) {
+    if (logado == null) {
+        throw new org.springframework.security.access.AccessDeniedException("Usuário não autenticado");
+    }
+
+    boolean ehAutor = receita.getUsuario() != null
+            && receita.getUsuario().getId().equals(logado.getId());
+
+    boolean ehAdmin = "ADMIN".equals(logado.getRole());
+
+    if (!ehAutor && !ehAdmin) {
+        throw new org.springframework.security.access.AccessDeniedException("Sem permissão para esta receita");
+    }
+}
+
+public Receita buscarOuFalharAutorizado(Long id, Usuario logado) {
+    Receita receita = buscarOuFalhar(id);
+    validarPermissaoEdicao(receita, logado);
+    return receita;
+}
 }

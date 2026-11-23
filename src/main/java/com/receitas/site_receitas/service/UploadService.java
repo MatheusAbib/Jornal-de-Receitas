@@ -1,5 +1,7 @@
 package com.receitas.site_receitas.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +14,8 @@ import java.util.UUID;
 
 @Service
 public class UploadService {
+
+    private static final Logger log = LoggerFactory.getLogger(UploadService.class);
 
     private final Path uploadDir;
 
@@ -41,6 +45,7 @@ public class UploadService {
         try {
             Files.deleteIfExists(uploadDir.resolve(nomeArquivo));
         } catch (IOException e) {
+            log.warn("Falha ao excluir imagem '{}': {}", nomeArquivo, e.getMessage());
         }
     }
 

@@ -383,7 +383,9 @@
   }
 
   .card-link {
-display: none;
+font-size: 0.7rem;
+min-height: 0;
+    padding: 10px 0
   }
 
   .card-receita-rapida .card-titulo {

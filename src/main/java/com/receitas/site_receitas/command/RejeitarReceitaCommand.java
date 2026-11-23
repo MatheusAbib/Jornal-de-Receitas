@@ -18,20 +18,20 @@ public class RejeitarReceitaCommand extends BaseCommand {
     private final Long receitaId;
     private final String motivo;
 
-public RejeitarReceitaCommand(
-        ReceitaService receitaService,
-        NotificacaoService notificacaoService,
-        FavoritoService favoritoService,
-        EstatisticasService estatisticasService,
-        Long receitaId,
-        String motivo) {
-    this.receitaService = receitaService;
-    this.notificacaoService = notificacaoService;
-    this.favoritoService = favoritoService;
-    this.estatisticasService = estatisticasService;
-    this.receitaId = receitaId;
-    this.motivo = motivo;
-}
+    public RejeitarReceitaCommand(
+            ReceitaService receitaService,
+            NotificacaoService notificacaoService,
+            FavoritoService favoritoService,
+            EstatisticasService estatisticasService,
+            Long receitaId,
+            String motivo) {
+        this.receitaService = receitaService;
+        this.notificacaoService = notificacaoService;
+        this.favoritoService = favoritoService;
+        this.estatisticasService = estatisticasService;
+        this.receitaId = receitaId;
+        this.motivo = motivo;
+    }
 
     @Override
     public void executar() {
@@ -42,22 +42,21 @@ public RejeitarReceitaCommand(
             return;
         }
 
-                receita.rejeitar(motivo);
-                receitaService.salvar(receita);
+        receita.rejeitar(motivo);
+        receitaService.salvar(receita);
 
         Usuario autor = receita.getUsuario();
 
         if (autor != null) {
-        Notificacao notificacao = NotificacaoFactory.receitaRejeitada(autor, receita.getTitulo(), receita.getMotivoRejeicao());
-        notificacaoService.salvar(notificacao);
+            Notificacao notificacao = NotificacaoFactory.receitaRejeitada(autor, receita.getTitulo(), receita.getMotivoRejeicao());
+            notificacaoService.salvar(notificacao);
 
-        Command cmdEstatisticas = new AtualizarEstatisticasCommand(
-                receitaService,
-                favoritoService,
-                estatisticasService,
-                notificacaoService,
-                autor
-        );
+            Command cmdEstatisticas = new AtualizarEstatisticasCommand(
+                    receitaService,
+                    favoritoService,
+                    estatisticasService,
+                    autor
+            );
             cmdEstatisticas.executar();
         }
 

@@ -1,15 +1,14 @@
 package com.receitas.site_receitas.model;
 
 public class Complexidade {
+    private int nivel;        // nível numérico da receita (1 = fácil, 2 = média, 3 = difícil)
+    private String descricao; // texto correspondente ao nível ("Fácil", "Média", "Difícil")
+    private int pontuacao;    // pontuação bruta somada pelos decorators
 
-    private int nivel;
-    private String descricao;
-    private int pontuacao;
-
-    public Complexidade() {
+    public Complexidade() {   // construtor vazio (permite criar o objeto em branco, se precisar)
     }
 
-    public Complexidade(int nivel, String descricao, int pontuacao) {
+    public Complexidade(int nivel, String descricao, int pontuacao) { // construtor usado pelos decorators (cria o objeto já preenchido)
         this.nivel = nivel;
         this.descricao = descricao;
         this.pontuacao = pontuacao;

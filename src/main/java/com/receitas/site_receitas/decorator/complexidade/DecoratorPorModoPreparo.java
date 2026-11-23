@@ -5,23 +5,23 @@ import com.receitas.site_receitas.model.Receita;
 
 public class DecoratorPorModoPreparo extends CalculadoraDecorator {
 
+    // construtor: recebe quem veio antes na cadeia (base ou outro decorator)
     public DecoratorPorModoPreparo(CalculadoraDeComplexidade calculadoraEnvolvida) {
         super(calculadoraEnvolvida);
     }
 
     @Override
+    // calcula a complexidade adicionando pontos conforme a quantidade de passos do modo de preparo
     public Complexidade calcular(Receita receita) {
+        // primeiro deixa a cadeia anterior calcular a pontuação acumulada
         Complexidade complexidade = super.calcular(receita);
-        int quantidade = contarPassos(receita);
-        int pontos = pontuarPorPassos(quantidade);
-        int novaPontuacao = complexidade.getPontuacao() + pontos;
-        return new Complexidade(
-                calcularNivel(novaPontuacao),
-                calcularDescricao(novaPontuacao),
-                novaPontuacao
-        );
+        // conta quantos passos a receita tem e transforma isso em pontos
+        int pontos = pontuarPorPassos(contarPassos(receita));
+        // soma a pontuação anterior com os pontos deste critério e cria o Complexidade final
+        return comPontuacao(complexidade.getPontuacao() + pontos);
     }
 
+    // conta quantos passos válidos existem no modo de preparo
     private int contarPassos(Receita receita) {
         if (receita.getModoPreparo() == null || receita.getModoPreparo().isBlank()) {
             return 0;
@@ -32,21 +32,10 @@ public class DecoratorPorModoPreparo extends CalculadoraDecorator {
                 .count();
     }
 
+    // regra de pontuação baseada na quantidade de passos
     private int pontuarPorPassos(int quantidade) {
-        if (quantidade >= 16) return 2;
-        if (quantidade >= 9) return 1; // <-- MUDOU AQUI (era 11)
-        return 0;
-    }
-
-    private int calcularNivel(int pontuacao) {
-        if (pontuacao >= 6) return 3;
-        if (pontuacao >= 3) return 2;
-        return 1;
-    }
-
-    private String calcularDescricao(int pontuacao) {
-        if (pontuacao >= 6) return "Difícil";
-        if (pontuacao >= 3) return "Média";
-        return "Fácil";
+        if (quantidade >= 16) return 2; // muitas etapas de preparo: +2 pontos
+        if (quantidade >= 9) return 1;  // quantidade intermediária de passos: +1 ponto
+        return 0;                       // poucas etapas: não aumenta a complexidade
     }
 }

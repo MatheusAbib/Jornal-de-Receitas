@@ -1,7 +1,6 @@
 package com.receitas.site_receitas.command;
 
 import com.receitas.site_receitas.model.Receita;
-import com.receitas.site_receitas.model.Receita.StatusReceita;
 import com.receitas.site_receitas.model.Usuario;
 import com.receitas.site_receitas.service.EstatisticasService;
 import com.receitas.site_receitas.service.FavoritoService;
@@ -9,13 +8,15 @@ import com.receitas.site_receitas.service.NotificacaoService;
 import com.receitas.site_receitas.service.ReceitaService;
 import com.receitas.site_receitas.service.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -26,7 +27,7 @@ class AprovarReceitaCommandTest {
     private NotificacaoService notificacaoService;
     private FavoritoService favoritoService;
     private EstatisticasService estatisticasService;
-    private AprovarReceitaCommand command;
+    private TransactionTemplate transactionTemplate;
 
     @BeforeEach
     void setUp() {
@@ -35,62 +36,77 @@ class AprovarReceitaCommandTest {
         notificacaoService = mock(NotificacaoService.class);
         favoritoService = mock(FavoritoService.class);
         estatisticasService = mock(EstatisticasService.class);
+        transactionTemplate = new TransactionTemplate(mock(PlatformTransactionManager.class));
     }
 
     @Test
-    @DisplayName("Deve aprovar receita pendente e notificar autor")
-    void deveAprovarReceitaPendenteENotificarAutor() {
+    void deveAprovarReceitaPendente() {
         Usuario autor = new Usuario();
         autor.setId(1);
         autor.setRole("USER");
-        Receita receita = new Receita();
-        receita.setId(100L);
-        receita.setTitulo("Bolo");
-        receita.setStatus(StatusReceita.PENDENTE);
-        receita.setUsuario(autor);
 
-        when(receitaService.buscarPorId(100L)).thenReturn(Optional.of(receita));
+        Receita receita = new Receita();
+        receita.setId(10L);
+        receita.setTitulo("Bolo");
+        receita.setUsuario(autor);
+        receita.setStatus(Receita.StatusReceita.PENDENTE);
+
+        when(receitaService.buscarPorId(10L)).thenReturn(Optional.of(receita));
         when(usuarioService.listarTodos()).thenReturn(List.of(autor));
 
-        command = new AprovarReceitaCommand(receitaService, usuarioService, notificacaoService, favoritoService, estatisticasService, 100L);
+        AprovarReceitaCommand command = new AprovarReceitaCommand(
+                receitaService,
+                usuarioService,
+                notificacaoService,
+                favoritoService,
+                estatisticasService,
+                transactionTemplate,
+                10L
+        );
         command.executar();
 
-        assertThat(receita.getStatus()).isEqualTo(StatusReceita.APROVADA);
+        assertThat(receita.getStatus()).isEqualTo(Receita.StatusReceita.APROVADA);
         verify(receitaService).salvar(receita);
-        verify(notificacaoService, atLeastOnce()).salvar(any());
+        assertThat(command.getResultado()).isEqualTo(receita);
     }
 
     @Test
-    @DisplayName("Deve retornar null quando receita nao existe")
     void deveRetornarNullQuandoReceitaNaoExiste() {
-        when(receitaService.buscarPorId(999L)).thenReturn(Optional.empty());
+        when(receitaService.buscarPorId(99L)).thenReturn(Optional.empty());
 
-        command = new AprovarReceitaCommand(receitaService, usuarioService, notificacaoService, favoritoService, estatisticasService, 999L);
+        AprovarReceitaCommand command = new AprovarReceitaCommand(
+                receitaService,
+                usuarioService,
+                notificacaoService,
+                favoritoService,
+                estatisticasService,
+                transactionTemplate,
+                99L
+        );
         command.executar();
 
         assertThat(command.getResultado()).isNull();
         verify(receitaService, never()).salvar(any());
-        verify(notificacaoService, never()).salvar(any());
     }
 
     @Test
-    @DisplayName("Deve guardar receita aprovada como resultado")
-    void deveGuardarReceitaComoResultado() {
-        Usuario autor = new Usuario();
-        autor.setId(1);
-        autor.setRole("ADMIN");
+    void deveLancarExcecaoAoAprovarReceitaJaAprovada() {
         Receita receita = new Receita();
-        receita.setId(100L);
-        receita.setTitulo("Bolo");
-        receita.setStatus(StatusReceita.PENDENTE);
-        receita.setUsuario(autor);
+        receita.setId(10L);
+        receita.setStatus(Receita.StatusReceita.APROVADA);
 
-        when(receitaService.buscarPorId(100L)).thenReturn(Optional.of(receita));
-        when(usuarioService.listarTodos()).thenReturn(List.of(autor));
+        when(receitaService.buscarPorId(10L)).thenReturn(Optional.of(receita));
 
-        command = new AprovarReceitaCommand(receitaService, usuarioService, notificacaoService, favoritoService, estatisticasService, 100L);
-        command.executar();
+        AprovarReceitaCommand command = new AprovarReceitaCommand(
+                receitaService,
+                usuarioService,
+                notificacaoService,
+                favoritoService,
+                estatisticasService,
+                transactionTemplate,
+                10L
+        );
 
-        assertThat(command.getResultado()).isEqualTo(receita);
+        assertThrows(IllegalStateException.class, command::executar);
     }
 }

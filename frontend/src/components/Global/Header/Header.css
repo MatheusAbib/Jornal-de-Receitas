@@ -922,9 +922,7 @@ display: none;
     padding-bottom: 0.5rem;
     
   }
-  .header-full-width{
-border-bottom: none !important;
-  }
+
 
   .header-full-width.scrolled .newspaper-title {
     font-size: clamp(1.15rem, 5vw, 1.7rem);

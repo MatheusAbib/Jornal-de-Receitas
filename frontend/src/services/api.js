@@ -17,6 +17,14 @@ function esconderLoader() {
   }
 }
 
+function getCookie(name) {
+  if (typeof document === 'undefined') return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
 const api = axios.create({
   baseURL: '',
   withCredentials: true,
@@ -26,6 +34,10 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+  const csrfToken = getCookie('XSRF-TOKEN');
+  if (csrfToken && !config.headers['X-XSRF-TOKEN']) {
+    config.headers['X-XSRF-TOKEN'] = csrfToken;
+  }
 
   if (config.showLoader === true) {
     mostrarLoader();

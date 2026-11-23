@@ -23,16 +23,20 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Usuario autenticar(String email, String senha) {
-        Usuario usuario = usuarioService.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+public Usuario autenticar(String email, String senha) {
+    Usuario usuario = usuarioService.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        if (!passwordEncoder.matches(senha, usuario.getSenha())) {
-            throw new RuntimeException("Senha incorreta");
-        }
-
-        return usuario;
+    if (!usuario.isAtivo()) {
+        throw new RuntimeException("Conta desativada. Contate o administrador.");
     }
+
+    if (!passwordEncoder.matches(senha, usuario.getSenha())) {
+        throw new RuntimeException("Senha incorreta");
+    }
+
+    return usuario;
+}
 
     public void registrarSessao(Usuario usuario, HttpSession session, HttpServletRequest request) {
         session.setAttribute("usuarioLogado", usuario);

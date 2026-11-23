@@ -21,19 +21,23 @@ public class UsuarioDetailsServiceImpl implements UserDetailsService {
         this.usuarioService = usuarioService;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario usuario = usuarioService.findByEmail(email)
-            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
+@Override
+public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    Usuario usuario = usuarioService.findByEmail(email)
+        .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
 
-        List<GrantedAuthority> authorities = Collections.singletonList(
-            new SimpleGrantedAuthority("ROLE_" + usuario.getRole())
-        );
-
-        return new User(
-            usuario.getEmail(),
-            usuario.getSenha(),
-            authorities
-        );
+    if (!usuario.isAtivo()) {
+        throw new UsernameNotFoundException("Conta desativada: " + email);
     }
+
+    List<GrantedAuthority> authorities = Collections.singletonList(
+        new SimpleGrantedAuthority("ROLE_" + usuario.getRole())
+    );
+
+    return new User(
+        usuario.getEmail(),
+        usuario.getSenha(),
+        authorities
+    );
+}
 }

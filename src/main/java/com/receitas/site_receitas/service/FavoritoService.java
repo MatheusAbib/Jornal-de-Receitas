@@ -71,7 +71,6 @@ public class FavoritoService {
                     receitaService,
                     this,
                     estatisticasService,
-                    notificacaoService,
                     usuario
             );
             commandInvoker.executar(cmdEstatisticas);
@@ -92,7 +91,6 @@ public class FavoritoService {
                 receitaService,
                 this,
                 estatisticasService,
-                notificacaoService,
                 usuario
         );
         commandInvoker.executar(cmdEstatisticas);

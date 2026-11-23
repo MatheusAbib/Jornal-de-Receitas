@@ -43,6 +43,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -71,6 +72,9 @@ public class ReceitaController {
 
     @Autowired
     private ComplexidadeService complexidadeService;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     public ReceitaController(
             ReceitaService receitaService,
@@ -101,12 +105,17 @@ public class ReceitaController {
             mapa.put("totalFavoritos", favoritoService.contarCurtidas(r));
         }
 
-        Complexidade complexidade = complexidadeService.calcular(r);
-        Map<String, Object> complexidadeMap = new LinkedHashMap<>();
-        complexidadeMap.put("nivel", complexidade.getNivel());
-        complexidadeMap.put("descricao", complexidade.getDescricao());
-        complexidadeMap.put("pontuacao", complexidade.getPontuacao());
-        mapa.put("complexidade", complexidadeMap);
+            // É o Controller: é quem pede o cálculo e recebe do service o objeto 'Complexidade'.
+            Complexidade complexidade = complexidadeService.calcular(r);
+
+            // Extrai do objeto Complexidade os três dados que vieram do service e vão para o JSON
+            Map<String, Object> complexidadeMap = new LinkedHashMap<>();
+            complexidadeMap.put("nivel", complexidade.getNivel());         // nível numérico (1, 2 ou 3)
+            complexidadeMap.put("descricao", complexidade.getDescricao()); // texto da complexidade ("Fácil", "Média", "Difícil")
+            complexidadeMap.put("pontuacao", complexidade.getPontuacao()); // pontuação final somada por todos os decorators
+
+            mapa.put("complexidade", complexidadeMap);                     
+            // inclui o bloco de complexidade na resposta da receita
 
         return mapa;
     }
@@ -468,11 +477,11 @@ public class ReceitaController {
         receita.setChefe(chefe != null && !chefe.isBlank() ? chefe : usuario.getNome());
 
         String ingredientesStr = ingredientes != null
-                ? ingredientes.stream().map(String::trim).filter(s -> !s.isEmpty()).reduce((a, b) -> a + "||" + b).orElse("")
+                ? String.join("||", ingredientes.stream().map(String::trim).filter(s -> !s.isEmpty()).toList())
                 : "";
 
         String modoPreparoStr = modoPreparo != null
-                ? modoPreparo.stream().map(String::trim).filter(s -> !s.isEmpty()).reduce((a, b) -> a + "||" + b).orElse("")
+                ? String.join("||", modoPreparo.stream().map(String::trim).filter(s -> !s.isEmpty()).toList())
                 : "";
 
         String nomeArquivo = uploadService.salvarImagem(imagemFile);
@@ -483,7 +492,7 @@ public class ReceitaController {
         receitaService.salvar(receita);
 
         Command cmdEstatisticas = new com.receitas.site_receitas.command.AtualizarEstatisticasCommand(
-                receitaService, favoritoService, estatisticasService, notificacaoService, usuario
+                receitaService, favoritoService, estatisticasService, usuario
         );
         commandInvoker.executar(cmdEstatisticas);
 
@@ -553,19 +562,28 @@ public class ReceitaController {
             @RequestParam(value = "imagemFile", required = false)
             MultipartFile imagemFile) throws Exception {
 
-        Receita existente = receitaService.buscarPorId(id).orElse(null);
+        Usuario usuario = obterUsuarioLogado();
 
-        if (existente == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "Receita não encontrada"));
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Usuário não autenticado"));
+        }
+
+        Receita existente = receitaService.buscarOuFalhar(id);
+
+        try {
+            receitaService.validarPermissaoEdicao(existente, usuario);
+        } catch (org.springframework.security.access.AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", e.getMessage()));
         }
 
         String ingredientesStr = ingredientes != null
-                ? ingredientes.stream().map(String::trim).filter(s -> !s.isEmpty()).reduce((a, b) -> a + "||" + b).orElse("")
+                ? String.join("||", ingredientes.stream().map(String::trim).filter(s -> !s.isEmpty()).toList())
                 : null;
 
         String modoPreparoStr = modoPreparo != null
-                ? modoPreparo.stream().map(String::trim).filter(s -> !s.isEmpty()).reduce((a, b) -> a + "||" + b).orElse("")
+                ? String.join("||", modoPreparo.stream().map(String::trim).filter(s -> !s.isEmpty()).toList())
                 : null;
 
         String nomeArquivo = uploadService.salvarImagem(imagemFile);
@@ -574,6 +592,63 @@ public class ReceitaController {
         receitaService.salvar(existente);
 
         return ResponseEntity.ok(Map.of("message", "Receita atualizada com sucesso", "receita", receitaParaMap(existente, true)));
+    }
+
+    @Operation(
+        summary = "Excluir receita",
+        description = "Remove uma receita do sistema, sua imagem e notifica o autor. Requer autenticação (admin ou autor)."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Receita excluída com sucesso",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(example = "{\"message\": \"Receita excluída com sucesso\"}")
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Receita não encontrada",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(example = "{\"message\": \"Receita não encontrada\"}")
+            )
+        )
+    })
+    @SecurityRequirement(name = "sessionAuth")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> excluirReceita(
+            @Parameter(description = "ID da receita a ser excluída", required = true, example = "1")
+            @PathVariable Long id) {
+
+        Usuario usuario = obterUsuarioLogado();
+
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Usuário não autenticado"));
+        }
+
+        Receita existente = receitaService.buscarPorId(id).orElse(null);
+
+        if (existente == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Receita não encontrada"));
+        }
+
+        try {
+            receitaService.validarPermissaoEdicao(existente, usuario);
+        } catch (org.springframework.security.access.AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", e.getMessage()));
+        }
+
+        Command command = new ExcluirReceitaCommand(
+                receitaService, notificacaoService, favoritoService, estatisticasService, uploadService, id
+        );
+        commandInvoker.executar(command);
+
+        return ResponseEntity.ok(Map.of("message", "Receita excluída com sucesso"));
     }
 
     @Operation(
@@ -604,7 +679,8 @@ public class ReceitaController {
             @Parameter(description = "ID da receita a ser aprovada", required = true, example = "1")
             @PathVariable Long id) {
         Command command = new AprovarReceitaCommand(
-                receitaService, usuarioService, notificacaoService, favoritoService, estatisticasService, id
+                receitaService, usuarioService, notificacaoService, favoritoService,
+                estatisticasService, transactionTemplate, id
         );
         commandInvoker.executar(command);
         return ResponseEntity.ok(Map.of("message", "Receita aprovada com sucesso"));
@@ -647,43 +723,4 @@ public class ReceitaController {
         return ResponseEntity.ok(Map.of("message", "Receita rejeitada com sucesso"));
     }
 
-    @Operation(
-        summary = "Excluir receita",
-        description = "Remove uma receita do sistema, sua imagem e notifica o autor. Requer autenticação (admin ou autor)."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Receita excluída com sucesso",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(example = "{\"message\": \"Receita excluída com sucesso\"}")
-            )
-        ),
-        @ApiResponse(
-            responseCode = "404",
-            description = "Receita não encontrada",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(example = "{\"message\": \"Receita não encontrada\"}")
-            )
-        )
-    })
-    @SecurityRequirement(name = "sessionAuth")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> excluirReceita(
-            @Parameter(description = "ID da receita a ser excluída", required = true, example = "1")
-            @PathVariable Long id) {
-        if (!receitaService.existe(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "Receita não encontrada"));
-        }
-
-        Command command = new ExcluirReceitaCommand(
-                receitaService, notificacaoService, favoritoService, estatisticasService, uploadService, id
-        );
-        commandInvoker.executar(command);
-
-        return ResponseEntity.ok(Map.of("message", "Receita excluída com sucesso"));
-    }
 }

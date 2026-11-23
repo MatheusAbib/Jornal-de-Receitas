@@ -43,9 +43,8 @@ public class ExcluirReceitaCommand extends BaseCommand {
             return;
         }
 
-        uploadService.excluirImagem(receita.getImagem());
-
         Usuario autor = receita.getUsuario();
+        String imagem = receita.getImagem();
 
         if (autor != null) {
             Notificacao notificacao = NotificacaoFactory.receitaExcluida(autor, receita.getTitulo());
@@ -54,14 +53,15 @@ public class ExcluirReceitaCommand extends BaseCommand {
 
         receitaService.excluir(receitaId);
 
+        uploadService.excluirImagem(imagem);
+
         if (autor != null) {
-Command cmdEstatisticas = new AtualizarEstatisticasCommand(
-        receitaService,
-        favoritoService,
-        estatisticasService,
-        notificacaoService,
-        autor
-);
+            Command cmdEstatisticas = new AtualizarEstatisticasCommand(
+                    receitaService,
+                    favoritoService,
+                    estatisticasService,
+                    autor
+            );
             cmdEstatisticas.executar();
         }
 

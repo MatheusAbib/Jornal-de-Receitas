@@ -5,41 +5,33 @@ import com.receitas.site_receitas.model.Receita;
 
 public class DecoratorPorCategoria extends CalculadoraDecorator {
 
+    // construtor: recebe quem veio antes na cadeia (base ou outro decorator)
     public DecoratorPorCategoria(CalculadoraDeComplexidade calculadoraEnvolvida) {
         super(calculadoraEnvolvida);
     }
 
     @Override
+    // calcula a complexidade considerando a categoria da receita
     public Complexidade calcular(Receita receita) {
+        // primeiro deixa a cadeia anterior calcular a pontuação acumulada
         Complexidade complexidade = super.calcular(receita);
+        // depois calcula quantos pontos essa categoria adiciona
         int pontos = pontuarPorCategoria(receita);
-        int novaPontuacao = complexidade.getPontuacao() + pontos;
-        return new Complexidade(
-                calcularNivel(novaPontuacao),
-                calcularDescricao(novaPontuacao),
-                novaPontuacao
-        );
+        // soma a pontuação anterior com os pontos da categoria e cria o Complexidade final
+        return comPontuacao(complexidade.getPontuacao() + pontos);
     }
 
+    // regra de pontuação específica da categoria
     private int pontuarPorCategoria(Receita receita) {
+        // se não tiver categoria, não soma nada
         if (receita.getCategoria() == null) {
             return 0;
         }
+        // se a categoria for DOCE, adiciona 1 ponto de complexidade
         if (receita.getCategoria() == Receita.Categoria.DOCE) {
             return 1;
         }
+        // para outras categorias (ex.: SALGADO), não adiciona ponto
         return 0;
-    }
-
-    private int calcularNivel(int pontuacao) {
-        if (pontuacao >= 6) return 3;
-        if (pontuacao >= 3) return 2;
-        return 1;
-    }
-
-    private String calcularDescricao(int pontuacao) {
-        if (pontuacao >= 6) return "Difícil";
-        if (pontuacao >= 3) return "Média";
-        return "Fácil";
     }
 }

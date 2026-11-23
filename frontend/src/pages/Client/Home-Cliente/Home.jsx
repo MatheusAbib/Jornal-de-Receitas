@@ -42,7 +42,7 @@ const DICAS = [
   },
   {
     titulo: 'Na hora de cozinhar',
-    texto: 'Prove o alimento durante o preparo, quando for seguro fazê-lo. Corrigir o sal aos poucos costuma dar mais controle sobre o resultado.'
+    texto: 'Prove o alimento durante o preparo. Corrigir o sal aos poucos costuma dar mais controle sobre o resultado.'
   },
   {
     titulo: 'Como guardar sobras',
@@ -115,19 +115,30 @@ function Estrela({ className = '' }) {
   );
 }
 
-function Anuncio({ imagem, legenda, classe = '', adaptavel = false }) {
+function Anuncio({ imagem, legenda, classe = '', adaptavel = false, onAbrir }) {
   if (!imagem) return null;
 
   return (
     <figure className={`jornal-anuncio ${classe} ${adaptavel ? 'jornal-anuncio--adaptavel' : ''}`}>
-      <div className="jornal-anuncio-imagem">
-        <img src={imagem} alt={legenda || 'Ilustração publicitária'} loading="lazy" />
-      </div>
+      <button
+        type="button"
+        className="jornal-anuncio-imagem jornal-anuncio-imagem--clicavel"
+        onClick={() => onAbrir(imagem, legenda)}
+        aria-label={`Ampliar imagem: ${legenda || 'Ilustração publicitária'}`}
+      >
+        <img
+          src={imagem}
+          alt={legenda || 'Ilustração publicitária'}
+          loading="lazy"
+        />
+        <span className="jornal-anuncio-ampliar" aria-hidden="true">
+          <i className="pi pi-search-plus" />
+        </span>
+      </button>
       {legenda && <figcaption>{legenda}</figcaption>}
     </figure>
   );
 }
-
 function Divisoria({ texto }) {
   return (
     <div className="jornal-divisoria">
@@ -154,7 +165,6 @@ function SkeletonCard() {
 function Home() {
   const { usuario } = useAuth();
   const { mostrarToast } = useToast();
-
   const [receitas, setReceitas] = useState([]);
   const [carrossel, setCarrossel] = useState([]);
   const [favoritos, setFavoritos] = useState([]);
@@ -183,6 +193,31 @@ function Home() {
     return null;
   }
 });
+
+const [imagemAmpliada, setImagemAmpliada] = useState(null);
+  useEffect(() => {
+    if (!imagemAmpliada) return;
+
+    const overflowAnterior = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const fecharComEscape = evento => {
+      if (evento.key === 'Escape') {
+        setImagemAmpliada(null);
+      }
+    };
+
+    document.addEventListener('keydown', fecharComEscape);
+
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      document.removeEventListener('keydown', fecharComEscape);
+    };
+  }, [imagemAmpliada]);
+
+  const abrirImagem = (imagem, legenda) => {
+    setImagemAmpliada({ imagem, legenda });
+  };
 
 useLayoutEffect(() => {
   if (!restauracao || carregando) return;
@@ -374,7 +409,10 @@ const semResultados = filtrosAtivos && receitasFiltradas.length === 0;
 
   const anuncioColunaEsquerda = imagensCarrossel[0];
   const anuncioColunaDireita = imagensCarrossel[1];
-  const anunciosDinamicos = imagensCarrossel.slice(2, 4);
+  const anunciosDinamicos = [
+  ...imagensCarrossel.slice(2, 4),
+  ...imagensCarrossel.slice(6, 7)
+];
   const imagemReceitaRecortar = imagensCarrossel[4];
 
   const dicaDoDia = DICAS[
@@ -442,41 +480,6 @@ const cardProps = receita => ({
 <header className="jornal-chamada-superior">
   <div className="jornal-chamada-composicao">
 
-<div className="jornal-chamada-esquerda">
-  <div className="jornal-chamada-nota">
-    <div className="jornal-chamada-nota-topo">
-      <span>AVISO AOS COZINHEIROS</span>
-    </div>
-
-    <p>Uma receita não precisa ficar guardada!</p>
-
-  </div>
-
-  <div className="jornal-chamada-publicar">
-
-    <strong>Procura-se receitas!</strong>
-
-    <p>
-      Tem uma receita para compartilhar?
-      Publique no jornal.
-    </p>
-
-
-{usuario && (
-  <Link to="/nova" className="jornal-chamada-publicar-botao">
-    Enviar receita
-    <i className="pi pi-arrow-up-right" aria-hidden="true" />
-  </Link>
-)}
-
-{!usuario && (
-  <span className="jornal-chamada-publicar-rodape">
-    FAÇA LOGIN
-  </span>
-)}
-  </div>
-</div>
-
 
     <div className="jornal-recorte">
       <div className="jornal-recorte-etiqueta">
@@ -540,6 +543,39 @@ const cardProps = receita => ({
         <span className="jornal-chamada-etiqueta-fio" />
         <span>CONSULTE À VONTADE</span>
       </div>
+
+        <div className="jornal-chamada-nota">
+    <div className="jornal-chamada-nota-topo">
+      <span>AVISO AOS COZINHEIROS</span>
+    </div>
+
+    <p>Uma receita não precisa ficar guardada!</p>
+
+  </div>
+
+  <div className="jornal-chamada-publicar">
+
+    <strong>Procura-se receitas!</strong>
+
+    <p>
+      Tem uma receita para compartilhar?
+      Publique no jornal.
+    </p>
+
+
+{usuario && (
+  <Link to="/nova" className="jornal-chamada-publicar-botao">
+    Enviar receita
+    <i className="pi pi-arrow-up-right" aria-hidden="true" />
+  </Link>
+)}
+
+{!usuario && (
+  <span className="jornal-chamada-publicar-rodape">
+    FAÇA LOGIN
+  </span>
+)}
+  </div>
     </div>
   </div>
 </header>
@@ -576,48 +612,56 @@ const cardProps = receita => ({
         imagem={obterImagemUrl(anuncioColunaEsquerda.imagemUrl)}
         legenda={anuncioColunaEsquerda.titulo || ''}
         classe="jornal-anuncio--cacula"
+        onAbrir={abrirImagem}
       />
     )}
 
 
-    <div className="jornal-dicionario">
-      <div className="jornal-dicionario-cabecalho">
-        <span>CONSULTA RÁPIDA</span>
-        <Estrela />
+<div className="jornal-dicionario">
+  <div className="jornal-dicionario-cabecalho">
+    <span>CONSULTA RÁPIDA</span>
+    <span>ARQUIVO Nº 01</span>
+  </div>
+
+  <div className="jornal-dicionario-titulo">
+
+    <h3>Glossário<span>.</span></h3>
+
+    <p>Palavras e expressões que fazem parte da boa cozinha.</p>
+  </div>
+
+  <div className="jornal-dicionario-lista">
+    <div className="jornal-dicionario-item">
+      <span className="jornal-dicionario-numero">01</span>
+      <div className="jornal-dicionario-item-conteudo">
+        <strong>Refogar</strong>
+        <p>Cozinhar ingredientes em pouca gordura, geralmente mexendo.</p>
       </div>
-
-      <h3>Glossário</h3>
-
-      <div className="jornal-dicionario-lista">
-        <div className="jornal-dicionario-item">
-          <strong>Refogar</strong>
-          <p>
-            Cozinhar ingredientes em pouca gordura,
-            geralmente mexendo.
-          </p>
-        </div>
-
-        <div className="jornal-dicionario-item">
-          <strong>Reduzir</strong>
-          <p>
-            Deixar um líquido evaporar parcialmente
-            para concentrar o sabor.
-          </p>
-        </div>
-
-        <div className="jornal-dicionario-item">
-          <strong>Banho-maria</strong>
-          <p>
-            Aquecer uma preparação indiretamente
-            utilizando água quente.
-          </p>
-        </div>
-      </div>
-
-      <span className="jornal-dicionario-rodape">
-        TERMOS DO RECEITUÁRIO
-      </span>
     </div>
+
+    <div className="jornal-dicionario-item">
+      <span className="jornal-dicionario-numero">02</span>
+      <div className="jornal-dicionario-item-conteudo">
+        <strong>Reduzir</strong>
+        <p>Deixar um líquido evaporar parcialmente para concentrar o sabor.</p>
+      </div>
+    </div>
+
+    <div className="jornal-dicionario-item">
+      <span className="jornal-dicionario-numero">03</span>
+      <div className="jornal-dicionario-item-conteudo">
+        <strong>Banho-maria</strong>
+        <p>Aquecer uma preparação indiretamente utilizando água quente.</p>
+      </div>
+    </div>
+  </div>
+
+  <div className="jornal-dicionario-rodape">
+    <i className="pi pi-star-fill" aria-hidden="true" />
+    <span>TERMOS DO RECEITUÁRIO</span>
+    <i className="pi pi-star-fill" aria-hidden="true" />
+  </div>
+</div>
   </aside>
 
   <article className="jornal-materia-principal">
@@ -730,7 +774,7 @@ const cardProps = receita => ({
 
     <div className="jornal-publicidade-titulo">
       <span>Publicidade cotidiana</span>
-      <h2>Anúncios</h2>
+      <h2>Segredinhos</h2>
     </div>
 
     {anuncioColunaDireita && (
@@ -738,6 +782,7 @@ const cardProps = receita => ({
         imagem={obterImagemUrl(anuncioColunaDireita.imagemUrl)}
         legenda={anuncioColunaDireita.titulo || ''}
         classe="jornal-anuncio--elefante"
+        onAbrir={abrirImagem}
       />
     )}
 
@@ -811,44 +856,82 @@ const cardProps = receita => ({
 </section>
 
 
-        {anunciosDinamicos.length > 0 && (
-          <>
-            <Divisoria texto="Anúncios & novidades" />
 
-            <section className="jornal-intervalo-publicitario" aria-label="Anúncios e novidades">
-              <div className="jornal-intervalo-intro">
-                <span className="jornal-intervalo-sobretitulo">
-                  Páginas de publicidade
-                </span>
-                <Estrela />
-                <h2>
-                  Bons anúncios,
-                  <em> boas lembranças.</em>
-                </h2>
-                <p>
-                  Uma seleção de imagens e novidades para folhear
-                  entre uma receita e outra.
-                </p>
-                <div className="jornal-carimbo">
-                  <span>Seleção</span>
-                  <strong>do jornal</strong>
-                </div>
-              </div>
+{anunciosDinamicos.length > 0 && (
+  <section
+    className="jornal-classificados"
+    aria-labelledby="jornal-classificados-titulo"
+  >
+    <div className="jornal-classificados-cabecalho">
+      <div className="jornal-classificados-edicao">
+        <span>JORNAL DE RECEITAS</span>
+        <span>CADERNO DE PUBLICIDADE</span>
+      </div>
 
-              <div className="jornal-anuncios-dinamicos">
-                {anunciosDinamicos.map((item, indice) => (
-                  <Anuncio
-                    key={item.id ?? indice}
-                    imagem={obterImagemUrl(item.imagemUrl)}
-                    legenda={item.titulo || 'Anúncio da edição'}
-                    classe="jornal-anuncio--intervalo"
-                    adaptavel
-                  />
-                ))}
-              </div>
-            </section>
-          </>
-        )}
+      <div className="jornal-classificados-manchete">
+        <span className="jornal-classificados-chapeu">
+          INTERVALO COMERCIAL
+        </span>
+
+        <h2 id="jornal-classificados-titulo">
+          Reclames <em>& novidades</em>
+        </h2>
+
+        <p>
+          Um espaço para os anúncios que também fazem parte
+          das páginas do nosso jornal.
+        </p>
+      </div>
+
+      <div className="jornal-classificados-registro">
+        <span>PUBLICIDADE</span>
+        <strong>{String(anunciosDinamicos.length).padStart(2, '0')}</strong>
+        <span>ANÚNCIOS NESTA EDIÇÃO</span>
+      </div>
+    </div>
+
+    <div className="jornal-classificados-lista">
+      {anunciosDinamicos.map((item, indice) => (
+        <article
+          className="jornal-classificados-item"
+          key={item.id ?? indice}
+        >
+          <div className="jornal-classificados-item-topo">
+            <span>
+              ANÚNCIO Nº {String(indice + 1).padStart(2, '0')}
+            </span>
+            <span>RECLAME ILUSTRADO</span>
+          </div>
+
+          <Anuncio
+            imagem={obterImagemUrl(item.imagemUrl)}
+            legenda={item.titulo || 'Anúncio da edição'}
+            classe="jornal-anuncio--classificado"
+            adaptavel
+            onAbrir={abrirImagem}
+          />
+
+          <div className="jornal-classificados-item-rodape">
+            <i className="pi pi-star-fill" aria-hidden="true" />
+            <span>ESPAÇO PUBLICITÁRIO</span>
+            <i className="pi pi-star-fill" aria-hidden="true" />
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div className="jornal-classificados-rodape">
+      <span>FIM DO CADERNO PUBLICITÁRIO</span>
+      <span className="jornal-classificados-rodape-centro">
+        <i className="pi pi-star-fill" aria-hidden="true" />
+        JORNAL DE RECEITAS
+        <i className="pi pi-star-fill" aria-hidden="true" />
+      </span>
+      <span>CONTINUE A LEITURA</span>
+    </div>
+  </section>
+)}
+
 
         <section className="jornal-catalogo" id="receitas-do-dia">
           <div className="jornal-catalogo-cabecalho">
@@ -937,47 +1020,86 @@ Todas as receitas
               )}
 
             {!filtrosAtivos && (
-              <section className="jornal-interludio">
-                <div className="jornal-interludio-texto">
-                  <span className="jornal-interludio-sobretitulo">
-                    <Estrela />
-                    Do caderno da cozinheira
-                  </span>
-                  <h2>
-                    Uma receita
-                    <em> para recortar</em>
-                    e guardar.
-                  </h2>
-                  <p>
-                    Havia sempre uma receita especial esperando
-                    pela tesoura, pela cola e por um lugar no
-                    caderno de família.
-                  </p>
-                  <div className="jornal-interludio-detalhe">
-                    <span>Receituário ilustrado</span>
-                    <Estrela />
-                    <span>Para guardar com carinho</span>
-                  </div>
-                </div>
+<section className="jornal-interludio">
+  <div className="jornal-interludio-cabecalho">
+    <span>JORNAL DE RECEITAS</span>
+    <span>SUPLEMENTO ESPECIAL · RECEITUÁRIO ILUSTRADO</span>
+  </div>
 
-                <div className="jornal-interludio-ilustracao">
-                  <div className="jornal-interludio-folha">
-                    <div className="jornal-interludio-folha-topo">
-                      <span>Receita ilustrada</span>
-                      <Estrela />
-                      <span>Do nosso arquivo</span>
-                    </div>
+  <div className="jornal-interludio-corpo">
+    <div className="jornal-interludio-texto">
+      <span className="jornal-interludio-sobretitulo">
+        <i className="pi pi-book" aria-hidden="true" />
+        Do caderno da cozinheira
+      </span>
 
-                    {imagemReceitaRecortar && (
-                      <Anuncio
-                        imagem={obterImagemUrl(imagemReceitaRecortar.imagemUrl)}
-                        legenda={imagemReceitaRecortar.titulo || 'Receita ilustrada · Acervo culinário'}
-                        classe="jornal-anuncio--receita"
-                      />
-                    )}
-                  </div>
-                </div>
-              </section>
+      <h2>
+        Uma receita
+        <em>para recortar</em>
+        e guardar.
+      </h2>
+
+      <p>
+        Havia sempre uma receita especial esperando pela tesoura,
+        pela cola e por um lugar no caderno de família.
+      </p>
+
+      <div className="jornal-interludio-carimbo">
+        <span>EDIÇÃO ESPECIAL</span>
+        <strong>Para</strong>
+        <strong>guardar!</strong>
+        <i className="pi pi-star-fill" aria-hidden="true" />
+      </div>
+
+      <div className="jornal-interludio-detalhe">
+        <span>TRADIÇÃO DE COZINHA</span>
+        <Estrela />
+        <span>MEMÓRIAS À MESA</span>
+      </div>
+    </div>
+
+    <div className="jornal-interludio-ilustracao">
+      <div className="jornal-interludio-recorte">
+        <div className="jornal-interludio-recorte-indicacao">
+          <i className="pi pi-pencil" aria-hidden="true" />
+          <span>RECORTE NA LINHA PONTILHADA</span>
+        </div>
+
+        <div className="jornal-interludio-folha">
+          <div className="jornal-interludio-folha-topo">
+            <span>RECEITUÁRIO POPULAR</span>
+            <span>ILUSTRAÇÃO Nº 01</span>
+          </div>
+
+          <div className="jornal-interludio-folha-titulo">
+            <span>DO ARQUIVO DA COZINHEIRA</span>
+            <strong>Uma boa receita merece ser guardada.</strong>
+          </div>
+
+          {imagemReceitaRecortar && (
+            <Anuncio
+              imagem={obterImagemUrl(imagemReceitaRecortar.imagemUrl)}
+              legenda={imagemReceitaRecortar.titulo || 'Receita ilustrada · Acervo culinário'}
+              classe="jornal-anuncio--receita"
+              onAbrir={abrirImagem}
+            />
+          )}
+
+          <div className="jornal-interludio-folha-rodape">
+            <span>COLE EM SEU CADERNO</span>
+            <i className="pi pi-star-fill" aria-hidden="true" />
+            <span>JORNAL DE RECEITAS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div className="jornal-interludio-rodape">
+    <span>COLECIONE NOSSAS RECEITAS</span>
+    <span>UMA TRADIÇÃO QUE PASSA DE COZINHA EM COZINHA</span>
+  </div>
+</section>
               )}
 
             {exibirDoces && (
@@ -1074,6 +1196,53 @@ Todas as receitas
           <Estrela />
         </footer>
       </main>
+
+        {imagemAmpliada && (
+          <div
+            className="jornal-modal-imagem-overlay"
+            onMouseDown={evento => {
+              if (evento.target === evento.currentTarget) {
+                setImagemAmpliada(null);
+              }
+            }}
+          >
+            <div
+              className="jornal-modal-imagem"
+              role="dialog"
+              aria-modal="true"
+              aria-label={imagemAmpliada.legenda || 'Imagem ampliada'}
+            >
+              <div className="jornal-modal-imagem-topo">
+                <span>ACERVO PUBLICITÁRIO · JORNAL DE RECEITAS</span>
+
+                <button
+                  type="button"
+                  className="jornal-modal-imagem-fechar"
+                  onClick={() => setImagemAmpliada(null)}
+                  aria-label="Fechar imagem"
+                  autoFocus
+                >
+                  <i className="pi pi-times" aria-hidden="true" />
+                </button>
+              </div>
+
+              <div className="jornal-modal-imagem-conteudo">
+                <img
+                  src={imagemAmpliada.imagem}
+                  alt={imagemAmpliada.legenda || 'Ilustração publicitária ampliada'}
+                />
+              </div>
+
+              {imagemAmpliada.legenda && (
+                <div className="jornal-modal-imagem-rodape">
+                  <i className="pi pi-star-fill" aria-hidden="true" />
+                  <span>{imagemAmpliada.legenda}</span>
+                  <i className="pi pi-star-fill" aria-hidden="true" />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
       <ModalResumoFavoritos
         aberto={resumoAberto}
