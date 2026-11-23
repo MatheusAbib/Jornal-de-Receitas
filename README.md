@@ -1,8 +1,9 @@
+
 # 🍅 Jornal de Receitas
 
 Sistema web completo para gerenciamento e compartilhamento de receitas culinárias, com design inspirado em jornais brasileiros dos anos 50 e 60.
 
-> 🔗 **Acesse online:** (https://jornaldereceitas.vercel.app/)
+> 🔗 **Acesse online:** https://jornaldereceitas.vercel.app/
 
 ---
 
@@ -16,55 +17,170 @@ O visual é inspirado em jornais impressos clássicos, com identidade em vinho (
 
 ## 🏗️ Arquitetura e Padrões de Projeto
 
-O projeto segue o padrão **MVC** no backend, com separação em camadas (Controller → Service → DAO → Model), e um frontend **SPA (Single Page Application)** em React consumindo a API REST. Implementa os seguintes Design Patterns:
+O projeto segue o padrão **MVC** no backend, com separação em camadas (`Controller → Service → DAO → Model`), e um frontend **SPA (Single Page Application)** em React consumindo a API REST.
+
+Implementa os seguintes Design Patterns:
 
 ### DAO (Data Access Object)
-Abstrai o acesso ao banco com interfaces (`IReceitaDAO`, `IUsuarioDAO`, `ICarrosselDAO`, `IFavoritoDAO`, `INotificacaoDAO`, `IEstatisticasDAO`, `ISiteConfigDAO`) e implementações específicas (`ReceitaDAOImpl`, `UsuarioDAOImpl`, etc). Os Services dependem apenas das interfaces, permitindo trocar a tecnologia de persistência sem alterar a lógica de negócio.
+
+Abstrai o acesso ao banco com interfaces (`IReceitaDAO`, `IUsuarioDAO`, `ICarrosselDAO`, `IFavoritoDAO`, `INotificacaoDAO`, `IEstatisticasDAO`, `ISiteConfigDAO`) e implementações específicas (`ReceitaDAOImpl`, `UsuarioDAOImpl`, etc.).
+
+Os Services dependem apenas das interfaces, permitindo trocar a tecnologia de persistência sem alterar a lógica de negócio.
 
 ### MVC (Model-View-Controller)
-- **Model:** entidades JPA (`Receita`, `Usuario`, `Favorito`, `Notificacao`, `Estatisticas`, `CarrosselItem`, `SiteConfig`)
-- **View:** SPA em React (Vite + React Router)
-- **Controller:** expõe endpoints REST, delega aos Services e retorna JSON
+
+- **Model:** entidades JPA (`Receita`, `Usuario`, `Favorito`, `Notificacao`, `Estatisticas`, `CarrosselItem`, `SiteConfig`).
+- **View:** SPA em React (Vite + React Router).
+- **Controller:** expõe endpoints REST, delega aos Services e retorna JSON.
 
 ### Command
-Encapsula operações de negócio como objetos (`AprovarReceitaCommand`, `RejeitarReceitaCommand`, `ExcluirReceitaCommand`, `AtualizarEstatisticasCommand`), executados pelo `CommandInvoker` sem que este conheça os detalhes internos de cada operação.
+
+Encapsula operações de negócio como objetos:
+
+- `AprovarReceitaCommand`
+- `RejeitarReceitaCommand`
+- `ExcluirReceitaCommand`
+- `AtualizarEstatisticasCommand`
+
+Esses comandos são executados pelo `CommandInvoker`, sem que ele conheça os detalhes internos de cada operação.
 
 ### Factory Method
-Centraliza a criação de objetos complexos (`ReceitaFactory`, `NotificacaoFactory`, `UsuarioFactory`), reduzindo duplicação e deixando explícitas as regras de criação.
+
+Centraliza a criação de objetos complexos:
+
+- `ReceitaFactory`
+- `NotificacaoFactory`
+- `UsuarioFactory`
+
+Reduz duplicação e deixa explícitas as regras de criação.
 
 ### Builder
-Constrói objetos passo a passo (`ReceitaBuilder`, `UsuarioBuilder`, `NotificacaoBuilder`, `FavoritoBuilder`, `CarrosselBuilder`, `EstatisticasBuilder`, `SiteConfigBuilder`), tornando a configuração mais legível e flexível.
+
+Constrói objetos passo a passo:
+
+- `ReceitaBuilder`
+- `UsuarioBuilder`
+- `NotificacaoBuilder`
+- `FavoritoBuilder`
+- `CarrosselBuilder`
+- `EstatisticasBuilder`
+- `SiteConfigBuilder`
+
+Torna a configuração dos objetos mais legível e flexível.
 
 ### Decorator (Padrão Estrutural)
-Implementado para o cálculo dinâmico da **complexidade das receitas**. A estrutura segue o padrão GoF clássico:
-- **Component:** `CalculadoraDeComplexidade` (interface)
-- **ConcreteComponent:** `CalculadoraBase` (retorna complexidade zero)
-- **Decorator:** `CalculadoraDecorator` (classe abstrata que envolve um Component)
-- **ConcreteDecorators:** `DecoratorPorIngredientes`, `DecoratorPorModoPreparo`, `DecoratorPorTempoPreparo`, `DecoratorPorCategoria`.
 
-O **ComplexidadeService** é responsável por montar a cadeia de decorators dinamicamente em tempo de execução. Cada decorator adiciona uma pontuação específica baseada nas características da receita (quantidade de ingredientes, número de passos, tempo de preparo e categoria). O resultado final é um objeto `Complexidade` com nível (Fácil, Média, Difícil), descrição e pontuação. O padrão **não utiliza frameworks** (é puramente POJO), garantindo que a lógica de negócio seja totalmente testável e independente do Spring.
+Implementado para o cálculo dinâmico da **complexidade das receitas**. A estrutura segue o padrão GoF clássico:
+
+| Papel | Implementação |
+|---|---|
+| Component | `CalculadoraDeComplexidade` (interface) |
+| ConcreteComponent | `CalculadoraBase` (retorna complexidade inicial – nível 1, "Fácil", pontuação 0) |
+| Decorator | `CalculadoraDecorator` (classe abstrata que envolve um Component) |
+| ConcreteDecorators | `DecoratorPorIngredientes`, `DecoratorPorModoPreparo`, `DecoratorPorTempoPreparo`, `DecoratorPorCategoria` |
+
+A interface `CalculadoraDeComplexidade` define o contrato `calcular(Receita): Complexidade`.
+
+A `CalculadoraBase` implementa essa interface e é o componente concreto básico, devolvendo sempre uma complexidade inicial.
+
+A `CalculadoraDecorator` também implementa a interface e mantém uma referência interna para outra `CalculadoraDeComplexidade`, servindo de base para os decorators concretos, que herdam dela e acrescentam critérios específicos (ingredientes, passos, tempo e categoria) ao cálculo.
+
+O **ComplexidadeService** é responsável por montar a cadeia de decorators dinamicamente em tempo de execução:
+
+```java
+CalculadoraDeComplexidade calculadora = new CalculadoraBase();
+calculadora = new DecoratorPorIngredientes(calculadora);
+calculadora = new DecoratorPorModoPreparo(calculadora);
+calculadora = new DecoratorPorTempoPreparo(calculadora);
+calculadora = new DecoratorPorCategoria(calculadora);
+```
+
+Cada decorator adiciona uma pontuação específica baseada nas características da receita (quantidade de ingredientes, número de passos, tempo de preparo e categoria).
+
+O resultado final é um objeto `Complexidade` com nível (Fácil, Média, Difícil), descrição e pontuação.
+
+O padrão não utiliza frameworks (é puramente POJO), garantindo que a lógica de negócio seja totalmente testável e independente do Spring.
 
 ---
 
 ## 🧠 Aplicação dos Princípios SOLID
 
-O projeto foi arquitetado para respeitar os cinco princípios do SOLID:
+O projeto foi arquitetado para respeitar os cinco princípios do SOLID, tanto na estrutura geral quanto nos padrões de projeto utilizados.
 
-- **SRP (Single Responsibility Principle):** Cada classe tem uma responsabilidade única e bem definida. Controllers cuidam exclusivamente do tráfego HTTP; Services orquestram regras de negócio; DAOs isolam o acesso ao banco; e os Commands encapsulam ações complexas (como `AprovarReceitaCommand`).
-- **OCP (Open-Closed Principle):** O padrão **Decorator** é a prova viva do OCP. É possível adicionar novos critérios de complexidade criando novos decorators, sem alterar o código dos decorators existentes ou do `ComplexidadeService`.
-- **LSP (Liskov Substitution Principle):** Todos os decorators (`CalculadoraBase`, `DecoratorPorIngredientes`, etc.) implementam a mesma interface `CalculadoraDeComplexidade`. Qualquer um deles pode substituir o outro na cadeia sem quebrar o contrato (o retorno é sempre uma `Complexidade`), garantindo que o sistema nunca falhe por polimorfismo.
-- **ISP (Interface Segregation Principle):** Os DAOs utilizam interfaces específicas por entidade (`IReceitaDAO`, `IUsuarioDAO`), evitando uma interface genérica e garantindo que as classes dependam apenas dos métodos que realmente usam.
-- **DIP (Dependency Inversion Principle):** Os Services de alto nível dependem estritamente das **interfaces** dos DAOs (ex: `IReceitaDAO`), e não de implementações concretas. O `ComplexidadeService` depende da abstração `CalculadoraDeComplexidade`. Isso permite trocar a tecnologia de persistência sem impactar as regras de negócio.
+### SRP — Single Responsibility Principle
+
+**Princípio da Responsabilidade Única**
+
+Cada classe tem uma responsabilidade única e bem definida:
+
+- **Controllers:** cuidam exclusivamente do tráfego HTTP: recebem requisições, validam parâmetros básicos, chamam Services e retornam respostas (ex.: `ReceitaController`, `UsuarioController`).
+- **Services:** orquestram regras de negócio, combinando DAOs, factories, builders e commands (ex.: `ReceitaService`, `FavoritoService`, `ComplexidadeService`).
+- **DAOs:** isolam o acesso ao banco de dados (`ReceitaDAOImpl`, `UsuarioDAOImpl`), evitando lógica de negócio nessa camada.
+- **Commands:** encapsulam ações de negócio específicas e complexas (como `AprovarReceitaCommand`, `RejeitarReceitaCommand`) em classes separadas.
+
+Isso facilita testes e manutenção, porque cada classe tem um motivo claro para mudar.
+
+### OCP — Open/Closed Principle
+
+**Princípio Aberto/Fechado**
+
+O código está aberto para extensão e fechado para modificação principalmente via Decorator e Command:
+
+- **Decorator:** é possível adicionar novos critérios de cálculo criando um novo decorator e encaixando-o na cadeia, sem alterar o código dos decorators existentes nem do `ComplexidadeService`.
+- **Command:** novas operações de negócio (por exemplo, um novo tipo de moderação de receita) podem ser adicionadas criando uma nova classe de comando que implementa `Command`, sem alterar o `CommandInvoker`.
+
+Isso torna a evolução das regras de negócio mais segura e controlada.
+
+### LSP — Liskov Substitution Principle
+
+**Princípio da Substituição de Liskov**
+
+Todos os decorators (`CalculadoraBase`, `DecoratorPorIngredientes`, `DecoratorPorModoPreparo`, `DecoratorPorTempoPreparo`, `DecoratorPorCategoria`) implementam a mesma interface `CalculadoraDeComplexidade`.
+
+Isso permite que qualquer um deles seja usado no lugar da interface sem quebrar o contrato:
+
+- O método de todos é sempre `calcular(Receita): Complexidade`.
+- O tipo de retorno e o comportamento esperado (devolver um `Complexidade` válido) são consistentes.
+- Da mesma forma, as implementações de `Command` (`AprovarReceitaCommand`, `RejeitarReceitaCommand`, etc.) podem ser usadas polimorficamente onde se espera um `Command`.
+
+### ISP — Interface Segregation Principle
+
+**Princípio da Segregação de Interfaces**
+
+As interfaces foram desenhadas específicas o suficiente para evitar "interfaces gordas":
+
+- Cada DAO tem sua própria interface específica (`IReceitaDAO`, `IUsuarioDAO`, `IFavoritoDAO`, `INotificacaoDAO`, `IEstatisticasDAO`, `ISiteConfigDAO`), em vez de uma interface genérica com métodos que nem todas as entidades usariam.
+- Os Services consomem apenas os métodos que realmente necessitam de cada DAO.
+
+Isso reduz o acoplamento e evita dependências desnecessárias entre classes.
+
+### DIP — Dependency Inversion Principle
+
+**Princípio da Inversão de Dependência**
+
+Os módulos de alto nível dependem de abstrações, não de implementações concretas:
+
+- Os Services dependem das interfaces dos DAOs (`IReceitaDAO`, `IUsuarioDAO`, etc.), e não de classes concretas. Isso permite trocar a implementação do DAO (por exemplo, de JPA para outra tecnologia) sem alterar a lógica de negócio.
+- O `ComplexidadeService` depende da abstração `CalculadoraDeComplexidade`. Ele não sabe se está usando só a `CalculadoraBase` ou uma cadeia com vários decorators; ele apenas chama `calcular(Receita)` na interface.
+
+Essa inversão de dependência facilita testes (com mocks) e futuras trocas de tecnologia.
 
 ---
 
 ## 🧹 Object Calisthenics (Calistenia de Objetos) e Decisões Conscientes
 
-O projeto buscou aplicar os princípios de Calistenia de Objetos, focando em métodos curtos, responsabilidade única (SRP) e retorno precoce (evitando `else`). No entanto, como este é um projeto Spring Boot real, algumas regras foram **conscientemente flexibilizadas** para manter a compatibilidade com o ecossistema:
+O projeto buscou aplicar os princípios de Calistenia de Objetos, focando em:
 
-- **Regra 9 (Sem Getters/Setters):** Utilizamos o Lombok para gerar getters/setters nas entidades JPA. Isso é um padrão consolidado do mercado para evitar verbosidade e facilitar a integração com bibliotecas como Hibernate e Jackson.
-- **Regra 3 e 4 (Tipos primitivos e coleções):** Não encapsulamos tipos como `String ingredientes` em classes como `Ingredientes` porque o banco de dados já armazena como `TEXT`. A abstração extra geraria complexidade desnecessária no mapeamento JPA.
-- **Regra 8 (Máximo 2 variáveis de instância):** Alguns Services e Controllers possuem mais de duas dependências para manter a coesão das operações de negócio (ex: `ReceitaController`).
+- Métodos curtos.
+- Responsabilidade única por classe (coerente com SRP).
+- Retorno precoce de métodos (evitando `else` aninhados desnecessários).
+- Uso de objetos de domínio para encapsular regras em vez de espalhar `ifs` pelo código.
+
+Como este é um projeto Spring Boot real, algumas regras foram conscientemente flexibilizadas para manter a compatibilidade com o ecossistema:
+
+- **Regra 9 (Sem Getters/Setters):** utilizamos o Lombok para gerar getters/setters nas entidades JPA. Isso é um padrão consolidado do mercado para evitar verbosidade e facilitar a integração com bibliotecas como Hibernate e Jackson.
+- **Regras 3 e 4 (Tipos primitivos e coleções):** não encapsulamos tipos como `String ingredientes` em classes como `Ingredientes`, porque o banco de dados já armazena como `TEXT`. A abstração extra geraria complexidade desnecessária no mapeamento JPA.
+- **Regra 8 (Máximo 2 variáveis de instância):** alguns Services e Controllers possuem mais de duas dependências para manter a coesão das operações de negócio (ex.: `ReceitaController`), o que é aceitável no contexto de uma aplicação Spring.
 
 ---
 
@@ -72,11 +188,11 @@ O projeto buscou aplicar os princípios de Calistenia de Objetos, focando em mé
 
 A API foi construída seguindo os princípios REST, utilizando os verbos HTTP (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`) de forma semântica para operações de CRUD, URLs baseadas em substantivos no plural (`/api/receitas`, `/api/usuarios`) e códigos de status HTTP adequados (`200`, `201`, `400`, `401`, `404`).
 
-Para operações de negócio que não se encaixam no CRUD tradicional (como `POST /api/receitas/{id}/aprovar` e `POST /api/carrossel/toggle/{id}`), adotou-se o padrão **RPC (Remote Procedure Call)**, que é amplamente utilizado no mercado para expressar ações de domínio de forma explícita, mantendo a clareza do contrato da API.
+Para operações de negócio que não se encaixam no CRUD tradicional (como `POST /api/receitas/{id}/aprovar` e `POST /api/carrossel/toggle/{id}`), adotou-se o padrão RPC (Remote Procedure Call), que é amplamente utilizado no mercado para expressar ações de domínio de forma explícita, mantendo a clareza do contrato da API.
 
 A documentação está totalmente integrada com o **SpringDoc OpenAPI** e disponível via **Swagger UI**.
 
-**Acesso online:** [`/swagger-ui/index.html`](https://jornaldereceitas.vercel.app/swagger-ui/index.html)
+**Acesso online:** `/swagger-ui/index.html` (via proxy no frontend).
 
 ### Cobertura da documentação
 
@@ -84,39 +200,90 @@ A documentação está totalmente integrada com o **SpringDoc OpenAPI** e dispon
 
 | Grupo | Endpoints documentados |
 |---|---|
-| **Usuários** | cadastro, login, logout, buscar usuário logado, editar perfil, listar usuários, buscar por ID, editar usuário, ativar/desativar, excluir |
-| **Receitas** | listar aprovadas (home), listar minhas, listar pendentes, listar rejeitadas, listar aprovadas (admin), buscar por ID, criar, editar, aprovar, rejeitar, excluir |
-| **Favoritos** | adicionar, remover, listar, resumo geral, resumo por ingrediente |
-| **Notificações** | listar todas, listar não lidas, contador, marcar como lida, marcar todas como lidas, excluir todas |
-| **Carrossel** | listar ativos (público), listar todos (admin), adicionar, editar, alternar status, excluir |
+| Usuários | Cadastro, login, logout, buscar usuário logado, editar perfil, listar usuários, buscar por ID, editar usuário, ativar/desativar, excluir |
+| Receitas | Listar aprovadas (home), listar minhas, listar pendentes, listar rejeitadas, listar aprovadas (admin), buscar por ID, criar, editar, aprovar, rejeitar, excluir |
+| Favoritos | Adicionar, remover, listar, resumo geral, resumo por ingrediente |
+| Notificações | Listar todas, listar não lidas, contador, marcar como lida, marcar todas como lidas, excluir todas |
+| Carrossel | Listar ativos (público), listar todos (admin), adicionar, editar, alternar status, excluir |
 
 ### Recursos implementados na documentação
 
-- ✅ `@Tag` em todos os controllers (5 grupos organizados)
-- ✅ `@Operation` com summary e description em todos os 38 endpoints
-- ✅ `@ApiResponses` com `@Content` e exemplos reais de resposta
-- ✅ `@Parameter` em todos os path variables e query params (com descrição e exemplo)
-- ✅ `@Schema` em todos os models (`Usuario`, `Receita`, `CarrosselItem`, `Notificacao`, `Favorito`)
-- ✅ `@SecurityRequirement` nos endpoints autenticados (cookie de sessão)
-- ✅ `multipart/form-data` correto nos endpoints de upload de imagem
+- `@Tag` em todos os Controllers (5 grupos organizados).
+- `@Operation` com `summary` e `description` em todos os 38 endpoints.
+- `@ApiResponses` com `@Content` e exemplos reais de resposta.
+- `@Parameter` em todos os path variables e query params (com descrição e exemplo).
+- `@Schema` em todos os models (`Usuario`, `Receita`, `CarrosselItem`, `Notificacao`, `Favorito`).
+- `@SecurityRequirement` nos endpoints autenticados (cookie de sessão).
+- `multipart/form-data` correto nos endpoints de upload de imagem.
 
 ---
 
 ## 🧪 Testes Unitários Automatizados
 
-O projeto conta com uma suíte de **153 testes unitários** implementados com **JUnit 5**, **Mockito** e **AssertJ**, seguindo o padrão **AAA (Arrange, Act, Assert)**.
+O projeto conta com uma suíte de testes unitários implementados com **JUnit 5**, **Mockito** e **AssertJ**, seguindo o padrão **AAA (Arrange, Act, Assert)**.
+
+### JUnit 5
+
+Usado para estruturar os testes:
+
+- Anotações como `@Test`, `@BeforeEach`, `@DisplayName`.
+- Integração com Maven (plugin Surefire) via `mvn test`.
+
+### Mockito
+
+Usado para criar mocks (objetos simulados) de DAOs e Services:
+
+- `mock(...)`
+- `when(...).thenReturn(...)`
+- `verify(...)`
+- `verifyNoInteractions(...)`
+
+Permite testar a lógica de Services e Commands isoladamente, sem acessar o banco ou subir o contexto completo.
+
+### AssertJ
+
+Usado para asserções fluentes e legíveis:
+
+```java
+assertThat(resultado.getDescricao()).isEqualTo("Difícil");
+assertThat(resultado.getPontuacao()).isZero();
+
+assertThatThrownBy(() -> service.excluir(999L))
+    .isInstanceOf(RuntimeException.class)
+    .hasMessage("Receita não encontrada");
+```
 
 ### Cobertura dos testes
-- **Decorator (34 testes):** Testes isolados para cada decorator (Base, Ingredientes, Modo de Preparo, Tempo, Categoria) e o teste da cadeia completa (CalculadoraCompletaTest).
-- **Models (43 testes):** Validação de regras de negócio (`Receita.aprovar()`, `Usuario.editarPerfil()`, etc.).
-- **Commands (10 testes):** Orquestração dos comandos (Aprovar, Rejeitar, Excluir, AtualizarEstatísticas).
-- **Services (33 testes):** Lógica de serviços (FavoritoService, NotificacaoService, ReceitaService, CarrosselService, AuthService, UploadService).
-- **DAOs (5 testes):** Testes de idempotência e persistência (FavoritoDAOImpl).
-- **Factories e Builders (15 testes):** Testes de criação de objetos complexos.
-- **Contexto (1 teste):** Teste de carregamento do contexto Spring Boot.
+
+**Decorator de complexidade**
+
+Testes isolados para cada decorator (`CalculadoraBaseTest`, `DecoratorPorIngredientesTest`, `DecoratorPorModoPreparoTest`, `DecoratorPorTempoPreparoTest`, `DecoratorPorCategoriaTest`) e teste da cadeia completa (`CalculadoraCompletaTest`, `ComplexidadeServiceTest`), garantindo que a soma de pontos e a conversão em nível/descrição estejam corretas.
+
+**Models, Builders e Factories**
+
+`ReceitaTest`, `UsuarioTest`, `EstatisticasTest`, `ReceitaBuilderTest`, `UsuarioBuilderTest`, `ReceitaFactoryTest`, `UsuarioFactoryTest` verificam regras de negócio dentro das entidades (como `Receita.aprovar()` e `Usuario.editarPerfil()`) e a construção correta de objetos mais complexos.
+
+**Commands**
+
+`AprovarReceitaCommandTest`, `RejeitarReceitaCommandTest`, `ExcluirReceitaCommandTest`, `AtualizarEstatisticasCommandTest` testam a orquestração das operações de aprovação, rejeição, exclusão de receitas e atualização de estatísticas, verificando mudanças de estado, chamadas aos Services e geração de notificações.
+
+**Services**
+
+`ReceitaServiceTest`, `FavoritoServiceTest`, `NotificacaoServiceTest`, `UsuarioServiceTest`, `AuthServiceTest`, `CarrosselServiceTest`, `UploadServiceTest`, `ComplexidadeServiceTest` validam a lógica de negócio de cada serviço isoladamente, com DAOs mockados.
+
+**DAO específico**
+
+Testes em `FavoritoDAOImplTest` para persistência e idempotência de operações de favoritos.
+
+### Execução dos testes
+
+Para rodar todos os testes:
+
+```bash
+mvn test
+```
 
 ---
-
 
 ## ✨ Funcionalidades
 
@@ -130,15 +297,19 @@ O projeto conta com uma suíte de **153 testes unitários** implementados com **
 
 ### 📖 Receitas
 
-- Envio de receitas com:
-  - Título.
-  - Tempo de preparo.
-  - Quantidade de porções.
-  - Nome do chefe.
-  - Categoria (Salgado ou Doce).
-  - Ingredientes.
-  - Modo de preparo.
-  - Imagem.
+Envio de receitas com:
+
+- Título.
+- Tempo de preparo.
+- Quantidade de porções.
+- Nome do chefe.
+- Categoria (Salgado ou Doce).
+- Ingredientes.
+- Modo de preparo.
+- Imagem.
+
+Outras funcionalidades:
+
 - Sistema de aprovação: receitas enviadas permanecem pendentes até a aprovação do administrador.
 - Listagem de receitas aprovadas separadas por categoria (Salgados e Doces).
 - Visualização detalhada com checklist interativo de ingredientes e passos numerados.
@@ -155,7 +326,7 @@ O projeto conta com uma suíte de **153 testes unitários** implementados com **
   - Ingredientes disponíveis.
   - Ingredientes que se repetem entre diferentes receitas.
 - Busca dinâmica por ingrediente:
-  - Seleção de ingredientes por meio de um `select`.
+  - Seleção de ingredientes por meio de um select.
   - Consulta em tempo real da quantidade de receitas favoritas que contêm o ingrediente selecionado.
   - Listagem dos títulos das receitas correspondentes.
 
@@ -177,44 +348,51 @@ O projeto conta com uma suíte de **153 testes unitários** implementados com **
 
 ### 🎠 Carrossel
 
-- Gerenciamento completo pelo administrador:
-  - Adicionar itens.
-  - Editar itens.
-  - Ativar e desativar itens.
-  - Excluir itens.
+Gerenciamento completo pelo administrador:
+
+- Adicionar itens.
+- Editar itens.
+- Ativar e desativar itens.
+- Excluir itens.
 - Suporte a imagens por URL ou upload de arquivo.
 - Atualização automática por polling.
 
 ### 👑 Painel Administrativo
 
 **Dashboard**
+
 - Cards com indicadores de usuários, receitas por status e favoritos.
 - Gráficos de distribuição das receitas por status.
 - Ranking das 5 receitas mais favoritadas.
 
 **Gerenciamento de Usuários**
+
 - Listagem paginada.
 - Busca de usuários.
 - Edição e exclusão.
 - Ativação e desativação de contas.
 
 **Receitas Pendentes**
+
 - Listagem e busca.
 - Visualização em modal.
 - Edição.
 - Aprovação e rejeição.
 
 **Receitas Aprovadas**
+
 - Listagem e busca.
 - Visualização em modal.
 - Edição e exclusão.
 
 **Receitas Rejeitadas**
+
 - Listagem e busca.
 - Visualização em modal.
 - Consulta do motivo da rejeição.
 
 **Outros Recursos**
+
 - Gerenciamento dos itens do carrossel exibido na página inicial.
 - Edição do perfil do administrador.
 - Sidebar responsiva com overlay em dispositivos móveis.
@@ -245,43 +423,43 @@ O projeto conta com uma suíte de **153 testes unitários** implementados com **
 
 | Tecnologia | Versão |
 |---|---|
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" width="24"> Java | 21 |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" width="24"> Spring Boot | 3.5.5 |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" width="24"> Spring Security | 6.x |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/hibernate/hibernate-original.svg" width="24"> Hibernate | 6.6 |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" width="24"> MySQL | 8.0 |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/maven/maven-original.svg" width="24"> Maven | 3.8+ |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swagger/swagger-original.svg" width="24"> SpringDoc OpenAPI | 2.x |
+| Java | 21 |
+| Spring Boot | 3.5.5 |
+| Spring Security | 6.x |
+| Hibernate | 6.6 |
+| MySQL | 8.0 |
+| Maven | 3.8+ |
+| SpringDoc OpenAPI | 2.x |
 
 ### Frontend
 
 | Tecnologia | Versão |
 |---|---|
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="24"> React | 19 |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vite/vite-original.svg" width="24"> Vite | 8 |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/reactrouter/reactrouter-original.svg" width="24"> React Router | 7 |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/axios/axios-plain.svg" width="24"> Axios | 1.20 |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prime/prime-original.svg" width="24"> PrimeReact | 10 |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prime/prime-original.svg" width="24"> PrimeIcons | 7 |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fontawesome/fontawesome-original.svg" width="24"> Font Awesome | 6.5 |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chartjs/chartjs-original.svg" width="24"> Chart.js (via PrimeReact) | 4.x |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" width="24"> HTML5 | — |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="24"> CSS3 | — |
+| React | 19 |
+| Vite | 8 |
+| React Router | 7 |
+| Axios | 1.20 |
+| PrimeReact | 10 |
+| PrimeIcons | 7 |
+| Font Awesome | 6.5 |
+| Chart.js (via PrimeReact) | 4.x |
+| HTML5 | — |
+| CSS3 | — |
 
 ### Ferramentas e Infraestrutura
 
 | Tecnologia | Finalidade |
 |---|---|
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" width="24"> Docker | Conteinerização |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="24"> GitHub | Versionamento de código |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/digitalocean/digitalocean-original.svg" width="24"> DigitalOcean | Hospedagem do backend |
+| Docker | Conteinerização |
+| GitHub | Versionamento de código |
+| DigitalOcean | Hospedagem do backend |
 | Vercel | Hospedagem do frontend |
 
 ---
 
 ## 🗄️ Banco de Dados
 
-O sistema utiliza MySQL para persistência dos dados, com mapeamento objeto-relacional por meio do JPA/Hibernate.
+O sistema utiliza **MySQL** para persistência dos dados, com mapeamento objeto-relacional por meio do JPA/Hibernate.
 
 ### Tabelas
 
@@ -303,12 +481,12 @@ O sistema utiliza MySQL para persistência dos dados, com mapeamento objeto-rela
 | `receita` | N:1 | `usuario` |
 | `usuario` | 1:N | `favorito` |
 | `usuario` | 1:N | `notificacao` |
-| `receita` | N:1 | `favorito` |
+| `receita` | 1:N | `favorito` |
 
 ### Tabelas Independentes
 
-- **`carrossel`**: gerenciada exclusivamente pelo administrador, sem vínculo direto com usuários.
-- **`site_config`**: armazena configurações globais do site, sem vínculo direto com usuários.
+- **`carrossel`:** gerenciada exclusivamente pelo administrador, sem vínculo direto com usuários.
+- **`site_config`:** armazena configurações globais do site, sem vínculo direto com usuários.
 
 ---
 
@@ -322,82 +500,61 @@ O projeto possui diagramas UML para documentar sua arquitetura, os relacionament
 - **DAOs:** interfaces, implementações e repositórios `JpaRepository`.
 - **Commands:** `Command`, `BaseCommand`, comandos concretos e `CommandInvoker`.
 - **Decorator:** estrutura completa do padrão de projeto, incluindo:
-  - Component.
-  - ConcreteComponent.
-  - Decorator.
-  - ConcreteDecorators.
-  - Cadeia de complexidade das receitas.
+  - Component (`CalculadoraDeComplexidade`).
+  - ConcreteComponent (`CalculadoraBase`).
+  - Decorator (`CalculadoraDecorator`).
+  - ConcreteDecorators (`DecoratorPorIngredientes`, `DecoratorPorModoPreparo`, `DecoratorPorTempoPreparo`, `DecoratorPorCategoria`).
+  - Cadeia de complexidade das receitas montada pelo `ComplexidadeService`.
 
-📁 Em [`/Diagramas/Diagrama de Classe`](./Diagramas/Diagrama%20de%20Classe)
+📁 **Em:** `/Diagramas/Diagrama de Classe`
 
 ### Diagramas de Sequência
 
-O projeto conta com diagramas de sequência desenvolvidos em PlantUML, organizados por domínio e representando os fluxos de execução do sistema.
+Os diagramas de sequência, desenvolvidos em PlantUML e exportados como imagens, representam fluxos de execução do sistema, como:
 
-**Autenticação (3)**
-- Cadastro.
-- Login.
-- Logout.
+- **Autenticação:** cadastro, login, logout, buscar usuário logado.
+- **Usuário:** editar perfil, editar usuário (admin), ativar/desativar, excluir.
+- **Receita:** criar, editar, aprovar, rejeitar, excluir, listar aprovadas (home/admin), listar pendentes, rejeitadas, "minhas receitas".
+- **Favorito:** favoritar, desfavoritar, listar favoritos, resumo por ingrediente.
+- **Notificação:** listar notificações, não lidas, contador, marcar como lida/todas lidas, excluir todas.
+- **Carrossel:** listar itens públicos e administrativos, adicionar, editar, alternar status, excluir.
 
-**Usuário (5)**
-- Buscar usuário logado.
-- Editar perfil.
-- Editar usuário (administrador).
-- Ativar/desativar usuário.
-- Excluir usuário.
+Um exemplo importante é o diagrama de sequência **"Listar Receitas Aprovadas (home) - com Decorator"**, onde:
 
-**Receita (11)**
-- Criar receita.
-- Editar receita.
-- Aprovar receita.
-- Rejeitar receita.
-- Excluir receita.
-- Listar receitas aprovadas (home).
-- Listar receitas aprovadas — Decorator (home).
-- Minhas receitas.
-- Listar receitas pendentes (admin).
-- Listar receitas rejeitadas (admin).
-- Listar receitas aprovadas (admin).
+1. O visitante chama `GET /api/receitas`.
+2. O `ReceitaController` chama `ReceitaService.listarAprovadas()`, que consulta `IReceitaDAO.listarPorStatus(APROVADA)`.
+3. Para cada receita, o Controller chama `receitaParaMap(receita, true)`, que:
+   - Usa o `FavoritoService` para contar curtidas.
+   - Chama `ComplexidadeService.calcular(receita)`, que delega para a cadeia de decorators representada por `CalculadoraDeComplexidade`.
+4. No fim, o Controller devolve `200 OK` com `{ receitas: [...] }`, incluindo favoritos e complexidade prontos para o frontend.
 
-**Favorito (3)**
-- Favoritar receita.
-- Desfavoritar receita.
-- Listar favoritos.
-
-**Notificação**
-- Listar notificações.
-- Listar notificações não lidas.
-- Consultar contador de notificações.
-- Marcar notificação como lida.
-- Marcar todas as notificações como lidas.
-- Excluir todas as notificações.
-
-**Carrossel (6)**
-- Listar itens públicos.
-- Listar itens administrativos.
-- Adicionar item.
-- Editar item.
-- Alternar status.
-- Excluir item.
-
-📁 Em [`/Diagramas/Diagramas de Sequência`](./Diagramas/Diagramas%20de%20Sequência)
+📁 **Em:** `/Diagramas/Diagramas de Sequência`
 
 ---
 
 ## 🔒 Segurança
 
-O sistema implementa mecanismos de proteção para autenticação, autorização, persistência de dados e comunicação entre frontend e backend.
+O sistema implementa mecanismos de proteção para autenticação, autorização, persistência de dados e comunicação entre frontend e backend, usando principalmente **Spring Security**, **BCrypt**, **JPA/Hibernate** e uma configuração de **CORS** restrita ao frontend oficial.
+
+### Como a segurança está configurada
+
+- A classe `SecurityConfig` define a política de acesso:
+  - Endpoints públicos: arquivos estáticos, Swagger (`/swagger-ui`, `/v3/api-docs`), cadastro e login (`/api/cadastro`, `/api/login`) e consulta do usuário logado (`/api/perfil/usuario-logado`).
+  - Endpoints que exigem **usuário autenticado**: `/api/perfil/**`, `/api/receitas/minhas`, `/api/favoritos/**`, `/api/notificacoes/**` e demais rotas protegidas.
+  - Endpoints **restritos ao ADMIN**: `/api/usuarios/**`, receitas pendentes/aprovadas/rejeitadas de admin, e todo o gerenciamento do carrossel administrativo (`/api/carrossel/admin`, `/api/carrossel/adicionar`, `/api/carrossel/editar/**`, `/api/carrossel/toggle/**`, `/api/carrossel/excluir/**`).
+- O login/logout é feito via API (`/api/login`, `/api/logout`), com sessão mantida por cookie `JSESSIONID`. O formulário padrão do Spring (`formLogin`) e o HTTP Basic (`httpBasic`) são desabilitados.
+- O CORS é configurado para permitir **apenas** as origens autorizadas (Vercel e `localhost:5173`), com envio de cookies habilitado (`allowCredentials = true`) e exposição do header `Set-Cookie`, garantindo que só o frontend oficial consiga consumir a API com sessão.
 
 ### Vulnerabilidades e Medidas de Proteção
 
-| Vulnerabilidade | Medida de Proteção |
-|---|---|
-| SQL Injection | JPA/Hibernate com consultas parametrizadas. |
-| Senhas em texto puro | Criptografia de hash com BCrypt (`BCryptPasswordEncoder`). |
-| Acesso não autorizado | Spring Security com controle de acesso por roles `ADMIN` e `USER`. |
-| Exposição de senhas em JSON | Campo protegido com `@JsonIgnore` e `@Schema(accessMode = WRITE_ONLY)`. |
-| CSRF | Desabilitado nas APIs REST utilizadas pela SPA separada. |
-| CORS | Configurado para permitir apenas a origem autorizada do frontend React. |
-| Segurança da sessão | Cookie `JSESSIONID` configurado com `HttpOnly` e `Secure` em produção. |
+| Vulnerabilidade           | Medida de Proteção                                                                                                                                              |
+|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SQL Injection             | Uso de JPA/Hibernate com consultas parametrizadas e repositórios Spring Data, evitando concatenação de SQL manual.                                             |
+| Senhas em texto puro      | Criptografia de senhas com **BCrypt** (`BCryptPasswordEncoder`), tanto no cadastro (`UsuarioService`) quanto na autenticação (`AuthService`).                  |
+| Acesso não autorizado     | Spring Security com controle de acesso por **roles** (`USER` e `ADMIN`) em nível de URL, garantindo que rotas administrativas sejam acessíveis só por admin.   |
+| Exposição de senhas em JSON | Campos de senha anotados com `@JsonIgnore` e `@Schema(accessMode = WRITE_ONLY)`, impedindo que hashes de senha sejam enviados em respostas da API.          |
+| CSRF                      | API REST consumida por SPA separada, com proteção baseada em CORS restrito + sessão; o formulário padrão do Spring é desativado, e os endpoints de login/logout são explicitamente controlados. |
+| CORS                      | Configuração de `CorsConfiguration` para aceitar apenas as origens definidas em `cors.allowed.origins` (Vercel + localhost), com métodos e headers controlados. |
+| Segurança da sessão       | Sessão HTTP mantida via cookie `JSESSIONID`, com flags `HttpOnly` e `Secure` em produção, reduzindo risco de roubo de sessão por scripts no navegador.         |
 
 ---
