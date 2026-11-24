@@ -1,5 +1,10 @@
 ﻿import { createContext, useState, useEffect, useContext } from 'react';
-import { buscarUsuarioLogado, login as loginService, logout as logoutService } from '../services/authService';
+import {
+  buscarUsuarioLogado,
+  login as loginService,
+  loginComGoogle as loginComGoogleService,
+  logout as logoutService,
+} from '../services/authService';
 
 const AuthContext = createContext(null);
 
@@ -9,25 +14,32 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     async function carregar() {
-      const u = await buscarUsuarioLogado();
-      setUsuario(u);
+      const usuarioLogado = await buscarUsuarioLogado();
+      setUsuario(usuarioLogado);
       setCarregando(false);
     }
+
     carregar();
   }, []);
 
-async function login(email, senha) {
-  const resultado = await loginService(email, senha);
-  if (resultado.success) {
-    if (resultado.usuario) {
-      setUsuario(resultado.usuario);
-    } else {
-      const u = await buscarUsuarioLogado();
-      setUsuario(u);
+  async function atualizarUsuarioAposLogin(resultado) {
+    if (resultado.success) {
+      const usuarioLogado = resultado.usuario ?? await buscarUsuarioLogado();
+      setUsuario(usuarioLogado);
     }
+
+    return resultado;
   }
-  return resultado;
-}
+
+  async function login(email, senha) {
+    const resultado = await loginService(email, senha);
+    return atualizarUsuarioAposLogin(resultado);
+  }
+
+  async function loginComGoogle(credential) {
+    const resultado = await loginComGoogleService(credential);
+    return atualizarUsuarioAposLogin(resultado);
+  }
 
   async function logout() {
     await logoutService();
@@ -35,7 +47,7 @@ async function login(email, senha) {
   }
 
   return (
-    <AuthContext.Provider value={{ usuario, carregando, login, logout, setUsuario }}>
+    <AuthContext.Provider value={{ usuario, carregando, login, loginComGoogle, logout, setUsuario }}>
       {children}
     </AuthContext.Provider>
   );

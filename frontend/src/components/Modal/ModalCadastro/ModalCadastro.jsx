@@ -1,248 +1,152 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import Modal from '../Modal';
+import BotaoGoogle from '../BotaoGoogle';
 import Button from '../../Home/Button/Button';
 import Input from '../../Home/Input/Input';
 import { cadastrar } from '../../../services/authService';
 import { extrairMensagemErro } from '../../../services/api';
+import { useAuth } from '../../../context/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import './ModalCadastro.css';
 
 const dadosIniciais = {
   nome: '',
   email: '',
-  cpf: '',
-  telefone: '',
-  genero: '',
   senha: '',
-  confirmarSenha: ''
+  confirmarSenha: '',
 };
 
 function ModalCadastro({ aberto, onFechar, onIrParaLogin }) {
+  const { login, loginComGoogle } = useAuth();
   const { mostrarToast } = useToast();
 
   const [dados, setDados] = useState(dadosIniciais);
-  const [alerta, setAlerta] = useState({ tipo: '', texto: '' });
+  const [alerta, setAlerta] = useState(null);
   const [carregando, setCarregando] = useState(false);
+  const [processandoGoogle, setProcessandoGoogle] = useState(false);
   const [cadastroConcluido, setCadastroConcluido] = useState(false);
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
 
-  const timeoutRef = useRef(null);
+  const ocupado = carregando || processandoGoogle;
+  const nomeValido = dados.nome.trim().length >= 3;
+  const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dados.email.trim());
+  const senhaValida = dados.senha.trim().length >= 6;
+  const confirmarValido = dados.confirmarSenha === dados.senha;
 
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
+  let erroSenha = '';
+  if ((dados.senha || dados.confirmarSenha) && !senhaValida) {
+    erroSenha = 'A senha deve ter pelo menos 6 caracteres.';
+  } else if (dados.confirmarSenha && !confirmarValido) {
+    erroSenha = 'As senhas não coincidem.';
+  }
+
+  const botaoHabilitado =
+    nomeValido &&
+    emailValido &&
+    senhaValida &&
+    confirmarValido &&
+    !ocupado &&
+    !cadastroConcluido;
 
   function limparFormulario() {
-    setDados({ ...dadosIniciais });
-    setAlerta({ tipo: '', texto: '' });
+    setDados(dadosIniciais);
+    setAlerta(null);
     setMostrarSenha(false);
     setMostrarConfirmar(false);
     setCadastroConcluido(false);
   }
 
   function handleFechar() {
-    if (carregando) return;
-
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
+    if (ocupado) return;
 
     limparFormulario();
     onFechar();
   }
 
   function handleIrParaLogin() {
-    if (carregando) return;
+    if (ocupado) return;
 
     handleFechar();
     onIrParaLogin();
   }
 
-  function handleChange(e) {
-    const { name, value } = e.target;
+  function handleChange(evento) {
+    const { name, value } = evento.target;
+    setDados(anterior => ({ ...anterior, [name]: value }));
+    setAlerta(null);
+  }
 
-    setDados(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  function mostrarErro(mensagem) {
+    setAlerta({ tipo: 'error', texto: mensagem });
+    mostrarToast(mensagem, 'error');
+  }
 
-    if (alerta.tipo === 'error') {
-      setAlerta({ tipo: '', texto: '' });
+  function concluirLogin(resultado, mensagem) {
+    mostrarToast(mensagem, 'success');
+    limparFormulario();
+    onFechar();
+
+    if (resultado.role === 'ADMIN') {
+      window.location.href = '/admin/dashboard';
     }
   }
 
-  function validarCpf(cpf) {
-    const numeros = cpf.replace(/\D/g, '');
+  async function handleLoginGoogle(credential) {
+    setAlerta(null);
 
-    if (numeros.length !== 11) return false;
-    if (/^(\d)\1{10}$/.test(numeros)) return false;
-
-    let soma = 0;
-
-    for (let i = 0; i < 9; i++) {
-      soma += parseInt(numeros.charAt(i), 10) * (10 - i);
+    const resultado = await loginComGoogle(credential);
+    if (!resultado.success) {
+      mostrarErro(resultado.message || 'Não foi possível continuar com o Google.');
+      return;
     }
 
-    let resto = (soma * 10) % 11;
-
-    if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(numeros.charAt(9), 10)) return false;
-
-    soma = 0;
-
-    for (let i = 0; i < 10; i++) {
-      soma += parseInt(numeros.charAt(i), 10) * (11 - i);
-    }
-
-    resto = (soma * 10) % 11;
-
-    if (resto === 10 || resto === 11) resto = 0;
-
-    return resto === parseInt(numeros.charAt(10), 10);
+    concluirLogin(resultado, 'Você entrou com sua conta Google!');
   }
 
-  function mascaraCpf(valor) {
-    const numeros = valor.replace(/\D/g, '').slice(0, 11);
-
-    return numeros
-      .replace(/^(\d{3})(\d)/, '$1.$2')
-      .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
-      .replace(/\.(\d{3})(\d{1,2})$/, '.$1-$2');
-  }
-
-  function mascaraTelefone(valor) {
-    const numeros = valor.replace(/\D/g, '').slice(0, 11);
-
-    if (!numeros) return '';
-
-    if (numeros.length <= 2) {
-      return `(${numeros}`;
-    }
-
-    if (numeros.length <= 6) {
-      return `(${numeros.slice(0, 2)}) ${numeros.slice(2)}`;
-    }
-
-    if (numeros.length <= 10) {
-      return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(6)}`;
-    }
-
-    return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
-  }
-
-  function handleCpfChange(e) {
-    setDados(prev => ({
-      ...prev,
-      cpf: mascaraCpf(e.target.value)
-    }));
-
-    if (alerta.tipo === 'error') {
-      setAlerta({ tipo: '', texto: '' });
-    }
-  }
-
-  function handleTelefoneChange(e) {
-    setDados(prev => ({
-      ...prev,
-      telefone: mascaraTelefone(e.target.value)
-    }));
-
-    if (alerta.tipo === 'error') {
-      setAlerta({ tipo: '', texto: '' });
-    }
-  }
-
-  const nomeValido = dados.nome.trim().length >= 3;
-  const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dados.email.trim());
-  const cpfValido = validarCpf(dados.cpf);
-
-  const quantidadeDigitosTelefone = dados.telefone.replace(/\D/g, '').length;
-  const telefoneValido =
-    quantidadeDigitosTelefone === 10 || quantidadeDigitosTelefone === 11;
-
-  const generoValido = dados.genero.trim() !== '';
-  const senhaValida = dados.senha.length >= 6;
-
-  const confirmarValido =
-    dados.confirmarSenha === dados.senha &&
-    dados.confirmarSenha.length >= 6;
-
-  const botaoHabilitado =
-    nomeValido &&
-    emailValido &&
-    cpfValido &&
-    telefoneValido &&
-    generoValido &&
-    senhaValida &&
-    confirmarValido &&
-    !carregando &&
-    !cadastroConcluido;
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-
+  async function handleSubmit(evento) {
+    evento.preventDefault();
     if (!botaoHabilitado) return;
 
-    setAlerta({ tipo: '', texto: '' });
+    const email = dados.email.trim();
+    const senha = dados.senha;
+
+    setAlerta(null);
     setCarregando(true);
 
     try {
-      const resultado = await cadastrar({
+      const cadastro = await cadastrar({
         nome: dados.nome.trim(),
-        email: dados.email.trim(),
-        cpf: dados.cpf.replace(/\D/g, ''),
-        telefone: dados.telefone.replace(/\D/g, ''),
-        genero: dados.genero,
-        senha: dados.senha
+        email,
+        senha,
       });
 
-      if (resultado.success) {
-        const mensagem =
-          resultado.message || 'Cadastro realizado com sucesso!';
-
-        setAlerta({
-          tipo: 'success',
-          texto: mensagem
-        });
-
-        setCadastroConcluido(true);
-        mostrarToast(mensagem, 'success');
-
-        timeoutRef.current = setTimeout(() => {
-          timeoutRef.current = null;
-          limparFormulario();
-          onFechar();
-          onIrParaLogin();
-        }, 2000);
-      } else {
-        const mensagem =
-          resultado.message || 'Não foi possível realizar o cadastro.';
-
-        setAlerta({
-          tipo: 'error',
-          texto: mensagem
-        });
-
-        mostrarToast(mensagem, 'error');
+      if (!cadastro.success) {
+        mostrarErro(cadastro.message || 'Não foi possível realizar o cadastro.');
+        return;
       }
-    } catch (err) {
-      const mensagem = extrairMensagemErro(
-        err,
-        'Não foi possível realizar o cadastro.'
-      );
+
+      setCadastroConcluido(true);
+      setDados(anterior => ({ ...anterior, senha: '', confirmarSenha: '' }));
+
+      try {
+        const resultado = await login(email, senha);
+
+        if (resultado.success) {
+          concluirLogin(resultado, 'Conta criada com sucesso! Você já está logado.');
+          return;
+        }
+      } catch {
+        setMostrarSenha(false);
+        setMostrarConfirmar(false);
+      }
 
       setAlerta({
-        tipo: 'error',
-        texto: mensagem
+        tipo: 'info',
+        texto: 'Sua conta foi criada. Clique em Fazer login para acessar.',
       });
-
-      mostrarToast(mensagem, 'error');
+    } catch (err) {
+      mostrarErro(extrairMensagemErro(err, 'Não foi possível realizar o cadastro.'));
     } finally {
       setCarregando(false);
     }
@@ -264,31 +168,32 @@ function ModalCadastro({ aberto, onFechar, onIrParaLogin }) {
       <Modal.Body className="cadastro-modal-body">
         <div className="cadastro-intro">
           <h3>Faça parte do nosso jornal</h3>
-
-          <p>
-            Crie sua conta para salvar receitas, organizar seus
-            favoritos e compartilhar suas próprias preparações.
-          </p>
+          <p>Crie sua conta para salvar receitas, organizar seus favoritos e compartilhar suas próprias preparações.</p>
         </div>
 
-        {alerta.texto && (
+        {alerta && (
           <div
-            className={`modal-message modal-message-${alerta.tipo === 'error' ? 'error' : 'success'}`}
+            className={`modal-message modal-message-${alerta.tipo}`}
             role={alerta.tipo === 'error' ? 'alert' : 'status'}
           >
             <i
-              className={`pi ${alerta.tipo === 'error' ? 'pi-exclamation-circle' : 'pi-check-circle'}`}
+              className={`pi ${alerta.tipo === 'error' ? 'pi-exclamation-circle' : 'pi-info-circle'}`}
               aria-hidden="true"
-            ></i>
-
+            />
             <span>{alerta.texto}</span>
           </div>
         )}
 
-        <form
-          className="cadastro-form"
-          onSubmit={handleSubmit}
-        >
+        {aberto && !carregando && !cadastroConcluido && (
+          <BotaoGoogle
+            onCredencial={handleLoginGoogle}
+            onProcessando={setProcessandoGoogle}
+            variante="cadastro"
+            titulo="Cadastre-se com o Google"
+          />
+        )}
+
+        <form className="cadastro-form" onSubmit={handleSubmit}>
           <div className="cadastro-secao">
             <div className="cadastro-secao-header">
               <span className="cadastro-secao-numero">01</span>
@@ -304,73 +209,24 @@ function ModalCadastro({ aberto, onFechar, onIrParaLogin }) {
                 value={dados.nome}
                 onChange={handleChange}
                 autoComplete="name"
+                disabled={ocupado || cadastroConcluido}
                 required
               />
             </div>
 
-            <div className="cadastro-form-row">
-              <div className="cadastro-form-group">
-                <Input
-                  id="cadastroEmail"
-                  label="E-mail"
-                  name="email"
-                  type="email"
-                  icon="pi pi-envelope"
-                  value={dados.email}
-                  onChange={handleChange}
-                  autoComplete="email"
-                  required
-                />
-              </div>
-
-              <div className="cadastro-form-group">
-                <Input
-                  id="cadastroGenero"
-                  label="Gênero"
-                  name="genero"
-                  icon="pi pi-users"
-                  value={dados.genero}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value=""></option>
-                  <option value="MASCULINO">Masculino</option>
-                  <option value="FEMININO">Feminino</option>
-                  <option value="OUTRO">Outro</option>
-                </Input>
-              </div>
-            </div>
-
-            <div className="cadastro-form-row">
-              <div className="cadastro-form-group">
-                <Input
-                  id="cadastroCpf"
-                  label="CPF"
-                  name="cpf"
-                  icon="pi pi-id-card"
-                  maxLength={14}
-                  value={dados.cpf}
-                  onChange={handleCpfChange}
-                  inputMode="numeric"
-                  autoComplete="off"
-                  required
-                />
-              </div>
-
-              <div className="cadastro-form-group">
-                <Input
-                  id="cadastroTelefone"
-                  label="Telefone"
-                  name="telefone"
-                  icon="pi pi-phone"
-                  maxLength={15}
-                  value={dados.telefone}
-                  onChange={handleTelefoneChange}
-                  inputMode="tel"
-                  autoComplete="tel"
-                  required
-                />
-              </div>
+            <div className="cadastro-form-group">
+              <Input
+                id="cadastroEmail"
+                label="E-mail"
+                name="email"
+                type="email"
+                icon="pi pi-envelope"
+                value={dados.email}
+                onChange={handleChange}
+                autoComplete="email"
+                disabled={ocupado || cadastroConcluido}
+                required
+              />
             </div>
           </div>
 
@@ -391,7 +247,8 @@ function ModalCadastro({ aberto, onFechar, onIrParaLogin }) {
                   onChange={handleChange}
                   autoComplete="new-password"
                   mostrarSenha={mostrarSenha}
-                  onToggleSenha={() => setMostrarSenha(prev => !prev)}
+                  onToggleSenha={() => setMostrarSenha(anterior => !anterior)}
+                  disabled={ocupado || cadastroConcluido}
                   required
                 />
               </div>
@@ -406,16 +263,19 @@ function ModalCadastro({ aberto, onFechar, onIrParaLogin }) {
                   onChange={handleChange}
                   autoComplete="new-password"
                   mostrarSenha={mostrarConfirmar}
-                  onToggleSenha={() => setMostrarConfirmar(prev => !prev)}
+                  onToggleSenha={() => setMostrarConfirmar(anterior => !anterior)}
+                  disabled={ocupado || cadastroConcluido}
                   required
                 />
               </div>
             </div>
 
-            <p className="cadastro-senha-ajuda">
-              <i className="pi pi-info-circle" aria-hidden="true"></i>
-              A senha deve conter pelo menos 6 caracteres.
-            </p>
+            {erroSenha && (
+              <div className="modal-message modal-message-error" role="status">
+                <i className="pi pi-exclamation-circle" aria-hidden="true" />
+                <span>{erroSenha}</span>
+              </div>
+            )}
           </div>
 
           <Button
@@ -427,45 +287,28 @@ function ModalCadastro({ aberto, onFechar, onIrParaLogin }) {
           >
             {carregando ? (
               <>
-                <i
-                  className="pi pi-spin pi-spinner"
-                  aria-hidden="true"
-                ></i>
-                Cadastrando...
+                <i className="pi pi-spin pi-spinner" aria-hidden="true" />
+                {cadastroConcluido ? 'Entrando...' : 'Cadastrando...'}
               </>
             ) : cadastroConcluido ? (
               <>
-                <i
-                  className="pi pi-check"
-                  aria-hidden="true"
-                ></i>
+                <i className="pi pi-check" aria-hidden="true" />
                 Conta criada
               </>
             ) : (
               <>
                 Criar minha conta
-                <i
-                  className="pi pi-arrow-right"
-                  aria-hidden="true"
-                ></i>
+                <i className="pi pi-arrow-right" aria-hidden="true" />
               </>
             )}
           </Button>
         </form>
 
         <div className="cadastro-login-link">
-          <span>Já tem uma conta?</span>
-
-          <button
-            type="button"
-            onClick={handleIrParaLogin}
-            disabled={carregando}
-          >
+          {!cadastroConcluido && <span>Já tem uma conta?</span>}
+          <button type="button" onClick={handleIrParaLogin} disabled={ocupado}>
             Fazer login
-            <i
-              className="pi pi-arrow-right"
-              aria-hidden="true"
-            ></i>
+            <i className="pi pi-arrow-right" aria-hidden="true" />
           </button>
         </div>
       </Modal.Body>

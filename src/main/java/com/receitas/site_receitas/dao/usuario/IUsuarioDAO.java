@@ -15,6 +15,8 @@ public interface IUsuarioDAO {
 
     Optional<Usuario> buscarPorEmail(String email);
 
+    Optional<Usuario> buscarPorGoogleSub(String googleSub);
+
     List<Usuario> listarTodos();
 
     Page<Usuario> listarPaginado(Pageable pageable);

@@ -141,7 +141,7 @@ function useGlobalButtonLoader() {
       if (!(event.target instanceof Element)) return;
 
       const alvo = event.target.closest(
-        'button, a[href], [role="button"], .header-user-profile, .admin-sidebar-btn, .header-logout-btn, .header-notification-btn'
+        'a[href], .header-user-profile, .admin-sidebar-btn, .header-logout-btn, .header-notification-btn'
       );
 
       if (!alvo) return;

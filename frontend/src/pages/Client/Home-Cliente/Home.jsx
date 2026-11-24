@@ -470,7 +470,7 @@ const cardProps = receita => ({
     <PageWrapper paginaAtual="inicio">
 <main className="home-wrapper">
         <div className="jornal-edicao-barra">
-          <span>Jornal de Receitas · Caderno culinário</span>
+          <span>Da sua cozinha para o mundo</span>
           <span className="jornal-edicao-data">{dataEdicao}</span>
           <span>Uma nova edição periodicamente</span>
         </div>
@@ -627,7 +627,6 @@ const cardProps = receita => ({
 
     <h3>Glossário<span>.</span></h3>
 
-    <p>Palavras e expressões que fazem parte da boa cozinha.</p>
   </div>
 
   <div className="jornal-dicionario-lista">

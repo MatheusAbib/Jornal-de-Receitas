@@ -17,7 +17,7 @@
   margin: 0;
   color: var(--vintage-green-dark, #354b38);
   font-family: var(--font-editorial, 'DM Serif Display', serif);
-  font-size: clamp(1.6rem, 4vw, 1.9rem);
+  font-size: clamp(1.6rem, 4vw, 1.8rem);
   font-weight: 400;
   line-height: 1.2;
   letter-spacing: -0.025em;
@@ -28,7 +28,7 @@
   margin: 0;
   color: var(--ink-soft, #66635d);
   font-family: var(--font-body, inherit);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 400;
   line-height: 1.75;
 }

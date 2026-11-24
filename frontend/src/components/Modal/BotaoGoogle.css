@@ -1,0 +1,88 @@
+.google-auth {
+  width: 100%;
+  min-width: 0;
+  margin: 16px 0;
+}
+
+.google-auth--login,
+.google-auth--cadastro {
+  margin: 0 0 20px;
+}
+
+.google-auth-faixa {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-soft, #d8d0bf);
+  background: var(--paper-white, #fffdf8);
+}
+
+.google-auth-rotulo {
+  margin: 0;
+  color: var(--vintage-green-dark, #344c3d);
+  font-family: var(--font-body, inherit);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.google-auth-controle {
+  width: 100%;
+  min-width: 0;
+  max-width: 400px;
+}
+
+.google-auth-botao {
+  width: 100%;
+}
+
+.google-auth .google-auth-mensagem {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.google-auth-repetir {
+  display: block;
+  margin-top: 5px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.google-auth-repetir:focus-visible {
+  outline: 2px solid var(--vintage-green, #526b50);
+  outline-offset: 3px;
+}
+
+.google-auth-divisor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  color: var(--ink-soft, #686357);
+  font-family: var(--font-body, inherit);
+  font-size: 0.76rem;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.google-auth-divisor::before,
+.google-auth-divisor::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-soft, #d8d0bf);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .google-auth-mensagem .pi-spin {
+    animation: none;
+  }
+}

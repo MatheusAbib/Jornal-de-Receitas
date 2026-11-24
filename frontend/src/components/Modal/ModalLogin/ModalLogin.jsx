@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Modal from '../Modal';
+import BotaoGoogle from '../BotaoGoogle';
 import Button from '../../Home/Button/Button';
 import Input from '../../Home/Input/Input';
 import { useAuth } from '../../../context/AuthContext';
@@ -7,18 +8,20 @@ import { useToast } from '../../../context/ToastContext';
 import './ModalLogin.css';
 
 function ModalLogin({ aberto, onFechar, onIrParaCadastro }) {
-  const { login } = useAuth();
+  const { login, loginComGoogle } = useAuth();
   const { mostrarToast } = useToast();
 
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(false);
+  const [processandoGoogle, setProcessandoGoogle] = useState(false);
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
+  const ocupado = carregando || processandoGoogle;
   const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const senhaValida = senha.trim().length > 0;
-  const botaoHabilitado = emailValido && senhaValida && !carregando;
+  const botaoHabilitado = emailValido && senhaValida && !ocupado;
 
   function limparFormulario() {
     setEmail('');
@@ -28,18 +31,46 @@ function ModalLogin({ aberto, onFechar, onIrParaCadastro }) {
   }
 
   function handleFechar() {
-    if (carregando) return;
+    if (ocupado) return;
 
     limparFormulario();
     onFechar();
   }
 
   function handleIrParaCadastro() {
-    if (carregando) return;
+    if (ocupado) return;
 
     limparFormulario();
     onFechar();
     onIrParaCadastro();
+  }
+
+  function concluirLogin(resultado) {
+    mostrarToast('Login realizado com sucesso!', 'success');
+    limparFormulario();
+    onFechar();
+
+    if (resultado.role === 'ADMIN') {
+      window.location.href = '/admin/dashboard';
+    }
+  }
+
+  function mostrarErroLogin(mensagem) {
+    setErro(mensagem);
+    mostrarToast(mensagem, 'error');
+    setSenha('');
+  }
+
+  async function handleLoginGoogle(credential) {
+    setErro('');
+
+    const resultado = await loginComGoogle(credential);
+
+    if (resultado.success) {
+      concluirLogin(resultado);
+    } else {
+      mostrarErroLogin(resultado.message || 'Não foi possível continuar com o Google.');
+    }
   }
 
   async function handleSubmit(e) {
@@ -54,29 +85,14 @@ function ModalLogin({ aberto, onFechar, onIrParaCadastro }) {
       const resultado = await login(email.trim(), senha);
 
       if (resultado.success) {
-        mostrarToast('Login realizado com sucesso!', 'success');
-
-        limparFormulario();
-        onFechar();
-
-        if (resultado.role === 'ADMIN') {
-          window.location.href = '/admin/dashboard';
-        }
+        concluirLogin(resultado);
       } else {
-        const msg = resultado.message || 'E-mail ou senha incorretos.';
-
-        setErro(msg);
-        mostrarToast(msg, 'error');
-        setSenha('');
+        mostrarErroLogin(resultado.message || 'E-mail ou senha incorretos.');
       }
     } catch (err) {
-      const msg =
-        err?.response?.data?.message ||
-        'Erro de conexão. Tente novamente.';
-
-      setErro(msg);
-      mostrarToast(msg, 'error');
-      setSenha('');
+      mostrarErroLogin(
+        err?.response?.data?.message || 'Erro de conexão. Tente novamente.'
+      );
     } finally {
       setCarregando(false);
     }
@@ -98,31 +114,24 @@ function ModalLogin({ aberto, onFechar, onIrParaCadastro }) {
       <Modal.Body className="login-modal-body">
         <div className="login-intro">
           <h3>Bem-vindo de volta</h3>
-
-          <p>
-            Entre com seus dados para acessar suas receitas,
-            favoritos e publicações.
-          </p>
+          <p>Entre com seus dados para acessar suas receitas, favoritos e publicações.</p>
         </div>
 
         {erro && (
-          <div
-            className="modal-message modal-message-error"
-            role="alert"
-          >
-            <i
-              className="pi pi-exclamation-circle"
-              aria-hidden="true"
-            ></i>
-
+          <div className="modal-message modal-message-error" role="alert">
+            <i className="pi pi-exclamation-circle" aria-hidden="true"></i>
             <span>{erro}</span>
           </div>
         )}
 
-        <form
-          className="login-form"
-          onSubmit={handleSubmit}
-        >
+        {aberto && !carregando && (
+          <BotaoGoogle
+            onCredencial={handleLoginGoogle}
+            onProcessando={setProcessandoGoogle}
+            titulo="Entre com sua conta Google"
+          />
+        )}
+        <form className="login-form" onSubmit={handleSubmit}>
           <div className="login-form-group">
             <Input
               id="username"
@@ -165,36 +174,24 @@ function ModalLogin({ aberto, onFechar, onIrParaCadastro }) {
           >
             {carregando ? (
               <>
-                <i
-                  className="pi pi-spin pi-spinner"
-                  aria-hidden="true"
-                ></i>
+                <i className="pi pi-spin pi-spinner" aria-hidden="true"></i>
                 Entrando...
               </>
             ) : (
               <>
                 Entrar na conta
-                <i
-                  className="pi pi-arrow-right"
-                  aria-hidden="true"
-                ></i>
+                <i className="pi pi-arrow-right" aria-hidden="true"></i>
               </>
             )}
           </Button>
         </form>
 
+
         <div className="login-register-link">
           <span>Ainda não tem uma conta?</span>
-
-          <button
-            type="button"
-            onClick={handleIrParaCadastro}
-          >
+          <button type="button" onClick={handleIrParaCadastro} disabled={ocupado}>
             Cadastre-se
-            <i
-              className="pi pi-arrow-right"
-              aria-hidden="true"
-            ></i>
+            <i className="pi pi-arrow-right" aria-hidden="true"></i>
           </button>
         </div>
       </Modal.Body>

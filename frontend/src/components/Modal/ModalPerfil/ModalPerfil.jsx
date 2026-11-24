@@ -1,134 +1,242 @@
-import { useState, useEffect } from 'react';
-import Modal from "../Modal";
+import { useEffect, useId, useState } from 'react';
+import Modal from '../Modal';
+import BotaoGoogle from '../BotaoGoogle';
 import LoaderInline from '../../Global/LoaderInline/LoaderInline';
-import { useAuth } from "../../../context/AuthContext";
-import { useToast } from "../../../context/ToastContext";
+import { useAuth } from '../../../context/AuthContext';
+import { useToast } from '../../../context/ToastContext';
+import { vincularGoogle } from '../../../services/authService';
 import api, { extrairMensagemErro } from '../../../services/api';
+import { listarCamposPendentesDoPerfil } from '../../../utils/perfilIncompleto';
 import './ModalPerfil.css';
 
-function ModalPerfil({ aberto, onFechar }) {
-  const { usuario, setUsuario } = useAuth();
-  const { mostrarToast } = useToast();
+const googleConfigurado = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim());
 
+const generos = {
+  MASCULINO: 'Masculino',
+  FEMININO: 'Feminino',
+  OUTRO: 'Outro',
+};
+
+function somenteDigitos(valor) {
+  return valor.replace(/\D/g, '');
+}
+
+function mascaraCpf(valor) {
+  return somenteDigitos(valor).slice(0, 11)
+    .replace(/^(\d{3})(\d)/, '$1.$2')
+    .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+    .replace(/\.(\d{3})(\d{1,2})$/, '.$1-$2');
+}
+
+function mascaraTelefone(valor) {
+  const digitos = somenteDigitos(valor).slice(0, 11);
+
+  if (!digitos) return '';
+  if (digitos.length <= 2) return `(${digitos}`;
+  if (digitos.length <= 6) return `(${digitos.slice(0, 2)}) ${digitos.slice(2)}`;
+
+  const divisao = digitos.length <= 10 ? 6 : 7;
+
+  return `(${digitos.slice(0, 2)}) ${digitos.slice(2, divisao)}-${digitos.slice(divisao)}`;
+}
+
+function criarFormulario(usuario) {
+  return {
+    nome: usuario.nome ?? '',
+    email: usuario.email ?? '',
+    cpf: usuario.cpf ?? '',
+    telefone: usuario.telefone ? mascaraTelefone(usuario.telefone) : '',
+    genero: (usuario.genero ?? '').toUpperCase(),
+    senha: '',
+    confirmarSenha: '',
+  };
+}
+
+function formatarData(data) {
+  if (!data) return '';
+
+  const [ano, mes, dia] = data.split('T')[0].split('-');
+
+  return dia && mes && ano ? `${dia}/${mes}/${ano}` : data;
+}
+
+function CampoPerfil({ id, label, icone, children, ...props }) {
+  return (
+    <div className="user-form-group">
+      <div className="user-input-float">
+        <input
+          id={id}
+          className="user-form-control-float"
+          placeholder=" "
+          {...props}
+        />
+        <label htmlFor={id}>{label}</label>
+        <i className={`pi ${icone}`} aria-hidden="true" />
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function ModalPerfil({ aberto, onFechar }) {
+  const { setUsuario } = useAuth();
+  const { mostrarToast } = useToast();
+  const tituloGoogleId = useId();
+  const painelVinculoId = useId();
+
+  const [perfil, setPerfil] = useState(null);
+  const [form, setForm] = useState(null);
   const [modoEdicao, setModoEdicao] = useState(false);
-  const [form, setForm] = useState({
-    nome: '', email: '', cpf: '', telefone: '',
-    genero: '', dataCadastro: '', senha: '', confirmarSenha: ''
-  });
-  const [original, setOriginal] = useState(null);
-  const [carregando, setCarregando] = useState(false);
   const [carregandoPerfil, setCarregandoPerfil] = useState(false);
-  const [mensagem, setMensagem] = useState({ tipo: '', texto: '' });
+  const [carregando, setCarregando] = useState(false);
+  const [mensagem, setMensagem] = useState(null);
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
+  const [modoVinculo, setModoVinculo] = useState(false);
+  const [senhaAtual, setSenhaAtual] = useState('');
+  const [vinculando, setVinculando] = useState(false);
 
   useEffect(() => {
     if (!aberto) return;
 
+    let ativo = true;
+
+    setPerfil(null);
+    setForm(null);
     setModoEdicao(false);
-    setMensagem({ tipo: '', texto: '' });
-    setCarregando(false);
+    setModoVinculo(false);
+    setSenhaAtual('');
+    setMensagem(null);
     setMostrarSenha(false);
     setMostrarConfirmar(false);
+    setCarregandoPerfil(true);
 
     async function carregarPerfil() {
-      setCarregandoPerfil(true);
       try {
         const response = await api.get('/api/perfil/usuario-logado', { silent: true });
-        const u = response.data.usuario;
+        const usuario = response.data.usuario;
 
-        const dados = {
-          nome: u.nome || '',
-          email: u.email || '',
-          cpf: formatarCpf(u.cpf || ''),
-          telefone: formatarTelefone(u.telefone || ''),
-          genero: (u.genero || '').toUpperCase(),
-          dataCadastro: formatarData(u.dataCadastro),
-          senha: '',
-          confirmarSenha: ''
-        };
+        if (!ativo) return;
 
-        setForm(dados);
-        setOriginal(dados);
+        if (!usuario) {
+          setMensagem({
+            tipo: 'error',
+            texto: 'Entre novamente para acessar seu perfil.',
+          });
+          return;
+        }
+
+        setPerfil(usuario);
+        setForm(criarFormulario(usuario));
       } catch (err) {
-        const msg = extrairMensagemErro(err, 'Erro ao carregar dados do usuário.');
-        setMensagem({ tipo: 'error', texto: msg });
-        mostrarToast(msg, 'error');
+        if (ativo) {
+          setMensagem({
+            tipo: 'error',
+            texto: extrairMensagemErro(err, 'Erro ao carregar dados do usuário.'),
+          });
+        }
       } finally {
-        setCarregandoPerfil(false);
+        if (ativo) setCarregandoPerfil(false);
       }
     }
 
     carregarPerfil();
+
+    return () => {
+      ativo = false;
+    };
   }, [aberto]);
 
-  function formatarCpf(cpf) {
-    const digits = cpf.replace(/\D/g, '');
-    if (digits.length === 11) {
-      return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-    }
-    return cpf;
+  const original = perfil ? criarFormulario(perfil) : null;
+  const camposPendentes = listarCamposPendentesDoPerfil(perfil);
+  const ocupado = carregando || vinculando;
+  const cpfMudou = form && original && form.cpf !== original.cpf;
+  const cpfValido = !cpfMudou || !form.cpf || somenteDigitos(form.cpf).length === 11;
+  const telefone = somenteDigitos(form?.telefone ?? '');
+  const telefoneValido = !telefone || telefone.length === 10 || telefone.length === 11;
+  const senhaValida = (!form?.senha && !form?.confirmarSenha) ||
+    (form?.senha.length >= 6 && form.senha === form.confirmarSenha);
+
+  const mudou = form && original && (
+    form.nome !== original.nome ||
+    form.email !== original.email ||
+    cpfMudou ||
+    form.telefone !== original.telefone ||
+    form.genero !== original.genero ||
+    form.senha ||
+    form.confirmarSenha
+  );
+
+  const podeSalvar = Boolean(
+    mudou &&
+    (form.nome === original.nome || form.nome.trim().length >= 3) &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()) &&
+    cpfValido &&
+    telefoneValido &&
+    senhaValida &&
+    !ocupado
+  );
+
+  function alternarEdicao() {
+    if (ocupado) return;
+
+    setForm(criarFormulario(perfil));
+    setMensagem(null);
+    setMostrarSenha(false);
+    setMostrarConfirmar(false);
+    setModoVinculo(false);
+    setSenhaAtual('');
+    setModoEdicao(valor => !valor);
   }
 
-  function formatarTelefone(telefone) {
-    const digits = telefone.replace(/\D/g, '');
-    if (digits.length === 11) {
-      return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-    }
-    if (digits.length === 10) {
-      return digits.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-    }
-    return telefone;
+  function alternarVinculo() {
+    if (ocupado) return;
+
+    setSenhaAtual('');
+    setMensagem(null);
+    setModoVinculo(valor => !valor);
   }
 
-  function formatarData(data) {
-    if (!data) return '';
-    try {
-      const d = data.split('T')[0];
-      const [ano, mes, dia] = d.split('-');
-      return `${dia}/${mes}/${ano}`;
-    } catch {
-      return data;
-    }
+  function handleFechar() {
+    if (ocupado) return;
+
+    setSenhaAtual('');
+    setModoVinculo(false);
+    setForm(null);
+    onFechar();
   }
 
-  function mascaraTelefone(valor) {
-    let v = valor.replace(/\D/g, '').substring(0, 11);
-    if (v.length > 0) v = '(' + v;
-    if (v.length > 3) v = v.slice(0, 3) + ') ' + v.slice(3);
-    if (v.length > 9) v = v.slice(0, 9) + '-' + v.slice(9, 14);
-    return v;
+  function atualizarCampo(nome, valor) {
+    setForm(anterior => ({ ...anterior, [nome]: valor }));
+    setMensagem(null);
   }
 
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setMensagem({ tipo: '', texto: '' });
+  function handleChange(evento) {
+    atualizarCampo(evento.target.name, evento.target.value);
   }
 
-  function handleTelefone(e) {
-    setForm({ ...form, telefone: mascaraTelefone(e.target.value) });
-    setMensagem({ tipo: '', texto: '' });
-  }
+  async function handleSubmit(evento) {
+    evento.preventDefault();
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setMensagem({ tipo: '', texto: '' });
-
-    if (form.senha && form.senha !== form.confirmarSenha) {
-      setMensagem({ tipo: 'error', texto: 'As senhas não coincidem' });
-      mostrarToast('As senhas não coincidem', 'error');
-      return;
-    }
+    if (!podeSalvar) return;
 
     setCarregando(true);
+    setMensagem(null);
 
     try {
       const dados = {
-        nome: form.nome,
-        email: form.email,
-        telefone: form.telefone.replace(/\D/g, ''),
-        genero: form.genero
+        nome: form.nome.trim(),
+        email: form.email.trim(),
+        genero: form.genero,
       };
+
+      if (form.telefone !== original.telefone) {
+        dados.telefone = telefone;
+      }
+
+      if (cpfMudou) {
+        dados.cpf = somenteDigitos(form.cpf) || null;
+      }
 
       if (form.senha) {
         dados.senha = form.senha;
@@ -136,211 +244,229 @@ function ModalPerfil({ aberto, onFechar }) {
       }
 
       const response = await api.post('/api/perfil/editar', dados, { silent: true });
+      const atualizado = response.data.usuario;
 
-      if (response.data.message?.includes('sucesso')) {
-        setMensagem({ tipo: 'success', texto: 'Perfil atualizado com sucesso!' });
-        mostrarToast('Perfil atualizado com sucesso!', 'success');
-
-        const novosDados = { ...form, senha: '', confirmarSenha: '' };
-        setForm(novosDados);
-        setOriginal(novosDados);
-
-        if (setUsuario) {
-          setUsuario({ ...usuario, ...dados, senha: undefined, confirmarSenha: undefined });
-        }
-
-        setTimeout(() => {
-          setModoEdicao(false);
-          setMensagem({ tipo: '', texto: '' });
-        }, 1500);
-      } else {
-        const msg = response.data.message || 'Erro ao atualizar';
-        setMensagem({ tipo: 'error', texto: msg });
-        mostrarToast(msg, 'error');
+      if (!atualizado) {
+        throw new Error(response.data.message || 'Erro ao atualizar o perfil.');
       }
+
+      setPerfil(atualizado);
+      setForm(criarFormulario(atualizado));
+      setUsuario(atualizado);
+      setModoEdicao(false);
+      mostrarToast('Perfil atualizado com sucesso!', 'success');
     } catch (err) {
-      const msg = extrairMensagemErro(err, 'Erro ao atualizar perfil');
-      setMensagem({ tipo: 'error', texto: msg });
-      mostrarToast(msg, 'error');
+      const texto = extrairMensagemErro(err, 'Erro ao atualizar o perfil.');
+
+      setMensagem({ tipo: 'error', texto });
+      mostrarToast(texto, 'error');
     } finally {
       setCarregando(false);
     }
   }
 
-  function toggleEdicao() {
-    setModoEdicao(!modoEdicao);
-    setMensagem({ tipo: '', texto: '' });
+  async function handleVincularGoogle(credential) {
+    try {
+      const resultado = await vincularGoogle(credential, senhaAtual);
+
+      if (!resultado.success) {
+        throw new Error(resultado.message || 'Não foi possível vincular o Google.');
+      }
+
+      setPerfil(anterior => ({ ...anterior, googleVinculado: true }));
+      setUsuario(anterior => anterior ? { ...anterior, googleVinculado: true } : anterior);
+      setModoVinculo(false);
+      mostrarToast(resultado.message || 'Conta Google vinculada com sucesso!', 'success');
+    } finally {
+      setSenhaAtual('');
+    }
   }
 
-  function handleFechar() {
-    setModoEdicao(false);
-    setMensagem({ tipo: '', texto: '' });
-    setMostrarSenha(false);
-    setMostrarConfirmar(false);
-    onFechar();
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  const nomeValido = form.nome.trim().length >= 3;
-  const emailValido = emailRegex.test(form.email.trim());
-  const telefoneValido = form.telefone.replace(/\D/g, '').length >= 10;
-  const generoValido = form.genero.trim() !== '';
-
-  let senhaValida = true;
-  if (form.senha || form.confirmarSenha) {
-    senhaValida = form.senha.length >= 6 && form.senha === form.confirmarSenha;
-  }
-
-  const formularioValido = nomeValido && emailValido && telefoneValido && generoValido && senhaValida;
-
-  const mudou =
-    !original ||
-    form.nome !== original.nome ||
-    form.email !== original.email ||
-    form.telefone !== original.telefone ||
-    form.genero !== original.genero ||
-    form.senha.length > 0 ||
-    form.confirmarSenha.length > 0;
-
-  const botaoHabilitado = formularioValido && mudou && !carregando;
+  const informacoes = perfil ? [
+    ['Nome', perfil.nome],
+    ['E-mail', perfil.email],
+    ['CPF', perfil.cpf ? mascaraCpf(perfil.cpf) : ''],
+    ['Telefone', perfil.telefone ? mascaraTelefone(perfil.telefone) : ''],
+    ['Gênero', generos[(perfil.genero ?? '').toUpperCase()]],
+    ['Data de Cadastro', formatarData(perfil.dataCadastro)],
+  ] : [];
 
   return (
     <Modal aberto={aberto} onFechar={handleFechar} maxWidth="600px">
-      <Modal.Header
-        titulo="Meu Perfil"
-        icone="pi pi-user"
-        onFechar={handleFechar}
-      />
+      <Modal.Header titulo="Meu Perfil" icone="pi pi-user" onFechar={handleFechar} />
 
       <Modal.Body>
-
         {carregandoPerfil && <LoaderInline texto="Carregando perfil..." />}
 
-        {!carregandoPerfil && !modoEdicao && (
-          <div className="user-view-mode">
-
-            <div className="user-view-info">
-
-              <div className="user-view-item">
-                <span className="user-view-label">Nome</span>
-                <span className="user-view-value">{form.nome || '-'}</span>
-              </div>
-
-              <div className="user-view-item">
-                <span className="user-view-label">E-mail</span>
-                <span className="user-view-value">{form.email || '-'}</span>
-              </div>
-
-              <div className="user-view-item">
-                <span className="user-view-label">CPF</span>
-                <span className="user-view-value">{form.cpf || '-'}</span>
-              </div>
-
-              <div className="user-view-item">
-                <span className="user-view-label">Telefone</span>
-                <span className="user-view-value">{form.telefone || '-'}</span>
-              </div>
-
-              <div className="user-view-item">
-                <span className="user-view-label">Gênero</span>
-                <span className="user-view-value">
-                  {form.genero === 'MASCULINO' ? 'Masculino' :
-                   form.genero === 'FEMININO' ? 'Feminino' :
-                   form.genero === 'OUTRO' ? 'Outro' : '-'}
-                </span>
-              </div>
-
-              <div className="user-view-item">
-                <span className="user-view-label">Data de Cadastro</span>
-                <span className="user-view-value">{form.dataCadastro || '-'}</span>
-              </div>
-
-            </div>
-
-            <div className="modal-actions">
-              <button type="button" className="modal-btn modal-btn-cancel" onClick={handleFechar}>
-                <i className="pi pi-times"></i> Fechar
-              </button>
-              <button type="button" className="modal-btn modal-btn-primary" onClick={toggleEdicao}>
-                <i className="pi pi-pencil"></i> Editar Perfil
-              </button>
-            </div>
-
+        {mensagem && (
+          <div className={`modal-message modal-message-${mensagem.tipo}`} role="alert">
+            <i className="pi pi-exclamation-circle" aria-hidden="true" />
+            {mensagem.texto}
           </div>
         )}
 
-        {!carregandoPerfil && modoEdicao && (
+        {!carregandoPerfil && perfil && !modoEdicao && (
+          <div className="user-view-mode">
+            {camposPendentes.length > 0 && (
+              <div className="user-profile-notice">
+                <i className="pi pi-exclamation-circle" aria-hidden="true" />
+                <div>
+                  <strong>Complete seu perfil</strong>
+                  <p>
+                    Em <strong>Editar Perfil</strong>, você pode adicionar{' '}
+                    {new Intl.ListFormat('pt-BR', { type: 'conjunction' }).format(camposPendentes)}
+                    {' '}para manter seus dados atualizados.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="user-view-info">
+              {informacoes.map(([label, valor]) => (
+                <div key={label} className="user-view-item">
+                  <span className="user-view-label">{label}</span>
+                  <span className="user-view-value">{valor || '-'}</span>
+                </div>
+              ))}
+            </div>
+
+            {(perfil.googleVinculado || googleConfigurado) && (
+              <section className="user-google" aria-labelledby={tituloGoogleId}>
+                <div className="user-google-cabecalho">
+                  <div className="user-google-identificacao">
+                    <span className="user-google-icone" aria-hidden="true">
+                      <i className={`pi ${perfil.googleVinculado ? 'pi-check' : 'pi-link'}`} />
+                    </span>
+
+                    <div>
+                      <h3 id={tituloGoogleId}>Conta Google</h3>
+                      <p>
+                        {perfil.googleVinculado
+                          ? 'Vinculada ao seu perfil'
+                          : 'Vincule para entrar com o Google.'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {googleConfigurado && perfil.googleVinculado === false && (
+                    <button
+                      type="button"
+                      className="user-google-acao"
+                      onClick={alternarVinculo}
+                      disabled={ocupado}
+                      aria-expanded={modoVinculo}
+                      aria-controls={painelVinculoId}
+                    >
+                      {modoVinculo ? 'Cancelar vínculo' : 'Vincular conta'}
+                      <i
+                        className={`pi ${modoVinculo ? 'pi-minus' : 'pi-arrow-right'}`}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  )}
+                </div>
+
+                <div id={painelVinculoId} hidden={!modoVinculo}>
+                  {aberto && modoVinculo && (
+                    <div className="user-google-vinculo">
+                      <p className="user-google-orientacao">
+                        Digite sua senha atual do Jornal e selecione a conta Google com o mesmo e-mail do seu perfil.
+                      </p>
+
+                      <CampoPerfil
+                        id="vinculoSenhaAtual"
+                        label="Senha atual"
+                        icone="pi-lock"
+                        type="password"
+                        autoComplete="current-password"
+                        value={senhaAtual}
+                        disabled={vinculando}
+                        onChange={evento => setSenhaAtual(evento.target.value)}
+                      />
+
+                      <BotaoGoogle
+                        onCredencial={handleVincularGoogle}
+                        onProcessando={setVinculando}
+                      />
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="modal-btn modal-btn-cancel"
+                onClick={handleFechar}
+                disabled={ocupado}
+              >
+                <i className="pi pi-times" aria-hidden="true" /> Fechar
+              </button>
+
+              <button
+                type="button"
+                className="modal-btn modal-btn-primary"
+                onClick={alternarEdicao}
+                disabled={ocupado}
+              >
+                <i className="pi pi-pencil" aria-hidden="true" /> Editar Perfil
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!carregandoPerfil && modoEdicao && form && (
           <div className="user-edit-mode">
             <form onSubmit={handleSubmit}>
-
               <div className="user-form-row">
-                <div className="user-form-group">
-                  <div className="user-input-float">
-                    <input
-                      type="text"
-                      id="editNome"
-                      name="nome"
-                      className="user-form-control-float"
-                      placeholder=" "
-                      value={form.nome}
-                      onChange={handleChange}
-                      required
-                    />
-                    <label htmlFor="editNome">Nome</label>
-                    <i className="pi pi-user"></i>
-                  </div>
-                </div>
+                <CampoPerfil
+                  id="editNome"
+                  label="Nome"
+                  icone="pi-user"
+                  name="nome"
+                  value={form.nome}
+                  onChange={handleChange}
+                  autoComplete="name"
+                  required
+                />
 
-                <div className="user-form-group">
-                  <div className="user-input-float">
-                    <input
-                      type="email"
-                      id="editEmail"
-                      name="email"
-                      className="user-form-control-float"
-                      placeholder=" "
-                      value={form.email}
-                      onChange={handleChange}
-                      required
-                    />
-                    <label htmlFor="editEmail">E-mail</label>
-                    <i className="pi pi-envelope"></i>
-                  </div>
-                </div>
+                <CampoPerfil
+                  id="editEmail"
+                  label="E-mail"
+                  icone="pi-envelope"
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  autoComplete="email"
+                  required
+                />
               </div>
 
               <div className="user-form-row">
-                <div className="user-form-group">
-                  <div className="user-input-float">
-                    <input
-                      type="text"
-                      id="editCpf"
-                      className="user-form-control-float"
-                      placeholder=" "
-                      value={form.cpf}
-                      readOnly
-                    />
-                    <label htmlFor="editCpf">CPF</label>
-                    <i className="pi pi-id-card"></i>
-                  </div>
-                </div>
+                <CampoPerfil
+                  id="editCpf"
+                  label="CPF (opcional)"
+                  icone="pi-id-card"
+                  name="cpf"
+                  value={form.cpf}
+                  onChange={evento => atualizarCampo('cpf', mascaraCpf(evento.target.value))}
+                  inputMode="numeric"
+                  maxLength={14}
+                />
 
-                <div className="user-form-group">
-                  <div className="user-input-float">
-                    <input
-                      type="tel"
-                      id="editTelefone"
-                      name="telefone"
-                      className="user-form-control-float"
-                      placeholder=" "
-                      value={form.telefone}
-                      onChange={handleTelefone}
-                    />
-                    <label htmlFor="editTelefone">Telefone</label>
-                    <i className="pi pi-phone"></i>
-                  </div>
-                </div>
+                <CampoPerfil
+                  id="editTelefone"
+                  label="Telefone"
+                  icone="pi-phone"
+                  name="telefone"
+                  type="tel"
+                  value={form.telefone}
+                  onChange={evento => atualizarCampo('telefone', mascaraTelefone(evento.target.value))}
+                  autoComplete="tel"
+                  maxLength={15}
+                />
               </div>
 
               <div className="user-form-row">
@@ -354,97 +480,91 @@ function ModalPerfil({ aberto, onFechar }) {
                       onChange={handleChange}
                     >
                       <option value=""></option>
-                      <option value="MASCULINO">Masculino</option>
-                      <option value="FEMININO">Feminino</option>
-                      <option value="OUTRO">Outro</option>
+                      {Object.entries(generos).map(([valor, label]) => (
+                        <option key={valor} value={valor}>{label}</option>
+                      ))}
                     </select>
                     <label htmlFor="editGenero">Gênero</label>
-                    <i className="pi pi-users"></i>
+                    <i className="pi pi-users" aria-hidden="true" />
                   </div>
                 </div>
 
-                <div className="user-form-group">
-                  <div className="user-input-float">
-                    <input
-                      type="text"
-                      id="editDataCadastro"
-                      className="user-form-control-float"
-                      placeholder=" "
-                      value={form.dataCadastro}
-                      readOnly
-                    />
-                    <label htmlFor="editDataCadastro">Data de Cadastro</label>
-                    <i className="pi pi-calendar"></i>
-                  </div>
-                </div>
+                <CampoPerfil
+                  id="editDataCadastro"
+                  label="Data de Cadastro"
+                  icone="pi-calendar"
+                  value={formatarData(perfil.dataCadastro)}
+                  readOnly
+                />
               </div>
 
               <div className="user-form-row">
-                <div className="user-form-group">
-                  <div className="user-input-float">
-                    <input
-                      type={mostrarSenha ? 'text' : 'password'}
-                      id="editSenha"
-                      name="senha"
-                      className="user-form-control-float"
-                      placeholder=" "
-                      value={form.senha}
-                      onChange={handleChange}
-                    />
-                    <label htmlFor="editSenha">Nova Senha</label>
-                    <i className="pi pi-lock"></i>
-                    <span
-                      className={`user-password-toggle pi ${mostrarSenha ? 'pi-eye-slash' : 'pi-eye'}`}
-                      onClick={() => setMostrarSenha(!mostrarSenha)}
-                    ></span>
-                  </div>
-                </div>
+                <CampoPerfil
+                  id="editSenha"
+                  label="Nova Senha"
+                  icone="pi-lock"
+                  name="senha"
+                  type={mostrarSenha ? 'text' : 'password'}
+                  value={form.senha}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                >
+                  <button
+                    type="button"
+                    className={`user-password-toggle pi ${mostrarSenha ? 'pi-eye-slash' : 'pi-eye'}`}
+                    aria-label={mostrarSenha ? 'Ocultar nova senha' : 'Mostrar nova senha'}
+                    onClick={() => setMostrarSenha(valor => !valor)}
+                  />
+                </CampoPerfil>
 
-                <div className="user-form-group">
-                  <div className="user-input-float">
-                    <input
-                      type={mostrarConfirmar ? 'text' : 'password'}
-                      id="confirmarSenha"
-                      name="confirmarSenha"
-                      className="user-form-control-float"
-                      placeholder=" "
-                      value={form.confirmarSenha}
-                      onChange={handleChange}
-                    />
-                    <label htmlFor="confirmarSenha">Confirmar Senha</label>
-                    <i className="pi pi-lock"></i>
-                    <span
-                      className={`user-password-toggle pi ${mostrarConfirmar ? 'pi-eye-slash' : 'pi-eye'}`}
-                      onClick={() => setMostrarConfirmar(!mostrarConfirmar)}
-                    ></span>
-                  </div>
-                </div>
+                <CampoPerfil
+                  id="confirmarSenha"
+                  label="Confirmar Senha"
+                  icone="pi-lock"
+                  name="confirmarSenha"
+                  type={mostrarConfirmar ? 'text' : 'password'}
+                  value={form.confirmarSenha}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                >
+                  <button
+                    type="button"
+                    className={`user-password-toggle pi ${mostrarConfirmar ? 'pi-eye-slash' : 'pi-eye'}`}
+                    aria-label={mostrarConfirmar ? 'Ocultar confirmação de senha' : 'Mostrar confirmação de senha'}
+                    onClick={() => setMostrarConfirmar(valor => !valor)}
+                  />
+                </CampoPerfil>
               </div>
 
-              {mensagem.texto && (
-                <div className={`modal-message modal-message-${mensagem.tipo === 'success' ? 'success' : 'error'}`}>
-                  <i className={`pi ${mensagem.tipo === 'success' ? 'pi-check-circle' : 'pi-exclamation-circle'}`}></i>
-                  {mensagem.texto}
-                </div>
+              {cpfMudou && !cpfValido && (
+                <p role="status">Informe um CPF com 11 dígitos ou deixe o campo em branco.</p>
               )}
 
               <div className="modal-actions">
-                <button type="button" className="modal-btn modal-btn-cancel" onClick={toggleEdicao}>
-                  <i className="pi pi-times"></i> Cancelar
+                <button
+                  type="button"
+                  className="modal-btn modal-btn-cancel"
+                  onClick={alternarEdicao}
+                  disabled={ocupado}
+                >
+                  <i className="pi pi-times" aria-hidden="true" /> Cancelar
                 </button>
-                <button type="submit" className="modal-btn modal-btn-save" disabled={!botaoHabilitado}>
-                  {carregando ? (
-                    <><i className="pi pi-spin pi-spinner"></i> Salvando...</>
-                  ) : (
-                    <><i className="pi pi-save"></i> Salvar</>
-                  )}
+
+                <button
+                  type="submit"
+                  className="modal-btn modal-btn-save"
+                  disabled={!podeSalvar}
+                >
+                  <i
+                    className={`pi ${carregando ? 'pi-spin pi-spinner' : 'pi-save'}`}
+                    aria-hidden="true"
+                  />
+                  {' '}{carregando ? 'Salvando...' : 'Salvar'}
                 </button>
               </div>
-
             </form>
           </div>
         )}
-
       </Modal.Body>
     </Modal>
   );

@@ -10,10 +10,17 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "usuario")
+@Table(
+        name = "usuario",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_usuario_google_sub",
+                columnNames = "google_sub"
+        )
+)
 @Getter
 @Setter
 @Schema(description = "Representa um usuário do sistema")
@@ -32,8 +39,8 @@ public class Usuario {
     @Schema(description = "Email único do usuário", example = "joao.silva@email.com")
     private String email;
 
-    @Column(nullable = false, unique = true, length = 14)
-    @Schema(description = "CPF do usuário (somente números)", example = "12345678901")
+    @Column(unique = true, length = 14)
+    @Schema(description = "CPF opcional do usuário (somente números)", example = "12345678901")
     private String cpf;
 
     @Schema(description = "Telefone de contato", example = "11987654321")
@@ -42,9 +49,13 @@ public class Usuario {
     @Schema(description = "Gênero do usuário", example = "MASCULINO", allowableValues = {"MASCULINO", "FEMININO", "OUTRO"})
     private String genero;
 
-    @Column(nullable = false)
+    @Column
     @Schema(description = "Senha do usuário (armazenada como hash BCrypt)", example = "$2a$10$...", accessMode = Schema.AccessMode.WRITE_ONLY)
     private String senha;
+
+    @JsonIgnore
+    @Column(name = "google_sub")
+    private String googleSub;
 
     @Column(name = "data_cadastro", nullable = false)
     @Schema(description = "Data em que o usuário se cadastrou", example = "2025-09-23")
@@ -104,7 +115,7 @@ public class Usuario {
                 .collect(Collectors.groupingBy(i -> i, Collectors.counting()))
                 .entrySet().stream()
                 .filter(e -> e.getValue() > 1)
-                .map(e -> e.getKey())
+                .map(Map.Entry::getKey)
                 .sorted()
                 .collect(Collectors.toList());
     }

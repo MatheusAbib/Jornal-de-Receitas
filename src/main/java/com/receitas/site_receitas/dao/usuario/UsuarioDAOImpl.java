@@ -31,6 +31,11 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
     }
 
     @Override
+    public Optional<Usuario> buscarPorGoogleSub(String googleSub) {
+        return repository.findByGoogleSub(googleSub);
+    }
+
+    @Override
     public List<Usuario> listarTodos() {
         return repository.findAll();
     }

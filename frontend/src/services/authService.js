@@ -14,6 +14,35 @@ export async function login(email, senha) {
   return response.data;
 }
 
+export async function solicitarNonceGoogle() {
+  const response = await api.post('/api/login/google/nonce', null, {
+    silent: true,
+    withCredentials: true,
+  });
+
+  return response.data.nonce;
+}
+
+export async function loginComGoogle(credential) {
+  const response = await api.post(
+    '/api/login/google',
+    { credential },
+    { silent: true, withCredentials: true },
+  );
+
+  return response.data;
+}
+
+export async function vincularGoogle(credential, senhaAtual) {
+  const response = await api.post(
+    '/api/perfil/google/vincular',
+    { credential, senhaAtual },
+    { silent: true, withCredentials: true },
+  );
+
+  return response.data;
+}
+
 export async function logout() {
   await api.post('/api/logout', null, { showLoader: true });
 }

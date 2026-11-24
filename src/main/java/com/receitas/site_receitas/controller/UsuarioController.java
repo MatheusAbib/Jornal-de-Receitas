@@ -58,6 +58,7 @@ public class UsuarioController {
         mapa.put("dataCadastro", u.getDataCadastro() != null ? u.getDataCadastro().toString() : null);
         mapa.put("ativo", u.isAtivo());
         mapa.put("role", u.getRole());
+        mapa.put("googleVinculado", u.getGoogleSub() != null);
         return mapa;
     }
 

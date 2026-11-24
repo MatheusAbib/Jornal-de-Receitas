@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { prefetchRota } from '../../../services/prefetch';
 import { listarCarrossel } from '../../../services/carrosselService';
+import { listarCamposPendentesDoPerfil } from '../../../utils/perfilIncompleto';
 import './Header.css';
 
 function Header({
@@ -26,6 +27,7 @@ function Header({
   const navigate = useNavigate();
 
   const estaLogado = Boolean(usuario);
+  const perfilIncompleto = listarCamposPendentesDoPerfil(usuario).length > 0;
   const sempreScrollado = ['nova', 'detalhe', 'minhas-receitas'].includes(paginaAtual);
   const compacto = sempreScrollado || scrollado;
 
@@ -265,7 +267,6 @@ useLayoutEffect(() => {
             </div>
 
             <span className="header-edition-description">
-              Da sua cozinha para o mundo
             </span>
 
             <time className="newspaper-date">
@@ -335,42 +336,47 @@ useLayoutEffect(() => {
                     <strong>{primeiroNome}</strong>
                   </div>
 
-                  <div className="header-account-actions">
-                    <button
-                      type="button"
-                      className="header-user-profile header-user-desktop"
-                      onClick={() => executarAcao(onAbrirPerfil)}
-                      aria-label="Abrir meu perfil"
-                      title="Meu perfil"
-                    >
-                      <i className="pi pi-user" aria-hidden="true" />
-                    </button>
+                    <div className="header-account-actions">
+                      <button
+                        type="button"
+                        className="header-user-profile header-user-desktop"
+                        onClick={() => executarAcao(onAbrirPerfil)}
+                        aria-label={perfilIncompleto ? 'Abrir meu perfil, dados pendentes' : 'Abrir meu perfil'}
+                        title={perfilIncompleto ? 'Complete seu perfil' : 'Meu perfil'}
+                      >
+                        <i className="pi pi-user" aria-hidden="true" />
 
-                    <button
-                      type="button"
-                      className="header-notification-btn header-notification-desktop"
-                      onClick={() => executarAcao(onAbrirNotificacoes)}
-                      aria-label={`Notificações: ${quantidadeNotificacoes} não lidas`}
-                      title="Notificações"
-                    >
-                      <i className="pi pi-bell" aria-hidden="true" />
-                      {quantidadeNotificacoes > 0 && (
-                        <span className="notification-badge">
-                          {contadorNotificacoes}
-                        </span>
-                      )}
-                    </button>
+                        {perfilIncompleto && (
+                          <i className="pi pi-exclamation-circle header-profile-alert" aria-hidden="true" />
+                        )}
+                      </button>
 
-                    <button
-                      type="button"
-                      className="header-logout-btn"
-                      onClick={() => executarAcao(onAbrirLogout)}
-                      aria-label="Sair da conta"
-                      title="Sair"
-                    >
-                      <i className="pi pi-sign-out" aria-hidden="true" />
-                    </button>
-                  </div>
+                      <button
+                        type="button"
+                        className="header-notification-btn header-notification-desktop"
+                        onClick={() => executarAcao(onAbrirNotificacoes)}
+                        aria-label={`Notificações: ${quantidadeNotificacoes} não lidas`}
+                        title="Notificações"
+                      >
+                        <i className="pi pi-bell" aria-hidden="true" />
+
+                        {quantidadeNotificacoes > 0 && (
+                          <span className="notification-badge">
+                            {contadorNotificacoes}
+                          </span>
+                        )}
+                      </button>
+
+                      <button
+                        type="button"
+                        className="header-logout-btn"
+                        onClick={() => executarAcao(onAbrirLogout)}
+                        aria-label="Sair da conta"
+                        title="Sair"
+                      >
+                        <i className="pi pi-sign-out" aria-hidden="true" />
+                      </button>
+                    </div>
                 </div>
               ) : (
                 <button
@@ -387,11 +393,6 @@ useLayoutEffect(() => {
           </div>
 
           <div className="header-nav-frame">
-            <div className="header-nav-decoration" aria-hidden="true">
-              <span>Poste as suas receitas</span>
-              <span>Feito para compartilhar</span>
-            </div>
-
             <nav
               id="header-navigation"
               className={`header-nav ${sidebarAberta ? 'open' : ''}`}
@@ -453,11 +454,14 @@ useLayoutEffect(() => {
                     type="button"
                     className="header-user-mobile"
                     onClick={() => executarAcao(onAbrirPerfil)}
+                    aria-label={perfilIncompleto ? 'Meu perfil, dados pendentes' : undefined}
                   >
                     <i className="pi pi-user" aria-hidden="true" />
                     <span>Meu Perfil</span>
+                    {perfilIncompleto && (
+                      <i className="pi pi-exclamation-circle header-profile-alert" aria-hidden="true" />
+                    )}
                   </button>
-
                   <button
                     type="button"
                     className="header-notification-sidebar"
