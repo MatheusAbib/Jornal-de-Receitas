@@ -47,7 +47,7 @@ public class GoogleAuthService {
         if (usuarioDAO.existePorEmail(contaGoogle.email())) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
-                    "Entre na sua conta do Jornal de Receitas para vincular o Google."
+                    "Esse e-mail já está cadastrado. Entre na sua conta para vincular o Google."
             );
         }
 

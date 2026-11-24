@@ -1,7 +1,9 @@
 package com.receitas.site_receitas.service;
 
+import com.receitas.site_receitas.dao.redefinicaosenha.IRedefinicaoSenhaDAO;
 import com.receitas.site_receitas.dao.usuario.IUsuarioDAO;
 import com.receitas.site_receitas.model.Usuario;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,24 +17,28 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class UsuarioServiceTest {
 
     private IUsuarioDAO usuarioDAO;
     private EstatisticasService estatisticasService;
-    private BCryptPasswordEncoder passwordEncoder;
     private UsuarioService usuarioService;
 
     @BeforeEach
     void setUp() {
         usuarioDAO = mock(IUsuarioDAO.class);
         estatisticasService = mock(EstatisticasService.class);
-        passwordEncoder = new BCryptPasswordEncoder();
         usuarioService = new UsuarioService();
+
         ReflectionTestUtils.setField(usuarioService, "usuarioDAO", usuarioDAO);
         ReflectionTestUtils.setField(usuarioService, "estatisticasService", estatisticasService);
-        ReflectionTestUtils.setField(usuarioService, "passwordEncoder", passwordEncoder);
+        ReflectionTestUtils.setField(usuarioService, "passwordEncoder", new BCryptPasswordEncoder());
+        ReflectionTestUtils.setField(usuarioService, "entityManager", mock(EntityManager.class));
+        ReflectionTestUtils.setField(usuarioService, "redefinicaoSenhaDAO", mock(IRedefinicaoSenhaDAO.class));
     }
 
     @Test
@@ -95,10 +101,12 @@ class UsuarioServiceTest {
     @DisplayName("Deve lancar excecao ao editar perfil com email em uso")
     void deveLancarExcecaoAoEditarPerfilComEmailEmUso() {
         Usuario usuario = new Usuario();
+        usuario.setId(1);
         usuario.setEmail("antigo@email.com");
         usuario.setSenha("hashAntigo");
 
         Usuario outro = new Usuario();
+        outro.setId(2);
         outro.setEmail("novo@email.com");
 
         when(usuarioDAO.buscarPorEmail("antigo@email.com")).thenReturn(Optional.of(usuario));

@@ -1,5 +1,6 @@
 ﻿import { useState } from 'react';
 import PageWrapper from '../../../components/Global/PageWrapper/PageWrapper';
+import { useToast } from '../../../context/ToastContext';
 import './Sobre.css';
 
 const timeline = [
@@ -71,6 +72,7 @@ const faq = [
 
 function Sobre() {
   const [faqAberto, setFaqAberto] = useState(null);
+  const { mostrarToast } = useToast();
 
   function toggleFaq(index) {
     setFaqAberto(prev => prev === index ? null : index);
@@ -254,29 +256,36 @@ function Sobre() {
             </div>
           </section>
 
-          <section className="sobre-contato-section" aria-labelledby="sobre-contato-titulo">
-            <div className="sobre-contato-conteudo">
-              <span className="sobre-section-kicker">05 / Contato</span>
+<section className="sobre-contato-section" aria-labelledby="sobre-contato-titulo">
+  <div className="sobre-contato-conteudo">
+    <span className="sobre-section-kicker">05 / Contato</span>
 
-              <h2 id="sobre-contato-titulo">Entre em contato</h2>
+    <h2 id="sobre-contato-titulo">Entre em contato</h2>
 
-              <p>
-                Tem alguma dúvida, sugestão ou gostaria de colaborar
-                com o Jornal de Receitas?
-              </p>
-            </div>
+    <p>
+      Tem alguma dúvida, sugestão ou gostaria de colaborar
+      com o Jornal de Receitas?
+    </p>
+  </div>
 
-            <a
-              className="sobre-contato-link"
-              href="mailto:contato@jornalreceitas.com"
-            >
-              <i className="pi pi-envelope" aria-hidden="true"></i>
-
-              <span>contato@jornalreceitas.com</span>
-
-              <i className="pi pi-arrow-up-right" aria-hidden="true"></i>
-            </a>
-          </section>
+  <button
+    type="button"
+    className="sobre-contato-link"
+    aria-label="Copiar e-mail matheus.abib.ma@gmail.com"
+    onClick={async () => {
+      try {
+        await navigator.clipboard.writeText('matheus.abib.ma@gmail.com');
+        mostrarToast('E-mail copiado!', 'success');
+      } catch {
+        mostrarToast('Não foi possível copiar o e-mail.', 'error');
+      }
+    }}
+  >
+    <i className="pi pi-envelope" aria-hidden="true"></i>
+    <span>matheus.abib.ma@gmail.com</span>
+    <i className="pi pi-copy" aria-hidden="true"></i>
+  </button>
+</section>
         </div>
 
         <footer className="sobre-rodape">

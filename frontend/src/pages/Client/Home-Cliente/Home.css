@@ -136,7 +136,7 @@
     "etiqueta publicar";
   align-items: center;
   justify-items: center;
-  gap: 6px 0;
+  gap: 16px 0;
   width: 100%;
   min-width: 0;
   transform: none;
@@ -1023,7 +1023,7 @@ display: none;
     minmax(0, 2.3fr)
     minmax(0, 0.95fr);
   align-items: stretch;
-  gap: clamp(24px, 3vw, 46px);
+  gap: clamp(24px, 3vw, 40px);
   padding: 45px 0 55px;
 }
 
@@ -1037,12 +1037,12 @@ display: none;
 }
 
 .jornal-coluna-esquerda {
-  padding-right: clamp(24px, 3vw, 46px);
+  padding-right: clamp(24px, 3vw, 40px);
   border-right: 1px solid var(--jornal-borda);
 }
 
 .jornal-materia-principal {
-  padding-right: clamp(24px, 3vw, 46px);
+  padding-right: clamp(24px, 3vw, 40px);
   border-right: 1px solid var(--jornal-borda);
 }
 
@@ -1249,14 +1249,9 @@ display: none;
   padding: 10px 8px;
   border-bottom: 3px double var(--jornal-verde-escuro);
   color: var(--jornal-verde-escuro);
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.08em;
-}
-
-.jornal-dicionario-titulo {
-  padding: 12px;
-  text-align: center;
 }
 
 .jornal-dicionario-sobretitulo {
@@ -1266,20 +1261,6 @@ display: none;
   font-size: 8px;
   font-weight: 900;
   letter-spacing: 0.1em;
-}
-
-.jornal-dicionario-titulo h3 {
-  margin: 0;
-  color: var(--jornal-verde-escuro);
-  font-family: var(--jornal-serif);
-  font-size: clamp(30px, 1.8vw, 49px);
-  font-weight: 400;
-  letter-spacing: -0.055em;
-  line-height: 1;
-}
-
-.jornal-dicionario-titulo h3 span {
-  color: var(--jornal-vermelho);
 }
 
 .jornal-dicionario-lista {
@@ -1293,8 +1274,12 @@ display: none;
   grid-template-columns: 30px minmax(0, 1fr);
   align-items: start;
   gap: 10px;
-  padding: 18px 0;
+  padding: 20px 0;
   border-top: 1px dashed rgba(95, 74, 48, 0.4);
+}
+
+.jornal-dicionario-item:first-child{
+  border-top: none;
 }
 
 .jornal-dicionario-numero {
@@ -1315,7 +1300,7 @@ display: none;
   margin-bottom: 6px;
   color: var(--jornal-verde-escuro);
   font-family: var(--jornal-serif);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 400;
   line-height: 1.1;
 }
@@ -1324,7 +1309,7 @@ display: none;
   margin: 0;
   color: #66523d;
   font-family: Georgia, serif;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.6;
 }
 
@@ -1336,7 +1321,7 @@ display: none;
   padding: 15px 8px 10px;
   border-top: 3px double var(--jornal-verde-escuro);
   color: var(--jornal-verde-escuro);
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-align: center;
@@ -1350,14 +1335,6 @@ display: none;
 @media (max-width: 700px) {
   .jornal-dicionario {
     margin-top: 24px;
-  }
-
-  .jornal-dicionario-titulo {
-    padding: 24px 10px;
-  }
-
-  .jornal-dicionario-titulo h3 {
-    font-size: 40px;
   }
 
   .jornal-dicionario-item {
@@ -2532,26 +2509,6 @@ display: none;}
   transform: rotate(1.5deg);
 }
 
-.jornal-interludio-recorte-indicacao {
-  position: absolute;
-  top: -11px;
-  left: 22px;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 3px 10px;
-  background: #e9d5aa;
-  color: var(--jornal-vermelho);
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  white-space: nowrap;
-}
-
-.jornal-interludio-recorte-indicacao i {
-  font-size: 12px;
-}
-
 .jornal-interludio-folha {
   position: relative;
   width: 100%;
@@ -2778,10 +2735,6 @@ display: none;
     padding: 8px;
   }
 
-  .jornal-interludio-recorte-indicacao {
-    left: 12px;
-    font-size: 7px;
-  }
 
   .jornal-interludio-folha {
     padding: 12px;
@@ -3046,14 +2999,16 @@ display: none;
 .jornal-modal-imagem-overlay {
   position: fixed;
   inset: 0;
-  z-index: 99999;
+  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-  background: rgba(23, 20, 16, 0.88);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+  padding: 24px 16px;
+  background: rgba(27, 25, 20, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   animation: jornalModalEntrada 0.2s ease-out;
 }
 
@@ -3345,17 +3300,6 @@ display: none;
     padding-top: 14px;
   }
 
-  .jornal-edicao-barra {
-    flex-wrap: wrap;
-    gap: 5px 14px;
-    font-size: 9px;
-    text-align: center;
-  }
-
-  .jornal-edicao-barra > span:last-child {
-    display: none;
-  }
-
   .jornal-chamada-superior {
     padding: 0;
   }
@@ -3429,8 +3373,8 @@ display: none;
 
   .jornal-chamada-direita .jornal-chamada-selo {
     grid-area: selo;
-    width: 105px;
-    height: 105px;
+    width: 100px;
+    height: 100px;
     margin: 0;
     transform: rotate(9deg);
   }
@@ -3652,6 +3596,9 @@ display: none;
     align-items: flex-start;
     flex-direction: column;
   }
+  .jornal-faixa-marcador, .jornal-edicao-barra{
+    display: none;
+  }
 }
 
 
@@ -3669,18 +3616,15 @@ display: none;
     padding: 12px 10px;
   }
 
-.jornal-faixa-marcador {
-    width: 100%;
-    justify-content: center;
-    min-height: 29px;
-  }
 
 .jornal-materia-topo {
-    font-size: 8px;
+    display: none;
+    
   }
 
 .jornal-materia-cabecalho {
     padding: 24px 0;
+    border-top: 1px solid var(--jornal-borda);
   }
 
 .jornal-materia-cabecalho h2 {

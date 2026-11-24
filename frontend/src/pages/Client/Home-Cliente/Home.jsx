@@ -619,13 +619,11 @@ const cardProps = receita => ({
 
 <div className="jornal-dicionario">
   <div className="jornal-dicionario-cabecalho">
-    <span>CONSULTA RÁPIDA</span>
-    <span>ARQUIVO Nº 01</span>
+    <span>GLOSSÁRIO</span>
   </div>
 
   <div className="jornal-dicionario-titulo">
 
-    <h3>Glossário<span>.</span></h3>
 
   </div>
 
@@ -1059,11 +1057,6 @@ Todas as receitas
 
     <div className="jornal-interludio-ilustracao">
       <div className="jornal-interludio-recorte">
-        <div className="jornal-interludio-recorte-indicacao">
-          <i className="pi pi-pencil" aria-hidden="true" />
-          <span>RECORTE NA LINHA PONTILHADA</span>
-        </div>
-
         <div className="jornal-interludio-folha">
           <div className="jornal-interludio-folha-topo">
             <span>RECEITUÁRIO POPULAR</span>

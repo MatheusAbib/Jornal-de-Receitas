@@ -289,11 +289,13 @@ mvn test
 
 ### 👤 Autenticação e Usuários
 
-- Cadastro de novos usuários.
-- Login e logout seguro.
-- Edição de perfil (nome, e-mail, telefone, gênero e senha).
-- Dois níveis de acesso: `USER` e `ADMIN`.
-- Ativação e desativação de contas pelo administrador.
+- Cadastro com nome, e-mail e senha, com login automático após a criação da conta.
+- Login e cadastro com uma conta Google.
+- Vinculação de uma conta Google a um perfil existente, mediante confirmação da senha atual.
+- Recuperação de senha por e-mail via Brevo para contas que têm senha cadastrada.
+- Edição de perfil com nome, e-mail, CPF, telefone, gênero e senha. CPF, telefone e gênero são opcionais e podem ser preenchidos depois.
+- Aviso de perfil incompleto no cabeçalho e no modal Meu Perfil.
+- Dois níveis de acesso, `USER` e `ADMIN`, com gerenciamento de ativação de contas pelo administrador.
 
 ### 📖 Receitas
 
@@ -454,6 +456,8 @@ Gerenciamento completo pelo administrador:
 | GitHub | Versionamento de código |
 | DigitalOcean | Hospedagem do backend |
 | Vercel | Hospedagem do frontend |
+| Google Identity Services | Login e cadastro com conta Google |
+| Brevo | Envio de e-mails de recuperação de senha pela API transacional |
 
 ---
 
@@ -465,7 +469,8 @@ O sistema utiliza **MySQL** para persistência dos dados, com mapeamento objeto-
 
 | Tabela | Descrição |
 |---|---|
-| `usuario` | Usuários cadastrados: nome, e-mail, CPF, senha, role e status de ativação. |
+| `usuario` | Contas do sistema, com e-mail único, dados de perfil opcionais, hash da senha local quando cadastrada, identificador `google_sub` único quando vinculado, perfil de acesso e status de ativação. |
+| `redefinicao_senha` | Pedido de recuperação vinculado ao usuário, com hash do token e datas de criação, expiração e uso. |
 | `receita` | Receitas enviadas: título, ingredientes, modo de preparo, imagem, categoria e status. |
 | `favorito` | Relacionamento entre usuários e receitas favoritadas. |
 | `notificacao` | Notificações vinculadas aos usuários. |
@@ -478,6 +483,7 @@ O sistema utiliza **MySQL** para persistência dos dados, com mapeamento objeto-
 | Entidade de Origem | Cardinalidade | Entidade de Destino |
 |---|---|---|
 | `usuario` | 1:1 | `estatisticas` |
+| `usuario` | 1:0..1 | `redefinicao_senha` |
 | `receita` | N:1 | `usuario` |
 | `usuario` | 1:N | `favorito` |
 | `usuario` | 1:N | `notificacao` |
@@ -534,27 +540,43 @@ Um exemplo importante é o diagrama de sequência **"Listar Receitas Aprovadas (
 
 ## 🔒 Segurança
 
-O sistema implementa mecanismos de proteção para autenticação, autorização, persistência de dados e comunicação entre frontend e backend, usando principalmente **Spring Security**, **BCrypt**, **JPA/Hibernate** e uma configuração de **CORS** restrita ao frontend oficial.
+O sistema usa **Spring Security** para autenticação e autorização, **BCrypt** para armazenar senhas locais como hashes e **JPA/Hibernate** para persistência dos dados. O acesso entre origens no navegador é configurado por **CORS**.
 
 ### Como a segurança está configurada
 
 - A classe `SecurityConfig` define a política de acesso:
-  - Endpoints públicos: arquivos estáticos, Swagger (`/swagger-ui`, `/v3/api-docs`), cadastro e login (`/api/cadastro`, `/api/login`) e consulta do usuário logado (`/api/perfil/usuario-logado`).
-  - Endpoints que exigem **usuário autenticado**: `/api/perfil/**`, `/api/receitas/minhas`, `/api/favoritos/**`, `/api/notificacoes/**` e demais rotas protegidas.
-  - Endpoints **restritos ao ADMIN**: `/api/usuarios/**`, receitas pendentes/aprovadas/rejeitadas de admin, e todo o gerenciamento do carrossel administrativo (`/api/carrossel/admin`, `/api/carrossel/adicionar`, `/api/carrossel/editar/**`, `/api/carrossel/toggle/**`, `/api/carrossel/excluir/**`).
-- O login/logout é feito via API (`/api/login`, `/api/logout`), com sessão mantida por cookie `JSESSIONID`. O formulário padrão do Spring (`formLogin`) e o HTTP Basic (`httpBasic`) são desabilitados.
-- O CORS é configurado para permitir **apenas** as origens autorizadas (Vercel e `localhost:5173`), com envio de cookies habilitado (`allowCredentials = true`) e exposição do header `Set-Cookie`, garantindo que só o frontend oficial consiga consumir a API com sessão.
+  - **Endpoints públicos:** arquivos estáticos, documentação Swagger (`/swagger-ui`, `/v3/api-docs`), cadastro (`/api/cadastro`), login com senha (`/api/login`), login com Google (`POST /api/login/google/nonce` e `POST /api/login/google`), recuperação de senha (`POST /api/auth/esqueci-senha` e `POST /api/auth/redefinir-senha`), consulta do usuário logado (`/api/perfil/usuario-logado`) e logout (`/api/logout`). A listagem pública de receitas, seus detalhes, o carrossel público e as configurações públicas do site também são acessíveis sem login.
+  - **Endpoints que exigem autenticação:** rotas protegidas de `/api/perfil/**`, incluindo `POST /api/perfil/google/vincular`, além de `/api/receitas/minhas`, `/api/favoritos/**`, `/api/notificacoes/**` e demais operações protegidas.
+  - **Endpoints restritos ao perfil `ADMIN`:** `/api/usuarios/**`, consultas de receitas pendentes, aprovadas e rejeitadas, operações de aprovação e rejeição de receitas e rotas de gerenciamento do carrossel (`/api/carrossel/admin`, `/api/carrossel/adicionar`, `/api/carrossel/editar/**`, `/api/carrossel/toggle/**` e `/api/carrossel/excluir/**`).
+- O login e o logout são feitos pela API. Tanto o login com senha quanto o login com Google usam uma sessão HTTP mantida pelo cookie `JSESSIONID`. O formulário padrão do Spring (`formLogin`) e a autenticação HTTP Basic (`httpBasic`) estão desabilitados.
+- A configuração `cors.allowed.origins` define as origens permitidas, incluindo o frontend na Vercel e `http://localhost:5173` no desenvolvimento. O `CorsConfiguration` permite o envio de cookies (`allowCredentials = true`) e define os métodos e cabeçalhos aceitos.
 
-### Vulnerabilidades e Medidas de Proteção
+### Login e vínculo com Google
 
-| Vulnerabilidade           | Medida de Proteção                                                                                                                                              |
-|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SQL Injection             | Uso de JPA/Hibernate com consultas parametrizadas e repositórios Spring Data, evitando concatenação de SQL manual.                                             |
-| Senhas em texto puro      | Criptografia de senhas com **BCrypt** (`BCryptPasswordEncoder`), tanto no cadastro (`UsuarioService`) quanto na autenticação (`AuthService`).                  |
-| Acesso não autorizado     | Spring Security com controle de acesso por **roles** (`USER` e `ADMIN`) em nível de URL, garantindo que rotas administrativas sejam acessíveis só por admin.   |
-| Exposição de senhas em JSON | Campos de senha anotados com `@JsonIgnore` e `@Schema(accessMode = WRITE_ONLY)`, impedindo que hashes de senha sejam enviados em respostas da API.          |
-| CSRF                      | API REST consumida por SPA separada, com proteção baseada em CORS restrito + sessão; o formulário padrão do Spring é desativado, e os endpoints de login/logout são explicitamente controlados. |
-| CORS                      | Configuração de `CorsConfiguration` para aceitar apenas as origens definidas em `cors.allowed.origins` (Vercel + localhost), com métodos e headers controlados. |
-| Segurança da sessão       | Sessão HTTP mantida via cookie `JSESSIONID`, com flags `HttpOnly` e `Secure` em produção, reduzindo risco de roubo de sessão por scripts no navegador.         |
+- O backend valida a assinatura, o emissor, a expiração e o Client ID do ID token do Google. Também confere o e-mail verificado e um `nonce` de uso único associado à sessão.
+- O identificador `sub` da conta Google é armazenado em `usuario.google_sub`, com restrição de unicidade.
+- Quando já existe um perfil com o e-mail informado, o vínculo exige login no Jornal e confirmação da senha atual. O vínculo mantém a conta existente e seus dados.
+- O cadastro público atribui a role `USER` no servidor.
+
+### Recuperação de senha
+
+- A recuperação por e-mail está disponível para contas ativas com senha local, inclusive as que também têm uma conta Google vinculada.
+- A solicitação retorna a mesma mensagem para e-mails cadastrados e não cadastrados.
+- O link expira em **30 minutos** e pode ser usado **uma vez**. A tabela `redefinicao_senha` armazena o hash SHA-256 do token. A troca da senha e a marcação do token como usado ocorrem na mesma transação.
+- Emitir um novo link invalida o anterior. Alterações de e-mail ou senha pelo perfil ou pelo painel administrativo também invalidam links pendentes.
+- A rota de solicitação aceita até **30 pedidos por minuto por instância do backend**. A emissão de links respeita um intervalo de **60 segundos por conta**.
+- O Spring Boot envia os e-mails transacionais pela API da Brevo via HTTPS. A chave da API fica na configuração do backend.
+
+### Vulnerabilidades e medidas de proteção
+
+| Ponto | Configuração atual |
+|---|---|
+| Injeção de SQL | A persistência usa JPA/Hibernate e repositórios Spring Data com consultas parametrizadas. |
+| Senhas em texto puro | O `BCryptPasswordEncoder` gera o hash no cadastro, na alteração e na redefinição da senha. O `AuthService` compara a senha informada com o hash armazenado. |
+| Acesso não autorizado | O Spring Security exige autenticação nas rotas protegidas e verifica a role `ADMIN` nas rotas administrativas. |
+| Exposição de senhas em JSON | Os mapas de resposta de login e perfil omitem o hash da senha. A anotação `@Schema(accessMode = WRITE_ONLY)` descreve o campo no Swagger. |
+| CSRF | A proteção CSRF do Spring Security está desabilitada na configuração atual. |
+| CORS | As origens, os métodos e os cabeçalhos permitidos são definidos no `CorsConfiguration`. |
+| Segurança da sessão | A configuração apresentada usa `JSESSIONID` com `HttpOnly` e `SameSite=Lax`. |
 
 ---

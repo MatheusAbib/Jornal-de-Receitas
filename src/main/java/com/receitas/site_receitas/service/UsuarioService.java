@@ -1,9 +1,12 @@
 package com.receitas.site_receitas.service;
 
 import com.receitas.site_receitas.builder.UsuarioBuilder;
+import com.receitas.site_receitas.dao.redefinicaosenha.IRedefinicaoSenhaDAO;
 import com.receitas.site_receitas.dao.usuario.IUsuarioDAO;
 import com.receitas.site_receitas.factory.UsuarioFactory;
 import com.receitas.site_receitas.model.Usuario;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,10 +14,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -28,6 +35,12 @@ public class UsuarioService {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private IRedefinicaoSenhaDAO redefinicaoSenhaDAO;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Transactional
     public String cadastrarUsuario(Usuario usuario) {
@@ -109,6 +122,10 @@ public class UsuarioService {
         Optional<Usuario> optional = usuarioDAO.buscarPorId(id);
         if (optional.isPresent()) {
             Usuario usuario = optional.get();
+            entityManager.refresh(usuario, LockModeType.PESSIMISTIC_WRITE);
+
+            String emailAnterior = usuario.getEmail();
+            String senhaAnterior = usuario.getSenha();
 
             usuario.editarPerfil(
                     dadosAtualizados.getNome(),
@@ -126,6 +143,7 @@ public class UsuarioService {
                 usuario.alterarSenha(passwordEncoder.encode(dadosAtualizados.getSenha()));
             }
 
+            invalidarRedefinicaoSeCredenciaisMudaram(usuario, emailAnterior, senhaAnterior);
             usuarioDAO.salvar(usuario);
         }
     }
@@ -151,10 +169,19 @@ public class UsuarioService {
         Usuario usuario = usuarioDAO.buscarPorEmail(emailAtual)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
+        entityManager.refresh(usuario, LockModeType.PESSIMISTIC_WRITE);
+
+        String emailAnterior = usuario.getEmail();
+        String senhaAnterior = usuario.getSenha();
+
+        if (!emailAnterior.equalsIgnoreCase(emailAtual)) {
+            throw new RuntimeException("O e-mail do perfil foi alterado. Entre novamente.");
+        }
+
         String novoEmail = dados.get("email");
-        if (novoEmail != null && !novoEmail.equals(emailAtual)) {
+        if (novoEmail != null && !novoEmail.equals(emailAnterior)) {
             Optional<Usuario> existente = usuarioDAO.buscarPorEmail(novoEmail);
-            if (existente.isPresent()) {
+            if (existente.isPresent() && !Objects.equals(existente.get().getId(), usuario.getId())) {
                 throw new RuntimeException("Este email já está em uso por outro usuário");
             }
         }
@@ -180,6 +207,7 @@ public class UsuarioService {
             usuario.alterarSenha(passwordEncoder.encode(novaSenha));
         }
 
+        invalidarRedefinicaoSeCredenciaisMudaram(usuario, emailAnterior, senhaAnterior);
         return usuarioDAO.salvar(usuario);
     }
 
@@ -229,6 +257,23 @@ public class UsuarioService {
                 .build();
 
         return cadastrarUsuarioComRetorno(usuario);
+    }
+
+    private void invalidarRedefinicaoSeCredenciaisMudaram(
+            Usuario usuario,
+            String emailAnterior,
+            String senhaAnterior
+    ) {
+        if (Objects.equals(emailAnterior, usuario.getEmail())
+                && Objects.equals(senhaAnterior, usuario.getSenha())) {
+            return;
+        }
+
+        LocalDateTime agora = LocalDateTime.now(ZoneOffset.UTC);
+
+        redefinicaoSenhaDAO.buscarParaAtualizacao(usuario.getId())
+                .filter(pedido -> pedido.estaDisponivel(agora))
+                .ifPresent(pedido -> pedido.marcarComoUsado(agora));
     }
 
     private Usuario salvarNovoUsuarioComSenha(Usuario usuario) {

@@ -1,24 +1,21 @@
-HELP.md
-target/
+### Dependencias ###
+node_modules
 
-### IDEs ###
-.idea/
-.vscode/
-.classpath
-.project
-.settings
-*.iml
-uploads/
-mvnw
-mvnw.cmd
-.mvn/
-
-### Sistema ###
-.DS_Store
-Thumbs.db
+### Build ###
+dist
+dist-ssr
 
 ### Logs ###
 *.log
+npm-debug.log*
 
-Script.md
-checklist.md
+### Editores ###
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.local
+
+.env/target/
+/$env.txt
+/target/

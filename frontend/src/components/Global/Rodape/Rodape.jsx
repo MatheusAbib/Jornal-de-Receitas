@@ -1,7 +1,10 @@
 ﻿import { useNavigate } from 'react-router-dom';
 import { prefetchRota } from '../../../services/prefetch';
 import { useAuth } from '../../../context/AuthContext';
+import { useToast } from '../../../context/ToastContext';
 import './Rodape.css';
+
+const emailAdministrador = 'matheus.abib.ma@gmail.com';
 
 function Rodape() {
   const { usuario } = useAuth();
@@ -28,28 +31,39 @@ function Rodape() {
     {
       caminho: '/',
       texto: 'Página inicial',
-      icone: 'pi-home'
+      icone: 'pi-home',
     },
     {
       caminho: '/sobre',
       texto: 'Sobre o jornal',
-      icone: 'pi-info-circle'
+      icone: 'pi-info-circle',
     },
     ...(usuario
       ? [
           {
             caminho: '/nova',
             texto: 'Enviar receita',
-            icone: 'pi-pencil'
+            icone: 'pi-pencil',
           },
           {
             caminho: '/minhas-receitas',
             texto: 'Minhas receitas',
-            icone: 'pi-book'
-          }
+            icone: 'pi-book',
+          },
         ]
-      : [])
+      : []),
   ];
+
+  const { mostrarToast } = useToast();
+
+      async function copiarEmail() {
+        try {
+          await navigator.clipboard.writeText(emailAdministrador);
+          mostrarToast('E-mail copiado!', 'success');
+        } catch {
+          mostrarToast('Não foi possível copiar o e-mail.', 'error');
+        }
+      }
 
   return (
     <footer className="newspaper-footer">
@@ -60,12 +74,8 @@ function Rodape() {
             <span>Jornal de receitas</span>
           </div>
 
-          <span className="footer-edition-center">
-          </span>
-
-          <span className="footer-edition-number">
-            Edição nº 04
-          </span>
+          <span className="footer-edition-center"></span>
+          <span className="footer-edition-number">Edição nº 04</span>
         </div>
       </div>
 
@@ -126,18 +136,14 @@ function Rodape() {
               </div>
 
               <ul className="footer-links">
-                {links.map((link) => (
+                {links.map(link => (
                   <li key={link.caminho}>
                     <a
                       href={link.caminho}
                       onMouseEnter={() => prefetchRota(link.caminho)}
-                      onClick={(event) => navegar(event, link.caminho)}
+                      onClick={event => navegar(event, link.caminho)}
                     >
-                      <i
-                        className={`pi ${link.icone}`}
-                        aria-hidden="true"
-                      ></i>
-
+                      <i className={`pi ${link.icone}`} aria-hidden="true"></i>
                       <span>{link.texto}</span>
                     </a>
                   </li>
@@ -148,26 +154,24 @@ function Rodape() {
             <div className="footer-section">
               <div className="footer-section-heading">
                 <span className="footer-section-number">03</span>
-                <h3 className="footer-title">Acompanhe o jornal</h3>
+                <h3 className="footer-title">Contato</h3>
               </div>
 
-              <div className="footer-socials">
-                <a href="#" aria-label="Facebook" title="Facebook">
-                  <i className="pi pi-facebook" aria-hidden="true"></i>
-                </a>
-
-                <a href="#" aria-label="Instagram" title="Instagram">
-                  <i className="pi pi-instagram" aria-hidden="true"></i>
-                </a>
-
-                <a href="#" aria-label="Twitter" title="Twitter">
-                  <i className="pi pi-twitter" aria-hidden="true"></i>
-                </a>
-
-                <a href="#" aria-label="YouTube" title="YouTube">
-                  <i className="pi pi-youtube" aria-hidden="true"></i>
-                </a>
-              </div>
+              <ul className="footer-links">
+                <li>
+                <button
+                  type="button"
+                  className="footer-contact-email"
+                  aria-label={`Copiar e-mail do administrador: ${emailAdministrador}`}
+                  title="Copiar e-mail"
+                  onClick={copiarEmail}
+                >
+                  <i className="pi pi-envelope" aria-hidden="true" />
+                  <span>{emailAdministrador}</span>
+                  <i className="pi pi-copy" aria-hidden="true" />
+                </button>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
