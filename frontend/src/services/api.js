@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+//Axios é a biblioteca que o frontend usa para fazer as chamadas HTTP (GET, POST, etc.) para o backend.
+// O api.js é a configuração central do Axios no frontend.
+
 let contador = 0;
 
 function mostrarLoader() {

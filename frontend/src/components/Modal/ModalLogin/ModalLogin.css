@@ -165,13 +165,34 @@
   font-size: 0.68rem;
 }
 
+.login-register-link button,
+.login-forgot-link {
+  position: relative;
+}
+
+.login-register-link button::after,
+.login-forgot-link::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .login-register-link button:hover:not(:disabled),
 .login-forgot-link:hover:not(:disabled) {
   color: var(--vintage-green, #47624b);
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  text-decoration: none;
 }
 
+.login-register-link button:hover:not(:disabled)::after,
+.login-forgot-link:hover:not(:disabled)::after {
+  opacity: 1;
+}
 .login-register-link button:focus-visible,
 .login-forgot-link:focus-visible {
   outline: 2px solid var(--vintage-green, #47624b);

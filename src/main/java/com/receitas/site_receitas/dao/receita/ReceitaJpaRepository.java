@@ -8,6 +8,7 @@ import com.receitas.site_receitas.model.Receita.StatusReceita;
 
 import java.util.List;
 
+// é a interface do Spring Data JPA que fala direto com o banco.
 public interface ReceitaJpaRepository extends JpaRepository<Receita, Long> {
 
     List<Receita> findByStatus(StatusReceita status);

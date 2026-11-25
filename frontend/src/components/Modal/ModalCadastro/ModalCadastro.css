@@ -245,12 +245,30 @@
   font-size: 0.68rem;
 }
 
-.cadastro-login-link button:hover:not(:disabled) {
-  color: var(--vintage-green, #47624b);
-  text-decoration: underline;
-  text-underline-offset: 4px;
+.cadastro-login-link button {
+  position: relative;
 }
 
+.cadastro-login-link button::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cadastro-login-link button:hover:not(:disabled) {
+  color: var(--vintage-green, #47624b);
+  text-decoration: none;
+}
+
+.cadastro-login-link button:hover:not(:disabled)::after {
+  opacity: 1;
+}
 .cadastro-login-link button:focus-visible {
   outline: 2px solid var(--vintage-green, #47624b);
   outline-offset: 3px;

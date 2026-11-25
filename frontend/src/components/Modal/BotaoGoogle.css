@@ -27,18 +27,49 @@
 }
 
 .google-auth-controle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
   width: 100%;
   min-width: 0;
   max-width: 400px;
+  min-height: 54px;
 }
 
 .google-auth-botao {
+  display: flex;
+  align-items: center;
+  grid-area: 1 / 1;
   width: 100%;
+  min-width: 0;
 }
 
 .google-auth .google-auth-mensagem {
+  grid-area: 1 / 1;
+  width: 100%;
   margin: 0;
+  box-sizing: border-box;
   overflow-wrap: anywhere;
+}
+
+:is(.google-auth--login, .google-auth--cadastro)
+  .google-auth-controle:not(:has([role='alert'])) {
+  position: relative;
+  display: block;
+  height: 54px;
+  min-height: 54px;
+}
+
+:is(.google-auth--login, .google-auth--cadastro)
+  .google-auth-controle:not(:has([role='alert']))
+  > :is(.google-auth-botao, .google-auth-mensagem[role='status']) {
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  margin: 0;
+}
+.google-auth .google-auth-mensagem[role='status'] i {
+  margin-top: 0;
 }
 
 .google-auth-repetir {

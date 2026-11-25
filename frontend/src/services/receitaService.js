@@ -1,5 +1,7 @@
 import api from './api';
 
+// O receitaService.js chama a api (Axios), que manda a requisição para o controller. O controller devolve o JSON
+// O Axios coloca isso em response.data, e o receitaService.js pega esse JSON e retorna para os componentes React.
 export async function listarReceitas(silent = false) {
   const response = await api.get('/api/receitas', { silent });
   return response.data.receitas || [];

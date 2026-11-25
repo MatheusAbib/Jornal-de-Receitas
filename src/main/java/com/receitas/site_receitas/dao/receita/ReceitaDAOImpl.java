@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
+// é a implementação do DAO que usa o ReceitaJpaRepository por baixo, encapsulando o acesso ao banco.
 @Component
 public class ReceitaDAOImpl implements IReceitaDAO {
 

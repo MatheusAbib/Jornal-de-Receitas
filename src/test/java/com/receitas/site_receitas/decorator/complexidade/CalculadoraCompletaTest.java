@@ -57,6 +57,6 @@ class CalculadoraCompletaTest {
         CalculadoraDeComplexidade calculadora = montarCadeiaCompleta();
         Complexidade resultado = calculadora.calcular(receita);
         assertThat(resultado.getPontuacao()).isEqualTo(3);
-        assertThat(resultado.getDescricao()).isEqualTo("Média"); // Agora sim! 3 pontos = Média
+        assertThat(resultado.getDescricao()).isEqualTo("Média"); // 3 pontos = Média
     }
 }

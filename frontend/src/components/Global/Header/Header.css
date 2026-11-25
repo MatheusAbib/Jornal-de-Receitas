@@ -152,7 +152,7 @@
   align-items: center;
   justify-content: center;
   gap: 14px;
-  margin-bottom: 18px;
+  margin-bottom: 0.6rem;
   color: var(--tomato-red);
   font-size: 0.6rem;
   font-weight: 800;
@@ -455,6 +455,7 @@
   height: 100%;
   padding: 0;
   background: rgba(29, 31, 26, 0.55);
+  backdrop-filter: blur(3px);
   border: 0;
   border-radius: 0;
   cursor: pointer;

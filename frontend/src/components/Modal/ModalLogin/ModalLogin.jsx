@@ -118,9 +118,16 @@ function ModalLogin({ aberto, onFechar, onIrParaCadastro }) {
     onFechar();
   }
 
-  function handleFechar() {
-    if (!ocupado) fecharModal();
+function handleFechar() {
+  if (ocupado) return;
+
+  if (tela === 'recuperar' || tela === 'redefinir') {
+    trocarTela('login');
+    return;
   }
+
+  fecharModal();
+}
 
   function handleIrParaCadastro() {
     if (ocupado) return;

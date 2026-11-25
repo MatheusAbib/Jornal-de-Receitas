@@ -3,8 +3,7 @@ package com.receitas.site_receitas.decorator.complexidade;
 import com.receitas.site_receitas.model.Complexidade;
 import com.receitas.site_receitas.model.Receita;
 
-
-//Classe base para todos os seus decorators (Ingredientes, ModoPreparo, Tempo, Categoria).
+//Centraliza todos as lógicas dos decorators (Ingredientes, ModoPreparo, Tempo, Categoria).
 //Um modelo pronto para os decorators, com coisas que todos eles têm em comum
 public abstract class CalculadoraDecorator implements CalculadoraDeComplexidade {
 
@@ -24,8 +23,8 @@ public abstract class CalculadoraDecorator implements CalculadoraDeComplexidade 
     protected Complexidade comPontuacao(int pontuacao) {
         // cria o objeto Complexidade já preenchido com nível, descrição e pontuação finais
         return new Complexidade(
-                nivelDe(pontuacao),                                  // calcula o nível (1, 2 ou 3) com base na pontuação
-                descricaoDe(pontuacao),                              // calcula o texto ("Fácil", "Média", "Difícil") com base na pontuação
+                nivelDe(pontuacao),                                  
+                descricaoDe(pontuacao),                             
                 pontuacao
         );
     }

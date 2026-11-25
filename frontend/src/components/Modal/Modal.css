@@ -8,7 +8,6 @@
   padding: 24px 16px;
   background: rgba(27, 25, 20, 0.55);
   backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
   overflow-y: auto;
   overscroll-behavior: contain;
   animation: fadeInModal 0.18s ease-out;
@@ -474,6 +473,8 @@
     gap: 16px;
   }
 }
+
+
 
 @media (prefers-reduced-motion: reduce) {
   .modal-overlay,

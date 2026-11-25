@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ComplexidadeService {
 
-// É o Service: é quem organiza o cálculo usando os decorators e devolve o resultado para o Controller
+// É quem organiza o cálculo e devolve o resultado para o Controller
 // Ponto de entrada: monta a fila empilhada de calculadoras e calcula a complexidade de uma receita
 public Complexidade calcular(Receita receita) {
     CalculadoraDeComplexidade calculadora = new CalculadoraBase(); // começa com a calculadora base (pontuação inicial = 0)
@@ -24,6 +24,7 @@ public Complexidade calcular(Receita receita) {
 
     return calculadora.calcular(receita);
     // executa a cadeia inteira de decorators e devolve o objeto Complexidade final para o controller
+    // O resultado desse 'calcular' é um objeto 'complexidade' pronto com nivel, descrição e pontuação. 
 }
 
 }

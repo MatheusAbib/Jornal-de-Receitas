@@ -1,0 +1,55 @@
+.card-receita--grade {
+  flex: 1;
+  min-height: 0;
+}
+
+:is(.card-receita--grade, .card-receita--destaque) .card-image {
+  isolation: isolate;
+}
+
+.card-receita--grade .card-image {
+  background: #e8dbc0;
+}
+
+.card-receita--grade .card-image img {
+  border-radius: 3px;
+}
+
+.card-receita--grade .card-content {
+  padding: 16px 2px 18px;
+}
+
+.card-receita--grade .card-titulo {
+  color: var(--jornal-verde-escuro, var(--vintage-green-dark, #274b39));
+  font-family: var(--jornal-serif, var(--font-editorial, Georgia, serif));
+  font-size: clamp(20px, 1.8vw, 26px);
+  line-height: 1.16;
+}
+
+.card-receita--destaque .card-image {
+  height: clamp(280px, 35vw, 490px);
+  border-radius: 3px;
+  background: #e8d9bb;
+}
+
+@media (max-width: 820px) {
+  .card-receita--destaque .card-image {
+    height: clamp(260px, 65vw, 460px);
+  }
+}
+
+@media (max-width: 760px) {
+  .card-receita--grade .card-titulo {
+    font-size: clamp(15px, 3.5vw, 22px);
+  }
+}
+
+@media (max-width: 480px) {
+  .card-receita--grade .card-image {
+    max-height: 360px;
+  }
+
+  .card-receita--grade .card-titulo {
+    font-size: 15px;
+  }
+}

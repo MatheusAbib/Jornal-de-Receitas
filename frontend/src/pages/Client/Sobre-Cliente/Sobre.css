@@ -1,61 +1,7 @@
-﻿.sobre-container {
-  width: min(100% - 48px, 1120px);
-  margin: 0 auto;
-  padding: 100px 0 70px;
+﻿.page-wrapper:where([data-pagina='sobre']) {
+  padding-block: 24px 70px;
   color: var(--ink-color, #292721);
 }
-
-.sobre-header {
-  border: 1px solid var(--border-soft, #ded8ca);
-  background: var(--paper-white, #fff);
-}
-
-
-.sobre-header-identidade {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.sobre-header-marca {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  background: var(--tomato-red);
-  color: var(--paper-white);
-  font-family: var(--font-editorial);
-  font-size: 1.15rem;
-  font-weight: 400;
-  letter-spacing: -0.08em;
-}
-
-
-.sobre-header-topo {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 14px 28px;
-  border-bottom: 1px solid var(--border-soft, #ded8ca);
-  color: var(--ink-muted, #77756f);
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-}
-
-.sobre-header-conteudo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: clamp(52px, 8vw, 90px) 28px;
-  text-align: center;
-}
-
-.sobre-editoria,
 .sobre-section-kicker {
   display: inline-block;
   color: var(--vintage-green, #47624b);
@@ -65,59 +11,14 @@
   line-height: 1.5;
   text-transform: uppercase;
 }
-
-.sobre-header h1 {
-  margin: 16px 0 18px;
-  color: var(--vintage-green-dark, #354b38);
-  font-family: 'DM Serif Display', Georgia, serif;
-  font-size: clamp(3.3rem, 8vw, 6.3rem);
-  font-weight: 400;
-  line-height: 1.05;
-  letter-spacing: -0.045em;
-}
-
-.sobre-header-conteudo > p {
-  max-width: 560px;
-  margin: 0;
-  color: var(--ink-soft, #66635d);
-  font-size: clamp(0.9rem, 1.6vw, 1rem);
-  line-height: 1.85;
-}
-
-.sobre-header-rodape {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 14px 24px;
-  padding: 16px 28px;
-  border-top: 1px solid var(--border-soft, #ded8ca);
-}
-
-.sobre-header-rodape span {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  color: var(--ink-muted, #77756f);
-  font-size: 0.75rem;
-}
-
-.sobre-header-rodape i {
-  color: var(--vintage-green, #47624b);
-  font-size: 0.85rem;
-}
-
 .sobre-content {
   display: flex;
   flex-direction: column;
   gap: clamp(72px, 9vw, 110px);
-  padding-top: clamp(72px, 9vw, 105px);
 }
-
 .sobre-section {
   width: 100%;
 }
-
 .sobre-section-header {
   display: flex;
   align-items: end;
@@ -127,7 +28,6 @@
   padding-bottom: 22px;
   border-bottom: 1px solid var(--border-soft, #ded8ca);
 }
-
 .sobre-section-header h2 {
   margin: 9px 0 0;
   color: var(--vintage-green-dark, #354b38);
@@ -137,7 +37,6 @@
   line-height: 1.2;
   letter-spacing: -0.025em;
 }
-
 .sobre-section-header > p {
   max-width: 285px;
   margin: 0 0 4px;
@@ -145,12 +44,10 @@
   font-size: 0.8rem;
   line-height: 1.7;
 }
-
 .journey-timeline {
   display: flex;
   flex-direction: column;
 }
-
 .timeline-item {
   display: grid;
   grid-template-columns: 180px minmax(0, 1fr);
@@ -158,20 +55,16 @@
   padding: 28px 0;
   border-bottom: 1px solid var(--border-soft, #ded8ca);
 }
-
 .timeline-item:first-child {
   padding-top: 10px;
 }
-
 .timeline-item:last-child {
   border-bottom: none;
 }
-
 .timeline-year {
   display: flex;
   align-items: flex-start;
 }
-
 .timeline-year span {
   color: var(--vintage-green, #47624b);
   font-family: 'DM Serif Display', Georgia, serif;
@@ -179,11 +72,9 @@
   font-weight: 400;
   line-height: 1;
 }
-
 .timeline-content {
   padding-top: 3px;
 }
-
 .timeline-indice {
   color: var(--ink-muted, #77756f);
   font-size: 0.67rem;
@@ -191,7 +82,6 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
-
 .timeline-content h3 {
   margin: 9px 0 10px;
   color: var(--ink-color, #292721);
@@ -200,7 +90,6 @@
   font-weight: 400;
   line-height: 1.3;
 }
-
 .timeline-content p {
   max-width: 680px;
   margin: 0;
@@ -208,7 +97,6 @@
   font-size: 0.88rem;
   line-height: 1.85;
 }
-
 .sobre-missao {
   display: grid;
   grid-template-columns: 0.35fr 1fr;
@@ -217,7 +105,6 @@
   background: var(--vintage-green-dark, #354b38);
   color: #fff;
 }
-
 .sobre-missao-identificacao {
   display: flex;
   flex-direction: column;
@@ -225,16 +112,13 @@
   justify-content: space-between;
   gap: 30px;
 }
-
 .sobre-missao-identificacao span {
   color: #c8d5c4;
 }
-
 .sobre-missao-identificacao i {
   color: #c8d5c4;
   font-size: 1.4rem;
 }
-
 .sobre-missao-conteudo h2 {
   margin: 0 0 18px;
   color: #fff;
@@ -243,24 +127,20 @@
   font-weight: 400;
   line-height: 1.15;
 }
-
 .sobre-missao-conteudo p {
   max-width: 700px;
   margin: 0;
   color: #e1e8df;
-  font-family: 'DM Serif Display', Georgia, serif;
-  font-size: clamp(1.2rem, 2.4vw, 1.7rem);
+  font-size: clamp(1.2rem, 2vw, 1rem);
   font-weight: 400;
   line-height: 1.65;
 }
-
 .sobre-recursos-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   border-top: 1px solid var(--border-soft, #ded8ca);
   border-left: 1px solid var(--border-soft, #ded8ca);
 }
-
 .sobre-recurso {
   display: flex;
   flex-direction: column;
@@ -270,7 +150,6 @@
   border-bottom: 1px solid var(--border-soft, #ded8ca);
   background: var(--paper-white, #fff);
 }
-
 .sobre-recurso-topo {
   display: flex;
   align-items: center;
@@ -278,18 +157,15 @@
   gap: 16px;
   margin-bottom: 30px;
 }
-
 .sobre-recurso-topo i {
   color: var(--vintage-green, #47624b);
   font-size: 1.3rem;
 }
-
 .sobre-recurso-topo span {
   color: var(--ink-muted, #77756f);
   font-size: 0.68rem;
   font-weight: 600;
 }
-
 .sobre-recurso h3 {
   margin: 0 0 10px;
   color: var(--ink-color, #292721);
@@ -298,30 +174,25 @@
   font-weight: 400;
   line-height: 1.3;
 }
-
 .sobre-recurso p {
   margin: 0;
   color: var(--ink-soft, #66635d);
   font-size: 0.81rem;
   line-height: 1.75;
 }
-
 .faq-container {
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--border-soft, #ded8ca);
 }
-
 .faq-item {
   border-bottom: 1px solid var(--border-soft, #ded8ca);
 }
-
 .faq-heading {
   margin: 0;
   font-size: inherit;
   font-weight: inherit;
 }
-
 .faq-question {
   display: flex;
   align-items: center;
@@ -336,17 +207,14 @@
   text-align: left;
   cursor: pointer;
 }
-
 .faq-question:hover {
   background: transparent;
   color: var(--vintage-green-dark, #354b38);
 }
-
 .faq-question:focus-visible {
   outline: 2px solid var(--vintage-green, #47624b);
   outline-offset: 3px;
 }
-
 .faq-numero {
   flex-shrink: 0;
   width: 38px;
@@ -355,7 +223,6 @@
   font-weight: 700;
   letter-spacing: 0.05em;
 }
-
 .faq-pergunta-texto {
   flex: 1;
   font-family: 'DM Serif Display', Georgia, serif;
@@ -363,26 +230,21 @@
   font-weight: 400;
   line-height: 1.4;
 }
-
 .faq-question > i {
   flex-shrink: 0;
   color: var(--vintage-green, #47624b);
   font-size: 0.9rem;
   transition: transform 0.2s ease;
 }
-
 .faq-item.active .faq-question > i {
   transform: rotate(45deg);
 }
-
 .faq-answer {
   padding: 0 48px 26px 62px;
 }
-
 .faq-answer[hidden] {
   display: none;
 }
-
 .faq-answer p {
   max-width: 750px;
   margin: 0;
@@ -390,7 +252,6 @@
   font-size: 0.88rem;
   line-height: 1.9;
 }
-
 .sobre-contato-section {
   display: flex;
   align-items: center;
@@ -400,7 +261,6 @@
   border: 1px solid var(--border-soft, #ded8ca);
   background: var(--paper-white, #fff);
 }
-
 .sobre-contato-conteudo h2 {
   margin: 10px 0 12px;
   color: var(--vintage-green-dark, #354b38);
@@ -409,7 +269,6 @@
   font-weight: 400;
   line-height: 1.2;
 }
-
 .sobre-contato-conteudo p {
   max-width: 420px;
   margin: 0;
@@ -417,7 +276,6 @@
   font-size: 0.85rem;
   line-height: 1.8;
 }
-
 .sobre-contato-link {
   display: inline-flex;
   align-items: center;
@@ -436,23 +294,19 @@
     background-color 0.18s ease,
     border-color 0.18s ease;
 }
-
 .sobre-contato-link:hover {
   border-color: var(--vintage-green-dark, #354b38);
   background: var(--vintage-green-dark, #354b38);
   color: #fff;
   text-decoration: none;
 }
-
 .sobre-contato-link:focus-visible {
   outline: 2px solid var(--vintage-green, #47624b);
   outline-offset: 3px;
 }
-
 .sobre-contato-link i {
   font-size: 0.9rem;
 }
-
 .sobre-rodape {
   display: flex;
   align-items: center;
@@ -463,152 +317,98 @@
   padding-top: 20px;
   border-top: 1px solid var(--border-soft, #ded8ca);
 }
-
 .sobre-rodape span:first-child {
   color: var(--vintage-green-dark, #354b38);
   font-family: 'DM Serif Display', Georgia, serif;
   font-size: 1.1rem;
 }
-
 .sobre-rodape span:last-child {
   color: var(--ink-muted, #77756f);
   font-size: 0.75rem;
 }
-
 @media (max-width: 900px) {
   .sobre-missao {
     grid-template-columns: 1fr;
     gap: 24px;
   }
-
   .sobre-missao-identificacao {
     flex-direction: row;
     align-items: center;
   }
-
   .sobre-recursos-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
   .sobre-contato-section {
     flex-direction: column;
     align-items: flex-start;
   }
 }
-
 @media (max-width: 600px) {
-  .sobre-container {
-    width: min(100% - 10px, 1120px);
-    padding: 20px 0 45px;
+  .page-wrapper:where([data-pagina='sobre']) {
+    padding-block: 20px 45px;
   }
-
-  .sobre-header-topo {
-    padding: 13px 18px;
-    font-size: 0.6rem;
-  }
-
-  .sobre-header-conteudo {
-    padding: 58px 20px;
-  }
-
-  .sobre-header h1 {
-    font-size: clamp(2.8rem, 12vw, 4rem);
-    margin: 14px 0;
-  }
-
-  .sobre-header-conteudo > p {
-    font-size: 0.85rem;
-    line-height: 1.75;
-  }
-
-  .sobre-header-rodape {
-    padding: 15px 18px;
-  }
-
-  .sobre-header-rodape span {
-    font-size: 0.69rem;
-  }
-
   .sobre-content {
     gap: 70px;
     padding-top: 70px;
   }
-
   .sobre-section-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
     margin-bottom: 24px;
   }
-
   .sobre-section-header h2 {
     font-size: 2.2rem;
   }
-
   .sobre-section-header > p {
     max-width: 100%;
   }
-
   .timeline-item {
     grid-template-columns: 1fr;
     gap: 12px;
     padding: 24px 0;
   }
-
   .timeline-year span {
     font-size: 2.5rem;
   }
-
   .timeline-content h3 {
     font-size: 1.4rem;
   }
-
   .sobre-missao {
     padding: 28px 24px;
   }
-
   .sobre-missao-conteudo h2 {
     font-size: 2.2rem;
   }
-
   .sobre-missao-conteudo p {
     font-size: 1.25rem;
   }
-
   .sobre-recursos-grid {
     grid-template-columns: 1fr;
   }
-
   .sobre-recurso {
     min-height: 0;
     padding: 23px;
   }
-
   .sobre-recurso-topo {
     margin-bottom: 22px;
   }
-
   .faq-question {
     gap: 12px;
     padding: 21px 0;
   }
-
   .faq-numero {
     width: 25px;
   }
-
   .faq-pergunta-texto {
     font-size: 1.2rem;
   }
-
   .faq-answer {
     padding: 0 20px 22px 37px;
   }
-
   .sobre-contato-section {
     padding: 26px 22px;
   }
-
   .sobre-contato-link {
     width: 100%;
     flex-shrink: 1;
@@ -616,33 +416,20 @@
     font-size: 0.73rem;
     overflow-wrap: anywhere;
   }
-
   .sobre-rodape {
     display: none;
   }
 }
-
 @media (max-width: 380px) {
-  .sobre-header h1 {
-    font-size: 2.6rem;
-  }
-
-  .sobre-header-rodape {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
   .sobre-section-header h2 {
     font-size: 1.9rem;
   }
-
   .sobre-contato-link {
     gap: 8px;
     padding: 12px 10px;
     font-size: 0.68rem;
   }
 }
-
 @media (prefers-reduced-motion: reduce) {
   .faq-question > i,
   .sobre-contato-link {

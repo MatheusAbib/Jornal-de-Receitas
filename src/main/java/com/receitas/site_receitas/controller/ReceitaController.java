@@ -105,14 +105,14 @@ public class ReceitaController {
             mapa.put("totalFavoritos", favoritoService.contarCurtidas(r));
         }
 
-            // É o Controller: é quem pede o cálculo e recebe do service o objeto 'Complexidade'.
+            //Chama o ComplexidadeService e recebe o Complexidade
             Complexidade complexidade = complexidadeService.calcular(r);
 
             // Extrai do objeto Complexidade os três dados que vieram do service e vão para o JSON
             Map<String, Object> complexidadeMap = new LinkedHashMap<>();
-            complexidadeMap.put("nivel", complexidade.getNivel());         // nível numérico (1, 2 ou 3)
-            complexidadeMap.put("descricao", complexidade.getDescricao()); // texto da complexidade ("Fácil", "Média", "Difícil")
-            complexidadeMap.put("pontuacao", complexidade.getPontuacao()); // pontuação final somada por todos os decorators
+            complexidadeMap.put("nivel", complexidade.getNivel());         
+            complexidadeMap.put("descricao", complexidade.getDescricao());
+            complexidadeMap.put("pontuacao", complexidade.getPontuacao()); 
 
             mapa.put("complexidade", complexidadeMap);                     
             // inclui o bloco de complexidade na resposta da receita
@@ -154,10 +154,13 @@ public class ReceitaController {
             )
         )
     })
-    @GetMapping
+    @GetMapping //esse método trata as requisições GET para /api/receitas
     public ResponseEntity<?> listarAprovadas() {
         try {
+
+            // chama receitaService.listarAprovadas() para buscar as receitas aprovadas
             List<Receita> receitas = receitaService.listarAprovadas();
+            // após solicitar as receitas aprovadas para o service, que solicitou para o receitaDAO, o controller recebe a lista de receitas aprovadas e monta o JSON
             List<Map<String, Object>> lista = new ArrayList<>();
 
             for (Receita r : receitas) {

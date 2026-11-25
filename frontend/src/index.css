@@ -1,10 +1,14 @@
-﻿
-@import './styles/variables.css';
+﻿@import './styles/variables.css';
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+:root {
+  --pagina-largura-maxima: 1350px;
+  --pagina-margem-lateral: 24px;
 }
 
 html {
@@ -17,20 +21,26 @@ html {
 }
 
 body {
-  min-height: 100vh;
-  min-height: 100dvh;
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   max-width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
-  font-family: 'Inter', sans-serif;
-  color: var(--text-color);
-  line-height: 1.7;
-  background: transparent !important;
-  position: relative;
   overflow-x: hidden;
+  background: transparent !important;
+  color: var(--text-color);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.7;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 header,
@@ -50,14 +60,24 @@ footer {
 
 .page-wrapper {
   display: flex;
-  flex-direction: column;
   flex: 1;
+  flex-direction: column;
+  width: calc(100% - var(--pagina-margem-lateral) - var(--pagina-margem-lateral));
+  min-width: 0;
+  max-width: var(--pagina-largura-maxima);
+  margin-inline: auto;
 }
 
-#root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+@media (max-width: 820px) {
+  :root {
+    --pagina-margem-lateral: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --pagina-margem-lateral: 5px;
+  }
 }
 
 @keyframes fadeIn {
@@ -111,8 +131,8 @@ footer {
 }
 
 .p-toast .p-toast-message {
-  border-radius: 0;
   border: 1px solid rgba(95, 74, 48, 0.2);
+  border-radius: 0;
   background: #fffdf7;
   color: #302a25;
   box-shadow: 4px 4px 0 rgba(95, 74, 48, 0.12);
@@ -121,16 +141,16 @@ footer {
 }
 
 .p-toast .p-toast-message-content {
-  padding: 14px 16px;
   gap: 12px;
+  padding: 14px 16px;
 }
 
 .p-toast .p-toast-summary {
   font-family: 'DM Serif Display', Georgia, serif;
   font-size: 1rem;
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .p-toast .p-toast-detail {
@@ -151,50 +171,56 @@ footer {
 }
 
 .p-toast .p-toast-message-success {
-  background: #fffdf7;
-  border-left: 6px solid #32654b;
-}
-
-.p-toast .p-toast-message-success .p-toast-message-icon,
-.p-toast .p-toast-message-success .p-toast-summary {
-  color: #32654b;
+  --toast-cor-borda: #32654b;
+  --toast-cor-destaque: #32654b;
 }
 
 .p-toast .p-toast-message-error {
-  background: #fffdf7;
-  border-left: 6px solid #b83c2b;
-}
-
-.p-toast .p-toast-message-error .p-toast-message-icon,
-.p-toast .p-toast-message-error .p-toast-summary {
-  color: #b83c2b;
+  --toast-cor-borda: #b83c2b;
+  --toast-cor-destaque: #b83c2b;
 }
 
 .p-toast .p-toast-message-info {
-  background: #fffdf7;
-  border-left: 6px solid #806347;
-}
-
-.p-toast .p-toast-message-info .p-toast-message-icon,
-.p-toast .p-toast-message-info .p-toast-summary {
-  color: #806347;
+  --toast-cor-borda: #806347;
+  --toast-cor-destaque: #806347;
 }
 
 .p-toast .p-toast-message-warn {
-  background: #fffdf7;
-  border-left: 6px solid #b1842f;
+  --toast-cor-borda: #b1842f;
+  --toast-cor-destaque: #a07826;
 }
 
-.p-toast .p-toast-message-warn .p-toast-message-icon,
-.p-toast .p-toast-message-warn .p-toast-summary {
-  color: #a07826;
+.p-toast :is(
+  .p-toast-message-success,
+  .p-toast-message-error,
+  .p-toast-message-info,
+  .p-toast-message-warn
+) {
+  border-left: 6px solid var(--toast-cor-borda);
 }
+
+.p-toast :is(
+  .p-toast-message-success,
+  .p-toast-message-error,
+  .p-toast-message-info,
+  .p-toast-message-warn
+) :is(.p-toast-message-icon, .p-toast-summary) {
+  color: var(--toast-cor-destaque);
+}
+
+
+@media(min-width: 1100px){
+  .page-wrapper{
+  width: calc(100% - 90px - 110px);
+}
+}
+
 
 @media (max-width: 768px) {
   .p-toast {
     width: 100%;
-    left: 0;
     right: 0;
+    left: 0;
     padding: 0 12px;
   }
 
@@ -204,8 +230,8 @@ footer {
   .p-toast-bottom-left {
     width: 100%;
     max-width: 100%;
-    left: 0;
     right: 0;
+    left: 0;
     padding: 12px;
   }
 
@@ -215,8 +241,8 @@ footer {
   }
 
   .p-toast .p-toast-message-content {
-    padding: 12px 14px;
     gap: 10px;
+    padding: 12px 14px;
   }
 
   .p-toast .p-toast-summary {

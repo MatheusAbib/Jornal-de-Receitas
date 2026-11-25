@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 //O DAO encapsula o JpaRepository
+// é a interface de DAO que o serviço conhece.
 public interface IReceitaDAO {
 
     Receita salvar(Receita receita);

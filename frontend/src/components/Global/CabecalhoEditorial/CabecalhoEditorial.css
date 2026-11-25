@@ -1,0 +1,200 @@
+.cabecalho-editorial {
+  border: 1px solid var(--border-soft, #ded8ca);
+  background: var(--paper-white, #fff);
+      margin-bottom: 30px;
+}
+
+.cabecalho-editorial-identidade {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.cabecalho-editorial-marca {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background: var(--tomato-red);
+  color: var(--paper-white);
+  font-family: var(--font-editorial);
+  font-size: 1.15rem;
+  font-weight: 400;
+  letter-spacing: -0.08em;
+}
+
+.cabecalho-editorial-topo,
+.cabecalho-editorial-rodape {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 13px 26px;
+}
+
+.cabecalho-editorial-topo {
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-soft, #ded8ca);
+  color: var(--ink-muted, #77756f);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.cabecalho-editorial-conteudo {
+  position: relative;
+  padding: 34px 36px 38px;
+  text-align: left;
+}
+
+.cabecalho-editorial-conteudo:has(:is(.minhas-nova-btn, .nova-minhas-receitas-btn)) {
+  padding-inline-end: 230px;
+}
+
+.cabecalho-editorial-editoria {
+  display: inline-block;
+  color: var(--vintage-green, #47624b);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cabecalho-editorial-conteudo h1 {
+  margin:0 0 12px;
+  color: var(--vintage-green-dark, #354b38);
+  font-family: var(--font-editorial, 'DM Serif Display', Georgia, serif);
+  font-size: clamp(2.5rem, 5vw, 3.9rem);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
+}
+
+.cabecalho-editorial-conteudo p {
+  max-width: 650px;
+  margin: 0;
+  color: var(--ink-soft, #66635d);
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+.cabecalho-editorial-conteudo :is(.minhas-nova-btn, .nova-minhas-receitas-btn) {
+  position: absolute;
+  top: 34px;
+  inset-inline-end: 36px;
+}
+
+.cabecalho-editorial-conteudo .nova-minhas-receitas-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 45px;
+  padding: 11px 17px;
+  background: var(--vintage-green, #47624b);
+  border: 1px solid var(--vintage-green, #47624b);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cabecalho-editorial-conteudo .nova-minhas-receitas-btn:hover {
+  background: var(--vintage-green-dark, #354b38);
+  border-color: var(--vintage-green-dark, #354b38);
+}
+
+.cabecalho-editorial-conteudo .nova-minhas-receitas-btn:focus-visible {
+  outline: 2px solid var(--vintage-green, #47624b);
+  outline-offset: 3px;
+}
+
+.cabecalho-editorial-conteudo .nova-minhas-receitas-btn i {
+  font-size: 0.85rem;
+}
+
+.cabecalho-editorial-rodape {
+  justify-content: flex-start;
+  gap: 14px 28px;
+  border-top: 1px solid var(--border-soft, #ded8ca);
+}
+
+.cabecalho-editorial-rodape span {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink-muted, #77756f);
+  font-size: 0.75rem;
+}
+
+.cabecalho-editorial-rodape i {
+  color: var(--vintage-green, #47624b);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 750px) {
+  .cabecalho-editorial-conteudo,
+  .cabecalho-editorial-conteudo:has(:is(.minhas-nova-btn, .nova-minhas-receitas-btn)) {
+    padding: 28px;
+  }
+
+  .cabecalho-editorial-conteudo :is(.minhas-nova-btn, .nova-minhas-receitas-btn) {
+    position: static;
+    width: 100%;
+    margin-top: 22px;
+  }
+}
+
+@media (max-width: 600px) {
+  .cabecalho-editorial-topo,
+  .cabecalho-editorial-rodape {
+    padding: 13px 18px;
+  }
+
+  .cabecalho-editorial-topo {
+    font-size: 0.6rem;
+  }
+
+  .cabecalho-editorial-conteudo,
+  .cabecalho-editorial-conteudo:has(:is(.minhas-nova-btn, .nova-minhas-receitas-btn)) {
+    padding: 28px 20px;
+  }
+
+  .cabecalho-editorial-conteudo h1 {
+    font-size: clamp(2.2rem, 9vw, 3rem);
+  }
+
+  .cabecalho-editorial-conteudo > p {
+    font-size: 0.82rem;
+  }
+
+  .cabecalho-editorial-rodape {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cabecalho-editorial-rodape span {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .cabecalho-editorial-conteudo,
+  .cabecalho-editorial-conteudo:has(:is(.minhas-nova-btn, .nova-minhas-receitas-btn)) {
+    padding: 26px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cabecalho-editorial-conteudo .nova-minhas-receitas-btn {
+    transition: none;
+  }
+}
