@@ -312,7 +312,7 @@
 }
 
 .footer-closing {
-  padding: 0 clamp(1.25rem, 4vw, 3rem) 24px;
+  padding: 0 clamp(1.25rem, 4vw, 3rem) 20px;
   background: var(--paper-color);
   border-top: 1px solid var(--border-soft);
 }
@@ -324,7 +324,7 @@
   gap: 18px;
   width: min(100%, 1400px);
   margin: 0 auto;
-  padding: 21px 0 18px;
+  padding: 20px 0 18px;
 }
 
 .footer-closing-rule {
@@ -354,7 +354,7 @@
   width: min(100%, 1400px);
   margin: 0 auto;
   color: var(--ink-soft);
-  font-size: 0.64rem;
+  font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   line-height: 1.6;
