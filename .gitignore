@@ -19,3 +19,6 @@ npm-debug.log*
 .env/target/
 /$env.txt
 /target/
+
+/Script.md
+/checklist.md
