@@ -1,32 +1,66 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Chart } from 'primereact/chart';
-import AdminLayout from "../../../components/Admin/AdminLayout/AdminLayout";
-import { useAuth } from "../../../context/AuthContext";
-import usePolling from "../../../hooks/usePolling";
-import { listarReceitas, listarPendentes, listarRejeitadas } from "../../../services/receitaService";
-import api from "../../../services/api";
-import { getCache, setCache } from "../../../services/cache";
+import AdminLayout from '../../../components/Admin/AdminLayout/AdminLayout';
+import { useAuth } from '../../../context/AuthContext';
+import usePolling from '../../../hooks/usePolling';
+import {
+  listarReceitas,
+  listarPendentes,
+  listarRejeitadas
+} from '../../../services/receitaService';
+import api from '../../../services/api';
+import { getCache, setCache } from '../../../services/cache';
 import './Dashboard.css';
 
 const CACHE_KEY = 'admin-dashboard';
 
+const dadosIniciais = {
+  totalUsuarios: 0,
+  usuariosAtivos: 0,
+  totalPendentes: 0,
+  totalAprovadas: 0,
+  totalRejeitadas: 0,
+  totalFavoritos: 0,
+  topReceitas: []
+};
+
+const indicadores = [
+  { campo: 'totalUsuarios', titulo: 'Usuários cadastrados', icone: 'pi-users', cor: 'verde' },
+  { campo: 'usuariosAtivos', titulo: 'Usuários ativos', icone: 'pi-user-plus', cor: 'verde' },
+  { campo: 'totalPendentes', titulo: 'Receitas pendentes', icone: 'pi-clock', cor: 'ocre' },
+  { campo: 'totalAprovadas', titulo: 'Receitas aprovadas', icone: 'pi-check-circle', cor: 'verde' },
+  { campo: 'totalRejeitadas', titulo: 'Receitas rejeitadas', icone: 'pi-times-circle', cor: 'vermelho' },
+  { campo: 'totalFavoritos', titulo: 'Favoritos', icone: 'pi-heart', cor: 'vermelho' }
+];
+
+const status = [
+  { campo: 'totalPendentes', titulo: 'Pendentes', cor: '#a87d2d' },
+  { campo: 'totalAprovadas', titulo: 'Aprovadas', cor: '#526b50' },
+  { campo: 'totalRejeitadas', titulo: 'Rejeitadas', cor: '#a13f35' }
+];
+
+const opcoesGrafico = {
+  responsive: true,
+  maintainAspectRatio: false,
+  animation: false,
+  cutout: '68%',
+  plugins: {
+    legend: { display: false }
+  }
+};
+
+const formatarNumero = new Intl.NumberFormat('pt-BR');
+
 function Dashboard() {
   const navigate = useNavigate();
   const { usuario, carregando: carregandoAuth } = useAuth();
-
-  const [dados, setDados] = useState({
-    totalUsuarios: 0,
-    usuariosAtivos: 0,
-    totalPendentes: 0,
-    totalAprovadas: 0,
-    totalRejeitadas: 0,
-    totalFavoritos: 0,
-    topReceitas: []
-  });
-
+  const [dados, setDados] = useState(dadosIniciais);
   const [carregando, setCarregando] = useState(true);
-  const chartRef = useRef(null);
+  const [erro, setErro] = useState('');
+
+  const ehAdmin = usuario?.role === 'ADMIN';
+  const carregandoTela = carregandoAuth || carregando;
 
   async function carregar(silencioso = false) {
     if (!silencioso) setCarregando(true);
@@ -39,43 +73,30 @@ function Dashboard() {
         api.get('/api/usuarios?size=100', { silent: true })
       ]);
 
-      const listaUsuarios = usuariosResp.data.usuarios || [];
-      const usuariosAtivos = listaUsuarios.filter(u => u.ativo).length;
-
-      const top = [...aprovadas]
+      const listaUsuarios = usuariosResp.data.usuarios ?? [];
+      const topReceitas = [...aprovadas]
         .sort((a, b) => (b.totalFavoritos || 0) - (a.totalFavoritos || 0))
         .slice(0, 5);
 
-      const totalFavoritos = aprovadas.reduce((acc, r) => acc + (r.totalFavoritos || 0), 0);
+      const novosDados = {
+        totalUsuarios: usuariosResp.data.totalItems ?? listaUsuarios.length,
+        usuariosAtivos: listaUsuarios.filter(item => item.ativo).length,
+        totalPendentes: pendentes.totalPendentes ?? 0,
+        totalAprovadas: aprovadas.length,
+        totalRejeitadas: rejeitadas.totalRejeitadas ?? 0,
+        totalFavoritos: aprovadas.reduce(
+          (total, receita) => total + (receita.totalFavoritos || 0),
+          0
+        ),
+        topReceitas
+      };
 
-      setDados(prev => {
-        const novosDados = {
-          totalUsuarios: usuariosResp.data.totalItems || listaUsuarios.length,
-          usuariosAtivos,
-          totalPendentes: pendentes.totalPendentes || 0,
-          totalAprovadas: aprovadas.length,
-          totalRejeitadas: rejeitadas.totalRejeitadas || 0,
-          totalFavoritos,
-          topReceitas: top
-        };
-
-        const iguais =
-          prev.totalUsuarios === novosDados.totalUsuarios &&
-          prev.usuariosAtivos === novosDados.usuariosAtivos &&
-          prev.totalPendentes === novosDados.totalPendentes &&
-          prev.totalAprovadas === novosDados.totalAprovadas &&
-          prev.totalRejeitadas === novosDados.totalRejeitadas &&
-          prev.totalFavoritos === novosDados.totalFavoritos &&
-          JSON.stringify(prev.topReceitas) === JSON.stringify(novosDados.topReceitas);
-
-        if (!iguais) {
-          setCache(CACHE_KEY, novosDados);
-        }
-
-        return iguais ? prev : novosDados;
-      });
-    } catch (e) {
-      console.error(e);
+      setCache(CACHE_KEY, novosDados);
+      setDados(novosDados);
+      setErro('');
+    } catch (falha) {
+      console.error(falha);
+      setErro('Não foi possível atualizar os dados do painel.');
     } finally {
       if (!silencioso) setCarregando(false);
     }
@@ -83,221 +104,167 @@ function Dashboard() {
 
   useEffect(() => {
     if (carregandoAuth) return;
-    if (!usuario) {
-      navigate('/');
+
+    if (!ehAdmin) {
+      navigate('/', { replace: true });
       return;
     }
 
-    const cached = getCache(CACHE_KEY);
+    const cache = getCache(CACHE_KEY);
 
-    if (cached) {
-      setDados(cached);
+    if (cache) {
+      setDados(cache);
       setCarregando(false);
       carregar(true);
     } else {
       carregar();
     }
-  }, [usuario, carregandoAuth, navigate]);
+  }, [usuario, ehAdmin, carregandoAuth, navigate]);
 
-  usePolling(() => carregar(true), 10000, !carregando && !carregandoAuth);
+  usePolling(() => carregar(true), 10000, ehAdmin && !carregandoTela);
 
-  const statusData = useMemo(() => ({
-    labels: ['Pendentes', 'Aprovadas', 'Rejeitadas'],
-    datasets: [
-      {
-        data: [dados.totalPendentes, dados.totalAprovadas, dados.totalRejeitadas],
-        backgroundColor: ['#d4af37', '#27ae60', '#8b0000'],
-        borderColor: '#fff',
-        borderWidth: 2
-      }
-    ]
-  }), [dados.totalPendentes, dados.totalAprovadas, dados.totalRejeitadas]);
+  const { totalPendentes, totalAprovadas, totalRejeitadas } = dados;
 
-  const statusOptions = useMemo(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: false,
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          color: '#333',
-          padding: 15,
-          font: { family: 'Inter', size: 13, weight: '600' }
-        }
-      }
-    }
-  }), []);
+  const dadosGrafico = useMemo(() => ({
+    labels: status.map(item => item.titulo),
+    datasets: [{
+      data: [totalPendentes, totalAprovadas, totalRejeitadas],
+      backgroundColor: status.map(item => item.cor),
+      borderWidth: 0
+    }]
+  }), [totalPendentes, totalAprovadas, totalRejeitadas]);
 
-if (carregandoAuth || carregando) {
+  const totalReceitas = totalPendentes + totalAprovadas + totalRejeitadas;
+  const maxFavoritos = dados.topReceitas[0]?.totalFavoritos || 1;
+
+  if (!carregandoAuth && !ehAdmin) return null;
+
   return (
-    <AdminLayout>
-      <div className="admin-topbar">
-        <h1><i className="pi pi-chart-line"></i> Dashboard</h1>
-        <div className="admin-topbar-actions">
-          <span><i className="pi pi-calendar"></i> Visão geral do site</span>
-        </div>
-      </div>
+    <AdminLayout
+  titulo="Dashboard"
+  descricao="Acompanhe os usuários, as receitas e os favoritos do Jornal."
+>
+      <div className="admin-dashboard">
 
-      <div className="dashboard-cards">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="dashboard-card">
-            <div className="card-icon skeleton-icon"></div>
-            <div className="card-info">
-              <div className="skeleton-line skeleton-line-label"></div>
-              <div className="skeleton-line skeleton-line-value"></div>
-            </div>
-          </div>
-        ))}
-      </div>
+        {erro && (
+          <p className="dashboard-aviso" role="status">
+            <i className="pi pi-exclamation-circle" aria-hidden="true" />
+            {erro}
+          </p>
+        )}
 
-      <div className="dashboard-grid">
-        <div className="dashboard-panel">
-          <div className="panel-header">
-            <h2><i className="pi pi-chart-pie"></i> Receitas por Status</h2>
-          </div>
-          <div className="panel-body-chart">
-            <div className="skeleton-chart"></div>
-          </div>
-        </div>
+        <div aria-busy={carregandoTela}>
+          <section className="dashboard-cards" aria-label="Indicadores do Jornal">
+            {indicadores.map(({ campo, titulo, icone, cor }) => (
+              <div className="dashboard-card" key={campo}>
+                <span className={`dashboard-icone dashboard-icone--${cor}`}>
+                  <i className={`pi ${icone}`} aria-hidden="true" />
+                </span>
 
-        <div className="dashboard-panel">
-          <div className="panel-header">
-            <h2><i className="pi pi-star-fill"></i> Top 5 Receitas Mais Favoritadas</h2>
-          </div>
-          <div className="panel-body-chart">
-            <div className="top-list" style={{ width: '100%' }}>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="top-item">
-                  <div className="skeleton-line skeleton-line-rank"></div>
-                  <div className="skeleton-line skeleton-line-bar"></div>
-                  <div className="skeleton-line skeleton-line-count"></div>
+                <div className="dashboard-indicador">
+                  <span className="dashboard-rotulo">{titulo}</span>
+                  {carregandoTela ? (
+                    <span className="dashboard-skeleton dashboard-skeleton--valor" aria-hidden="true" />
+                  ) : (
+                    <strong className="dashboard-valor">
+                      {formatarNumero.format(dados[campo])}
+                    </strong>
+                  )}
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </AdminLayout>
-  );
-}
-
-  return (
-    <AdminLayout>
-      <div className="admin-topbar">
-        <h1><i className="pi pi-chart-line"></i> Dashboard</h1>
-        <div className="admin-topbar-actions">
-          <span><i className="pi pi-calendar"></i> Visão geral do site</span>
-        </div>
-      </div>
-
-      <div className="dashboard-cards">
-
-        <div className="dashboard-card">
-          <div className="card-icon card-icon-users"><i className="pi pi-users"></i></div>
-          <div className="card-info">
-            <span className="card-label">Total de Usuários</span>
-            <span className="card-value">{dados.totalUsuarios}</span>
-          </div>
-        </div>
-
-        <div className="dashboard-card">
-          <div className="card-icon card-icon-active"><i className="pi pi-user-plus"></i></div>
-          <div className="card-info">
-            <span className="card-label">Usuários Ativos</span>
-            <span className="card-value">{dados.usuariosAtivos}</span>
-          </div>
-        </div>
-
-        <div className="dashboard-card">
-          <div className="card-icon card-icon-pending"><i className="pi pi-clock"></i></div>
-          <div className="card-info">
-            <span className="card-label">Receitas Pendentes</span>
-            <span className="card-value">{dados.totalPendentes}</span>
-          </div>
-        </div>
-
-        <div className="dashboard-card">
-          <div className="card-icon card-icon-approved"><i className="pi pi-check-circle"></i></div>
-          <div className="card-info">
-            <span className="card-label">Receitas Aprovadas</span>
-            <span className="card-value">{dados.totalAprovadas}</span>
-          </div>
-        </div>
-
-        <div className="dashboard-card">
-          <div className="card-icon card-icon-rejected"><i className="pi pi-times-circle"></i></div>
-          <div className="card-info">
-            <span className="card-label">Receitas Rejeitadas</span>
-            <span className="card-value">{dados.totalRejeitadas}</span>
-          </div>
-        </div>
-
-        <div className="dashboard-card">
-          <div className="card-icon card-icon-fav"><i className="pi pi-heart-fill"></i></div>
-          <div className="card-info">
-            <span className="card-label">Total de Favoritos</span>
-            <span className="card-value">{dados.totalFavoritos}</span>
-          </div>
-        </div>
-
-      </div>
-
-      <div className="dashboard-grid">
-
-        <div className="dashboard-panel">
-          <div className="panel-header">
-            <h2><i className="pi pi-chart-pie"></i> Receitas por Status</h2>
-          </div>
-          <div className="panel-body panel-body-chart">
-            <Chart
-              ref={chartRef}
-              type="doughnut"
-              data={statusData}
-              options={statusOptions}
-            />
-          </div>
-        </div>
-
-        <div className="dashboard-panel">
-          <div className="panel-header">
-            <h2><i className="pi pi-star-fill"></i> Top 5 Receitas Mais Favoritadas</h2>
-          </div>
-          <div className="panel-body panel-body-chart">
-            {dados.topReceitas.length > 0 ? (
-              <div className="top-list">
-                {dados.topReceitas.map((r, i) => {
-                  const maxFav = dados.topReceitas[0]?.totalFavoritos || 1;
-                  const pct = maxFav > 0 ? (r.totalFavoritos / maxFav) * 100 : 0;
-
-                  return (
-                    <div key={i} className="top-item">
-                      <span className={`top-rank rank-${i + 1}`}>{i + 1}</span>
-                      <div className="top-info">
-                        <span className="top-titulo">{r.titulo}</span>
-                        <div className="top-bar-bg">
-                          <div
-                            className="top-bar-fill"
-                            style={{ width: `${pct}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                      <span className="top-count">
-                        <i className="pi pi-heart-fill"></i> {r.totalFavoritos || 0}
-                      </span>
-                    </div>
-                  );
-                })}
               </div>
-            ) : (
-              <div className="top-receitas-empty">
-                <i className="pi pi-inbox"></i>
-                <p>Nenhuma receita aprovada ainda</p>
+            ))}
+          </section>
+
+          <div className="dashboard-grid">
+            <section className="dashboard-panel" aria-labelledby="dashboard-status">
+              <header className="dashboard-panel-header">
+                <h2 id="dashboard-status">
+                  <i className="pi pi-chart-pie" aria-hidden="true" />
+                  Receitas por status
+                </h2>
+              </header>
+
+              <div className="dashboard-panel-body">
+                <div className="dashboard-grafico-area" aria-hidden="true">
+                  {carregandoTela ? (
+                    <div className="dashboard-skeleton dashboard-skeleton--grafico" />
+                  ) : totalReceitas > 0 ? (
+                    <Chart
+                      type="doughnut"
+                      data={dadosGrafico}
+                      options={opcoesGrafico}
+                      className="dashboard-grafico"
+                    />
+                  ) : (
+                    <i className="pi pi-chart-pie dashboard-grafico-vazio" />
+                  )}
+                </div>
+
+                {!carregandoTela && (
+                  <ul className="dashboard-legenda" aria-label="Totais por status">
+                    {status.map(({ campo, titulo, cor }) => (
+                      <li key={campo}>
+                        <span className="dashboard-legenda-cor" style={{ backgroundColor: cor }} aria-hidden="true" />
+                        <span>{titulo}</span>
+                        <strong>{formatarNumero.format(dados[campo])}</strong>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-            )}
+            </section>
+
+            <section className="dashboard-panel" aria-labelledby="dashboard-favoritas">
+              <header className="dashboard-panel-header">
+                <h2 id="dashboard-favoritas">
+                  <i className="pi pi-heart" aria-hidden="true" />
+                  Receitas mais favoritadas
+                </h2>
+              </header>
+
+              <div className="dashboard-panel-body">
+                {carregandoTela ? (
+                  <div className="dashboard-ranking" aria-hidden="true">
+                    {Array.from({ length: 5 }, (_, indice) => (
+                      <div className="dashboard-skeleton dashboard-skeleton--linha" key={indice} />
+                    ))}
+                  </div>
+                ) : dados.topReceitas.length > 0 ? (
+                  <ol className="dashboard-ranking">
+                    {dados.topReceitas.map((receita, indice) => {
+                      const favoritos = receita.totalFavoritos || 0;
+
+                      return (
+                        <li className="dashboard-ranking-item" key={receita.id}>
+                          <span className="dashboard-posicao" aria-hidden="true">
+                            {indice + 1}
+                          </span>
+
+                          <div className="dashboard-ranking-info">
+                            <span className="dashboard-receita-titulo">{receita.titulo}</span>
+                            <div className="dashboard-barra" aria-hidden="true">
+                              <div style={{ width: `${(favoritos / maxFavoritos) * 100}%` }} />
+                            </div>
+                          </div>
+
+                          <span className="dashboard-favoritos" aria-label={`${favoritos} favoritos`}>
+                            <i className="pi pi-heart-fill" aria-hidden="true" />
+                            {formatarNumero.format(favoritos)}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                ) : (
+                  <p className="dashboard-vazio">
+                    <i className="pi pi-inbox" aria-hidden="true" />
+                    Nenhuma receita aprovada ainda.
+                  </p>
+                )}
+              </div>
+            </section>
           </div>
         </div>
-
       </div>
     </AdminLayout>
   );

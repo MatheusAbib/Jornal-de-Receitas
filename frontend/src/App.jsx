@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useLayoutEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Navigate, Routes, Route, useLocation } from 'react-router-dom';
 import PageLoader from './components/Global/PageLoader/PageLoader';
 import { useLoader } from './context/LoaderContext';
 import useGlobalButtonLoader from './hooks/useGlobalButtonLoader';
@@ -12,8 +12,7 @@ const NovaReceita = lazy(() => import('./pages/Client/NovaReceita-Cliente/NovaRe
 const Sobre = lazy(() => import('./pages/Client/Sobre-Cliente/Sobre'));
 const Dashboard = lazy(() => import('./pages/Admin/Dashboard-Admin/Dashboard'));
 const Usuarios = lazy(() => import('./pages/Admin/Usuarios-Admin/Usuarios'));
-const ReceitasPendentes = lazy(() => import('./pages/Admin/Receitas-Admin/ReceitasPendentes'));
-const ReceitasAprovadas = lazy(() => import('./pages/Admin/Receitas-Admin/ReceitasAprovadas'));
+const ReceitasAdmin = lazy(() => import('./pages/Admin/Receitas-Admin/ReceitasAdmin'));
 const Carrossel = lazy(() => import('./pages/Admin/Carrossel-Admin/Carrossel'));
 
 function ScrollToTop() {
@@ -78,8 +77,11 @@ function App() {
 
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/admin/usuarios" element={<Usuarios />} />
-          <Route path="/admin/pendentes" element={<ReceitasPendentes />} />
-          <Route path="/admin/aprovadas" element={<ReceitasAprovadas />} />
+          <Route path="/admin/pendentes" element={<ReceitasAdmin />} />
+          <Route
+            path="/admin/aprovadas"
+            element={<Navigate to="/admin/pendentes?aba=aprovadas" replace />}
+          />
           <Route path="/admin/carrossel" element={<Carrossel />} />
         </Routes>
       </Suspense>

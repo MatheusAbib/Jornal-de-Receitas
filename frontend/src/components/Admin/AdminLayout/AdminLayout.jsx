@@ -1,25 +1,59 @@
-﻿import { useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import AdminSidebar from '../AdminSidebar/AdminSidebar';
-import ModalLogout from "../../Modal/ModalLogout/ModalLogout";
-import ModalPerfil from "../../Modal/ModalPerfil/ModalPerfil";
-import { useAuth } from "../../../context/AuthContext";
+import AdminPageHeader from './AdminPageHeader';
+import ModalLogout from '../../Modal/ModalLogout/ModalLogout';
+import ModalPerfil from '../../Modal/ModalPerfil/ModalPerfil';
+import { useAuth } from '../../../context/AuthContext';
 import './AdminLayout.css';
 
-function AdminLayout({ children }) {
-  const { usuario, logout } = useAuth();
+function AdminLayout({ titulo, descricao, acao, children }) {
+  const { logout } = useAuth();
 
   const [logoutAberto, setLogoutAberto] = useState(false);
   const [perfilAberto, setPerfilAberto] = useState(false);
   const [sidebarAberta, setSidebarAberta] = useState(false);
 
-  function abrirSidebar() {
-    setSidebarAberta(true);
-    document.body.style.overflow = 'hidden';
-  }
+  useEffect(() => {
+    if (!sidebarAberta) return;
+
+    const overflowAnterior = document.body.style.overflow;
+    const telaMovel = window.matchMedia('(max-width: 768px)');
+
+    function sincronizarSidebar() {
+      if (telaMovel.matches) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        setSidebarAberta(false);
+      }
+    }
+
+    function fecharComEscape(event) {
+      if (event.key === 'Escape') setSidebarAberta(false);
+    }
+
+    sincronizarSidebar();
+    telaMovel.addEventListener('change', sincronizarSidebar);
+    document.addEventListener('keydown', fecharComEscape);
+
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      telaMovel.removeEventListener('change', sincronizarSidebar);
+      document.removeEventListener('keydown', fecharComEscape);
+    };
+  }, [sidebarAberta]);
 
   function fecharSidebar() {
     setSidebarAberta(false);
-    document.body.style.overflow = 'auto';
+  }
+
+  function abrirPerfil() {
+    fecharSidebar();
+    setPerfilAberto(true);
+  }
+
+  function abrirLogout() {
+    fecharSidebar();
+    setLogoutAberto(true);
   }
 
   async function confirmarLogout() {
@@ -36,29 +70,35 @@ function AdminLayout({ children }) {
   return (
     <div className="admin-layout">
       <div
-        className={`admin-sidebar-overlay ${sidebarAberta ? 'open' : ''}`}
+        className={'admin-sidebar-overlay' + (sidebarAberta ? ' open' : '')}
         onClick={fecharSidebar}
-      ></div>
+        aria-hidden="true"
+      />
 
       <AdminSidebar
-        usuario={usuario}
         aberta={sidebarAberta}
         onFechar={fecharSidebar}
-        onAbrirPerfil={() => setPerfilAberto(true)}
-        onAbrirLogout={() => setLogoutAberto(true)}
+        onAbrirPerfil={abrirPerfil}
+        onAbrirLogout={abrirLogout}
       />
 
       <main className="admin-content-wrapper">
         <button
           type="button"
           className="admin-sidebar-toggle"
-          onClick={abrirSidebar}
+          onClick={() => setSidebarAberta(true)}
           aria-label="Abrir menu"
+          aria-expanded={sidebarAberta}
         >
-          <i className="pi pi-bars"></i>
+          <i className="pi pi-bars" aria-hidden="true" />
         </button>
 
-        {children}
+        <div className="admin-page-content">
+          {titulo && (
+            <AdminPageHeader titulo={titulo} descricao={descricao} acao={acao} />
+          )}
+          {children}
+        </div>
       </main>
 
       <ModalLogout

@@ -8,7 +8,6 @@ const IGNORAR_CLASSES = [
   'close-user-modal',
   'close-edit-user-modal',
   'notificacoes-modal-close',
-  'admin-modal-close',
   'carrossel-modal-close',
   'detalhes-modal-close',
   'user-modal-close',
@@ -16,16 +15,12 @@ const IGNORAR_CLASSES = [
   'cadastro-modal-close',
   'logout-modal-close',
   'header-nav-close',
-  'admin-sidebar-close',
   'menu-icon',
-  'admin-sidebar-toggle',
   'header-nav-overlay',
-  'admin-sidebar-overlay',
   'carousel-control',
   'carousel-indicator',
   'tab-button',
   'minhas-tab',
-  'admin-recipe-tab',
   'filter-icon',
   'user-password-toggle',
   'cadastro-password-toggle',
@@ -41,7 +36,6 @@ const IGNORAR_CLASSES = [
   'nova-remove-btn',
   'nova-tempo-toggle',
   'action-btn',
-  'admin-btn',
   'modal-btn',
   'btn',
   'p-toast-icon-close',
@@ -141,7 +135,7 @@ function useGlobalButtonLoader() {
       if (!(event.target instanceof Element)) return;
 
       const alvo = event.target.closest(
-        'a[href], .header-user-profile, .admin-sidebar-btn, .header-logout-btn, .header-notification-btn'
+        '.header-user-profile, .header-logout-btn, .header-notification-btn'
       );
 
       if (!alvo) return;

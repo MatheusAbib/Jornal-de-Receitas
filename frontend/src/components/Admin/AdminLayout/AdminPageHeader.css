@@ -1,0 +1,39 @@
+.admin-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-soft, #ded8ca);
+}
+
+.admin-page-header-texto {
+  min-width: 0;
+}
+
+.admin-page-header h1 {
+  margin: 0;
+  color: var(--vintage-green-dark, #354b38);
+  font-family: var(--font-editorial, 'DM Serif Display', Georgia, serif);
+  font-size: clamp(1.9rem, 4vw, 2.7rem);
+  font-weight: 400;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.admin-page-header p {
+  max-width: 58ch;
+  margin: 6px 0 0;
+  color: var(--ink-soft, #65574b);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 480px) {
+  .admin-page-header-acao,
+  .admin-page-header-acao > :is(button, a) {
+    width: 100%;
+  }
+}

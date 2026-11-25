@@ -6,8 +6,7 @@ const rotas = {
   '/detalhe': () => import('../pages/Client/DetalhesReceita-Cliente/DetalhesReceita'),
   '/admin/dashboard': () => import('../pages/Admin/Dashboard-Admin/Dashboard'),
   '/admin/usuarios': () => import('../pages/Admin/Usuarios-Admin/Usuarios'),
-  '/admin/pendentes': () => import('../pages/Admin/Receitas-Admin/ReceitasPendentes'),
-  '/admin/aprovadas': () => import('../pages/Admin/Receitas-Admin/ReceitasAprovadas'),
+  '/admin/pendentes': () => import('../pages/Admin/Receitas-Admin/ReceitasAdmin'),
   '/admin/carrossel': () => import('../pages/Admin/Carrossel-Admin/Carrossel'),
 };
 
@@ -15,6 +14,7 @@ const jaBaixados = new Set();
 
 export function prefetchRota(path) {
   const loader = rotas[path];
+
   if (!loader || jaBaixados.has(path)) return;
 
   jaBaixados.add(path);

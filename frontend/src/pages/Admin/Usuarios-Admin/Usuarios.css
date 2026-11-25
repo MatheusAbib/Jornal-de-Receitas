@@ -1,60 +1,68 @@
-﻿
-.admin-table .status-badge {
-  position: static !important;
-  inset: auto !important;
-  display: inline-flex !important;
+﻿.admin-usuarios .admin-table .status-badge {
+  position: static;
+  inset: auto;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 5px 10px !important;
-  border: 1px solid var(--border-color, #e5e5e5) !important;
-  border-radius: 4px !important;
-  background: var(--background-color, #fff) !important;
-  color: var(--text-color, #333) !important;
-  font-family: inherit;
-  font-size: 0.75rem !important;
-  font-weight: 500 !important;
-  line-height: 1.4;
-  letter-spacing: 0 !important;
-  text-transform: none !important;
+  gap: 6px;
+  padding: 4px 9px;
+  border: 1px solid var(--border-soft, #ded8ca);
+  border-radius: 0;
+  background: var(--paper-light, #faf3e3);
+  color: var(--ink-soft, #65574b);
+  font: 700 0.75rem / 1.4 var(--font-body, inherit);
+  letter-spacing: normal;
+  text-transform: none;
   white-space: nowrap;
-  box-shadow: none !important;
+  box-shadow: none;
 }
 
-.admin-table .status-badge.active {
-  background: var(--background-color, #fff) !important;
-  color: var(--text-color, #333) !important;
-  border-color: var(--border-color, #e5e5e5) !important;
+
+.admin-usuarios .admin-table .status-badge::before {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: currentColor;
+  content: '';
 }
 
-.admin-table .status-badge.inactive {
-  background: var(--surface-color, #f5f5f5) !important;
-  color: var(--light-text, #777) !important;
-  border-color: var(--border-color, #e5e5e5) !important;
+.admin-usuarios .admin-table .status-badge.active {
+  border-color: #c7d6c5;
+  background: #ecf2e8;
+  color: var(--vintage-green-dark, #354b38);
 }
 
-.action-btn.btn-edit,
-.action-btn.btn-delete {
-  color: var(--text-color, #333);
+.admin-usuarios .admin-table .status-badge.inactive {
+  background: var(--paper-light, #faf3e3);
+  color: var(--ink-soft, #65574b);
+}
+
+.admin-usuarios .action-btn:is(.btn-edit, .btn-delete) {
+  border-radius: 0;
   background: transparent;
-  border-radius: 4px;
+  color: var(--vintage-green-dark, #354b38);
   box-shadow: none;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.18s ease;
 }
 
-.action-btn.btn-edit:hover,
-.action-btn.btn-delete:hover {
-  background: var(--surface-color, #f5f5f5);
-  color: var(--text-color, #333);
-  box-shadow: none;
+.admin-usuarios .action-btn.btn-delete {
+  color: var(--tomato-red-dark, #812e28);
 }
 
-.action-btn.btn-edit:focus-visible,
-.action-btn.btn-delete:focus-visible {
-  outline: 2px solid var(--primary-color, #333);
+.admin-usuarios .action-btn.btn-edit:hover:not(:disabled) {
+  background: var(--paper-light, #faf3e3);
+}
+
+.admin-usuarios .action-btn.btn-delete:hover:not(:disabled) {
+  background: #f9eeea;
+}
+
+.admin-usuarios .action-btn:focus-visible {
+  outline: 2px solid var(--vintage-green, #47624b);
   outline-offset: 2px;
 }
 
-.switch {
+.admin-usuarios .switch {
   position: relative;
   display: inline-block;
   flex-shrink: 0;
@@ -63,7 +71,7 @@
   vertical-align: middle;
 }
 
-.switch input {
+.admin-usuarios .switch input {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -73,59 +81,57 @@
   cursor: pointer;
 }
 
-.switch .slider {
+.admin-usuarios .switch .slider {
   position: absolute;
   inset: 0;
   display: block;
-  background: var(--border-color, #dedede);
-  border: 1px solid var(--border-color, #dedede);
-  border-radius: 24px;
+  border: 1px solid var(--border-soft, #ded8ca);
+  border-radius: 999px;
+  background: var(--paper-color, #f1e8d6);
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
 }
 
-.switch .slider::before {
+.admin-usuarios .switch .slider::before {
   position: absolute;
   top: 3px;
   left: 3px;
   width: 16px;
   height: 16px;
-  background: var(--background-color, #fff);
+  border: 1px solid var(--border-soft, #ded8ca);
   border-radius: 50%;
-  content: "";
-  transition: transform 0.2s ease;
+  background: var(--paper-white, #fffdf7);
+  box-sizing: border-box;
+  content: '';
+  transition: transform 0.18s ease;
 }
 
-.switch input:checked + .slider {
-  background: var(--primary-color, #333);
-  border-color: var(--primary-color, #333);
+.admin-usuarios .switch input:checked + .slider {
+  border-color: var(--vintage-green-dark, #354b38);
+  background: var(--vintage-green-dark, #354b38);
 }
 
-.switch input:checked + .slider::before {
+.admin-usuarios .switch input:checked + .slider::before {
   transform: translateX(18px);
 }
 
-.switch input:focus-visible + .slider {
-  outline: 2px solid var(--primary-color, #333);
+.admin-usuarios .switch input:focus-visible + .slider {
+  outline: 2px solid var(--vintage-green, #47624b);
   outline-offset: 3px;
 }
 
-.switch input:disabled + .slider {
+.admin-usuarios .switch input:disabled + .slider {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 .admin-modal-delete-text {
   margin: 0 0 12px;
-  color: var(--text-color, #333);
-  font-size: 0.95rem;
+  color: var(--ink-color, #302a25);
+  font-size: 0.9rem;
   line-height: 1.6;
   text-align: center;
-}
-
-.admin-modal-delete-text strong {
-  color: var(--text-color, #333);
-  font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .admin-modal-delete-warning {
@@ -133,94 +139,81 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 0 0 18px;
-  color: var(--light-text, #777);
-  font-size: 0.85rem;
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-left: 2px solid var(--tomato-red, #a13f35);
+  background: #f9eeea;
+  color: var(--tomato-red-dark, #812e28);
+  font-size: 0.82rem;
   line-height: 1.5;
-  text-align: center;
 }
 
 .admin-modal-delete-warning i {
   flex-shrink: 0;
-  font-size: 0.95rem;
 }
 
-.skeleton-line {
+.admin-usuarios .skeleton-line {
+  width: var(--usuarios-skeleton-largura, 100%);
+  max-width: 100%;
   height: 14px;
-  background: linear-gradient(
-    90deg,
-    var(--surface-color, #f1f1f1) 25%,
-    var(--background-color, #fff) 50%,
-    var(--surface-color, #f1f1f1) 75%
-  );
+  background: linear-gradient(90deg, #eee7da 25%, #f8f3e9 50%, #eee7da 75%);
   background-size: 200% 100%;
-  border-radius: 3px;
-  animation: skeleton-loading 1.4s ease-in-out infinite;
+  animation: usuarios-skeleton 1.4s ease-in-out infinite;
 }
 
-.skeleton-line-xs {
-  width: 30px;
+.admin-usuarios .skeleton-line-xs {
+  --usuarios-skeleton-largura: 30px;
 }
 
-.skeleton-line-sm {
-  width: 60px;
+.admin-usuarios .skeleton-line-sm {
+  --usuarios-skeleton-largura: 60px;
 }
 
-.skeleton-line-md {
-  width: 120px;
+.admin-usuarios .skeleton-line-md {
+  --usuarios-skeleton-largura: 120px;
 }
 
-.skeleton-line-lg {
-  width: 180px;
+.admin-usuarios .skeleton-line-lg {
+  --usuarios-skeleton-largura: 180px;
 }
 
-.form-group input[type="password"]::-ms-reveal,
-.form-group input[type="password"]::-ms-clear {
+@keyframes usuarios-skeleton {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.admin-usuarios .form-group input[type='password']::-ms-reveal,
+.admin-usuarios .form-group input[type='password']::-ms-clear {
   display: none;
 }
 
-.form-group input[type="password"]::-webkit-credentials-auto-fill-button,
-.form-group input[type="password"]::-webkit-strong-password-auto-fill-button,
-.form-group input[type="password"]::-webkit-caps-lock-indicator {
+.admin-usuarios .form-group input[type='password']::-webkit-credentials-auto-fill-button,
+.admin-usuarios .form-group input[type='password']::-webkit-strong-password-auto-fill-button,
+.admin-usuarios .form-group input[type='password']::-webkit-caps-lock-indicator {
   display: none !important;
   visibility: hidden;
   pointer-events: none;
 }
 
-@keyframes skeleton-loading {
-  0% {
-    background-position: 200% 0;
-  }
-
-  100% {
-    background-position: -200% 0;
-  }
-}
-
 @media (max-width: 768px) {
-  .admin-table .status-badge {
-    padding: 5px 8px !important;
-    font-size: 0.72rem !important;
-  }
-
-  .admin-modal-delete-text {
-    font-size: 0.9rem;
-  }
-
-  .admin-modal-delete-warning {
-    font-size: 0.8rem;
+  .admin-usuarios .admin-table .status-badge {
+    padding-inline: 7px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .skeleton-line {
+  .admin-usuarios .skeleton-line {
     animation: none;
   }
 
-  .switch .slider,
-  .switch .slider::before,
-  .action-btn.btn-edit,
-  .action-btn.btn-delete {
+  .admin-usuarios .switch .slider,
+  .admin-usuarios .switch .slider::before,
+  .admin-usuarios .action-btn {
     transition: none;
   }
 }

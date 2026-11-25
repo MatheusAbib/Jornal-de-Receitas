@@ -285,16 +285,20 @@ async function carregar(silencioso = false) {
 
   if (carregandoAuth || carregando) {
     return (
-      <AdminLayout>
-        <div className="admin-topbar">
-          <h1><i className="pi pi-images"></i> Carrossel</h1>
-          <div className="admin-topbar-actions">
+      <AdminLayout
+  titulo="Carrossel"
+  descricao="Gerencie as imagens exibidas na p?gina inicial."
+  acao={
+    <>
+  <div className="admin-topbar-actions">
             <span><i className="pi pi-list"></i> Total: <strong>...</strong></span>
             <button type="button" className="carrossel-btn-novo" disabled>
               <i className="pi pi-plus"></i> Novo Item
             </button>
           </div>
-        </div>
+    </>
+  }
+>
 
         <div className="carrossel-grid">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -318,16 +322,20 @@ async function carregar(silencioso = false) {
   }
 
   return (
-    <AdminLayout>
-      <div className="admin-topbar">
-        <h1><i className="pi pi-images"></i> Carrossel</h1>
-        <div className="admin-topbar-actions">
+    <AdminLayout
+  titulo="Carrossel"
+  descricao="Gerencie as imagens exibidas na p?gina inicial."
+  acao={
+    <>
+  <div className="admin-topbar-actions">
           <span><i className="pi pi-list"></i> Total: <strong>{itens.length}</strong></span>
           <button type="button" className="carrossel-btn-novo" onClick={abrirNovo}>
             <i className="pi pi-plus"></i> Novo Item
           </button>
         </div>
-      </div>
+    </>
+  }
+>
 
       {!carregando && itens.length > 0 && (
         <div className="carrossel-grid">
